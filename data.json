@@ -1,0 +1,285 @@
+{
+  "modes": {
+    "Social Content Kit": {},
+    "General": {}
+  },
+  "category_tree": {
+    "Sosyal İçerik (Social Content)": {
+      "Instagram Post": {
+        "en": [
+          "{brand} visual about {topic}. {visual}. {composition}. {lighting}. Style: {style_tokens}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için {topic} hakkında görsel. {visual}. {composition}. {lighting}. Stil: {style_tokens}. CTA: {cta}."
+        ]
+      },
+      "TikTok Video Cover": {
+        "en": [
+          "TikTok video cover for {brand} on {topic}. {visual}. {composition}. {lighting}. Style: {style_tokens}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için {topic} konulu TikTok kapak görseli. {visual}. {composition}. {lighting}. Stil: {style_tokens}. CTA: {cta}."
+        ]
+      },
+      "YouTube Thumbnail": {
+        "en": [
+          "YouTube thumbnail concept for {brand}, topic: {topic}. {visual}. {composition}. {lighting}. Style: {style_tokens}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için YouTube küçük resim; konu: {topic}. {visual}. {composition}. {lighting}. Stil: {style_tokens}. CTA: {cta}."
+        ]
+      }
+    },
+    "Ürün (Product)": {
+      "Ürün Reklamı (Product Ad)": {
+        "en": [
+          "Product ad visual for {brand}: {product} focus. {visual}. {composition}. {lighting}. Materials: {material}. Lens: {lens}. Style: {style_tokens}. Benefit: {benefit}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için ürün reklam görseli: {product} odak. {visual}. {composition}. {lighting}. Malzemeler: {material}. Lens: {lens}. Stil: {style_tokens}. Fayda: {benefit}. CTA: {cta}."
+        ]
+      }
+    }
+  },
+  "pools": {
+    "en": {
+      "brands": [
+        "EMBERLY",
+        "ACME",
+        "Nova Lab",
+        "Urban Craft"
+      ],
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "Amazon",
+        "Etsy"
+      ],
+      "topics": [
+        "new collection launch",
+        "limited-time offer",
+        "eco-friendly materials",
+        "handcrafted design",
+        "back-to-school essentials",
+        "holiday gift guide",
+        "minimal desk setup trends",
+        "cozy lifestyle inspiration",
+        "summer style"
+      ],
+      "visuals": [
+        "hero product on seamless background",
+        "dynamic diagonal layout",
+        "clean mockup with shadows",
+        "lifestyle usage scene",
+        "top-down flatlay",
+        "macro texture detail",
+        "splash/kinetic motion moment"
+      ],
+      "compositions": [
+        "rule of thirds",
+        "centered hero",
+        "top-down flatlay",
+        "diagonal balance",
+        "three-quarter angle",
+        "symmetrical framing"
+      ],
+      "lightings": [
+        "soft studio light",
+        "rim light + softbox",
+        "golden hour feel",
+        "dramatic chiaroscuro",
+        "natural window light",
+        "high-key clean light"
+      ],
+      "ctas": [
+        "shop now",
+        "save & share",
+        "learn more",
+        "limited time",
+        "discover more",
+        "tap to see details",
+        "add to cart"
+      ],
+      "colors": [
+        "muted neutrals",
+        "bold primary palette",
+        "luxury black & gold",
+        "soft pastels",
+        "cool monochrome"
+      ],
+      "lenses": [
+        "50mm natural",
+        "85mm portrait",
+        "24mm wide"
+      ],
+      "materials": [
+        "matte finish",
+        "brushed metal",
+        "polished glass",
+        "soft fabric"
+      ],
+      "products": [
+        "sneakers",
+        "watch",
+        "book",
+        "perfume",
+        "headphones"
+      ],
+      "film_tokens": [
+        "subtle halation",
+        "grain touch"
+      ],
+      "artists": [
+        "Ghibli spirit",
+        "Bauhaus touch"
+      ],
+      "concepts": [
+        "quiet luxury",
+        "modern minimalism",
+        "sport performance"
+      ],
+      "benefits": [
+        "lightweight comfort",
+        "durable build",
+        "premium feel",
+        "eco choice"
+      ],
+      "angles": [
+        "eye-level",
+        "low angle",
+        "high angle",
+        "45-degree 3/4 view"
+      ],
+      "poses": [
+        "flatlay arrangement",
+        "on-foot pose",
+        "in-hand hold"
+      ],
+      "movements": [
+        "push-in",
+        "pan left",
+        "subtle tilt"
+      ]
+    },
+    "tr": {
+      "brands": [
+        "EMBERLY",
+        "ACME",
+        "Nova Lab",
+        "Urban Craft"
+      ],
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "Amazon",
+        "Etsy"
+      ],
+      "topics": [
+        "yeni koleksiyon lansmanı",
+        "sınırlı süre fırsatı",
+        "çevre dostu malzemeler",
+        "el işçiliği tasarım",
+        "okula dönüş",
+        "yılbaşı hediye rehberi",
+        "minimal masa düzeni trendleri",
+        "sıcak yaşam tarzı ilhamı",
+        "yaz stili"
+      ],
+      "visuals": [
+        "seamless arka planda ürün kahramanı",
+        "dinamik diyagonal yerleşim",
+        "gölgeli temiz mockup",
+        "kullanım anı sahnesi",
+        "yukarıdan flatlay",
+        "makro doku detayı",
+        "sıçrama/kinetik hareket anı"
+      ],
+      "compositions": [
+        "üçte bir kuralı",
+        "merkezde kahraman",
+        "yukarıdan flatlay",
+        "diyagonal denge",
+        "üç çeyrek açı",
+        "simetrik kadraj"
+      ],
+      "lightings": [
+        "yumuşak stüdyo ışığı",
+        "rim light + softbox",
+        "altın saat hissi",
+        "dramatic chiaroscuro",
+        "doğal pencere ışığı",
+        "yüksek anahtar temiz ışık"
+      ],
+      "ctas": [
+        "hemen keşfet",
+        "kaydet & paylaş",
+        "daha fazlası",
+        "sınırlı süre",
+        "detayları gör",
+        "sepete ekle"
+      ],
+      "colors": [
+        "soluk nötrler",
+        "cesur ana renk paleti",
+        "lüks siyah & altın",
+        "yumuşak pasteller",
+        "serin monokrom"
+      ],
+      "lenses": [
+        "50mm doğal",
+        "85mm portre",
+        "24mm geniş"
+      ],
+      "materials": [
+        "mat mat",
+        "fırçalanmış metal",
+        "cilalı cam",
+        "yumuşak kumaş"
+      ],
+      "products": [
+        "sneaker",
+        "saat",
+        "kitap",
+        "parfüm",
+        "kulaklık"
+      ],
+      "film_tokens": [
+        "hafif halation",
+        "tane dokusu"
+      ],
+      "artists": [
+        "Ghibli ruhu",
+        "Bauhaus dokunuşu"
+      ],
+      "concepts": [
+        "sakin lüks",
+        "modern minimalizm",
+        "spor performansı"
+      ],
+      "benefits": [
+        "hafif konfor",
+        "dayanıklı yapı",
+        "premium his",
+        "eko tercih"
+      ],
+      "angles": [
+        "göz hizası",
+        "alttan açı",
+        "üstten açı",
+        "45 derece üç çeyrek"
+      ],
+      "poses": [
+        "flatlay düzeni",
+        "ayağa giyilmiş",
+        "elde tutuş"
+      ],
+      "movements": [
+        "yakınlaşma",
+        "sola pan",
+        "hafif tilt"
+      ]
+    }
+  }
+}

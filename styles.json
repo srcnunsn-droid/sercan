@@ -1,0 +1,35 @@
+{
+  "Cinematic Realism (Sinematik Gerçekçilik)": [
+    "cinematic depth",
+    "soft DOF",
+    "global illumination",
+    "filmic contrast",
+    "subtle halation",
+    "volumetric light",
+    "natural color balance"
+  ],
+  "Minimal Editorial (Minimal Editoryal)": [
+    "clean negative space",
+    "balanced grid",
+    "gentle gradients",
+    "soft shadows",
+    "neutral palette",
+    "geometric layout"
+  ],
+  "Luxury Editorial (Lüks Editoryal)": [
+    "glossy reflections",
+    "rich textures",
+    "gold accents",
+    "black on black",
+    "selective highlights",
+    "premium finish"
+  ],
+  "Dreamy Pastel (Düşsel Pastel)": [
+    "pastel tones",
+    "haze",
+    "soft bloom",
+    "creamy light",
+    "airy mood",
+    "whispered contrast"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "version": "2025.11.03-stable",
+  "data_urls": {
+    "styles": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/styles.json",
+    "data": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/data.json",
+    "data_extended": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/data_extended.json",
+    "negative_bank": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/negative_bank.json",
+    "platforms": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/platforms.json"
+  }
+}

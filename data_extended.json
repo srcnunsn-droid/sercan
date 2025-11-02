@@ -1,0 +1,68 @@
+{
+  "pools_ext": {
+    "en": {
+      "topics": [
+        "drops only today",
+        "editorial limited run",
+        "signature series"
+      ],
+      "visuals": [
+        "floating hero with long shadow",
+        "gradient backdrop with organic blobs"
+      ],
+      "lightings": [
+        "edge-lit high contrast",
+        "butterfly light setup"
+      ],
+      "ctas": [
+        "tap to shop",
+        "new in store"
+      ]
+    },
+    "tr": {
+      "topics": [
+        "sadece bugün drop",
+        "editoryal sınırlı seri",
+        "imza seri"
+      ],
+      "visuals": [
+        "uzun gölgeli yüzen kahraman",
+        "organik bloblu degrade arka plan"
+      ],
+      "lightings": [
+        "yüksek kontrast kenar ışık",
+        "butterfly ışık şeması"
+      ],
+      "ctas": [
+        "hemen sepete ekle",
+        "mağazada yeni"
+      ]
+    }
+  },
+  "pools_trend": {
+    "en": {
+      "colors": [
+        "neo-mint",
+        "digital lavender"
+      ],
+      "concepts": [
+        "quiet outdoor core"
+      ],
+      "film_tokens": [
+        "retro bloom"
+      ]
+    },
+    "tr": {
+      "colors": [
+        "neo-mint",
+        "dijital leylak"
+      ],
+      "concepts": [
+        "sessiz dış mekan stili"
+      ],
+      "film_tokens": [
+        "retro bloom"
+      ]
+    }
+  }
+}

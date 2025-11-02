@@ -1,0 +1,35 @@
+{
+  "ctas_by_platform": {
+    "Instagram": [
+      "save & share",
+      "link in bio",
+      "swipe for steps"
+    ],
+    "TikTok": [
+      "follow for more",
+      "watch till the end",
+      "drop a comment"
+    ],
+    "YouTube": [
+      "subscribe for more",
+      "turn on notifications",
+      "watch next"
+    ],
+    "Amazon": [
+      "see details",
+      "compare now",
+      "view on Amazon"
+    ],
+    "Etsy": [
+      "add to cart",
+      "favorite this item",
+      "view variations"
+    ]
+  },
+  "platform_of_sub": {
+    "Instagram Post": "Instagram",
+    "TikTok Video Cover": "TikTok",
+    "YouTube Thumbnail": "YouTube",
+    "Ürün Reklamı (Product Ad)": "Instagram"
+  }
+}
