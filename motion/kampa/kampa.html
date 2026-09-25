@@ -1,0 +1,309 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, CX = W / 2;
+const cv = document.getElementById('c');
+const g = cv.getContext('2d');
+
+// Brand (sampled from logo)
+const BLUE = '#1a4996', BLUE_D = '#0f2f66', BLUE_L = '#3f74c9', GREEN = '#76b82a', INK = '#13233f', GREY = '#5d6b82', BG1 = '#f6f9fc', BG2 = '#e2eaf4', RED = '#e5322d';
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOut3 = t => 1 - Math.pow(1 - t, 3);
+const eOut5 = t => 1 - Math.pow(1 - t, 5);
+const eInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const eBack = t => { const c1 = 1.7, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function text(str, x, y, { size = 100, w = 800, fam = 'Inter', color = INK, align = 'center', alpha = 1, spacing = 0 } = {}) {
+  if (alpha <= 0) return 0;
+  g.save(); g.globalAlpha *= alpha; g.font = `${w} ${size}px "${fam}"`; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'middle';
+  if (spacing) g.letterSpacing = spacing + 'px';
+  g.fillText(str, x, y); const m = g.measureText(str).width; g.restore(); return m;
+}
+function measure(str, size, w = 800, fam = 'Inter') { g.font = `${w} ${size}px "${fam}"`; return g.measureText(str).width; }
+function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function lin(x0, y0, x1, y1, stops) { const gr = g.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, c]) => gr.addColorStop(o, c)); return gr; }
+
+// ---------- assets ----------
+const PUMP = new Image(); PUMP.src = 'pump.png';
+const LOGO = new Image(); LOGO.src = 'logo.png';
+const off = document.createElement('canvas'); const og = off.getContext('2d');
+
+// pump drawing with shine sweep, shadow and float
+function pump(cx, cy, w, t, { shine = -1, rot = 0, alpha = 1, shadow = 1 } = {}) {
+  const h = w * PUMP.height / PUMP.width;
+  g.save(); g.globalAlpha = alpha;
+  // floor shadow
+  if (shadow > 0) {
+    const sg = g.createRadialGradient(cx, cy + h * .47, 0, cx, cy + h * .47, w * .55);
+    sg.addColorStop(0, `rgba(15,47,102,${.28 * shadow})`); sg.addColorStop(1, 'rgba(15,47,102,0)');
+    g.save(); g.translate(cx, cy + h * .47); g.scale(1, .16); g.translate(-cx, -(cy + h * .47));
+    g.fillStyle = sg; g.fillRect(cx - w, cy + h * .47 - w, w * 2, w * 2); g.restore();
+  }
+  g.translate(cx, cy); g.rotate(rot);
+  if (shine >= 0 && shine <= 1) {
+    off.width = Math.ceil(w); off.height = Math.ceil(h);
+    og.clearRect(0, 0, off.width, off.height); og.globalCompositeOperation = 'source-over';
+    og.drawImage(PUMP, 0, 0, w, h);
+    og.globalCompositeOperation = 'source-atop';
+    const x = lerp(-w * .6, w * 1.4, shine);
+    const sgr = og.createLinearGradient(x - 160, 0, x + 160, h * .35);
+    sgr.addColorStop(0, 'rgba(255,255,255,0)'); sgr.addColorStop(.5, 'rgba(255,255,255,.75)'); sgr.addColorStop(1, 'rgba(255,255,255,0)');
+    og.fillStyle = sgr; og.fillRect(0, 0, w, h);
+    g.drawImage(off, -w / 2, -h / 2, w, h);
+  } else g.drawImage(PUMP, -w / 2, -h / 2, w, h);
+  g.restore();
+  return h;
+}
+
+// ---------- backgrounds ----------
+function studio(t) {
+  g.fillStyle = lin(0, 0, 0, H, [[0, BG1], [1, BG2]]); g.fillRect(0, 0, W, H);
+  // soft blue glow
+  const gr = g.createRadialGradient(CX, 900, 0, CX, 900, 900);
+  gr.addColorStop(0, 'rgba(63,116,201,.16)'); gr.addColorStop(1, 'rgba(63,116,201,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  // diagonal brand stripes (echo the K mark)
+  g.save(); g.globalAlpha = .06; g.fillStyle = BLUE;
+  for (let i = 0; i < 6; i++) { const x = -400 + i * 260 + (t * 30) % 260; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 90, 0); g.lineTo(x + 90 - 600, H); g.lineTo(x - 600, H); g.fill(); }
+  g.restore();
+}
+function water(t, level, amp = 30, colTop = BLUE_L, colBot = BLUE_D, alpha = 1) {
+  g.save(); g.globalAlpha = alpha;
+  for (let layer = 0; layer < 3; layer++) {
+    const y0 = level + layer * 40;
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 20) g.lineTo(x, y0 + Math.sin(x * .008 + t * (2 + layer * .7) + layer) * amp + Math.sin(x * .021 - t * 3) * amp * .3);
+    g.lineTo(W, H); g.closePath();
+    g.fillStyle = layer === 0 ? 'rgba(118,184,42,.55)' : lin(0, y0, 0, H, [[0, colTop], [1, colBot]]);
+    if (layer === 1) g.globalAlpha = alpha * .6; else g.globalAlpha = alpha;
+    g.fill();
+  }
+  g.restore();
+}
+function bubbles(t, a, top = 0, seed = 3, n = 40) {
+  if (a <= 0) return;
+  const r = rng(seed);
+  g.save();
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, sp = 120 + r() * 260, s = 5 + r() * 18, ph = r();
+    const y = H - ((t * sp + ph * (H - top)) % (H - top));
+    g.globalAlpha = a * .7; g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 3;
+    g.beginPath(); g.arc(x + Math.sin(t * 2 + i) * 14, y, s, 0, 7); g.stroke();
+    g.globalAlpha = a * .5; g.fillStyle = '#fff'; g.beginPath(); g.arc(x + Math.sin(t * 2 + i) * 14 - s * .35, y - s * .35, s * .22, 0, 7); g.fill();
+  }
+  g.restore();
+}
+// full-screen wave wipe: covers screen with color, switch happens at mid
+function wipe(t, t0, dur, color, color2 = GREEN) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1) return;
+  const yTop = lerp(H + 150, -H * 1.3, eInOut(p)), hBand = H * 1.3;
+  const edge = (y, sgn) => { for (let x = 0; x <= W; x += 20) g.lineTo(sgn > 0 ? x : W - x, y + Math.sin((sgn > 0 ? x : W - x) * .01 + t * 6) * 45); };
+  g.save();
+  g.beginPath(); g.moveTo(0, yTop - 40); edge(yTop - 40, 1); g.lineTo(W, yTop + 40); g.lineTo(0, yTop + 40); g.closePath(); g.fillStyle = color2; g.fill();
+  g.beginPath(); g.moveTo(0, yTop); edge(yTop, 1); g.lineTo(W, yTop + hBand); edge(yTop + hBand, -1); g.closePath(); g.fillStyle = color; g.fill();
+  g.restore();
+}
+
+// ================= SCENES =================
+function s1(t) { // 0 – 2.4 : blue, water, headline
+  g.fillStyle = lin(0, 0, 0, H, [[0, BLUE_D], [1, BLUE]]); g.fillRect(0, 0, W, H);
+  // rising water
+  const lv = lerp(H + 100, 1180, eOut3(prog(t, 0, 1.2)));
+  water(t, lv, 34, '#2d63b8', '#0a2350');
+  bubbles(t, prog(t, .2, .8), 900, 5, 36);
+  // splash droplets at start
+  const r = rng(12), sp = prog(t, .9, 1.9);
+  if (sp > 0 && sp < 1) for (let i = 0; i < 40; i++) {
+    const a = -Math.PI * (.15 + .7 * r()), v = 900 + r() * 900, x0 = 200 + r() * 680;
+    const tt = sp * 1.0, x = x0 + Math.cos(a) * v * tt * .5, y = 1180 + Math.sin(a) * v * tt + 1600 * tt * tt;
+    g.globalAlpha = 1 - sp; g.fillStyle = i % 4 ? '#bcd7ff' : GREEN; g.beginPath(); g.arc(x, y, 6 + r() * 10, 0, 7); g.fill();
+  }
+  g.globalAlpha = 1;
+  // headline
+  const a = eOut5(prog(t, .35, .85)), b = eOut5(prog(t, .6, 1.1));
+  g.save(); g.beginPath(); g.rect(0, 440, W, 170); g.clip();
+  text('Güçlü pompa,', CX, 525 + (1 - a) * 170, { size: 120, w: 900, color: '#fff' }); g.restore();
+  g.save(); g.beginPath(); g.rect(0, 610, W, 170); g.clip();
+  text('kesintisiz su.', CX, 695 + (1 - b) * 170, { size: 120, w: 900, color: GREEN }); g.restore();
+  const ul = eOut5(prog(t, 1.0, 1.5));
+  g.fillStyle = '#fff'; g.fillRect(CX - 200 * ul, 810, 400 * ul, 10);
+  text('KAMPA ile tanışın', CX, 890, { size: 44, w: 800, color: 'rgba(255,255,255,.85)', alpha: prog(t, 1.2, 1.6), spacing: 6 });
+}
+function s2(t) { // 2.4 – 5.7 : product hero
+  const lt = t - 2.4;
+  studio(t);
+  water(t, 1560, 22, '#3f74c9', '#0f2f66', .95);
+  bubbles(t, .5, 1500, 8, 18);
+  const k = eOut5(prog(lt, .1, 1.0));
+  const bob = Math.sin(t * 2.2) * 8;
+  pump(lerp(CX + 700, CX, k), 1050 + bob, 980 * lerp(.8, 1, k), t, { shine: prog(lt, .9, 2.0), rot: (1 - k) * .12 });
+  // headings
+  const c = eBack(prog(lt, .6, 1.0));
+  if (c > 0) { g.save(); g.translate(CX, 330); g.scale(c, c); rr(-130, -34, 260, 68, 34); g.fillStyle = BLUE; g.fill(); text('HYDROO', 0, 2, { size: 34, w: 800, color: '#fff', spacing: 6 }); g.restore(); }
+  const a = eOut5(prog(lt, .8, 1.25));
+  g.save(); g.beginPath(); g.rect(0, 380, W, 170); g.clip();
+  text('MXO 35/3.0', CX, 465 + (1 - a) * 170, { size: 150, w: 900, color: BLUE }); g.restore();
+  text('Komple Paslanmaz Santrifüj Pompa', CX, 590, { size: 50, w: 800, color: INK, alpha: prog(lt, 1.1, 1.5) });
+  text('Açık fanlı · Trifaze · AISI 304', CX, 665, { size: 40, w: 400, color: GREY, alpha: prog(lt, 1.3, 1.7) });
+}
+// callout anchors in pump image coords (0..1)
+const ANCH = [
+  { p: [.33, .36], label: ['AISI 304', 'paslanmaz gövde'], side: -1, y: 420 },
+  { p: [.13, .62], label: ['Açık fanlı', 'santrifüj çark'], side: -1, y: 620 },
+  { p: [.62, .40], label: ['Trifaze motor', '4 HP güç'], side: 1, y: 460 },
+];
+function gauge(x, y, r, frac, val, unit, label, a) {
+  if (a <= 0) return;
+  g.save(); g.globalAlpha = a;
+  g.lineCap = 'round'; g.lineWidth = 22;
+  g.strokeStyle = 'rgba(26,73,150,.12)'; g.beginPath(); g.arc(x, y, r, Math.PI * .75, Math.PI * 2.25); g.stroke();
+  g.strokeStyle = lin(x - r, y, x + r, y, [[0, BLUE], [1, GREEN]]); g.beginPath(); g.arc(x, y, r, Math.PI * .75, Math.PI * (.75 + 1.5 * frac)); g.stroke();
+  text(val, x, y - 8, { size: 74, w: 900, color: BLUE });
+  text(unit, x, y + 50, { size: 34, w: 800, color: GREEN });
+  text(label, x, y + r + 40, { size: 32, w: 800, color: INK });
+  g.restore();
+}
+function s3(t) { // 5.7 – 9.8 : features
+  const lt = t - 5.7;
+  studio(t);
+  const pw = 820, pcx = CX, pcy = 880 + Math.sin(t * 2.2) * 6;
+  const ph = pump(pcx, pcy, pw, t, { shine: prog(lt, 2.6, 3.4) });
+  text('Öne çıkan özellikler', CX, 260 - 0, { size: 56, w: 900, color: BLUE, alpha: eOut5(prog(lt, 0, .4)) });
+  // callouts
+  ANCH.forEach((c, i) => {
+    const st = .3 + i * .45;
+    const k = eOut3(prog(lt, st, st + .45));
+    if (k <= 0) return;
+    const ax = pcx - pw / 2 + c.p[0] * pw, ay = pcy - ph / 2 + c.p[1] * ph;
+    const lx = c.side < 0 ? 110 : W - 110, ly = c.y;
+    const jx = lx - c.side * 300;
+    const ex = lerp(ax, jx, k), ey = lerp(ay, ly, k);
+    // pulse dot
+    const pr = 14 + Math.sin(t * 6 + i) * 3;
+    g.fillStyle = GREEN; g.beginPath(); g.arc(ax, ay, pr, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(118,184,42,.5)'; g.lineWidth = 4; g.beginPath(); g.arc(ax, ay, pr + 10 + (t * 30 % 20), 0, 7); g.stroke();
+    g.strokeStyle = BLUE; g.lineWidth = 4; g.beginPath(); g.moveTo(ax, ay); g.lineTo(ex, ey); g.stroke();
+    const la = prog(lt, st + .35, st + .6);
+    g.globalAlpha = la; g.beginPath(); g.moveTo(jx, ly); g.lineTo(lerp(jx, lx, eOut3(la)), ly); g.stroke(); g.globalAlpha = 1;
+    const al = c.side < 0 ? 'left' : 'right';
+    text(c.label[0], lx, ly - 80, { size: 46, w: 900, color: BLUE, align: al, alpha: la });
+    text(c.label[1], lx, ly - 34, { size: 36, w: 400, color: INK, align: al, alpha: la });
+  });
+  // gauges
+  const gs = [[45, 50, 'm³/h', 'Debi'], [19, 25, 'mss', 'Basma yüksekliği'], [4, 5, 'HP', 'Motor gücü']];
+  gs.forEach(([v, max, u, l], i) => {
+    const st = 1.9 + i * .3, k = eOut3(prog(lt, st, st + 1.0));
+    const x = 200 + i * 340;
+    const a = prog(lt, st - .1, st + .2);
+    // card
+    g.save(); g.globalAlpha = a; g.translate(0, (1 - eOut5(prog(lt, st - .1, st + .4))) * 120);
+    rr(x - 155, 1270, 310, 400, 36); g.fillStyle = '#ffffff'; g.shadowColor = 'rgba(15,47,102,.15)'; g.shadowBlur = 40; g.shadowOffsetY = 12; g.fill(); g.shadowColor = 'transparent';
+    gauge(x, 1450, 105, (v / max) * k, String(Math.round(v * k)), u, l, 1);
+    g.restore();
+  });
+}
+function money(v) { const s = v.toFixed(2).split('.'); return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + s[1]; }
+function s4(t) { // 9.8 – 12.7 : offer
+  const lt = t - 9.8;
+  g.fillStyle = lin(0, 0, 0, H, [[0, BLUE_D], [1, BLUE]]); g.fillRect(0, 0, W, H);
+  water(t, 1700, 18, '#2d63b8', '#0a2350', .9);
+  bubbles(t, .35, 700, 21, 20);
+  pump(CX, 470 + Math.sin(t * 2.2) * 6, 700, t, { shadow: 0, shine: prog(lt, .2, 1.1) });
+  // card
+  const k = eOut5(prog(lt, .15, .6));
+  g.save(); g.translate(0, (1 - k) * 300); g.globalAlpha = k;
+  rr(80, 800, W - 160, 640, 48); g.fillStyle = '#fff'; g.fill();
+  // badge
+  const b = eBack(prog(lt, .5, .85));
+  if (b > 0) { g.save(); g.translate(W - 170, 820); g.rotate(.12); g.scale(b, b);
+    rr(-120, -56, 240, 112, 30); g.fillStyle = RED; g.fill(); text('%15', 0, -8, { size: 60, w: 900, color: '#fff' }); text('İNDİRİM', 0, 34, { size: 24, w: 800, color: '#fff', spacing: 3 }); g.restore(); }
+  text('Kampanyalı fiyat', 140, 890, { size: 40, w: 800, color: GREY, align: 'left' });
+  // old price with strike
+  const ow = text('55.295,90 TL', 140, 975, { size: 52, w: 400, color: GREY, align: 'left' });
+  const sk = eOut3(prog(lt, .7, 1.0)); g.fillStyle = RED; g.fillRect(130, 972, (ow + 20) * sk, 6);
+  // new price roll
+  const pv = lerp(55295.90, 47001.52, eOut5(prog(lt, .85, 1.6)));
+  text(money(pv) + ' TL', 140, 1090, { size: 118, w: 900, color: BLUE, align: 'left', spacing: -2 });
+  text('KDV dahil', 140, 1170, { size: 36, w: 800, color: GREEN, align: 'left' });
+  g.fillStyle = 'rgba(26,73,150,.12)'; g.fillRect(140, 1220, W - 280, 3);
+  const r1 = prog(lt, 1.3, 1.6), r2 = prog(lt, 1.5, 1.8);
+  text('Havale ile', 140, 1285, { size: 40, w: 400, color: INK, align: 'left', alpha: r1 });
+  text('45.591,47 TL', W - 140, 1285, { size: 44, w: 900, color: BLUE, align: 'right', alpha: r1 });
+  text('Taksit', 140, 1365, { size: 40, w: 400, color: INK, align: 'left', alpha: r2 });
+  text('4.786,71 TL\'den başlayan', W - 140, 1365, { size: 40, w: 800, color: BLUE, align: 'right', alpha: r2 });
+  g.restore();
+  // chips
+  const chips = ['Ücretsiz kargo', 'Stoktan teslim', '24 ay garanti'];
+  const cw = chips.map(c => measure(c, 30, 800) + 84);
+  let x = CX - (cw.reduce((a, b) => a + b, 0) + 16 * (chips.length - 1)) / 2; const y = 1530;
+  chips.forEach((c, i) => {
+    const a = eBack(prog(lt, 1.7 + i * .15, 2.05 + i * .15)); const w = cw[i];
+    if (a > 0) { g.save(); g.translate(x + w / 2, y); g.scale(a, a); rr(-w / 2, -40, w, 80, 40); g.fillStyle = 'rgba(255,255,255,.14)'; g.fill();
+      g.strokeStyle = GREEN; g.lineWidth = 3; g.stroke();
+      g.strokeStyle = GREEN; g.lineWidth = 6; g.lineCap = 'round'; g.beginPath(); g.moveTo(-w / 2 + 28, 0); g.lineTo(-w / 2 + 38, 10); g.lineTo(-w / 2 + 56, -10); g.stroke();
+      text(c, 20, 2, { size: 30, w: 800, color: '#fff' }); g.restore(); }
+    x += w + 16;
+  });
+  text('16:00\'ya kadar verilen siparişler aynı gün kargoda', CX, 1640, { size: 34, w: 400, color: 'rgba(255,255,255,.85)', alpha: prog(lt, 2.2, 2.5) });
+}
+function s5(t) { // 12.7 – 15 : end card
+  const lt = t - 12.7;
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+  // stripes
+  g.save(); g.globalAlpha = .07; g.fillStyle = BLUE;
+  for (let i = 0; i < 6; i++) { const x = -400 + i * 260 + (t * 30) % 260; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 90, 0); g.lineTo(x + 90 - 600, H); g.lineTo(x - 600, H); g.fill(); }
+  g.restore();
+  water(t, 1640, 20, '#3f74c9', '#0f2f66', 1);
+  // logo reveal wipe
+  const lw = 900, lh = lw * LOGO.height / LOGO.width, lx = CX - lw / 2, ly = 640;
+  const rv = eInOut(prog(lt, .1, .7));
+  g.save(); g.beginPath(); g.rect(lx - 20, ly - 20, (lw + 40) * rv, lh + 40); g.clip();
+  const sc = lerp(1.08, 1, eOut3(prog(lt, .1, 1.0)));
+  g.translate(CX, ly + lh / 2); g.scale(sc, sc); g.drawImage(LOGO, -lw / 2, -lh / 2, lw, lh); g.restore();
+  // green slash following reveal
+  if (rv > 0 && rv < 1) { const x = lx - 20 + (lw + 40) * rv; g.fillStyle = GREEN; g.beginPath(); g.moveTo(x, ly - 40); g.lineTo(x + 26, ly - 40); g.lineTo(x - 14, ly + lh + 40); g.lineTo(x - 40, ly + lh + 40); g.fill(); }
+  const s = eOut5(prog(lt, .6, 1.0));
+  text('Suyun gücü, KAMPA güvencesi.', CX, 930 + (1 - s) * 40, { size: 58, w: 800, color: INK, alpha: s });
+  const c = eBack(prog(lt, .9, 1.3));
+  if (c > 0) { g.save(); g.translate(CX, 1130); g.scale(c, c);
+    rr(-360, -76, 720, 152, 76); g.fillStyle = BLUE; g.fill();
+    text('Hemen sipariş verin', -40, 2, { size: 50, w: 900, color: '#fff' });
+    g.beginPath(); g.arc(270, 0, 50, 0, 7); g.fillStyle = GREEN; g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = 8; g.lineCap = 'round'; g.lineJoin = 'round'; const nx = Math.sin(lt * 8) * 5;
+    g.beginPath(); g.moveTo(250 + nx, 0); g.lineTo(290 + nx, 0); g.moveTo(275 + nx, -16); g.lineTo(292 + nx, 0); g.lineTo(275 + nx, 16); g.stroke();
+    g.restore(); }
+  text('Hydroo MXO 35/3.0 · Stoktan teslim · Ücretsiz kargo', CX, 1290, { size: 32, w: 400, color: GREY, alpha: prog(lt, 1.2, 1.6) });
+  pump(CX, 1480 + Math.sin(t * 2.2) * 5, 420, t, { alpha: prog(lt, 1.0, 1.5), shadow: 0 });
+}
+
+window.draw = function (t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  if (t < 2.4) s1(t);
+  else if (t < 5.7) s2(t);
+  else if (t < 9.8) s3(t);
+  else if (t < 12.7) s4(t);
+  else s5(t);
+  wipe(t, 2.0, .8, BLUE);
+  wipe(t, 5.3, .8, BLUE);
+  wipe(t, 12.3, .8, '#ffffff', BLUE);
+  // 9.8 : flash cut into offer scene
+  const f = 1 - prog(t, 9.8, 10.0);
+  if (t >= 9.8 && f > 0) { g.fillStyle = `rgba(255,255,255,${f * .8})`; g.fillRect(0, 0, W, H); }
+  const fi = 1 - prog(t, 0, .2);
+  if (fi > 0) { g.fillStyle = `rgba(0,0,0,${fi})`; g.fillRect(0, 0, W, H); }
+};
+window.ready = (async () => {
+  const sample = 'AaĞğŞşİıÇçÖöÜüâ0123456789%+·³';
+  for (const f of ['900 100px "Inter"', '800 100px "Inter"', '400 100px "Inter"'])
+    await document.fonts.load(f, sample);
+  await document.fonts.ready;
+  await Promise.all([PUMP, LOGO].map(i => i.complete ? 0 : new Promise(r => i.onload = r)));
+})();
+</script>
+</body></html>
