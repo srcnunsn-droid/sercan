@@ -1,0 +1,439 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, CX = W / 2, CY = 880;
+const cv = document.getElementById('c');
+const g = cv.getContext('2d');
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const eOut3 = t => 1 - Math.pow(1 - t, 3);
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function hash(i, j, k) { let h = (i * 374761393 + j * 668265263 + k * 2147483647) >>> 0; h = ((h ^ (h >>> 13)) * 1274126177) >>> 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+
+// ---------- time remap (slow motion around impact) ----------
+const rate = t => 1 - 0.74 * (sstep(4.45, 4.8, t) * (1 - sstep(5.1, 5.45, t)));
+const TAU = []; { let acc = 0; for (let i = 0; i <= 15 * 600; i++) { TAU.push(acc); acc += rate(i / 600) / 600; } }
+const tauOf = t => { const f = clamp(t, 0, 15) * 600, i = Math.floor(f); return i >= TAU.length - 1 ? TAU[TAU.length - 1] : lerp(TAU[i], TAU[i + 1], f - i); };
+const T_IMP = tauOf(5.0), T_FIRE = tauOf(5.6), T_FALL = tauOf(7.0), T_END = tauOf(15);
+
+// ---------- sprites ----------
+function softSprite(color, size = 128, hard = 0) {
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const x = c.getContext('2d'); const gr = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gr.addColorStop(0, color); gr.addColorStop(hard, color); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = gr; x.fillRect(0, 0, size, size); return c;
+}
+const SPR = {
+  core: softSprite('rgba(255,248,215,1)', 128, .15), mid: softSprite('rgba(255,170,60,1)', 128, .1),
+  out: softSprite('rgba(255,80,25,1)', 128, 0), ember: softSprite('rgba(200,40,20,1)', 128, 0),
+  smoke: softSprite('rgba(38,32,36,1)', 128, .25), smokeL: softSprite('rgba(95,82,90,1)', 128, .25),
+  white: softSprite('rgba(255,245,235,1)', 128, .3),
+};
+// clouds
+function makeCloud(seed, w = 640, h = 300) {
+  const PX = 90, PY = 80; const c = document.createElement('canvas'); c.width = w + PX * 2; c.height = h + PY * 2;
+  const x = c.getContext('2d'); const r = rng(seed);
+  x.filter = 'blur(5px)'; x.translate(PX, PY);
+  const puffs = [];
+  for (let i = 0; i < 26; i++) {
+    const px = w * (.15 + .7 * r()), py = h * (.45 + .3 * r()) - Math.sin((px / w) * Math.PI) * h * .22;
+    puffs.push([px, py, h * (.1 + .16 * r()) * (0.6 + Math.sin((px / w) * Math.PI) * .6)]);
+  }
+  // shadow pass then lit pass
+  for (const [px, py, pr] of puffs) {
+    const gr = x.createLinearGradient(0, py - pr, 0, py + pr);
+    gr.addColorStop(0, '#ffd2a8'); gr.addColorStop(.45, '#e59a8e'); gr.addColorStop(1, '#6d4f7c');
+    x.fillStyle = gr; x.beginPath(); x.arc(px, py, pr, 0, 7); x.fill();
+  }
+  x.globalCompositeOperation = 'source-atop'; x.filter = 'blur(14px)';
+  for (const [px, py, pr] of puffs) { x.fillStyle = 'rgba(255,225,190,.35)'; x.beginPath(); x.arc(px - pr * .3, py - pr * .45, pr * .6, 0, 7); x.fill(); }
+  return c;
+}
+const CLOUDS = Array.from({ length: 7 }, (_, i) => makeCloud(100 + i * 17));
+
+// ---------- plane geometry (local, nose +x) ----------
+const WL0 = [70, 18], WT0 = [-70, 24], WLT = [-195, 188], WTT = [-235, 188];
+const BF = 0.72;
+const BL = [lerp(WL0[0], WLT[0], BF), lerp(WL0[1], WLT[1], BF)];
+const BT = [lerp(WT0[0], WTT[0], BF), lerp(WT0[1], WTT[1], BF)];
+const JAG = [[.2, 9], [.35, -7], [.5, 11], [.65, -5], [.8, 8]].map(([f, o]) => [lerp(BL[0], BT[0], f) + o * .6, lerp(BL[1], BT[1], f) + o]);
+const IMPACT_LOCAL = [lerp(BL[0], BT[0], .5), lerp(BL[1], BT[1], .5)];
+const EXHAUST = [-92, 80], WING_EDGE = IMPACT_LOCAL;
+
+// ---------- simulation state ----------
+const V0 = 720;
+let S;
+function bob(tau) { return Math.sin(tau * 1.3) * 10 + Math.sin(tau * 2.9) * 4; }
+function preTheta(tau) { return Math.sin(tau * 1.1) * 0.012; }
+function reset() {
+  S = { tau: 0, px: 0, py: bob(0), theta: 0, vx: V0, vy: 0, shake: 0, shudder: 0, flash: 0,
+    parts: [], piece: null, rings: [], imp: false, acc: {}, r: rng(1234), camx: 0, camy: bob(0), burst: [] };
+}
+function local2world(lx, ly, px = S.px, py = S.py, th = S.theta) {
+  const c = Math.cos(th), s = Math.sin(th); return [px + lx * c - ly * s, py + lx * s + ly * c];
+}
+// impact point (plane is on analytic path before fall)
+const IMP_WORLD = (() => { const px = V0 * T_IMP, py = bob(T_IMP), th = preTheta(T_IMP); const c = Math.cos(th), s = Math.sin(th);
+  return [px + IMPACT_LOCAL[0] * c - IMPACT_LOCAL[1] * s, py + IMPACT_LOCAL[0] * s + IMPACT_LOCAL[1] * c]; })();
+const MET_V = [-180, 1650];
+const meteorPos = tau => [IMP_WORLD[0] - MET_V[0] * (T_IMP - tau), IMP_WORLD[1] - MET_V[1] * (T_IMP - tau)];
+
+function emit(key, ratePerSec, dt, fn) {
+  S.acc[key] = (S.acc[key] || 0) + ratePerSec * dt;
+  while (S.acc[key] >= 1) { S.acc[key] -= 1; fn(S.acc[key] / Math.max(ratePerSec, 1e-6)); }
+}
+function spawn(p) { S.parts.push(p); }
+
+function fireAt(lx, ly, intensity, dt, key) {
+  const r = S.r;
+  emit(key + 'f', 340 * intensity, dt, back => {
+    const [x, y] = local2world(lx + (r() - .5) * 14, ly + (r() - .5) * 14);
+    const bx = x - S.vx * back, by = y - S.vy * back;
+    spawn({ t: 'fire', x: bx, y: by, vx: S.vx * .38 + (r() - .5) * 90, vy: S.vy * .38 + (r() - .5) * 90 - 30, age: 0, life: .35 + r() * .45, s0: 30 * (.7 + intensity * .6), s1: 95 + r() * 80 * intensity });
+  });
+  emit(key + 's', 85 * intensity, dt, back => {
+    const [x, y] = local2world(lx - 30, ly + (r() - .5) * 20);
+    spawn({ t: 'smoke', x: x - S.vx * back, y: y - S.vy * back, vx: S.vx * .12 + (r() - .5) * 40, vy: S.vy * .12 - 25 - r() * 30, age: 0, life: 3 + r() * 2.5, s0: 40, s1: 230 + r() * 160, rot: r() * 6, light: r() > .7 });
+  });
+}
+
+function impact() {
+  const r = S.r; const [ix, iy] = IMP_WORLD;
+  S.imp = true; S.flash = 1; S.shake = 1; S.shudder = 1;
+  S.rings.push({ x: ix, y: iy, age: 0 });
+  for (let i = 0; i < 140; i++) { const a = r() * Math.PI * 2, sp = 300 + r() * 1300;
+    spawn({ t: 'spark', x: ix, y: iy, vx: Math.cos(a) * sp + S.vx * .5, vy: Math.sin(a) * sp - 150, age: 0, life: .4 + r() * .9 }); }
+  for (let i = 0; i < 70; i++) { const a = r() * Math.PI * 2, sp = 100 + r() * 400;
+    spawn({ t: 'fire', x: ix + (r() - .5) * 40, y: iy + (r() - .5) * 40, vx: Math.cos(a) * sp + S.vx * .6, vy: Math.sin(a) * sp, age: 0, life: .5 + r() * .7, s0: 40, s1: 170 + r() * 120 }); }
+  for (let i = 0; i < 40; i++) { const a = r() * Math.PI * 2, sp = 60 + r() * 200;
+    spawn({ t: 'smoke', x: ix, y: iy, vx: Math.cos(a) * sp + S.vx * .5, vy: Math.sin(a) * sp, age: 0, life: 2.5 + r() * 2, s0: 60, s1: 300 + r() * 200, rot: r() * 6 }); }
+  for (let i = 0; i < 26; i++) { const a = -Math.PI * r(), sp = 250 + r() * 700;
+    const pts = Array.from({ length: 3 + (r() * 3 | 0) }, (_, k, arr) => { const aa = k / 5 * Math.PI * 2; const rr = 6 + r() * 16; return [Math.cos(aa) * rr, Math.sin(aa) * rr]; });
+    spawn({ t: 'debris', x: ix, y: iy, vx: Math.cos(a) * sp * .6 + S.vx * .55, vy: Math.sin(a) * sp * .5 + 80, age: 0, life: 3.5, rot: r() * 6, spin: (r() - .5) * 18, pts, lit: r() > .5 }); }
+  // wing tip breaks off
+  const c = local2world((BL[0] + WLT[0] + WTT[0] + BT[0]) / 4, (BL[1] + WLT[1] + WTT[1] + BT[1]) / 4);
+  S.piece = { x: c[0], y: c[1], vx: S.vx * .62, vy: 180, rot: S.theta, spin: 3.4, lc: [(BL[0] + WLT[0] + WTT[0] + BT[0]) / 4, (BL[1] + WLT[1] + WTT[1] + BT[1]) / 4] };
+}
+
+function step(dt) {
+  const tau = S.tau + dt, r = S.r;
+  // --- plane motion
+  if (tau < T_FALL) {
+    S.px = V0 * tau; S.py = bob(tau) + (S.imp ? eOut3(prog(tau, T_IMP, T_IMP + 1.2)) * 40 : 0);
+    S.theta = preTheta(tau) + S.shudder * Math.sin(tau * 47) * .035;
+    S.vx = V0; S.vy = 0;
+  } else {
+    const f = tau - T_FALL;
+    const target = .62 * eInOut(clamp(f / 3.6)) + Math.sin(f * 2.3) * .05 * clamp(f / 2) + S.shudder * Math.sin(tau * 47) * .03;
+    S.theta += (target - S.theta) * Math.min(1, dt * 6);
+    const sp = V0 + 240 * clamp(f / 5);
+    S.vx = sp * Math.cos(S.theta); S.vy = sp * Math.sin(S.theta) + 120 * clamp(f / 3);
+    S.px += S.vx * dt; S.py += S.vy * dt;
+  }
+  S.shudder = Math.max(S.imp ? .25 : 0, S.shudder - dt * .5);
+  S.shake = Math.max(0, S.shake - dt * 1.6);
+  S.flash = Math.max(0, S.flash - dt * 3.2);
+
+  // --- camera follow
+  const lead = 40 - 80 * clamp((tau - T_FALL) / 3);
+  S.camx = S.px + lead;
+  const k = tau < T_FALL ? 8 : 1.6;
+  S.camy += (S.py + (tau > T_FALL ? 180 * clamp((tau - T_FALL) / 3) : 0) - S.camy) * Math.min(1, dt * k);
+
+  // --- meteor
+  if (!S.imp && tau > T_IMP - 1.6 && tau < T_IMP) {
+    const [mx, my] = meteorPos(tau);
+    emit('met', 420, dt, () => spawn({ t: 'fire', x: mx + (r() - .5) * 16, y: my + (r() - .5) * 16, vx: (r() - .5) * 60, vy: (r() - .5) * 60, age: 0, life: .25 + r() * .35, s0: 34, s1: 10 }));
+    emit('mets', 60, dt, () => spawn({ t: 'smoke', x: mx, y: my, vx: (r() - .5) * 30, vy: -20, age: 0, life: 1.6, s0: 26, s1: 110, rot: r() * 6, light: true }));
+  }
+  if (!S.imp && tau >= T_IMP) impact();
+
+  // --- engines: contrails before impact
+  if (!S.imp) {
+    emit('con', 260, dt, back => { const [x, y] = local2world(EXHAUST[0], EXHAUST[1]); spawn({ t: 'con', x: x - S.vx * back, y: y, vx: 0, vy: 0, age: 0, life: 1.6, s0: 16, s1: 46 }); });
+  } else {
+    const fi = sstep(T_FIRE - .3, T_FIRE + 1.2, tau) * (0.85 + Math.sin(tau * 13) * .15);
+    const smokeOnly = .35 * (1 - sstep(T_FIRE, T_FIRE + 1, tau));
+    fireAt(EXHAUST[0], EXHAUST[1], Math.max(fi, .02), dt, 'eng');
+    if (smokeOnly > 0) emit('ss', 90 * smokeOnly, dt, () => { const [x, y] = local2world(EXHAUST[0], EXHAUST[1]); spawn({ t: 'smoke', x, y, vx: S.vx * .1, vy: -20, age: 0, life: 3, s0: 30, s1: 200, rot: r() * 6 }); });
+    fireAt(WING_EDGE[0], WING_EDGE[1], .28 + .1 * Math.sin(tau * 9), dt, 'wing');
+    // occasional flare-ups
+    emit('flare', 1.1, dt, () => { const [x, y] = local2world(EXHAUST[0] + 10, EXHAUST[1]); S.burst.push(tau);
+      for (let i = 0; i < 26; i++) { const a = r() * 6.28, sp = 100 + r() * 260; spawn({ t: 'fire', x, y, vx: S.vx * .5 + Math.cos(a) * sp, vy: S.vy * .5 + Math.sin(a) * sp, age: 0, life: .4 + r() * .4, s0: 30, s1: 120 }); }
+      for (let i = 0; i < 14; i++) { const a = r() * 6.28, sp = 300 + r() * 600; spawn({ t: 'spark', x, y, vx: S.vx * .6 + Math.cos(a) * sp, vy: S.vy * .6 + Math.sin(a) * sp, age: 0, life: .5 + r() * .5 }); } });
+    emit('drip', 18, dt, () => { const [x, y] = local2world(WING_EDGE[0], WING_EDGE[1]); spawn({ t: 'spark', x, y, vx: S.vx * .8 + (r() - .5) * 200, vy: S.vy * .8 + r() * 200, age: 0, life: .5 + r() * .6 }); });
+  }
+  // --- wing piece
+  if (S.piece) { const p = S.piece; p.vy += 700 * dt; p.vx *= (1 - .25 * dt); p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.spin * dt;
+    emit('pc', 50, dt, () => spawn({ t: 'smoke', x: p.x, y: p.y, vx: 0, vy: -10, age: 0, life: 2, s0: 20, s1: 110, rot: r() * 6 }));
+    emit('pf', 90, dt, () => spawn({ t: 'fire', x: p.x + (r() - .5) * 20, y: p.y + (r() - .5) * 20, vx: 0, vy: -30, age: 0, life: .3 + r() * .3, s0: 20, s1: 50 })); }
+  // --- particles
+  for (const p of S.parts) {
+    p.age += dt;
+    if (p.t === 'spark' || p.t === 'debris') { p.vy += 900 * dt; p.vx *= (1 - 1.2 * dt); }
+    else { const d = p.t === 'smoke' ? 1.1 : 2.2; p.vx *= (1 - d * dt); p.vy *= (1 - d * dt); }
+    if (p.t === 'debris') p.rot += p.spin * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+  }
+  S.parts = S.parts.filter(p => p.age < p.life);
+  for (const rg of S.rings) rg.age += dt;
+  S.tau = tau;
+}
+function advance(target) {
+  if (!S || target < S.tau - 1e-9) reset();
+  while (S.tau < target - 1e-9) step(Math.min(1 / 240, target - S.tau));
+}
+
+// ---------- camera ----------
+function zoomAt(tau) {
+  let z = lerp(.86, 1.0, eInOut(prog(tau, 0, T_IMP)));
+  z *= 1 + .1 * Math.exp(-Math.max(0, tau - T_IMP) * 3) * (tau > T_IMP ? 1 : 0);
+  z *= lerp(1, .42, eInOut(prog(tau, T_FALL - .5, T_END)));
+  return z;
+}
+let CAM;
+function setCam(t) {
+  const tau = S.tau, z = zoomAt(tau);
+  const sh = S.shake * S.shake;
+  const r = rng(Math.floor(t * 30) + 9);
+  CAM = { x: S.camx, y: S.camy, z, rot: -S.theta * .28 + (r() - .5) * .02 * sh, ox: (r() - .5) * 60 * sh, oy: (r() - .5) * 60 * sh };
+}
+function applyCam(p = 1) {
+  const zl = Math.pow(CAM.z, p);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.translate(CX + CAM.ox, CY + CAM.oy); g.rotate(CAM.rot); g.scale(zl, zl); g.translate(-CAM.x * p, -CAM.y * p);
+  return zl;
+}
+
+// ---------- drawing ----------
+function sky(tau) {
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  const dark = clamp((S.camy - 300) / 3500) * .35;
+  const hz = 1500 - S.camy * .06;
+  const gr = g.createLinearGradient(0, hz - 1700, 0, hz + 300);
+  gr.addColorStop(0, '#141735'); gr.addColorStop(.35, '#3b2a5e'); gr.addColorStop(.62, '#a34a5d'); gr.addColorStop(.82, '#ef8a55'); gr.addColorStop(.93, '#ffc27a'); gr.addColorStop(1, '#ffd9a0');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  // sun
+  const sx = 230 - (S.camx * .01) % 1, sy = hz - 60;
+  const sg = g.createRadialGradient(sx, sy, 0, sx, sy, 700);
+  sg.addColorStop(0, 'rgba(255,240,200,1)'); sg.addColorStop(.06, 'rgba(255,225,170,.95)'); sg.addColorStop(.25, 'rgba(255,160,90,.35)'); sg.addColorStop(1, 'rgba(255,120,60,0)');
+  g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = sg; g.fillRect(0, 0, W, H); g.restore();
+  // stars at top
+  const r = rng(3); g.fillStyle = '#fff';
+  for (let i = 0; i < 70; i++) { const x = r() * W, y = r() * 600, a = r(); g.globalAlpha = a * .5 * (1 - y / 600); g.fillRect(x, y, 2, 2); }
+  g.globalAlpha = 1;
+  if (dark) { g.fillStyle = `rgba(20,10,25,${dark})`; g.fillRect(0, 0, W, H); }
+}
+const LAYERS = [
+  { p: .12, cw: 700, ch: 380, dens: y => .35, sc: .6, a: .55, id: 1 },
+  { p: .3, cw: 760, ch: 460, dens: y => .38, sc: .9, a: .75, id: 2 },
+  { p: .62, cw: 900, ch: 560, dens: y => .3 + clamp((y - 600) / 1800) * .4, sc: 1.3, a: .9, id: 3 },
+];
+const SEA_Y = 2900;
+function cloudLayer(L) {
+  const zl = applyCam(L.p);
+  const halfW = 800 / zl, halfH = 1150 / zl;
+  const cx = CAM.x * L.p, cy = CAM.y * L.p;
+  const i0 = Math.floor((cx - halfW) / L.cw) - 1, i1 = Math.floor((cx + halfW) / L.cw) + 1;
+  const j0 = Math.floor((cy - halfH) / L.ch) - 1, j1 = Math.floor((cy + halfH) / L.ch) + 1;
+  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+    const h = hash(i, j, L.id), wy = j * L.ch;
+    if (h > L.dens(wy)) continue;
+    const spr = CLOUDS[Math.floor(hash(i, j, L.id + 9) * CLOUDS.length)];
+    const s = L.sc * (.7 + hash(i, j, L.id + 5) * .8);
+    const x = i * L.cw + hash(i, j, L.id + 2) * L.cw * .6, y = wy + hash(i, j, L.id + 3) * L.ch * .6;
+    g.globalAlpha = L.a; g.drawImage(spr, x - spr.width * s / 2, y - spr.height * s / 2, spr.width * s, spr.height * s);
+  }
+  g.globalAlpha = 1;
+}
+function cloudSea(front) {
+  applyCam(1);
+  const cw = 520, x0 = Math.floor((CAM.x - 2600) / cw), x1 = Math.floor((CAM.x + 2600) / cw);
+  if (!front) {
+    const gr = g.createLinearGradient(0, SEA_Y, 0, SEA_Y + 900);
+    gr.addColorStop(0, 'rgba(214,140,140,1)'); gr.addColorStop(.3, 'rgba(120,85,125,1)'); gr.addColorStop(1, 'rgba(45,32,60,1)');
+    g.fillStyle = gr; g.fillRect(CAM.x - 4000, SEA_Y + 60, 8000, 6000);
+  }
+  for (let row = 0; row < 4; row++) for (let i = x0; i <= x1; i++) {
+    if ((row % 2 === 0) !== front) continue;
+    const spr = CLOUDS[Math.floor(hash(i, row, 77) * CLOUDS.length)];
+    const s = 1.6 + hash(i, row, 78) * .9 + row * .3;
+    const x = i * cw + hash(i, row, 79) * 200, y = SEA_Y - 60 + row * 150 + hash(i, row, 80) * 60;
+    g.globalAlpha = 1; g.drawImage(spr, x - spr.width * s / 2, y - spr.height * s * .6, spr.width * s, spr.height * s);
+  }
+}
+function sprite(img, x, y, s, a, rot = 0) {
+  g.globalAlpha = a;
+  if (rot) { g.save(); g.translate(x, y); g.rotate(rot); g.drawImage(img, -s / 2, -s / 2, s, s); g.restore(); }
+  else g.drawImage(img, x - s / 2, y - s / 2, s, s);
+}
+function drawSmoke() {
+  for (const p of S.parts) {
+    if (p.t === 'con') { const k = p.age / p.life; sprite(SPR.white, p.x, p.y, lerp(p.s0, p.s1, k), .28 * (1 - k)); }
+    if (p.t !== 'smoke') continue;
+    const k = p.age / p.life; const s = lerp(p.s0, p.s1, Math.sqrt(k));
+    sprite(p.light ? SPR.smokeL : SPR.smoke, p.x, p.y, s, .62 * Math.pow(1 - k, 1.4) * clamp(p.age * 6), p.rot);
+  }
+  g.globalAlpha = 1;
+}
+function drawFire() {
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (const p of S.parts) {
+    if (p.t === 'fire') {
+      const k = p.age / p.life, s = lerp(p.s0, p.s1, k);
+      const spr = k < .25 ? SPR.core : k < .55 ? SPR.mid : k < .8 ? SPR.out : SPR.ember;
+      sprite(spr, p.x, p.y, s, (1 - k) * .75);
+    } else if (p.t === 'spark') {
+      const k = p.age / p.life; g.globalAlpha = 1 - k; g.strokeStyle = k < .4 ? '#fff4c8' : '#ffa040'; g.lineWidth = 3.5;
+      g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - (p.vx - S.vx * .0) * .018, p.y - p.vy * .018); g.stroke();
+    }
+  }
+  g.restore(); g.globalAlpha = 1;
+}
+function drawDebris() {
+  for (const p of S.parts) {
+    if (p.t !== 'debris') continue;
+    g.save(); g.translate(p.x, p.y); g.rotate(p.rot); g.globalAlpha = 1 - clamp((p.age - 2.8) / .7);
+    g.beginPath(); p.pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath();
+    g.fillStyle = p.lit ? '#c9c4cc' : '#3a3440'; g.fill(); g.restore();
+  }
+  g.globalAlpha = 1;
+}
+function poly(pts) { g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); }
+function wingGrad() {
+  const gr = g.createLinearGradient(0, 10, 0, 190); gr.addColorStop(0, '#e9e4ea'); gr.addColorStop(1, '#8f8aa0'); return gr;
+}
+function drawPlane(tau) {
+  const dmg = S.imp;
+  g.save(); g.translate(S.px, S.py); g.rotate(S.theta);
+  // far wing (behind)
+  poly([[40, -28], [-60, -26], [-170, -92], [-140, -92]]); g.fillStyle = '#6b6680'; g.fill();
+  // far horizontal stabilizer
+  poly([[-300, -12], [-360, -52], [-378, -52], [-362, -14]]); g.fillStyle = '#6b6680'; g.fill();
+  // vertical fin
+  poly([[-245, -40], [-338, -196], [-384, -196], [-372, -28]]);
+  let gr = g.createLinearGradient(-380, -196, -250, -30); gr.addColorStop(0, '#e8784f'); gr.addColorStop(1, '#b84a3a'); g.fillStyle = gr; g.fill();
+  // fuselage
+  g.beginPath(); g.moveTo(385, 10);
+  g.bezierCurveTo(385, -25, 340, -42, 290, -42); g.lineTo(-250, -42);
+  g.bezierCurveTo(-310, -42, -370, -36, -392, -26); g.lineTo(-392, -14);
+  g.bezierCurveTo(-340, 0, -290, 38, -230, 42); g.lineTo(290, 42);
+  g.bezierCurveTo(345, 42, 385, 35, 385, 10); g.closePath();
+  gr = g.createLinearGradient(0, -42, 0, 42); gr.addColorStop(0, '#fff6ec'); gr.addColorStop(.45, '#e6e1ea'); gr.addColorStop(1, '#8a87a0');
+  g.fillStyle = gr; g.fill();
+  // rim light from the sun (behind-left)
+  g.save(); g.clip(); g.globalCompositeOperation = 'lighter';
+  const rg = g.createLinearGradient(-392, 0, -120, 0); rg.addColorStop(0, 'rgba(255,170,90,.45)'); rg.addColorStop(1, 'rgba(255,170,90,0)');
+  g.fillStyle = rg; g.fillRect(-400, -50, 300, 100);
+  // cheatline
+  g.globalCompositeOperation = 'source-over'; g.fillStyle = '#e8784f'; g.fillRect(-300, 14, 640, 7);
+  g.fillStyle = '#3b3f73'; g.fillRect(-300, 23, 640, 4);
+  g.restore();
+  // windows
+  g.fillStyle = '#2b2f55';
+  for (let x = 250; x > -220; x -= 22) { g.beginPath(); g.ellipse(x, -12, 5, 7, 0, 0, 7); g.fill(); }
+  g.beginPath(); g.moveTo(330, -26); g.lineTo(356, -26); g.lineTo(370, -12); g.lineTo(330, -12); g.closePath(); g.fillStyle = '#1e2144'; g.fill();
+  g.fillRect(262, -4, 3, 30); // door
+  // near stabilizer
+  poly([[-290, 2], [-372, 38], [-394, 38], [-362, -2]]); g.fillStyle = '#cfcad6'; g.fill();
+  // near wing
+  if (!dmg) poly([WL0, WLT, WTT, WT0]); else poly([WL0, BL, ...JAG, BT, WT0]);
+  g.fillStyle = wingGrad(); g.fill();
+  g.strokeStyle = 'rgba(80,70,100,.5)'; g.lineWidth = 2; g.stroke();
+  // flap line
+  g.beginPath(); g.moveTo(-72, 30); g.lineTo(dmg ? BT[0] + 14 : -222, dmg ? BT[1] - 10 : 176); g.stroke();
+  if (!dmg) { poly([WLT, [-190, 150], [-176, 150], [-186, 188]]); g.fillStyle = '#e8784f'; g.fill(); }
+  // engine pylon + nacelle
+  poly([[-10, 38], [30, 38], [10, 60], [-50, 60]]); g.fillStyle = '#9d98ad'; g.fill();
+  g.beginPath(); g.moveTo(60, 54); g.lineTo(-60, 56); g.quadraticCurveTo(-92, 70, -92, 80); g.quadraticCurveTo(-92, 92, -60, 104); g.lineTo(60, 106);
+  g.quadraticCurveTo(74, 80, 60, 54); g.closePath();
+  gr = g.createLinearGradient(0, 54, 0, 106); gr.addColorStop(0, '#f4f0f4'); gr.addColorStop(1, '#7c7892'); g.fillStyle = gr; g.fill();
+  g.beginPath(); g.ellipse(62, 80, 9, 25, 0, 0, 7); g.fillStyle = dmg ? '#1a1015' : '#2d2a3c'; g.fill();
+  // damage: soot + glow
+  if (dmg) {
+    const k = clamp((tau - T_IMP) * 2);
+    g.save(); g.globalAlpha = k;
+    [[IMPACT_LOCAL[0] + 20, IMPACT_LOCAL[1] - 20, 90], [-60, 80, 70], [-20, 70, 50]].forEach(([x, y, r]) => {
+      const sg = g.createRadialGradient(x, y, 0, x, y, r); sg.addColorStop(0, 'rgba(20,12,14,.9)'); sg.addColorStop(1, 'rgba(20,12,14,0)'); g.fillStyle = sg; g.fillRect(x - r, y - r, r * 2, r * 2); });
+    g.restore();
+  }
+  g.restore();
+  // fire light on the plane
+  if (dmg) {
+    const [ex, ey] = local2world(EXHAUST[0], EXHAUST[1]);
+    const fl = .5 + .5 * sstep(T_FIRE - .3, T_FIRE + 1.2, tau) + Math.sin(tau * 31) * .08;
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const lg = g.createRadialGradient(ex, ey, 0, ex, ey, 420); lg.addColorStop(0, `rgba(255,140,50,${.55 * fl})`); lg.addColorStop(1, 'rgba(255,90,30,0)');
+    g.fillStyle = lg; g.fillRect(ex - 420, ey - 420, 840, 840); g.restore();
+  }
+}
+function drawPiece() {
+  const p = S.piece; if (!p) return;
+  g.save(); g.translate(p.x, p.y); g.rotate(p.rot); g.translate(-p.lc[0], -p.lc[1]);
+  poly([BL, WLT, WTT, BT, ...JAG.slice().reverse()]); g.fillStyle = wingGrad(); g.fill();
+  poly([WLT, [-190, 150], [-176, 150], [-186, 188]]); g.fillStyle = '#e8784f'; g.fill();
+  g.restore();
+}
+function drawMeteor(tau) {
+  if (S.imp || tau < T_IMP - 1.6) return;
+  const [mx, my] = meteorPos(tau);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  sprite(SPR.out, mx, my, 260, .8); sprite(SPR.mid, mx, my, 120, 1); sprite(SPR.core, mx, my, 60, 1);
+  g.restore();
+  g.save(); g.translate(mx, my); g.rotate(tau * 5); poly([[-14, -10], [8, -16], [17, 2], [6, 15], [-12, 11]]); g.fillStyle = '#2a1a14'; g.fill(); g.restore();
+  g.globalAlpha = 1;
+}
+function drawRings() {
+  for (const rg of S.rings) {
+    const k = clamp(rg.age / .9); if (k >= 1) continue;
+    g.save(); g.globalAlpha = (1 - k) * .8; g.strokeStyle = '#ffe2b0'; g.lineWidth = 14 * (1 - k) + 2;
+    g.beginPath(); g.arc(rg.x, rg.y, 30 + eOut3(k) * 650, 0, 7); g.stroke(); g.restore();
+  }
+}
+function post(t) {
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  if (S.flash > 0) { g.fillStyle = `rgba(255,236,200,${S.flash * .9})`; g.fillRect(0, 0, W, H); }
+  // warm bloom during fire
+  const v = g.createRadialGradient(CX, H / 2, H * .28, CX, H / 2, H * .78);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(8,4,12,.7)'); g.fillStyle = v; g.fillRect(0, 0, W, H);
+  // grain
+  const r = rng(Math.floor(t * 30) * 13 + 5); g.fillStyle = '#fff';
+  for (let i = 0; i < 1400; i++) { g.globalAlpha = r() * .06; g.fillRect(r() * W, r() * H, 2, 2); }
+  g.globalAlpha = 1;
+  // fade in / out
+  const a = Math.max(1 - prog(t, 0, .6), prog(t, 14.2, 15));
+  if (a > 0) { g.fillStyle = `rgba(0,0,0,${a})`; g.fillRect(0, 0, W, H); }
+}
+
+window.draw = function (t) {
+  advance(tauOf(t));
+  const tau = S.tau;
+  setCam(t);
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  sky(tau);
+  for (const L of LAYERS) cloudLayer(L);
+  applyCam(1);
+  cloudSea(false);
+  drawSmoke();
+  drawPiece();
+  drawPlane(tau);
+  drawDebris();
+  drawFire();
+  drawMeteor(tau);
+  drawRings();
+  cloudSea(true);
+  { applyCam(1); const fg = g.createLinearGradient(0, SEA_Y + 120, 0, SEA_Y + 520);
+    fg.addColorStop(0, 'rgba(150,105,140,0)'); fg.addColorStop(1, 'rgba(95,68,105,1)'); g.fillStyle = fg; g.fillRect(CAM.x - 5000, SEA_Y + 120, 10000, 6000); }
+  post(t);
+};
+window.ready = Promise.resolve();
+</script>
+</body></html>
