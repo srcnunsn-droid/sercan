@@ -1,0 +1,423 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, CX = W / 2, CY = H / 2;
+const cv = document.getElementById('c');
+const g = cv.getContext('2d');
+
+// Palette
+const BG = '#0d0b0a', INK = '#f5efe6', CORAL = '#e8784f', AMBER = '#f2b35e', PLUM = '#7a5cff', MUTE = '#8a8178';
+const BEAT = 0.5; // 120 BPM
+
+// ---------- easing / helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOut3 = t => 1 - Math.pow(1 - t, 3);
+const eOut5 = t => 1 - Math.pow(1 - t, 5);
+const eIn3 = t => t * t * t;
+const eInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const eBack = t => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const eElastic = t => t === 0 || t === 1 ? t : Math.pow(2, -10 * t) * Math.sin((t * 10 - .75) * (2 * Math.PI / 3)) + 1;
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+function font(w, size, fam = 'Space Grotesk') { g.font = `${w} ${size}px "${fam}"`; }
+function text(str, x, y, { size = 100, w = 700, fam = 'Space Grotesk', color = INK, align = 'center', alpha = 1, spacing = 0 } = {}) {
+  g.save(); g.globalAlpha *= alpha; font(w, size, fam); g.fillStyle = color; g.textAlign = align; g.textBaseline = 'middle';
+  if (spacing) g.letterSpacing = spacing + 'px';
+  g.fillText(str, x, y); g.restore();
+}
+
+// ---------- the spark (original radial mark) ----------
+function spark(x, y, r, t, { rays = 12, color = CORAL, grow = 1, rot = 0, width = 1 } = {}) {
+  g.save(); g.translate(x, y); g.rotate(rot);
+  for (let i = 0; i < rays; i++) {
+    const a = i / rays * Math.PI * 2;
+    const len = r * (i % 2 ? .72 : 1) * clamp(grow * 1.4 - i * 0.03, 0, 1);
+    if (len <= 0) continue;
+    const wBase = r * 0.13 * width;
+    g.save(); g.rotate(a);
+    g.beginPath();
+    g.moveTo(0, -wBase * .5);
+    g.quadraticCurveTo(len * .55, -wBase * .55, len, 0);
+    g.quadraticCurveTo(len * .55, wBase * .55, 0, wBase * .5);
+    g.closePath();
+    g.fillStyle = color; g.fill();
+    g.restore();
+  }
+  g.beginPath(); g.arc(0, 0, r * .14 * width, 0, Math.PI * 2); g.fillStyle = color; g.fill();
+  g.restore();
+}
+
+function glow(x, y, r, color, a) {
+  const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, color); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.save(); g.globalAlpha = a; g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); g.restore();
+}
+
+// ---------- background: drifting grid + grain ----------
+const grainSeed = rng(7);
+const grainPts = Array.from({ length: 900 }, () => [grainSeed() * W, grainSeed() * H, grainSeed()]);
+function background(t, hue = 0) {
+  g.fillStyle = BG; g.fillRect(0, 0, W, H);
+  // soft color fields
+  glow(CX + Math.sin(t * .7) * 260, 520 + Math.cos(t * .5) * 120, 900, hue ? '#3a2a6e' : '#4a2216', .55);
+  glow(CX - Math.cos(t * .6) * 300, 1450 + Math.sin(t * .4) * 140, 950, hue ? '#4a2216' : '#2a1d4f', .45);
+  // grid
+  g.save(); g.strokeStyle = 'rgba(245,239,230,0.045)'; g.lineWidth = 2;
+  const off = (t * 40) % 120;
+  for (let x = -120 + off; x < W + 120; x += 120) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
+  for (let y = -120 + off; y < H + 120; y += 120) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  g.restore();
+}
+function grain(t) {
+  const f = Math.floor(t * 30);
+  const r = rng(f * 97 + 3);
+  g.save(); g.fillStyle = '#fff';
+  for (const p of grainPts) { g.globalAlpha = 0.05 * r(); g.fillRect((p[0] + r() * 40) % W, (p[1] + r() * 40) % H, 2, 2); }
+  g.restore();
+  // vignette
+  const v = g.createRadialGradient(CX, CY, H * .25, CX, CY, H * .75);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.65)');
+  g.fillStyle = v; g.fillRect(0, 0, W, H);
+}
+
+// ---------- persistent UI chrome ----------
+function chrome(t, a) {
+  if (a <= 0) return;
+  g.save(); g.globalAlpha = a;
+  text('CLAUDE', 90, 130, { size: 30, w: 700, align: 'left', color: INK, spacing: 8 });
+  const sec = t.toFixed(2).padStart(5, '0');
+  text(`00:${sec}`, W - 90, 130, { size: 28, w: 500, fam: 'JetBrains Mono', align: 'right', color: MUTE });
+  // progress bar
+  g.fillStyle = 'rgba(245,239,230,0.12)'; g.fillRect(90, H - 130, W - 180, 4);
+  g.fillStyle = CORAL; g.fillRect(90, H - 130, (W - 180) * (t / 15), 4);
+  text(`KARE ${String(Math.floor(t * 30)).padStart(3, '0')} / 450`, 90, H - 90, { size: 24, w: 500, fam: 'JetBrains Mono', align: 'left', color: MUTE });
+  text('MOTION · 2026', W - 90, H - 90, { size: 24, w: 500, fam: 'JetBrains Mono', align: 'right', color: MUTE });
+  g.restore();
+}
+
+// ================= SCENES =================
+
+// S1 0.0–2.0 : dot pulse -> spark burst, "Merhaba."
+function s1(t) {
+  const p = prog(t, 0, 2);
+  background(t);
+  const dotIn = eOut3(prog(t, 0.05, 0.5));
+  const pulse = 1 + Math.sin(t * 14) * 0.08 * (1 - prog(t, .5, 1));
+  const burst = eOut5(prog(t, 1.0, 1.6));
+  if (burst < 0.01) {
+    glow(CX, 820, 260 * dotIn, CORAL, .7);
+    g.beginPath(); g.arc(CX, 820, 26 * dotIn * pulse, 0, Math.PI * 2); g.fillStyle = CORAL; g.fill();
+  } else {
+    glow(CX, 820, 520 * burst, CORAL, .55);
+    spark(CX, 820, 230 * burst, t, { grow: burst, rot: (1 - burst) * -1.2 });
+    // shock ring
+    const ring = prog(t, 1.0, 1.9);
+    g.save(); g.globalAlpha = 1 - ring; g.strokeStyle = AMBER; g.lineWidth = 6 * (1 - ring) + 1;
+    g.beginPath(); g.arc(CX, 820, 60 + eOut3(ring) * 700, 0, Math.PI * 2); g.stroke(); g.restore();
+    // debris
+    const r = rng(11);
+    for (let i = 0; i < 60; i++) {
+      const a = r() * Math.PI * 2, sp = 300 + r() * 900, s = 3 + r() * 7;
+      const d = eOut3(ring) * sp;
+      g.globalAlpha = (1 - ring) * .9; g.fillStyle = r() > .5 ? AMBER : INK;
+      g.fillRect(CX + Math.cos(a) * d, 820 + Math.sin(a) * d, s, s);
+    }
+    g.globalAlpha = 1;
+  }
+  // typing "Merhaba."
+  const word = 'Merhaba.';
+  const n = Math.floor(clamp((t - 0.35) / 0.08, 0, word.length));
+  const shown = word.slice(0, n);
+  font(800, 150, 'Inter');
+  const tw = g.measureText(word).width;
+  text(shown, CX - tw / 2, 1240, { size: 150, w: 800, fam: 'Inter', align: 'left' });
+  if (Math.floor(t * 4) % 2 === 0 || n < word.length) {
+    font(800, 150, 'Inter'); const sw = g.measureText(shown).width;
+    g.fillStyle = CORAL; g.fillRect(CX - tw / 2 + sw + 10, 1180, 12, 120);
+  }
+  // exit wipe
+  const out = eIn3(prog(t, 1.75, 2.0));
+  if (out > 0) { g.fillStyle = CORAL; g.fillRect(0, H * (1 - out), W, H * out); }
+}
+
+// S2 2.0–4.5 : "Ben" / "CLAUDE" kinetic slam
+function s2(t) {
+  const lt = t - 2;
+  g.fillStyle = CORAL; g.fillRect(0, 0, W, H);
+  // stripes sliding
+  g.save(); g.globalAlpha = .12; g.fillStyle = BG;
+  for (let i = 0; i < 14; i++) { const y = i * 160 - ((lt * 300) % 160); g.fillRect(0, y, W, 50); }
+  g.restore();
+  // "Ben"
+  const bIn = eBack(prog(lt, 0.0, 0.4));
+  text('Ben', CX, lerp(1100, 640, bIn), { size: 150, w: 800, fam: 'Inter', color: BG, alpha: prog(lt, 0, .15) });
+  // CLAUDE letters slam in on beats
+  const letters = 'CLAUDE'.split('');
+  font(700, 228); const widths = letters.map(c => g.measureText(c).width);
+  const total = widths.reduce((a, b) => a + b, 0) + 8 * (letters.length - 1);
+  let x = CX - total / 2;
+  const shake = lt > .5 && lt < 1.8 ? Math.sin(lt * 90) * 6 * (1 - prog(lt, .5, 1.8)) : 0;
+  letters.forEach((c, i) => {
+    const st = 0.5 + i * 0.125;
+    const k = prog(lt, st, st + 0.28);
+    const sc = lerp(3.2, 1, eOut5(k));
+    g.save(); g.globalAlpha = clamp(k * 3);
+    g.translate(x + widths[i] / 2 + shake, 960); g.scale(sc, sc);
+    font(700, 228); g.fillStyle = BG; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(c, 0, 0);
+    g.restore();
+    x += widths[i] + 8;
+  });
+  // underline
+  const ul = eOut5(prog(lt, 1.4, 1.9));
+  g.fillStyle = BG; g.fillRect(CX - total / 2, 1110, total * ul, 14);
+  // subline
+  const sub = prog(lt, 1.6, 2.0);
+  text('bir yapay zekâ asistanıyım', CX, 1230, { size: 58, w: 500, color: BG, alpha: sub });
+  // exit: circle iris to dark
+  const o = eInOut(prog(lt, 2.15, 2.5));
+  if (o > 0) { g.save(); g.fillStyle = BG; g.beginPath(); g.arc(CX, CY, o * 1300, 0, Math.PI * 2); g.fill(); g.restore(); }
+}
+
+// S3 4.5–8.5 : capability montage, 4 cards x 1.0s
+const CODE = [
+  ['const', ' fikir ', '= ', 'hayal', '();'],
+  ['if', ' (fikir) ', '{', '', ''],
+  ['  ', 'tasarla', '(fikir);', '', ''],
+  ['  ', 'kodla', '(fikir);', '', ''],
+  ['  return ', 'gerçek', ';', '', ''],
+  ['}', '', '', '', ''],
+];
+function s3(t) {
+  const lt = t - 4.5;
+  background(t, 1);
+  const idx = Math.min(3, Math.floor(lt / 1.0));
+  const k = lt - idx * 1.0;
+  const labels = ['KOD YAZARIM', 'TASARLARIM', 'ANALİZ EDERİM', 'ÖĞRETİRİM'];
+  const cols = [CORAL, AMBER, PLUM, CORAL];
+  const inn = eOut5(clamp(k / 0.3));
+  const out = eIn3(prog(k, 0.82, 1.0));
+  const col = cols[idx];
+
+  // counter
+  text(`0${idx + 1}`, 90, 330, { size: 40, w: 500, fam: 'JetBrains Mono', align: 'left', color: col, alpha: inn });
+  g.fillStyle = col; g.globalAlpha = inn; g.fillRect(170, 328, 200 * inn, 3); g.globalAlpha = 1;
+
+  // card
+  const cardY = 520 + (1 - inn) * 200 - out * 200;
+  g.save(); g.globalAlpha = inn * (1 - out);
+  roundRect(110, cardY, W - 220, 760, 40); g.fillStyle = 'rgba(245,239,230,0.05)'; g.fill();
+  g.strokeStyle = 'rgba(245,239,230,0.14)'; g.lineWidth = 2; g.stroke();
+  g.save(); roundRect(110, cardY, W - 220, 760, 40); g.clip();
+  if (idx === 0) drawCode(k, cardY);
+  if (idx === 1) drawDesign(k, cardY);
+  if (idx === 2) drawChart(k, cardY);
+  if (idx === 3) drawLearn(k, cardY);
+  g.restore(); g.restore();
+
+  // big label with mask reveal
+  g.save();
+  g.beginPath(); g.rect(0, 1330, W, 200); g.clip();
+  const ly = 1430 + (1 - inn) * 160 - out * 160;
+  font(700, 118); const lw = g.measureText(labels[idx]).width;
+  const size = lw > 900 ? 118 * 900 / lw : 118;
+  text(labels[idx], CX, ly, { size, w: 700, color: INK });
+  g.restore();
+  // accent dot
+  g.beginPath(); g.arc(CX, 1570, 10 * inn * (1 - out), 0, Math.PI * 2); g.fillStyle = col; g.fill();
+
+  // flash on each cut
+  const fl = 1 - clamp(k / 0.12);
+  if (fl > 0) { g.fillStyle = `rgba(245,239,230,${fl * .22})`; g.fillRect(0, 0, W, H); }
+}
+function roundRect(x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+}
+function drawCode(k, y0) {
+  // window dots
+  [CORAL, AMBER, '#6fcf97'].forEach((c, i) => { g.beginPath(); g.arc(170 + i * 42, y0 + 60, 12, 0, 7); g.fillStyle = c; g.fill(); });
+  text('fikir.js', W - 170, y0 + 60, { size: 28, w: 500, fam: 'JetBrains Mono', align: 'right', color: MUTE });
+  const colors = [PLUM, INK, MUTE, AMBER, MUTE];
+  let chars = Math.floor(k * 150);
+  CODE.forEach((line, li) => {
+    let x = 170; const y = y0 + 170 + li * 92;
+    text(String(li + 1), 150, y, { size: 30, w: 500, fam: 'JetBrains Mono', align: 'right', color: 'rgba(138,129,120,.5)' });
+    line.forEach((seg, si) => {
+      if (chars <= 0) return;
+      const s = seg.slice(0, chars); chars -= seg.length;
+      const c = li >= 2 && li <= 3 && si === 1 ? CORAL : colors[si % colors.length];
+      text(s, x + 20, y, { size: 44, w: 500, fam: 'JetBrains Mono', align: 'left', color: c });
+      font(500, 44, 'JetBrains Mono'); x += g.measureText(seg).width;
+    });
+  });
+}
+function drawDesign(k, y0) {
+  const cx = CX, cy = y0 + 380;
+  const m = eInOut(clamp(k / 0.8));
+  // morphing shapes: square -> circle, rotating triangles
+  g.save(); g.translate(cx, cy); g.rotate(m * Math.PI * .5);
+  const s = 240, r = lerp(10, s / 2, m);
+  roundRect(-s / 2, -s / 2, s, s, r); g.fillStyle = AMBER; g.fill(); g.restore();
+  for (let i = 0; i < 3; i++) {
+    const a = m * Math.PI * 2 + i * 2.094, d = 240;
+    g.save(); g.translate(cx + Math.cos(a) * d, cy + Math.sin(a) * d); g.rotate(a + m * 3);
+    g.beginPath(); g.moveTo(0, -50); g.lineTo(45, 30); g.lineTo(-45, 30); g.closePath();
+    g.strokeStyle = [CORAL, PLUM, INK][i]; g.lineWidth = 8; g.stroke(); g.restore();
+  }
+  // bezier guide
+  g.save(); g.strokeStyle = 'rgba(245,239,230,.35)'; g.setLineDash([10, 12]); g.lineWidth = 3;
+  g.beginPath(); g.moveTo(180, y0 + 680); g.bezierCurveTo(400, y0 + 520 - m * 200, 700, y0 + 820, 900, y0 + 600); g.stroke(); g.restore();
+  [[180, y0 + 680], [900, y0 + 600]].forEach(([x, y]) => { g.fillStyle = INK; g.fillRect(x - 10, y - 10, 20, 20); });
+}
+function drawChart(k, y0) {
+  const vals = [.35, .55, .42, .78, .62, .95];
+  const bw = 90, gap = 40, base = y0 + 650, x0 = CX - (vals.length * bw + (vals.length - 1) * gap) / 2;
+  vals.forEach((v, i) => {
+    const p = eBack(clamp((k - i * 0.06) / 0.4));
+    const h = v * 460 * p;
+    g.fillStyle = i === vals.length - 1 ? PLUM : 'rgba(245,239,230,.22)';
+    roundRect(x0 + i * (bw + gap), base - h, bw, Math.max(h, 1), 14); g.fill();
+  });
+  // trend line
+  const lp = eOut3(clamp((k - .25) / .5));
+  g.save(); g.strokeStyle = AMBER; g.lineWidth = 7; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath();
+  vals.forEach((v, i) => {
+    const x = x0 + i * (bw + gap) + bw / 2, y = base - v * 460 - 40;
+    if (i / (vals.length - 1) <= lp) i ? g.lineTo(x, y) : g.moveTo(x, y);
+  });
+  g.stroke(); g.restore();
+  const pct = Math.round(eOut3(clamp(k / .7)) * 247);
+  text(`+${pct}%`, W - 170, y0 + 110, { size: 72, w: 700, align: 'right', color: AMBER });
+}
+function drawLearn(k, y0) {
+  // nodes connecting — a small knowledge graph
+  const r = rng(5);
+  const nodes = Array.from({ length: 14 }, () => [180 + r() * 720, y0 + 100 + r() * 560]);
+  const p = eOut3(clamp(k / .7));
+  g.save(); g.lineWidth = 3;
+  for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+    const [a, b] = [nodes[i], nodes[j]]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    if (d > 300) continue;
+    const q = clamp(p * 1.6 - (i / nodes.length) * .6);
+    g.strokeStyle = `rgba(232,120,79,${.55 * q})`;
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(lerp(a[0], b[0], q), lerp(a[1], b[1], q)); g.stroke();
+  }
+  nodes.forEach(([x, y], i) => {
+    const q = eBack(clamp(p * 1.5 - i * 0.04));
+    g.beginPath(); g.arc(x, y, (i % 4 === 0 ? 20 : 11) * q, 0, 7); g.fillStyle = i % 4 === 0 ? AMBER : INK; g.fill();
+  });
+  g.restore();
+}
+
+// S4 8.5–11.5 : "Bu video..." proof — code-made stats
+function s4(t) {
+  const lt = t - 8.5;
+  background(t);
+  const a1 = eOut5(prog(lt, 0, .35));
+  text('Bu videoyu', CX, 560 - (1 - a1) * 80, { size: 96, w: 800, fam: 'Inter', alpha: a1 });
+  // strike-through choices
+  const opts = ['kamerayla', 'programla', 'kodla'];
+  opts.forEach((o, i) => {
+    const st = 0.35 + i * 0.4;
+    const ap = eOut5(prog(lt, st, st + .25));
+    const y = 780 + i * 170;
+    const isLast = i === 2;
+    text(o, CX, y + (1 - ap) * 60, { size: isLast ? 150 : 110, w: 700, color: isLast ? CORAL : MUTE, alpha: ap });
+    if (!isLast) {
+      const sp = eOut3(prog(lt, st + .25, st + .45));
+      font(700, 110); const w = g.measureText(o).width;
+      g.fillStyle = INK; g.fillRect(CX - w / 2 - 10, y - 4, (w + 20) * sp, 10);
+    }
+  });
+  const a2 = eOut5(prog(lt, 1.6, 1.9));
+  text('yaptım.', CX, 1300 + (1 - a2) * 60, { size: 96, w: 800, fam: 'Inter', alpha: a2 });
+  // stat chips
+  const stats = [['450', 'kare'], ['0', 'kamera'], ['%100', 'kod']];
+  stats.forEach(([n, l], i) => {
+    const q = eBack(prog(lt, 1.9 + i * .12, 2.3 + i * .12));
+    const x = 220 + i * 320;
+    g.save(); g.globalAlpha = clamp(q); g.translate(x, 1540); g.scale(q, q);
+    roundRect(-140, -90, 280, 180, 28); g.fillStyle = 'rgba(245,239,230,0.06)'; g.fill();
+    g.strokeStyle = 'rgba(232,120,79,.5)'; g.lineWidth = 2; g.stroke();
+    text(n, 0, -22, { size: 70, w: 700, color: INK });
+    text(l, 0, 45, { size: 30, w: 500, fam: 'JetBrains Mono', color: MUTE });
+    g.restore();
+  });
+  // exit: all collapse to center (handled by s5 zoom-in) — quick fade
+  const o = prog(lt, 2.75, 3.0);
+  if (o > 0) { g.fillStyle = `rgba(13,11,10,${o})`; g.fillRect(0, 0, W, H); }
+}
+
+// S5 11.5–15.0 : particles converge into spark, logo lockup + CTA
+const PARTS = (() => { const r = rng(42); return Array.from({ length: 220 }, () => ({ a: r() * Math.PI * 2, d: 500 + r() * 1100, s: 2 + r() * 6, c: r() > .6 ? AMBER : (r() > .5 ? CORAL : INK), sp: .5 + r() })); })();
+function s5(t) {
+  const lt = t - 11.5;
+  background(t);
+  const conv = eInOut(prog(lt, 0, 1.0));
+  const cy = 780;
+  PARTS.forEach(p => {
+    const d = p.d * (1 - conv) + 20 * conv;
+    const a = p.a + conv * 2.5 * p.sp;
+    g.globalAlpha = (1 - prog(lt, .9, 1.1)) * .9; g.fillStyle = p.c;
+    g.fillRect(CX + Math.cos(a) * d, cy + Math.sin(a) * d, p.s, p.s);
+  });
+  g.globalAlpha = 1;
+  const pop = prog(lt, 0.95, 1.6);
+  if (pop > 0) {
+    const e = eElastic(pop);
+    glow(CX, cy, 600 * clamp(e), CORAL, .6);
+    spark(CX, cy, 210 * e, t, { grow: clamp(pop * 2), rot: lt * .35 });
+    const fl = 1 - clamp((lt - .95) / .2);
+    if (fl > 0) { g.fillStyle = `rgba(245,239,230,${fl * .7})`; g.fillRect(0, 0, W, H); }
+  }
+  // wordmark
+  const wm = eOut5(prog(lt, 1.3, 1.8));
+  g.save(); g.beginPath(); g.rect(0, 1020, W, 240); g.clip();
+  text('Claude', CX, 1140 + (1 - wm) * 220, { size: 210, w: 700, color: INK });
+  g.restore();
+  // tagline
+  const tg = prog(lt, 1.8, 2.2);
+  text('düşün · tasarla · üret', CX, 1320, { size: 48, w: 500, fam: 'JetBrains Mono', color: MUTE, alpha: tg, spacing: 2 });
+  // CTA pill
+  const ct = eBack(prog(lt, 2.2, 2.6));
+  if (ct > 0) {
+    g.save(); g.translate(CX, 1520); g.scale(ct, ct);
+    roundRect(-380, -70, 760, 140, 70); g.fillStyle = CORAL; g.fill();
+    text('Birlikte ne yaratalım?', 0, 2, { size: 54, w: 700, color: BG });
+    g.restore();
+  }
+  // final fade
+  const f = prog(lt, 3.2, 3.5);
+  if (f > 0) { g.fillStyle = `rgba(0,0,0,${f})`; g.fillRect(0, 0, W, H); }
+}
+
+// ================= MASTER =================
+window.draw = function (t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  // beat zoom punch
+  const beatPhase = (t % BEAT) / BEAT;
+  const punch = t > 4.5 && t < 11.5 ? (1 - eOut3(clamp(beatPhase * 3))) * 0.012 : 0;
+  g.save(); g.translate(CX, CY); g.scale(1 + punch, 1 + punch); g.translate(-CX, -CY);
+  if (t < 2) s1(t);
+  else if (t < 4.5) s2(t);
+  else if (t < 8.5) s3(t);
+  else if (t < 11.5) s4(t);
+  else s5(t);
+  g.restore();
+  if (t >= 2 && t < 4.5) {} else grain(t);
+  chrome(t, t < 2 ? prog(t, .3, .8) : (t < 4.5 ? 0 : 1 - prog(t, 14.2, 14.7)));
+};
+window.ready = (async () => {
+  const sample = 'AaĞğŞşİıÇçÖöÜüâ0123456789%+·';
+  for (const f of ['700 100px "Space Grotesk"', '500 100px "Space Grotesk"', '800 100px "Inter"', '500 100px "JetBrains Mono"'])
+    await document.fonts.load(f, sample);
+  await document.fonts.ready;
+})();
+</script>
+</body></html>
