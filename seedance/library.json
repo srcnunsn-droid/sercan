@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "name": "Seedance Cinematic Prompt Library",
+    "version": "2026.09.25-cinematic",
+    "spine": [
+      "HEADER",
+      "STYLE PREFIX",
+      "NO ON-SCREEN TEXT",
+      "CRITICAL BLOCKS",
+      "ASSETS",
+      "GEOMETRY MAP",
+      "FIRST FRAME",
+      "OPTICS",
+      "CAMERA",
+      "LIGHT & COLOUR",
+      "ATMOSPHERE",
+      "ACTION TIMING",
+      "PHYSICS",
+      "ACTING",
+      "AUDIO",
+      "LOCKS"
+    ],
+    "notes_tr": "Bu dosya her promptun değişmeyen iskelet bloklarını tutar. Sahne dosyaları (seedance/scenes/*.json) ve karakter dosyası (seedance/characters.json) bu blokların içine yerleştirilir. Prompt gövdesi daima İngilizcedir."
+  },
+  "version_profiles": {
+    "2.0": {
+      "max_image_refs": 9,
+      "max_runtime_s": 15,
+      "refs_per_human": 1,
+      "refs_per_creature": 1,
+      "notes_tr": "9 görsel referans, en fazla 15 saniye. Her slot değerli: önce karakterler, sonra grup/kostüm, sonra prop, sonra mekan, en son video/ses."
+    },
+    "2.5": {
+      "max_image_refs": 50,
+      "max_runtime_s": 30,
+      "refs_per_human": 3,
+      "refs_per_creature": 2,
+      "notes_tr": "50 görsel referans, en fazla 30 saniye. Her karakter için ön / profil / detay plakası ayrı verilir; kimlik uzun çekimde çok daha sağlam tutar. Birbirinin kopyası referanslar yüzü ortalar — her referans farklı bir iş yapmalı."
+    }
+  },
+  "style_prefixes": {
+    "large_format": {
+      "label_tr": "Büyük format fotogerçekçi (varsayılan)",
+      "operating_style": "Operating style: large-scale realism with intimate handheld closeness, immersive in-camera feel, tactile textures, shallow depth of field on the face, documentary framing, photochemical look.",
+      "texture": "Texture: matte non-reflective surfaces, lived-in worn materials, organic 65mm film grain, no digital gloss, no plastic sheen."
+    },
+    "hoytema": {
+      "label_tr": "Hoytema — büyük format, atmosferik derinlik, el kamerası yakınlığı",
+      "operating_style": "Operating style — HOYTE VAN HOYTEMA: large-format realism, intimate handheld closeness, in-camera feel, atmospheric depth, photochemical rendition.",
+      "texture": "Texture: matte non-reflective surfaces, lived-in worn materials, organic 65mm film grain, no digital gloss, no plastic sheen."
+    },
+    "deakins": {
+      "label_tr": "Deakins — sade kompozisyon, motive edilmiş tek kaynak ışık, silüet",
+      "operating_style": "Operating style — ROGER DEAKINS: restrained precise compositions, single motivated sources, strong silhouettes, clean negative space, naturalistic exposure.",
+      "texture": "Texture: matte non-reflective surfaces, weathered real materials, fine 35mm film grain, no digital gloss, no plastic sheen."
+    },
+    "lubezki": {
+      "label_tr": "Lubezki — doğal ışık, uzun akışkan planlar, geniş açı yakınlık",
+      "operating_style": "Operating style — EMMANUEL LUBEZKI: natural available light, long flowing takes, wide lenses held close to the body, the camera breathing with the subject.",
+      "texture": "Texture: matte natural surfaces, raw organic materials, organic 65mm film grain, no digital gloss, no plastic sheen."
+    },
+    "doc16": {
+      "label_tr": "Belgesel 16mm — kirli, gerçek, sokak",
+      "operating_style": "Operating style: observational documentary realism, reportage handheld, the operator reacting rather than anticipating, found framing, photochemical look.",
+      "texture": "Texture: matte worn surfaces, gritty street materials, heavy organic 16mm film grain with gate weave, no digital gloss, no plastic sheen."
+    },
+    "neon_noir": {
+      "label_tr": "Neon noir — gece şehri, pratik ışıklar, ıslak zemin",
+      "operating_style": "Operating style: night-city realism, practical-lit, intimate handheld closeness, shallow depth of field on the face, wet reflective ground as the only gloss in frame, photochemical look.",
+      "texture": "Texture: matte skin and fabric, wet asphalt and glass as the only reflective surfaces, organic 35mm film grain, no digital gloss, no plastic sheen."
+    }
+  },
+  "style_shared": {
+    "style": "Style: 8K, photorealism, real organic film grain and halation, high dynamic range, shot on large-format film. NOT a 3D render, NOT a game engine, NOT a game-cutscene aesthetic, NOT a cartoon, NOT anime cel-shading.",
+    "skin": "Skin: pore-level realism — visible pores, fine vellus hair, natural asymmetry, no smoothing, no retouching. Half the face often falls into shadow.",
+    "skin_creature": "Surface: real organic surface detail at macro scale — individual hairs, scales, pores, dirt and wear, no smoothing, no plastic.",
+    "technical": "Technical: 8K, real-time 24fps, true 180-degree shutter with a real 1/48 second exposure on every frame, genuine photographic motion blur, each frame blending smoothly into the next. Smooth stable motion, no flicker, no warping, no morphing, no frame interpolation, no frame blending, no ghosting, no double-imaging, no high-shutter video crispness.",
+    "strobe_quarantine": "The stepped, stuttering quality of this sequence comes entirely from the strobe lighting described below — from bodies revealed only in discrete flashes — and never from broken or choppy footage. The camera motion between flashes stays continuous and smooth even while bodies appear to jump between positions."
+  },
+  "no_text_block": "NO ON-SCREEN TEXT — CRITICAL: no on-screen text of any kind anywhere in frame at any point. No captions, no subtitles, no burned-in dialogue, no auto-captions, no karaoke text, no lower thirds, no titles, no title cards, no credits, no watermarks, no logos, no timecode, no UI overlays, no social-media overlays, no interface elements, no Chinese characters, no Korean characters. The frame is clean of all overlay graphics from first frame to last.",
+  "critical_library": {
+    "nobody_else": {
+      "label_tr": "Kadrajda başka kimse yok",
+      "text": "NOBODY ELSE IS IN THE FRAME — CRITICAL: the only figures in this sequence are {CAST_LIST}. No extras, no passers-by, no background figures, no silhouettes in windows, no reflections of other people, no crowd at any depth. Every frame is empty of any person or creature not listed in the assets."
+    },
+    "everyone_live": {
+      "label_tr": "Herkes canlı — kimse donmaz",
+      "text": "EVERYONE IS LIVE — CRITICAL: nobody freezes at any point. Every visible body breathes, blinks, shifts weight and reacts throughout, foreground and background alike, each on their own clock, never moving as one, never holding a posed still."
+    },
+    "strobe": {
+      "label_tr": "Strobe ışık",
+      "text": "THE STROBE IS THE DEFINING FEATURE — CRITICAL: the space is lit by hard white strobe flashes firing relentlessly on a fast {BPM} BPM pulse. The rhythm is flash, black, flash, black — hard on, hard off, with occasional double and triple stutter runs. Each flash is instantaneous and brilliant, revealing the scene crisply frozen mid-motion, hard-edged and contrasty. Each black interval drops the frame to near-darkness, held readable by a dim constant {SECONDARY} glow. No fade in, no fade out, every transition a hard snap. Nothing is ever frozen, held or static between flashes — every body is in continuous motion at all times, it is only the light that stops them."
+    },
+    "mouth_visible": {
+      "label_tr": "Ağız her karede görünür (lipsync)",
+      "text": "THE MOUTH IS ALWAYS VISIBLE AND ALWAYS READABLE — CRITICAL: the face is turned toward the lens, the mouth unobstructed, frontal and clearly readable in every single frame, and it stays readable through the camera movement, through the cant and through every change of the light. Nothing ever covers it — no hand, no hair, no arm, no microphone, no other body."
+    }
+  },
+  "lens_ladder": [
+    {"fov": "180°", "mm": "fisheye", "use_tr": "POV, rüya, halüsinasyon"},
+    {"fov": "107°", "mm": "14–16mm", "use_tr": "devasa iç mekan, epik açılış"},
+    {"fov": "84°", "mm": "20–24mm", "use_tr": "tam boy blokaj, içine çeken aksiyon"},
+    {"fov": "63°", "mm": "28–35mm", "use_tr": "gözlemci, yanında yürüme, belgesel"},
+    {"fov": "47°", "mm": "40–50mm", "use_tr": "göz hizası nötr, iki kişilik plan"},
+    {"fov": "34°", "mm": "60–70mm", "use_tr": "sıkıştırılmış grup, katmanlı derinlik"},
+    {"fov": "29°", "mm": "75–85mm", "use_tr": "portre sıkıştırma, eller"},
+    {"fov": "18°", "mm": "100–135mm", "use_tr": "kimlik tutan yakın plan"},
+    {"fov": "12°", "mm": "180–200mm", "use_tr": "detay, obje, doku"},
+    {"fov": "8°", "mm": "300–400mm", "use_tr": "çok uzak gözlem"}
+  ],
+  "lens_defense": {
+    "long": "This is a LONG lens — strong telephoto compression, flattened perspective, background pulled in close and thrown soft, only one to three faces sharp at a time, tight crop. NOT wide-angle, NOT large-format coverage, no fisheye, no edge distortion, no deep focus, no full-room coverage.",
+    "ultra_wide": "This is an ULTRA-WIDE lens — deep perspective, near objects looming large and far objects shrinking fast, strong sense of scale, the whole space readable edge to edge. NOT telephoto, NOT compressed, no flattened background, no shallow portrait crop, no fisheye bulge.",
+    "macro": "This is a MACRO detail lens — a plane of focus millimetres deep, texture filling the frame, everything outside the plane dissolving into soft colour. NOT wide-angle, NOT a full-body shot, no deep focus, no environment coverage."
+  },
+  "optics_default": "Spherical large-format glass — natural halation around highlights, creamy focus falloff, subtle lens breathing, natural 180-degree motion blur. No anamorphic streak flares, no oval bokeh, no artificial flares, no fisheye.",
+  "camera_registers": {
+    "locked": {
+      "label_tr": "Sabit (tripod) — durağanlık konudur",
+      "text": "CAMERA: locked-off register, 0° cant — tripod-weighted, the frame holds still or travels in an extremely slow push, stillness is the subject. No shake, no drift, no zoom, no reframing."
+    },
+    "gentle": {
+      "label_tr": "Hafif el kamerası — süzülür, nefes alır",
+      "text": "CAMERA: gentle handheld register, a 3–10° cant swinging slowly, never passing through level, never settling square — floating, drifting, riding the operator's breath, small organic corrections, frames settle and hold before moving on."
+    },
+    "heavy": {
+      "label_tr": "Ağır el kamerası — sarsıntılı, enerjik",
+      "text": "CAMERA: heavy handheld register, a 12–25° cant swinging, never passing through level, never settling square — jolting, bobbing, lurching, snapping corrections with high-frequency vibration underneath, every frame mid-move while the eye can still land."
+    },
+    "violent": {
+      "label_tr": "Şiddetli el kamerası — hiçbir kare oturmaz",
+      "text": "CAMERA: violent handheld register, a 25–45° cant swinging hard, never passing through level, never settling square — punching in and ripping back, whip-pans, hard surges, violent corrections, nothing settles, the frame never lands."
+    }
+  },
+  "camera_never_settles": "Never locked, never stabilized, never mechanically smooth, never gimbal-glide, never floaty drone — real shoulder-mounted mass, weight shifts, breath, human over-correction, every frame mid-move but always smooth and continuous in its own travel.",
+  "atmosphere": {
+    "air": "ATMOSPHERE: the air carries real density at every depth — a continuous scattering gradient from the lens to the farthest plane, blacks lifted at every plane, depth reading in clearly separated layers: {PLANES}. Razor skin and fabric texture up close, heavy grain inside the lifted shadows, natural bloom at point light sources. Low macro contrast, high micro contrast. Bodies pass through the air without disturbing it, leaving no wakes and no trails.",
+    "clean": "ATMOSPHERE: the air is clean — no haze, no density, no visible beams, no suspended particulate, full clarity to the farthest plane. Depth reads through focus and scale alone: {PLANES}. Razor texture up close, natural bloom only at point light sources.",
+    "fog": "ATMOSPHERE: thick cold fog holding at uniform density, visibility falling off with distance, blacks lifted at every plane, depth reading in clearly separated layers: {PLANES}. The fog is uniform — it never forms shapes moving through frame.",
+    "no_source_close": "No plumes, no banks, no tendrils, no wisps, no swirls, no rolling, no fog-machine texture, no smoke shapes, no volumetric shafts, no god rays. Nothing in the air is emitted by anything.",
+    "source_close": "Visible vapor exists only where its named source makes it — {SOURCE} — and nowhere else in frame. No fog-machine texture, no smoke shapes without a source, no god rays."
+  },
+  "acting_base": "ACTING: natural eye blinking throughout, active forehead and brow micro-expression, no frozen mask-face, no dead eyes.",
+  "acting_base_creature": "ACTING: the animal behaves as a real animal — natural blinking, ear and nostril micro-movement, weight shifts, breathing visible in the ribs, no human expressions, no anthropomorphic mugging, no frozen pose.",
+  "audio": {
+    "nobgm": "NO BGM — no background music of any kind. No score, no soundtrack, no instrumental, no underscore, no ambient musical pad, no drone, no tone bed, no swell, no sting, no humming, no singing, no whistling, no lyrics. Diegetic sound effects and room tone only. Nothing musical anywhere at any point.",
+    "nobgm_header": "NO BGM — no background music anywhere in this sequence; diegetic sound only.",
+    "attached_track": "AUDIO: the attached clip {AUDIO_TAG} is the sole and complete audio source for this sequence. Generate no additional audio of any kind — no room tone, no foley, no ambience, no breath, no added dialogue, NO BGM.",
+    "unheard_track_close": "No track, no instrumental, nothing else musical in the mix."
+  },
+  "locks_standard": {
+    "identity": "Same identity, same wardrobe and same geography continuous across the whole sequence.",
+    "wardrobe": "Wardrobe identical to each tagged reference, one look per figure, no mixing.",
+    "angles": "Every shot a different angle and height.",
+    "light": "Light direction and colour temperature identical across all shots.",
+    "air": "The air holds uniform density throughout."
+  },
+  "skin_protection": "Skin reads true cinematic matte — zero shine on forehead, nose bridge, cheekbones and collarbones, real fine even pore texture, real peach fuzz at the jaw and hairline, real lip surface texture, light absorbed like true subsurface scattering, skin protected and rendering true and natural, never plastic, never doll-skin — no acne, no blemishes, no enlarged or rough pores, fine flattering texture that keeps every face looking good.",
+  "negation_tail": "No CGI, no rendered look, no digital cleanliness, no plastic surfaces, no AI smoothness, no skin smoothing, no glow, no stiffness, no frozen posing, no stabilized camera, no gimbal glide, no video-look high-shutter crispness, no frame interpolation, no frame blending, no dropped frames.",
+  "negation_tail_locked": "No CGI, no rendered look, no digital cleanliness, no plastic surfaces, no AI smoothness, no skin smoothing, no glow, no stiffness, no frozen posing, no video-look high-shutter crispness, no frame interpolation, no frame blending, no dropped frames.",
+  "negative_prompt": {
+    "identity": ["face morphing", "identity swap", "averaged face", "wardrobe change mid-shot", "hair colour drift", "eye colour drift", "extra tattoos", "invented facial marks"],
+    "anatomy": ["extra fingers", "fused fingers", "extra limbs", "missing limbs", "broken wrists", "backwards knees", "melted hands", "deformed feet"],
+    "render": ["3D render", "CGI", "game engine", "cartoon", "anime", "plastic skin", "waxy skin", "oversharpened", "AI smoothness", "beauty filter"],
+    "motion": ["slow motion unless stated", "frame interpolation", "ghosting", "double image", "jitter", "warping", "floating bodies", "sliding feet", "teleporting"],
+    "text_overlay": ["captions", "subtitles", "watermark", "logo", "UI overlay", "title card", "timecode", "social media frame"],
+    "atmosphere": ["fog machine", "unsourced smoke", "god rays", "volumetric shafts", "lens flare streaks", "oval bokeh"],
+    "population": ["extra people", "crowd", "background figures", "reflections of other people"]
+  }
+}

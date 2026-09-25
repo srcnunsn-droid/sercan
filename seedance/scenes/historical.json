@@ -1,0 +1,127 @@
+{
+  "category": "historical",
+  "scenes": [
+    {
+      "id": "janissary_fog_charge",
+      "label_en": "Janissary charge through fog",
+      "label_tr": "Sisli savaş alanında yeniçeri hücumu",
+      "hook_tr": "Mehter hissi olmadan sadece nefes ve adım sesi; sisten çıkan börkler. Osmanlı tarihi içerikleri çok paylaşılır.",
+      "platforms": ["YouTube Shorts", "TikTok", "Instagram Reels"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["historical", "turkiye"],
+          "only": ["his_01"],
+          "this_scene": "leading a line of soldiers out of thick morning fog, drawing the curved sabre, raising it high, and breaking into a charge at the head of the line."
+        }
+      },
+      "default_cast": {"A": "his_01"},
+      "extra_assets": [
+        {"label_en": "janissary line wardrobe sheet", "asset": "the line of janissaries — two dozen soldiers in the same tall white felt börk hats with the long back fold, deep red and dark blue kaftans, wide sashes, yellow boots, curved sabres and long muskets. Permitted variation in moustache and build, uniform consistent."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE TALL WHITE HATS", "text": "every soldier wears the same tall white felt börk with the long fold hanging down the back of the neck. The hats are tall, white, soft felt — never helmets, never turbans, never fezzes — and they read clearly through the fog as a row of white shapes."}
+      ],
+      "location_label": "open plain in thick morning fog",
+      "location": "an open grassy plain at dawn in thick cold fog, trampled wet grass, a low rise ahead, bare trees faintly visible. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} walks at the front centre of the line toward camera, the line of soldiers staggered behind at different depths, emerging from the fog. Depth planes: wet grass foreground, {A} mid-ground sharp, the line behind fading into fog background.",
+      "first_frame": "already walking out of the fog, the white hats of the line appearing behind like ghosts.",
+      "shots": [
+        {"dur": 3.5, "name": "emerging from fog", "lens": "34° (65mm) short tele", "lens_note": "compressed, the line stacking behind the leader", "beat": "{A} walks out of the fog toward camera, the line of white hats emerging behind, boots swishing through wet grass, breath clouding."},
+        {"dur": 3.0, "name": "sabre drawn", "lens": "29° (85mm) portrait compression", "lens_note": "the face and the drawn sabre", "beat": "{A} draws the kilij from the scabbard with a ring of steel and raises it high, the moustache wet with fog, eyes blazing, and shouts 'Hücum!'"},
+        {"dur": 3.5, "name": "the charge", "lens": "84° (22mm) classic wide", "lens_note": "low, the line charging at the lens", "beat": "{A} breaks into a run at the head of the line, the whole line surging after, kaftans flying, sabres raised, boots tearing up the wet grass."}
+      ],
+      "camera": {"register": "heavy", "extra": "In shot 3 the operator runs backward ahead of the charge."},
+      "light": "diffuse dawn light through the fog from screen-RIGHT, soft and pale, the white hats glowing, the red kaftans muted, faces lit softly and evenly.",
+      "colour": "~70% pale grey-white fog and wet green-grey grass; ~20% deep muted red kaftans; ~10% bright white hats and steel glints.",
+      "atmosphere": {"mode": "fog", "planes": "wet grass nearest, the leader, the line of soldiers, the bare trees vanishing into fog", "source": null},
+      "physics": "real bodyweight and kit — heavy kaftans swing and slap against the legs, the börk folds bounce on the back of the neck, boots sink and tear wet grass, muskets and scabbards jolt against the body, breath condenses on every exhale. Nothing floats, nothing slides.",
+      "acting": "Stern resolve turning to fury — the brow low and hard, eyes narrowed; on the shout the eyes widen and the mouth opens fully. The soldiers behind grim and fierce, each different. Nobody looks into the lens.",
+      "audio": "boots swishing through wet grass, the ring of the sabre drawn from its scabbard, the shout 'Hücum!' in a commanding baritone, a roar from the line, the thunder of running feet, kit rattling.",
+      "locks_chain": "the sequence runs in order — emerge from the fog, draw and raise the sabre with the shout, the charge. Every soldier in the tall white börk throughout.",
+      "negative_extra": ["turbans", "fez", "helmets", "gunfire", "blood", "flags with text"]
+    },
+    {
+      "id": "gladiator_gate",
+      "label_en": "Gladiator gate entrance",
+      "label_tr": "Arena kapısından gladyatör girişi",
+      "hook_tr": "Demir kapı kalkar, güneş ve kalabalık patlar. Epik giriş anı her zaman izlenir.",
+      "platforms": ["YouTube Shorts", "TikTok", "Instagram Reels"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["historical", "fighters", "fantasy"],
+          "this_scene": "waiting in the dark tunnel as the iron gate rises, stepping out into the blazing arena, lifting the weapon to the roaring crowd, and scooping a handful of sand."
+        }
+      },
+      "default_cast": {"A": "his_03"},
+      "extra_assets": [
+        {"label_en": "arena crowd wardrobe sheet", "asset": "the Roman arena crowd — thousands in the tiered stone stands in off-white, ochre and faded red tunics and togas, a sea of raised arms, faces too far to read."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE GATE", "text": "a heavy iron portcullis rises vertically in its stone groove, chains rattling, dust falling from the top. It rises once, fully, and stays up. It never opens sideways, never disappears."}
+      ],
+      "location_label": "Roman arena tunnel and sand floor",
+      "location": "the stone tunnel under a Roman amphitheatre opening onto a blazing sand arena floor, a heavy iron portcullis at the tunnel mouth, tiered stone stands packed with spectators, a pale blue sky. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} waits in the dark tunnel facing the portcullis, the arena beyond. In shot 3 {A} stands on the sand facing the stands screen-LEFT. Depth planes: tunnel stone and iron bars foreground, {A} mid-ground, the blazing arena and stands background.",
+      "first_frame": "already standing in the dark behind the bars, the blazing arena glowing through them, chains starting to clank.",
+      "shots": [
+        {"dur": 3.0, "name": "behind the bars", "lens": "29° (85mm) portrait compression", "lens_note": "the face through the iron bars", "beat": "{A} breathes slowly behind the bars, the face striped by light and shadow, sweat on the brow, as the portcullis begins to rise with a grinding of chains."},
+        {"dur": 3.0, "name": "stepping out", "lens": "84° (22mm) classic wide", "lens_note": "low from behind, the tunnel mouth and the blazing arena", "beat": "{A} walks out under the rising gate into the blinding sun, dust falling from above, the roar of the crowd hitting like a wave."},
+        {"dur": 4.0, "name": "raising the weapon", "lens": "47° (50mm) standard normal", "lens_note": "waist-up on the sand, the stands behind", "beat": "{A} lifts the weapon high to the stands, the crowd erupting, then crouches, scoops a handful of sand, rubs it between the palms and lets it fall, eyes lifting to the far gate."}
+      ],
+      "camera": {"register": "heavy", "extra": "The camera shakes with the crowd's roar."},
+      "light": "a hard midday sun from high screen-RIGHT, the arena floor blazing, the tunnel in deep shadow, bars casting hard stripes across the face in shot 1, harsh top light on shoulders and brow in shot 3.",
+      "colour": "~70% bleached warm sand and sun-baked stone; ~20% deep brown-black tunnel shadow and leather; ~10% pale blue sky and the red of shield and tunic accents.",
+      "atmosphere": {"mode": "air", "planes": "iron bars and stone nearest, the gladiator, the sand floor, the stands in heat haze furthest", "source": "dust falling from the rising portcullis and sand trickling from the palms"},
+      "physics": "real bodyweight — the heavy portcullis rises slowly with chain strain, dust falls with gravity, bare feet press into hot sand, muscles shift under the leather, the scooped sand pours from the palms in a thin stream. Contact shadows on the sand. Nothing floats, nothing slides.",
+      "acting": "Controlled dread becoming defiance — a slow breath, the brow tight; stepping out, the eyes squint in the sun; raising the weapon the jaw sets and the chin lifts. Never looks into the lens.",
+      "audio": "chains grinding and clanking, the scrape of the portcullis in stone, a slow breath, the roar of thousands swelling, footsteps in sand, the trickle of falling sand, the distant thud of a second gate.",
+      "locks_chain": "the sequence runs in order — behind the bars, the gate rises, stepping into the sun, the raised weapon, the sand. One gate, rising once.",
+      "negative_extra": ["lions", "blood", "modern stadium", "helmet appearing"]
+    },
+    {
+      "id": "flapper_charleston",
+      "label_en": "Speakeasy Charleston",
+      "label_tr": "1920'ler gizli barda Charleston dansı",
+      "hook_tr": "Sallanan püsküller, inci kolye, retro caz enerjisi. Dans trendleri ve vintage estetik sevenler için.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["historical", "creators", "fashion"],
+          "this_scene": "dancing a fast joyful Charleston on a small wooden floor, knees swinging, arms flicking, the fringe flying, ending with a hand on the hip and a laugh."
+        }
+      },
+      "default_cast": {"A": "his_04"},
+      "extra_assets": [
+        {"label_en": "speakeasy crowd wardrobe sheet", "asset": "the speakeasy crowd — a dozen patrons in 1920s eveningwear: dark suits with waistcoats, beaded and fringed dresses, cloche hats, feathered headbands, cigarette holders, clapping and cheering around the floor."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE FRINGE", "text": "the layered beaded fringe of the dress swings and flies with every movement, lagging behind the body and whipping back, catching the light in thousands of small glints. The fringe never freezes, never merges into one piece."}
+      ],
+      "location_label": "1920s speakeasy with a small dance floor",
+      "location": "a cramped 1920s speakeasy, dark wood panelling, a small square parquet dance floor, a brass-railed bar with bottles behind, low amber lamps with fringed shades, thin cigarette smoke under the ceiling. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} dances in the centre of the small floor, facing camera. The bar runs along the back wall. The crowd surrounds the floor at different depths, NOT in a line. Depth planes: patrons' shoulders foreground, {A} mid-ground, the bar and lamps background.",
+      "first_frame": "already mid-Charleston, one knee swinging in, the fringe flying.",
+      "shots": [
+        {"dur": 3.0, "name": "full body Charleston", "lens": "47° (50mm) standard normal", "lens_note": "full body at hip height", "beat": "{A} dances a fast Charleston, knees swinging in and out, hands crossing over the knees, heels kicking back, the fringe flying, the crowd clapping."},
+        {"dur": 2.0, "name": "fringe and pearls", "lens": "12° (200mm) tele detail", "lens_note": "tight on the swinging fringe and pearls", "beat": "the beaded fringe whips and swirls, the long pearl strand swinging out and slapping back, the gold heels flicking in and out of frame."},
+        {"dur": 3.0, "name": "the finish", "lens": "29° (85mm) portrait compression", "lens_note": "chest-up, lamps glowing behind", "beat": "{A} stops on the beat with one hand on the hip and the other flung high, breathless, and throws the head back in a laugh as the crowd cheers."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator bobs with the rhythm, jostled by the patrons."},
+      "light": "warm low amber lamps with fringed shades around the room, pools of warm light, the dancer lit from above and screen-LEFT, sparkling highlights on the beads and pearls, deep brown shadows in the corners.",
+      "colour": "~70% deep amber and brown wood; ~20% champagne gold glints from the fringe and pearls; ~10% the deep red lipstick and crimson velvet of the bar stools.",
+      "atmosphere": {"mode": "air", "planes": "patrons' shoulders nearest, the dancer, the bar, the back wall furthest", "source": "thin ribbons of cigarette smoke rising from the patrons' cigarette holders and gathering under the ceiling"},
+      "physics": "real bodyweight — the heels strike and twist on the parquet, the knees swing with momentum, the beaded fringe has real weight and swings late and slaps back, the pearl strand swings in a wide arc, the headband feather bobs. Contact shadows on the floor. Nothing floats, nothing slides.",
+      "acting": "Pure joy — eyes sparkling, eyebrows jumping with the rhythm, a wide grin, head tossing; on the finish a full laugh with the eyes squeezed. The crowd laughing and cheering. Nobody looks into the lens.",
+      "audio": "NO BGM in the mix — the band is not audible. Only the crowd clapping in time to an unheard fast 200 BPM beat, heels drumming on parquet, beads clattering, laughter and cheering, glasses clinking at the bar.",
+      "nobgm": false,
+      "locks_chain": "the sequence runs in order — the Charleston, the fringe and pearls, the finish and laugh. One dress, one floor.",
+      "negative_extra": ["modern clothing", "phones", "band visible", "neon", "disco lights"]
+    }
+  ]
+}

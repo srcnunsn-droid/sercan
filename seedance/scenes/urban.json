@@ -1,0 +1,159 @@
+{
+  "category": "urban",
+  "scenes": [
+    {
+      "id": "rooftop_gap_jump",
+      "label_en": "Rooftop gap jump",
+      "label_tr": "Çatıdan çatıya boşluk atlayışı",
+      "hook_tr": "0. saniyede koşu, 4. saniyede 4 metrelik boşluk. İzleyici nefesini tutar, video tekrar izlenir.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["urban", "sports", "fighters", "scifi", "fantasy", "historical", "comedy", "creators"],
+          "this_scene": "sprinting across the roof toward the gap, clearing it, landing and rolling on the lower roof, rising breathing hard, focus sliding into a disbelieving grin."
+        }
+      },
+      "default_cast": {"A": "urb_01"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE GAP", "text": "a 4-metre open gap separates two flat concrete rooftops above a 30-metre drop into a dark alley. The far roof sits 1 metre LOWER than the near roof. The gap never narrows, never widens, never bridges. The jump always clears it — no fall, no stumble at the edge, no slip over the parapet, no wire, no mat."}
+      ],
+      "location_label": "two flat concrete rooftops at dusk with an alley gap",
+      "location": "two flat-topped six-storey concrete apartment blocks at blue-hour dusk, separated by a 4-metre alley gap, tar-paper roofs, rusted vent stacks, a cluster of satellite dishes, a parapet only 20cm high, a lit city skyline far behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the near roof fills the frame bottom, the gap runs left-to-right across the middle of the frame, the lower far roof sits beyond it. {A} runs AWAY from camera toward the gap in shots 1 and 2, crosses the gap screen-left to screen-right in shot 3, and lands facing camera in shot 4. The satellite dishes stand screen-RIGHT on the near roof. Depth planes: vent stacks and grit foreground, the runner and gap mid-ground, the skyline background thrown soft.",
+      "first_frame": "already at full sprint 12 metres from the edge, arms pumping, grit kicking up from the heels.",
+      "shots": [
+        {"dur": 2.0, "name": "low chase", "lens": "84° (22mm) classic wide", "lens_note": "low behind the heels, the sprint immersive", "beat": "{A} sprints at 25 km/h across the tar paper toward the edge, grit spitting from each footfall, the gap opening ahead."},
+        {"dur": 1.5, "name": "take-off profile", "lens": "47° (50mm) standard normal", "lens_note": "side-on at waist height, the take-off readable", "beat": "the last plant — the front foot hits the parapet, knee drives up, arms swing forward and {A} launches off the edge into open air."},
+        {"dur": 2.0, "name": "gap crossing from below", "lens": "107° (16mm) architectural ultra-wide", "lens_note": "from the alley floor looking straight up, the drop and both roofs in frame", "beat": "{A} crosses the 4-metre gap against the blue sky, silhouetted, legs cycling, jacket hem and loose straps lifting, the far roof coming up fast. Brief slow motion on the apex only."},
+        {"dur": 2.5, "name": "landing and grin", "lens": "63° (32mm) reportage wide", "lens_note": "handheld in front, the landing and the face together", "beat": "{A} lands on both feet on the lower roof, knees absorbing, rolls across the right shoulder and comes up to standing in one motion, chest heaving, then looks back over {A.pos} shoulder at the gap and a disbelieving grin breaks out."}
+      ],
+      "slowmo": {"what": "the apex of the jump", "start": 4.2, "end": 4.9},
+      "camera": {"register": "heavy", "extra": "In shot 1 the operator runs behind at full speed; in shot 3 the camera is planted on the alley floor and only tilts to follow."},
+      "light": "blue-hour dusk, the sky still bright cyan-blue above and the city below already lit. Soft top light from the sky, faces lit by the last warm glow on the western horizon from screen-left. The runner's silhouette reads hard against the sky in shot 3.",
+      "colour": "~70% cool blue-hour sky and grey concrete; ~20% warm sodium-orange from the city windows and street lights below; ~10% last warm peach from the western horizon on the face and hands.",
+      "atmosphere": {"mode": "air", "planes": "roof grit and vent stacks nearest, the runner and gap edge, the next rooftops softening, the skyline furthest and palest", "source": "grit and tar dust kicked up by each footfall and the landing roll, settling within a metre"},
+      "physics": "real full bodyweight — each footfall flattens the tar paper and sprays grit, the take-off foot flexes against the parapet, the body follows a true ballistic arc across the gap and falls with real gravity, knees fold on landing and the roll carries momentum through the shoulder, loose straps and hair lag behind the body and snap forward on landing, hard contact shadows on the roof. Nothing floats, nothing slides, no wire assist.",
+      "acting": "Eyes locked on the far edge through shots 1–3, jaw set, breath through the teeth. On the landing the brow releases, eyes widen, mouth opens on a laugh, forehead lifts. Never looks into the lens.",
+      "audio": "running footfalls on tar paper, grit scattering, heavy breathing, wind rush over the gap, the thud and scrape of the landing roll, a breathless laugh, distant city traffic below.",
+      "locks_chain": "the sequence runs in order — sprint to the edge, take-off from the parapet, cross the gap in silhouette, land and roll on the lower roof, look back and grin. The gap is always 4 metres, the far roof always lower.",
+      "negative_extra": ["falling into the gap", "bridge over the gap", "safety wire", "crash mat", "roof edges merging"]
+    },
+    {
+      "id": "skate_rail_night",
+      "label_en": "Night rail grind",
+      "label_tr": "Gece merdiven korkuluğunda kayma",
+      "hook_tr": "Sodyum ışık altında 12 basamaklık korkuluk; ilk denemede başarı ve çığlık. Kaykay kültürü bu tarz 'make' anlarını çok paylaşır.",
+      "platforms": ["TikTok", "Instagram Reels"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["urban", "sports", "comedy", "creators", "fashion"],
+          "this_scene": "rolling up fast, ollieing onto the rail, grinding down twelve stairs, landing clean and throwing both fists up with a raw shout."
+        }
+      },
+      "default_cast": {"A": "urb_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE BOARD STAYS ON THE RAIL", "text": "one skateboard — a worn maple deck with black grip tape and white wheels — stays under the feet from the ollie to the landing. The trucks lock onto the single round steel handrail and slide down its full length. The board never passes through the rail, never detaches mid-grind, never duplicates."}
+      ],
+      "location_label": "concrete stair set with a steel handrail under sodium light",
+      "location": "a public plaza at night, a twelve-step concrete stair set with a single round galvanized steel handrail down its centre, chipped wax marks on the rail, a flat concrete run-out at the bottom, a sodium street lamp above the top step, a closed shuttered shop behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the stair set descends screen-LEFT to screen-RIGHT, the rail running parallel to it. The street lamp sits above the top step, screen-LEFT. {A} approaches from the top, rides the rail down left-to-right, and rolls out screen-RIGHT on the flat. Depth planes: rail and stairs foreground, the skater mid-ground, the shuttered shop background.",
+      "first_frame": "already rolling fast along the top plaza, pushing twice, board clattering over the concrete joints.",
+      "shots": [
+        {"dur": 2.0, "name": "push-in follow", "lens": "63° (32mm) reportage wide", "lens_note": "follow-cam at knee height, the approach and the rail in frame", "beat": "{A} pushes hard twice and crouches, eyes on the top of the rail, the wheels drumming over expansion joints."},
+        {"dur": 3.0, "name": "grind from below", "lens": "84° (22mm) classic wide", "lens_note": "from the bottom of the stairs looking up the rail", "beat": "{A} snaps an ollie, the trucks bite the rail with a metallic screech and a puff of wax dust, and the board grinds all twelve stairs toward camera, arms out for balance, hoodie and hair whipping."},
+        {"dur": 2.0, "name": "landing and shout", "lens": "47° (50mm) standard normal", "lens_note": "handheld at chest height, the landing and the face", "beat": "{A} drops off the rail end, wheels slam the flat, knees absorb, the board rolls out screen-RIGHT, and {A.sub} throws both fists up and shouts at the sky, laughing."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator rides alongside on a second board in shot 1, standing planted for shot 2."},
+      "light": "a single sodium street lamp from above and screen-LEFT, hard and warm, faces half in shadow. A faint cool blue fill from the night sky. The rail catches one hard specular line of light.",
+      "colour": "~70% sodium amber on concrete, skin and fabric; ~20% deep blue-black night in the shadows and the shop shutters; ~10% cool steel white on the rail specular.",
+      "atmosphere": {"mode": "air", "planes": "the rail and the top steps nearest, the skater, the plaza floor, the shuttered shop softest", "source": null},
+      "physics": "real bodyweight — the tail snaps down and the deck pops up with a real flex, trucks bite and chatter along the rail with real friction, the body stays balanced over the board with small arm corrections, the landing compresses the knees deep and the wheels skid half a centimetre before rolling. Hoodie strings and hair lag and swing. Contact shadows under the board and feet. Nothing floats, nothing slides that should not.",
+      "acting": "Tongue caught between teeth on the approach, eyes narrowed, brow drawn. On the landing the brow flies up, mouth opens wide on the shout, eyes squeeze nearly shut with the laugh. Never looks into the lens.",
+      "audio": "urethane wheels drumming over concrete joints, the crack of the ollie pop, metal truck grind screech on the steel rail, the slap of the landing, a raw shout and laughter, the distant hum of the lamp.",
+      "locks_chain": "the sequence runs in order — approach and push, ollie onto the rail, grind all twelve stairs, land on the flat and shout. One board, one rail, one stair set.",
+      "negative_extra": ["two skateboards", "board clipping through rail", "sparks", "crowd", "helmet appearing"]
+    },
+    {
+      "id": "karakoy_street_walk",
+      "label_en": "Karaköy street-style walk",
+      "label_tr": "Karaköy'de sokak stili yürüyüşü",
+      "hook_tr": "Renkli merdivenler, kahve bardağı, rüzgar — moda/lifestyle kombin tanıtımı. Kaydetme oranı yüksek içerik.",
+      "platforms": ["Instagram Reels", "TikTok", "Pinterest"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["urban", "fashion", "creators", "turkiye", "comedy"],
+          "this_scene": "walking down a narrow Istanbul street with a paper coffee cup, turning back to glance over the shoulder with a small knowing smile, easy and confident."
+        }
+      },
+      "default_cast": {"A": "urb_03"},
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE STREET", "text": "a narrow steep cobbled Istanbul street, painted stone steps down one side, café tables with small tulip glasses of tea, strings of unlit bulbs overhead, a slice of the Bosphorus and a ferry visible at the far end. A handful of pedestrians pass at a distance in the background only, soft and unrecognisable, never approaching the lens, never crossing in front of the subject."}
+      ],
+      "location_label": "narrow cobbled Karaköy street toward the Bosphorus",
+      "location": "a steep cobbled street in Karaköy, Istanbul, weathered pastel facades, painted stone steps, café tables, a strip of the Bosphorus water at the far end. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} walks down the street TOWARD camera, centred, the Bosphorus strip behind {A.obj} at the far end of the street. Café tables line screen-LEFT, painted steps screen-RIGHT. Background pedestrians stay at least 15 metres behind. Depth planes: cobbles foreground, the subject mid-ground sharp, the café tables and facades soft, the water furthest.",
+      "first_frame": "already mid-stride walking toward camera, coffee cup in the RIGHT hand, a breeze moving the fabric.",
+      "shots": [
+        {"dur": 3.0, "name": "walking backwards lead", "lens": "47° (50mm) standard normal", "lens_note": "full body, walking backward in front of the subject", "beat": "{A} walks downhill toward camera in an easy confident stride, the cup in the RIGHT hand, the bomber swinging open, background pedestrians drifting slowly across the far end."},
+        {"dur": 2.0, "name": "detail insert", "lens": "12° (200mm) tele detail", "lens_note": "tight on the hand, cup and sleeve", "beat": "the RIGHT hand lifts the paper cup, steam curling from the lid opening, the gold ring catching a point of light, sleeve fabric creasing."},
+        {"dur": 3.0, "name": "over-the-shoulder turn", "lens": "29° (85mm) portrait compression", "lens_note": "from behind as the subject passes, then the turn back", "beat": "{A} walks past camera and away, then turns back over {A.pos} LEFT shoulder with a small knowing smile, one brow lifting, and keeps walking toward the water."}
+      ],
+      "camera": {"register": "gentle", "extra": "In shot 1 the operator walks backward downhill in step with the subject."},
+      "light": "late-afternoon sun low from screen-RIGHT, raking down the street and catching the edge of the face and the hijab fabric, the shadowed side of the street cool. Warm bounce off the pastel facades fills the face softly.",
+      "colour": "~70% warm pastel facade tones — faded apricot, dusty pink, cream; ~20% the sage and cream of the wardrobe held saturated; ~10% cool Bosphorus blue at the far end of the street.",
+      "atmosphere": {"mode": "air", "planes": "cobbles nearest, the subject, the café tables, the facades, the water and far shore palest", "source": "a thin curl of steam rising from the coffee lid opening and vanishing within 10cm"},
+      "physics": "real bodyweight walking downhill — heels land first on the uneven cobbles, the weight rolls forward, the bomber and trousers swing with each step and settle, the hijab fabric shifts gently in the breeze at the shoulder, the coffee in the cup moves with each step. Contact shadows on the cobbles. Nothing floats, nothing slides.",
+      "acting": "Relaxed confident face, soft eyes, a small private smile that grows on the turn back, the brow lifting playfully. Eyeline down the street and then back over the shoulder to a point beside the lens, never directly into the lens.",
+      "audio": "footsteps on cobblestones, fabric rustle, distant café chatter and tea glasses clinking, a ferry horn from the water, gulls far off.",
+      "locks_chain": "the sequence runs in order — confident walk toward camera, the cup detail, the pass and the look back over the LEFT shoulder. Same street, same cup, same direction of travel toward the water.",
+      "negative_extra": ["hair showing from under hijab", "pedestrians near the lens", "brand logo on cup", "tourists crowding"]
+    },
+    {
+      "id": "rooftop_dj_sunset",
+      "label_en": "Rooftop DJ drop",
+      "label_tr": "Gün batımında çatı DJ drop'u",
+      "hook_tr": "Drop anında kalabalığın zıplaması — müzik tanıtımı, etkinlik ve kulüp hesapları için.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "lubezki",
+      "roles": {
+        "A": {
+          "fit": ["urban", "creators", "fashion", "comedy"],
+          "this_scene": "behind the decks at sunset, holding the build with one hand raised, then slamming the drop and jumping with the crowd, grinning."
+        }
+      },
+      "default_cast": {"A": "urb_04"},
+      "extra_assets": [
+        {"label_en": "rooftop crowd wardrobe sheet", "asset": "the crowd — about thirty young adults in summer streetwear: linen shirts, tank tops, cargo shorts, slip dresses, sneakers, a few bucket hats. Permitted variation in colour and cut, all casual and summery, nobody in costume, nobody holding a phone up to camera."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE DROP", "text": "the whole sequence builds to one moment at 6.0s: the raised hand comes down on the mixer and everyone jumps at once. Before 6.0s the crowd sways and bounces in anticipation; after 6.0s every body is airborne or landing, arms up, each at their own height and timing, never moving as one."}
+      ],
+      "location_label": "city rooftop terrace at sunset with a DJ booth",
+      "location": "a city rooftop terrace at sunset, a black DJ booth with two decks and a mixer at the terrace edge, festoon bulbs strung overhead, a low glass balustrade, the city skyline and a hazy orange sun behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the DJ booth sits at the terrace edge with {A} behind it facing the crowd and camera, the sun and skyline BEHIND {A.obj}. The crowd fills the foreground and mid-ground between camera and booth, scattered at different depths, NOT in a row. Depth planes: backs of heads and raised hands foreground, {A} mid-ground sharp, the skyline and sun background.",
+      "first_frame": "already mid-build, the crowd swaying, one hand of {A} raised high above the decks.",
+      "shots": [
+        {"dur": 3.0, "name": "over the crowd", "lens": "63° (32mm) reportage wide", "lens_note": "from inside the crowd at head height looking at the booth", "beat": "{A} rides the build, one hand raised, head nodding hard, the crowd around the lens bouncing, bare raised arms swaying in the foreground."},
+        {"dur": 3.0, "name": "booth close", "lens": "29° (85mm) portrait compression", "lens_note": "tight on the face and the raised hand, sun flaring behind the head", "beat": "{A} grins, counts down with the fingers of the raised hand — three, two, one — eyes on the crowd, the sun burning a halo behind {A.pos} head."},
+        {"dur": 3.0, "name": "the drop", "lens": "84° (22mm) classic wide", "lens_note": "low from the front of the crowd, the booth and jumpers together", "beat": "the hand slams down on the mixer and {A} jumps, and the whole crowd leaps with {A.obj}, hair and shirts flying, arms up, landing and jumping again at their own random timing."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator is inside the crowd and gets jostled; on the drop the camera bounces with the jump."},
+      "light": "a low sun directly behind the booth, hard warm backlight rimming every head and shoulder, faces facing camera lit softly by bounce off the terrace floor and the festoon bulbs. The sun sits just above the skyline and never moves.",
+      "colour": "~70% deep sunset orange and gold from the sun and the lit haze; ~20% warm tungsten from the festoon bulbs on faces; ~10% dusky violet-blue in the upper sky and the shadows.",
+      "atmosphere": {"mode": "air", "planes": "raised hands and heads nearest, the booth and {A}, the balustrade, the skyline in sunset haze furthest", "source": null},
+      "physics": "real bodyweight — the crowd's jumps load and release through the knees, the terrace boards flex slightly on the landing, the DJ's hand hits the mixer with a firm press, headphones bounce on the neck, shirts and hair lift and drop with each jump, contact shadows under every foot. Nothing floats, nothing slides.",
+      "acting": "{A}: brows up and eyes wide through the build, mouth open on the count, a huge laugh on the drop. Crowd faces: eyes closed, mouths open shouting, arms reaching. Nobody looks into the lens.",
+      "audio": "NO BGM in the mix — the track is not audible. Only the crowd whooping and counting down together, the thud of feet landing on terrace boards, the click of the mixer, laughter, wind over the rooftop.",
+      "nobgm": false,
+      "locks_chain": "the sequence runs in order — the build with the hand raised, the finger countdown, the slam and the crowd jump. The sun stays behind the booth, the booth stays at the terrace edge.",
+      "negative_extra": ["phones held up at camera", "stage lights", "confetti", "crowd in a line", "identical dancers"]
+    }
+  ]
+}

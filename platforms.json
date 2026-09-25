@@ -24,12 +24,25 @@
       "add to cart",
       "favorite this item",
       "view variations"
+    ],
+    "YouTube Shorts": [
+      "subscribe for part 2",
+      "watch it again",
+      "comment your guess"
+    ],
+    "Instagram Reels": [
+      "tag someone who does this",
+      "save for later",
+      "share to your story"
     ]
   },
   "platform_of_sub": {
     "Instagram Post": "Instagram",
     "TikTok Video Cover": "TikTok",
     "YouTube Thumbnail": "YouTube",
-    "Ürün Reklamı (Product Ad)": "Instagram"
+    "Ürün Reklamı (Product Ad)": "Instagram",
+    "Seedance Sinematik Sahne (Seedance Cinematic Scene)": "YouTube Shorts",
+    "Viral Karakter Kısa Video (Viral Character Short)": "TikTok",
+    "Ürün Sinematik Reklam (Product Cinematic Ad)": "Instagram Reels"
   }
 }

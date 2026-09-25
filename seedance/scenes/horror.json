@@ -1,0 +1,95 @@
+{
+  "category": "horror",
+  "scenes": [
+    {
+      "id": "hospital_corridor_reveal",
+      "label_en": "Flickering corridor reveal",
+      "label_tr": "Titreşen hastane koridorunda beliren varlık",
+      "hook_tr": "Işık söner, yanar ve arkada biri var. Klasik ama en çok paylaşılan korku formatı; izleyiciler videoyu tekrar tekrar durdurur.",
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["horror", "comedy", "urban", "scifi"],
+          "this_scene": "walking alone down a hospital corridor at night checking a clipboard, stopping when the lights flicker, slowly turning around, and backing away in silent terror."
+        },
+        "B": {
+          "fit": ["horror"],
+          "only": ["hor_02", "hor_04"],
+          "this_scene": "appearing at the far end of the corridor in the darkness between flickers, closer each time the light returns, never seen moving."
+        }
+      },
+      "default_cast": {"A": "hor_01", "B": "hor_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE LIGHT CHANGE", "text": "the overhead fluorescent tubes flicker off to near-black and back on three times, at 4.0s, 6.0s and 8.0s. Each blackout lasts half a second, lit only by a dim green exit sign. Each time the light returns the figure at the far end is closer — 20 metres, then 12, then 6. The figure is never seen moving; it only appears closer after each blackout."},
+        {"title": "THE FIGURE STAYS AT THE FAR END", "text": "the figure stays in the corridor behind the nurse and never reaches the camera, never touches anyone. The scene ends on the nurse backing away with the figure 6 metres behind."}
+      ],
+      "location_label": "empty hospital corridor at night",
+      "location": "a long empty hospital corridor at night, pale green walls, a scuffed grey linoleum floor, a row of flickering fluorescent tubes, a folded wheelchair against the wall, closed doors with small windows, a green exit sign at the far end. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the corridor runs from the lens straight into depth. {A} walks AWAY from camera in shot 1, stops and turns to face camera in shots 2 and 3. {B} appears at the far end behind {A}, centre of the corridor. The wheelchair sits against the LEFT wall. Depth planes: linoleum foreground, {A} mid-ground, {B} and the exit sign background.",
+      "first_frame": "already walking down the corridor away from camera, footsteps squeaking, eyes on the clipboard.",
+      "shots": [
+        {"dur": 4.0, "name": "the walk", "lens": "47° (50mm) standard normal", "lens_note": "behind the nurse at shoulder height, the corridor stretching ahead", "beat": "{A} walks down the corridor away from camera reading the clipboard, the tubes buzzing, the corridor empty."},
+        {"dur": 4.0, "name": "the flicker", "lens": "63° (32mm) reportage wide", "lens_note": "in front of the nurse, the corridor behind in frame", "beat": "the lights flicker off and on at 4.0s — {A} stops dead; {B} stands at the far end behind, 20 metres away. {A} turns slowly around. The lights flicker again at 6.0s — {B} now 12 metres away."},
+        {"dur": 3.0, "name": "backing away", "lens": "29° (85mm) portrait compression", "lens_note": "the nurse's face, the corridor soft behind", "beat": "the lights flicker a third time at 8.0s and {B} stands 6 metres behind; {A} backs away step by step, clipboard trembling, a hand over the mouth, eyes locked on the figure."}
+      ],
+      "light_changes": true,
+      "camera": {"register": "gentle", "extra": "The camera breathes but never shakes; shot 3 slowly drifts backward with the nurse."},
+      "light": "cool overhead fluorescent tubes, flat and green-white, with the three hard half-second blackouts described above; during each blackout only the dim green exit sign lights the far end.",
+      "colour": "~70% sickly pale green walls and grey floor; ~20% cold white fluorescent; ~10% the green exit sign glow at the far end.",
+      "atmosphere": {"mode": "clean", "planes": "the near linoleum, the nurse, the middle corridor, the figure and exit sign at the far end", "source": null},
+      "physics": "real bodyweight — footsteps strike and squeak on linoleum, the body freezes mid-step and turns with weight, the backing steps are unsteady, the clipboard trembles in the hand; the figure is heavy and utterly still. Contact shadows on the floor. Nothing floats, nothing slides.",
+      "acting": "{A}: mild tiredness, then a sudden stop, eyes widening, the brow lifting and knotting, breath catching, lips trembling behind the hand, tears welling. {B}: utterly still. Nobody looks into the lens.",
+      "audio": "the buzz of fluorescent tubes, squeaking footsteps, the sharp electrical clack of each blackout, a caught breath, trembling breathing, a single faint click from the far end, total silence under it.",
+      "locks_chain": "the sequence runs in order — the walk, the first flicker with the figure at 20 metres, the turn, the second flicker at 12 metres, the third flicker at 6 metres and the backing away. The figure is never seen moving.",
+      "negative_extra": ["figure running", "figure attacking", "jump into lens", "gore", "blood", "extra patients"]
+    },
+    {
+      "id": "ghost_hunter_pov",
+      "label_en": "Ghost-hunter selfie cam",
+      "label_tr": "Terk edilmiş otelde paranormal vlogger",
+      "hook_tr": "Vlogger kameraya fısıldar, arkadaki koridorda maske belirir. İzleyiciler 'arkana bak!' yorumu yapar.",
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["horror", "comedy", "urban", "creators"],
+          "this_scene": "filming a selfie video on a small handheld camcorder in an abandoned hotel hallway, an elastic head torch strapped over the hair, whispering to the camera, hearing something, turning, and slowly turning back with fear."
+        },
+        "B": {
+          "fit": ["horror"],
+          "only": ["hor_04", "hor_02"],
+          "this_scene": "standing motionless at the far end of the hallway behind the vlogger, visible only in the edge of the torch beam, gone the next moment."
+        }
+      },
+      "default_cast": {"A": "hor_03", "B": "hor_04"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE FIGURE BEHIND", "text": "the figure appears ONLY from 3.0s to 6.0s, standing motionless at the far end of the hallway 15 metres behind the vlogger, lit only by the edge of the head torch beam. The vlogger does not see it. At 6.0s, when the vlogger turns back, the hallway behind is empty."}
+      ],
+      "location_label": "abandoned hotel hallway at night",
+      "location": "a long abandoned hotel hallway at night, peeling floral wallpaper, a rotting patterned carpet, numbered doors hanging open with plain brass number plates, a broken chandelier, total darkness except for the head torch. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} holds the camcorder at arm's length facing {A.ref}, the hallway stretching behind {A.obj} over the shoulder into depth. {B} appears at the far end of the hallway behind, centre-frame. Depth planes: {A}'s face foreground, the hallway mid-ground, the far end background.",
+      "first_frame": "already whispering into the camcorder at arm's length, the head torch beam swinging behind.",
+      "shots": [
+        {"dur": 10.0, "name": "selfie-cam oner", "lens": "84° (22mm) classic wide", "lens_note": "the camcorder at arm's length, the face close and the hallway behind",
+         "beats": [
+           {"dur": 3.0, "text": "{A} whispers to the camcorder, 'Okay. This is the fourth floor. Nobody's been up here since...' — eyes flicking around, breath fast, the torch beam lighting the wallpaper behind."},
+           {"dur": 3.0, "text": "{A} keeps whispering, unaware; behind, at the far end of the hallway, {B} stands motionless at the edge of the torch beam. A distant creak — {A} freezes, and slowly turns the head to look back over the shoulder, the beam swinging away from the far end."},
+           {"dur": 4.0, "text": "{A} turns slowly back to the camcorder — the hallway behind now empty — face pale, breathing ragged, whispering 'Did you hear that?', eyes wet with fear, glancing over the shoulder again."}
+         ]}
+      ],
+      "camera": {"register": "heavy", "extra": "The camcorder is handheld by the subject at arm's length, shaking with the nervous grip, the framing drifting as the arm tires."},
+      "light": "the head torch is the only light — a cool white hard beam from the forehead swinging with every head movement, lighting the face from bounce off the camcorder hand, the hallway beyond falling off into total black.",
+      "light_changes": true,
+      "colour": "~70% near-black darkness; ~20% cool white torch-lit wallpaper and skin; ~10% faded rose and mustard of the rotting wallpaper and carpet.",
+      "atmosphere": {"mode": "air", "planes": "the vlogger's face nearest, the near hallway, the far end in darkness", "source": "old dust floating through the torch beam, disturbed by the vlogger's movement"},
+      "physics": "real bodyweight — the arm holding the camcorder tires and sags, the torch beam swings with the head, the carpet creaks under shifting feet, the breath fogs faintly in the cold. The figure is completely still, no breath. Nothing floats, nothing slides.",
+      "acting": "{A}: nervous excitement sliding into fear — brows high and knotted, eyes darting, lips dry and trembling on the whisper, the swallow visible; looking into the camcorder lens as a vlogger does, then over the shoulder. {B}: motionless.",
+      "audio": "fast whispering close to the camcorder mic: 'Okay. This is the fourth floor. Nobody's been up here since...' and later 'Did you hear that?', ragged breathing, carpet creaks, one distant wooden creak, a faint drip, near silence.",
+      "locks_chain": "the sequence runs in order — whispering to the camcorder, the figure appears behind at the far end, the creak, the turn, the turn back to an empty hallway, the whispered question. The figure is visible only from 3.0s to 6.0s.",
+      "negative_extra": ["figure moving", "figure approaching", "camera recording UI", "REC text", "battery icon", "night vision green"]
+    }
+  ]
+}

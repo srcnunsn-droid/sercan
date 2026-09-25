@@ -1,0 +1,369 @@
+{
+  "category": "fantasy",
+  "scenes": [
+    {
+      "id": "elf_forest_arrow",
+      "label_en": "Forest arrow shot",
+      "label_tr": "Sisli ormanda ok atışı",
+      "hook_tr": "Yay gerilir, ok sisi yarar, kuşlar havalanır. Fantastik film fragmanı hissi verir.",
+      "platforms": [
+        "YouTube Shorts",
+        "TikTok",
+        "Instagram Reels"
+      ],
+      "style": "lubezki",
+      "roles": {
+        "A": {
+          "fit": [
+            "fantasy",
+            "historical",
+            "fighters"
+          ],
+          "this_scene": "stepping out from behind an ancient tree in a foggy forest, drawing the longbow to full, holding one breath, releasing, and watching the arrow's flight."
+        }
+      },
+      "default_cast": {
+        "A": "fan_01"
+      },
+      "critical": [
+        {
+          "lib": "nobody_else"
+        },
+        {
+          "title": "THE BOW AND ARROW",
+          "text": "one longbow and one grey-fletched arrow. The string draws back to the corner of the mouth with the bow limbs visibly bending, and on release the arrow leaves the string and flies straight away from camera into the fog. The arrow never glows, never trails light, never duplicates."
+        }
+      ],
+      "location_label": "ancient foggy forest at dawn",
+      "location": "an ancient forest at dawn, huge moss-covered trunks, a carpet of ferns and fallen leaves, low cold fog between the trees, pale light filtering from above. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} steps out from behind a huge trunk on screen-LEFT and draws facing screen-RIGHT, into depth. The arrow flies AWAY from camera into the fog. Depth planes: ferns and bark foreground, {A} mid-ground, the trees fading into fog background.",
+      "first_frame": "already stepping out from behind the trunk, an arrow nocked, eyes on the fog.",
+      "shots": [
+        {
+          "dur": 3.0,
+          "name": "the draw",
+          "lens": "47° (50mm) standard normal",
+          "lens_note": "waist-up profile from the side",
+          "beat": "{A} raises the bow and draws the string to the corner of the mouth, the limbs bending, hair swinging back over the shoulder, the fog drifting behind."
+        },
+        {
+          "dur": 2.0,
+          "name": "held breath",
+          "lens": "18° (120mm) portrait tight",
+          "lens_note": "the eye, the fletching and the string at the cheek",
+          "beat": "one eye narrows along the arrow shaft, the breath held, the fletching trembling against the cheek, a bead of dew falling off the bow tip."
+        },
+        {
+          "dur": 3.0,
+          "name": "release",
+          "lens": "84° (22mm) classic wide",
+          "lens_note": "behind the shoulder, the arrow's flight into the forest",
+          "beat": "{A} releases — the string snaps forward, the arrow streaks away into the fog, and a flock of dark birds bursts from the canopy above; {A} lowers the bow slowly, watching."
+        }
+      ],
+      "camera": {
+        "register": "gentle",
+        "extra": "In shot 3 the camera holds behind the shoulder and does not follow the arrow."
+      },
+      "light": "cool dawn light filtering down through the canopy from above and screen-RIGHT, soft on the face, pale in the fog, the hair and the moss glowing where light touches them.",
+      "colour": "~70% deep moss green and cool fog grey; ~20% warm tones of hair, skin and leather; ~10% pale silver dawn light.",
+      "atmosphere": {
+        "mode": "fog",
+        "planes": "ferns and bark nearest, the archer, the nearer trunks, the far trees vanishing in fog",
+        "source": null
+      },
+      "physics": "real draw weight — the bow limbs bend deep and store tension, the string presses into the fingers and the cheek, the release snaps the limbs forward and the bow jumps in the hand, hair and cloth swing with the movement, the birds lift with real wing weight. Contact shadow at the feet. Nothing floats, nothing slides.",
+      "acting": "Stillness and focus — one eye narrowing, the brow calm and level, the breath held, lips closed; after the release the eyes soften slightly. Never looks into the lens.",
+      "audio": "the creak of the bow limbs under tension, a held breath, the snap of the string, the arrow's whistle fading, an explosion of wingbeats from the canopy, dripping dew, a distant stream.",
+      "locks_chain": "the sequence runs in order — step out and draw, the held breath, the release and the birds. One bow, one arrow, flying away into the fog.",
+      "negative_extra": [
+        "glowing arrow",
+        "magic trails",
+        "multiple arrows",
+        "arrow toward camera",
+        "elves in crowd"
+      ]
+    },
+    {
+      "id": "sorceress_sand",
+      "label_en": "Sandstorm from the palm",
+      "label_tr": "Avuçtan yükselen kum fırtınası",
+      "hook_tr": "Kum avuçtan yükselir ve çölü yutan bir fırtınaya dönüşür. Büyü efekti tamamen fiziksel görünür.",
+      "platforms": [
+        "TikTok",
+        "Instagram Reels",
+        "YouTube Shorts"
+      ],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": [
+            "fantasy",
+            "historical",
+            "scifi"
+          ],
+          "this_scene": "kneeling on a dune crest, scooping sand into both palms, rising and opening the hands so the sand lifts upward and grows into a towering spiralling storm behind."
+        }
+      },
+      "default_cast": {
+        "A": "fan_02"
+      },
+      "critical": [
+        {
+          "lib": "nobody_else"
+        },
+        {
+          "title": "THE SAND RISES",
+          "text": "the sand leaves the open palms and rises upward against gravity in a thin stream, joins the wind, and grows into a towering column of spiralling sand behind the sorceress, 100 metres tall, turning slowly. It is made only of sand and dust — no glow, no sparks, no light, no magic particles, no colour other than sand."
+        }
+      ],
+      "location_label": "high desert dunes at sunset",
+      "location": "high desert dunes at sunset, a sharp dune crest, smooth wind-rippled slopes, a flat hazy horizon, a deep orange sun low in the sky. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} kneels on the dune crest centre-frame facing camera, the sun low BEHIND {A.obj} screen-LEFT. The sand column grows behind {A.obj}, screen-RIGHT. Depth planes: rippled sand foreground, {A} mid-ground, the rising column and horizon background.",
+      "first_frame": "already kneeling, both hands pushing into the sand of the crest.",
+      "shots": [
+        {
+          "dur": 3.0,
+          "name": "the scoop",
+          "lens": "29° (85mm) portrait compression",
+          "lens_note": "on the hands and the face",
+          "beat": "{A} scoops red-gold sand into both cupped palms and rises slowly to standing, the sand spilling through the fingers, the clothes stirring."
+        },
+        {
+          "dur": 3.0,
+          "name": "the palms open",
+          "lens": "12° (200mm) tele detail",
+          "lens_note": "tight on the opening palms",
+          "beat": "the palms open flat and the sand lifts off them upward in a thin rising stream, grains tumbling up past the fingertips."
+        },
+        {
+          "dur": 4.0,
+          "name": "the storm",
+          "lens": "84° (22mm) classic wide",
+          "lens_note": "low and wide, the figure and the towering column",
+          "beat": "{A} stands with the arms spread, clothes whipping, as the sand column rises behind into a towering slow spiral that swallows the sun, the light dimming and turning deep orange."
+        }
+      ],
+      "camera": {
+        "register": "gentle",
+        "extra": "In shot 3 the camera slowly tilts up with the rising column."
+      },
+      "light": "a low deep-orange sun from behind screen-LEFT, a hard rim on the head and shoulders, the face lit by warm bounce from the sand; in shot 3 the column swallows the sun and the light dims to a deep orange glow.",
+      "light_changes": true,
+      "colour": "~70% warm sand gold and orange sky; ~20% the deep tones of the wardrobe; ~10% bright metallic glints of jewellery and trim.",
+      "atmosphere": {
+        "mode": "air",
+        "planes": "wind-rippled sand nearest, the figure, the rising column, the horizon furthest in haze",
+        "source": "the sand rising from the palms and the towering spiralling column behind, and sand streaming off the dune crest in the wind"
+      },
+      "physics": "real sand grains — they pour and trickle through the fingers with weight, then lift upward in a thin stream against gravity as the only impossible element, the column turns with real mass and throws sand outward at its base, the clothes whip in the rising wind, loose cloth streams. Contact shadow on the sand. The figure never floats.",
+      "acting": "Calm command — eyes half-closed, the brow smooth and composed, lips parted in a slow exhale as the sand rises; in shot 3 the eyes open fully, fierce and steady. Never looks into the lens.",
+      "audio": "the trickle of sand through fingers, the rising hiss of wind, a deep growing roar of the sandstorm, cloth cracking in the wind, a low slow exhale.",
+      "locks_chain": "the sequence runs in order — scoop the sand, open the palms and the sand rises, the towering storm behind. The column is only sand.",
+      "negative_extra": [
+        "glowing sand",
+        "sparkles",
+        "magic particles",
+        "fire",
+        "lightning"
+      ]
+    },
+    {
+      "id": "viking_snow_roar",
+      "label_en": "Shield-wall war cry in snow",
+      "label_tr": "Karda kalkan duvarı ve savaş çığlığı",
+      "hook_tr": "Nefes buharı, kalkan vuruşu, savaş çığlığı. Güçlü kadın karakter ve tarih-fantastik kitlesi için.",
+      "platforms": [
+        "YouTube Shorts",
+        "TikTok",
+        "Instagram Reels"
+      ],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": [
+            "fantasy",
+            "historical",
+            "fighters"
+          ],
+          "this_scene": "standing at the front of a shield wall in falling snow, beating the axe on the shield rim three times, then throwing the head back in a war cry and charging forward."
+        }
+      },
+      "default_cast": {
+        "A": "fan_03"
+      },
+      "extra_assets": [
+        {
+          "label_en": "shield-wall warriors wardrobe sheet",
+          "asset": "the shield wall — a dozen warriors behind in dark wool, fur and chainmail, round painted wooden shields in muted red, black and ochre, axes and spears, snow on their shoulders. Permitted variation in beards, braids and helmets, all weathered and real."
+        }
+      ],
+      "critical": [
+        {
+          "lib": "everyone_live"
+        },
+        {
+          "title": "THE BREATH IN THE COLD",
+          "text": "it is well below freezing. Visible breath condenses from every mouth and nose on every exhale, and the war cry sends out a thick cloud of breath. Snow falls steadily and settles on hair, fur and shields."
+        }
+      ],
+      "location_label": "snowy fjord shore battlefield",
+      "location": "a snowy battlefield on a fjord shore at grey noon, trampled snow, dark pine forest behind, a steel-grey fjord and misty mountains. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands at the front centre of the shield wall facing camera, the other warriors in a staggered wall behind, at different depths, NOT in a perfect line. The fjord lies behind screen-LEFT, the forest screen-RIGHT. Depth planes: falling snow foreground, {A} mid-ground, the shield wall and fjord background.",
+      "first_frame": "already standing braced at the front, snow falling, the axe raised to strike the shield rim.",
+      "shots": [
+        {
+          "dur": 3.0,
+          "name": "shield beats",
+          "lens": "47° (50mm) standard normal",
+          "lens_note": "waist-up from the front, the wall behind",
+          "beat": "{A} beats the axe on the shield rim three times, the whole wall answering each beat, snow jumping off the shields, breath clouds pumping."
+        },
+        {
+          "dur": 3.0,
+          "name": "war cry",
+          "lens": "29° (85mm) portrait compression",
+          "lens_note": "the face and shoulders",
+          "beat": "{A} throws the head back and screams a war cry, a thick cloud of breath exploding into the cold, the tendons of the neck standing out, snow on the lashes."
+        },
+        {
+          "dur": 3.0,
+          "name": "the charge",
+          "lens": "84° (22mm) classic wide",
+          "lens_note": "low, the wall charging at the lens",
+          "beat": "{A} charges forward and the wall follows, shields up, snow kicking up from every stride, the line breaking into a ragged running mass."
+        }
+      ],
+      "camera": {
+        "register": "violent",
+        "extra": "In shot 3 the operator backs away from the charge and is nearly overrun."
+      },
+      "light": "flat grey overcast noon, soft and cold from above, no hard shadows, the snow bright, faces lit evenly and cool.",
+      "colour": "~70% cold white snow and steel-grey sky and fjord; ~20% dark wool, fur and pine; ~10% muted red and ochre shield paint.",
+      "atmosphere": {
+        "mode": "air",
+        "planes": "falling snowflakes nearest, the shieldmaiden, the shield wall, the fjord and mountains in mist furthest",
+        "source": "breath condensing from every mouth and nose, and snow kicked up by the charge"
+      },
+      "physics": "real mass — the axe strikes the shield rim and the shield jolts on the arm, snow jumps off with each blow, the charging bodies sink into snow and churn it up, chainmail swings and clinks with momentum, fur mantles bounce, hair swings heavily. Nothing floats, nothing slides.",
+      "acting": "Ferocity — eyes wide and blazing, brow crushed down, teeth bared on the beats; on the war cry the forehead strains and the mouth opens fully. The wall faces fierce, each different. Nobody looks into the lens.",
+      "audio": "three hard wooden cracks of axes on shields answered by the wall, heavy breathing, the war cry, a roar from the whole wall, chainmail clinking, boots crunching in snow, wind off the fjord.",
+      "locks_chain": "the sequence runs in order — three shield beats, the war cry, the charge. Snow falls throughout.",
+      "negative_extra": [
+        "horned helmets",
+        "modern clothing",
+        "blood",
+        "clean snow without footprints"
+      ]
+    },
+    {
+      "id": "ronin_duel_wheat",
+      "label_en": "Duel in the wheat field",
+      "label_tr": "Buğday tarlasında düello",
+      "hook_tr": "Rüzgarda dalgalanan buğday, uzun bekleyiş, tek darbe. Gerilim ve estetik birleşir, sonu merak ettirir.",
+      "platforms": [
+        "YouTube Shorts",
+        "TikTok",
+        "Instagram Reels"
+      ],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": [
+            "historical",
+            "fighters",
+            "fantasy"
+          ],
+          "this_scene": "facing the opponent across the wheat, hand resting on the sword hilt, waiting in stillness, then drawing and cutting in one motion as they pass each other.",
+          "only": [
+            "his_02",
+            "his_01",
+            "fgt_03",
+            "fan_03"
+          ]
+        },
+        "B": {
+          "fit": [
+            "fantasy",
+            "historical",
+            "fighters",
+            "horror"
+          ],
+          "this_scene": "facing the swordsman across the wheat, the long greatsword held low, then charging and swinging as they pass, and staggering to one knee after the cross.",
+          "only": [
+            "fan_04",
+            "hor_04",
+            "his_03"
+          ]
+        }
+      },
+      "default_cast": {
+        "A": "his_02",
+        "B": "fan_04"
+      },
+      "critical": [
+        {
+          "lib": "nobody_else"
+        },
+        {
+          "title": "TWO DISTINCT DESIGNS",
+          "text": "the two fighters never merge, never swap wardrobe, never swap weapons. One is {A} with the lighter sword; the other is {B} with the long greatsword. They stay on opposite sides of the frame until they pass."
+        },
+        {
+          "title": "THE PASS",
+          "text": "at 7.5s both charge, cross each other in the centre of frame with one flash of steel, and end with their backs to each other 5 metres apart. {A} stays standing; {B} drops to one knee. No blood spray, no dismemberment."
+        }
+      ],
+      "location_label": "golden wheat field under a stormy sky",
+      "location": "a vast golden wheat field at waist height under a dark stormy sky, the wheat rolling in waves in a strong wind, a lone dead tree on the horizon. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands on the LEFT of frame facing screen-RIGHT; {B} stands on the RIGHT of frame facing screen-LEFT, 20 metres apart. The lone tree sits on the horizon between them. After the pass, {A} is on the RIGHT and {B} on the LEFT, backs to each other. Depth planes: wheat heads foreground, both fighters mid-ground, the horizon and storm background.",
+      "first_frame": "already facing each other across the wheat, the wind bending the stalks between them.",
+      "shots": [
+        {
+          "dur": 4.0,
+          "name": "the standoff",
+          "lens": "18° (120mm) portrait tight",
+          "lens_note": "long lens from the side, both fighters compressed with the wheat rolling between",
+          "beat": "{A} and {B} stand motionless facing each other, the wheat rolling in waves, {A} with the hand resting on the hilt, {B} with the greatsword low, hair and cloth whipping."
+        },
+        {
+          "dur": 3.5,
+          "name": "eyes",
+          "lens": "12° (200mm) tele detail",
+          "lens_note": "tight on the eyes of the swordsman",
+          "beat": "{A.pos} eyes narrow, a strand of hair across them, the thumb pushing the sword guard a centimetre out of the scabbard with a small click."
+        },
+        {
+          "dur": 4.5,
+          "name": "the pass",
+          "lens": "84° (22mm) classic wide",
+          "lens_note": "low in the wheat, both fighters and the pass",
+          "beat": "both charge through the wheat and cross in the centre in one flash of steel, ending 5 metres apart with backs turned; a beat of silence; then {B} drops to one knee as {A} slowly sheathes the sword."
+        }
+      ],
+      "camera": {
+        "register": "locked",
+        "extra": "Every shot tripod-weighted; the stillness is the tension."
+      },
+      "light": "dark storm light, a break in the clouds throwing a single shaft of low sun from screen-LEFT across the wheat and the fighters, the rest of the field in shadow.",
+      "colour": "~70% golden wheat in low sun; ~20% dark slate storm sky; ~10% the dark accents of both fighters' wardrobe.",
+      "atmosphere": {
+        "mode": "air",
+        "planes": "wheat heads nearest, the fighters, the rolling field, the lone tree and storm sky furthest",
+        "source": "chaff and wheat seeds torn off the stalks by the wind and by the charge"
+      },
+      "physics": "real mass — the wheat bends and whips back as the bodies charge through it, the greatsword's weight slows the heavy charge, the greatsword swing carries momentum and follow-through, the lighter sword's cut is fast and light, the kneel drops the heavy body with a thud, cloth and hair whip in the wind. Nothing floats, nothing teleports.",
+      "acting": "{A}: utter calm, eyes narrowing, no emotion, a slow exhale after the pass. {B}: a low snarl, brow crushed, a shudder before the kneel. Neither looks into the lens.",
+      "audio": "wind roaring through the wheat, distant thunder, the small click of the sword guard, running feet through wheat, one sharp ring of steel, silence, then the heavy thud of a knee hitting the ground.",
+      "locks_chain": "the sequence runs in order — the standoff, the eyes and the click, the charge and the pass, the kneel and the sheathing. The two designs never merge. Positions swap only through the pass.",
+      "negative_extra": [
+        "blood spray",
+        "decapitation",
+        "fighters merging",
+        "swapped weapons",
+        "extra fighters"
+      ],
+      "extra_assets": []
+    }
+  ]
+}

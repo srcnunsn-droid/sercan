@@ -1,0 +1,163 @@
+{
+  "category": "scifi",
+  "scenes": [
+    {
+      "id": "cyber_courier_alley",
+      "label_en": "Neon alley courier run",
+      "label_tr": "Neon ara sokakta siborg kurye kaçışı",
+      "hook_tr": "Yağmur, neon, buhar ve metal kol. Cyberpunk estetiği 'edit' ve oyun kitlesinde çok tutulur.",
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "style": "neon_noir",
+      "roles": {
+        "A": {
+          "fit": ["scifi", "urban", "fighters", "sports"],
+          "this_scene": "sprinting through a rain-soaked neon alley with a sealed package under one arm, vaulting a stack of crates, then skidding to a stop and glancing back over the shoulder."
+        }
+      },
+      "default_cast": {"A": "sci_01"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE SIGNS ARE UNREADABLE", "text": "the alley is lit by neon tube signs in magenta, cyan and amber that are abstract glowing shapes — arrows, rings, bars, zigzags — with no letters, no words, no characters of any language on them. Wet ground reflects them as long coloured smears."}
+      ],
+      "location_label": "rain-soaked neon alley at night",
+      "location": "a narrow rain-soaked alley at night between tall concrete buildings, abstract neon tube signs on both walls, tangled cables overhead, steam venting from a street grate, stacked plastic crates, puddles reflecting neon. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the alley runs from the lens straight into depth. {A} runs TOWARD camera in shots 1 and 2 and stops centre-frame in shot 3. The steaming grate sits screen-LEFT mid-alley, the crates screen-RIGHT. Magenta signs line the LEFT wall, cyan the RIGHT wall. Depth planes: rain and puddles foreground, {A} mid-ground, the far end of the alley background in neon haze.",
+      "first_frame": "already at full sprint down the alley, splashing through a puddle, package clamped under the arm.",
+      "shots": [
+        {"dur": 3.0, "name": "sprint at camera", "lens": "63° (32mm) reportage wide", "lens_note": "running backward in front, full body", "beat": "{A} sprints straight at the lens through the rain, puddles exploding under each boot, the raincoat flapping, neon smearing across the wet walls."},
+        {"dur": 2.0, "name": "crate vault", "lens": "84° (22mm) classic wide", "lens_note": "low beside the crates", "beat": "{A} plants the LEFT hand on the top crate and vaults it sideways, legs swinging over, water spraying off the coat, landing in a puddle."},
+        {"dur": 3.0, "name": "skid and glance", "lens": "29° (85mm) portrait compression", "lens_note": "chest-up, neon bokeh behind", "beat": "{A} skids to a stop, breathing hard, rain running down the face, and glances back over the RIGHT shoulder down the alley, eyes narrowing."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator runs backward in shot 1, splashed by the puddles."},
+      "light": "practical neon only — magenta from the LEFT wall, cyan from the RIGHT wall, a warm amber sign at the far end, the face split between magenta and cyan, the rain lit in coloured streaks.",
+      "colour": "~70% deep blue-black shadow and wet concrete; ~20% magenta and cyan neon on skin, rain and puddles; ~10% warm amber from the far sign and the chrome forearm reflections.",
+      "atmosphere": {"mode": "air", "planes": "rain streaks nearest, the runner, the steam column, the far end of the alley in neon bloom furthest", "source": "steam venting from the street grate screen-LEFT, rising in one column and bending in the draught"},
+      "physics": "real bodyweight on wet ground — boots hit puddles and throw crowns of spray, the raincoat is heavy and wet and swings late, the vault loads the planted arm, the landing splashes, the skid slides 30cm on wet concrete with real friction, hair plastered and dripping. Contact reflections in the puddles. Nothing floats.",
+      "acting": "Hunted and focused — eyes wide and scanning, brow tight, lips parted with breath; on the glance back the eyes narrow and the jaw sets. Never looks into the lens.",
+      "audio": "heavy rain drumming on metal and concrete, boots splashing, the hiss of the steam vent, a buzzing neon tube, hard breathing, the scrape of the crates, a distant siren.",
+      "locks_chain": "the sequence runs in order — sprint at the lens, vault the crates, skid and glance back. The package stays under the arm throughout. Magenta LEFT wall, cyan RIGHT wall.",
+      "negative_extra": ["readable neon text", "Chinese characters on signs", "Japanese characters on signs", "flying cars", "drones", "holograms"]
+    },
+    {
+      "id": "mech_stomp_city",
+      "label_en": "Mech stomp in the city",
+      "label_tr": "Şehirde dev mech adımı ve pilot",
+      "hook_tr": "Kokpitte pilotun yüzü, dışarıda 40 tonluk adım. Ölçek karşıtlığı fragman hissi verir.",
+      "platforms": ["YouTube Shorts", "TikTok", "Instagram Reels"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "needs": "creature",
+          "fit": ["creatures"],
+          "only": ["cre_02"],
+          "this_scene": "striding down a flooded city avenue at dawn, planting one foot in a crater of water, then turning its head and raising a massive arm."
+        },
+        "B": {
+          "fit": ["scifi", "fighters", "urban", "sports", "historical"],
+          "this_scene": "strapped inside the cockpit, gripping the twin control sticks, jolting with every step, eyes fixed forward, whispering a short radio call."
+        }
+      },
+      "default_cast": {"A": "cre_02", "B": "sci_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE SCALE", "text": "the mech is 12 metres tall — its head reaches the fourth floor of the buildings, a parked car reaches only its ankle. Inside the cockpit the pilot is a normal-sized human. The scale never shrinks, the buildings never shrink."}
+      ],
+      "location_label": "flooded abandoned city avenue at dawn",
+      "location": "a wide abandoned city avenue at dawn, six-storey concrete buildings with broken windows, shallow floodwater covering the asphalt, abandoned rusted cars, fallen traffic poles. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the avenue runs from the lens into depth. {A} strides TOWARD camera down the centre of the avenue. The rusted cars sit at the LEFT kerb. In the cockpit shot {B} sits centre-frame facing the lens. Depth planes: floodwater and debris foreground, {A} mid-ground, the far avenue and dawn sky background.",
+      "first_frame": "already mid-stride, one massive foot lifting out of the floodwater, water pouring off it.",
+      "shots": [
+        {"dur": 3.0, "name": "street-level stride", "lens": "107° (16mm) architectural ultra-wide", "lens_note": "at water level on the avenue, looking up", "beat": "{A} strides toward camera, one foot lifting and plunging into the floodwater, a wall of water exploding up, the rusted cars rocking in the wave."},
+        {"dur": 3.0, "name": "cockpit", "lens": "47° (50mm) standard normal", "lens_note": "inside the cockpit facing the pilot", "beat": "{B} jolts in the harness with the footfall, gripping the sticks, sweat on the lip, eyes fixed forward, and says into the throat mic: 'Contact. Moving in.'"},
+        {"dur": 3.0, "name": "head turn and arm raise", "lens": "84° (22mm) classic wide", "lens_note": "low from the flooded street, the mech against the dawn", "beat": "{A} stops, water streaming off its armour, turns its head so the red optic slit sweeps across the street, and raises a massive arm, hydraulics hissing."},
+        {"dur": 3.0, "name": "the foot", "lens": "29° (85mm) portrait compression", "lens_note": "on the planted foot and the rusted car beside it", "beat": "the huge planted foot shifts its weight, the asphalt under the water cracking, a rusted car beside it lifting on one side and dropping back with a crash, ripples spreading out."}
+      ],
+      "camera": {"register": "heavy", "extra": "Every footfall shakes the camera; in the cockpit the camera is hard-mounted to the seat frame and jolts with the pilot."},
+      "light": "cold dawn from behind the mech, screen-RIGHT, a pale gold rim along the armour edges, the front of the mech in cool blue shadow; inside the cockpit, the pilot's face lit by dim amber instrument glow and cold daylight through the canopy.",
+      "colour": "~70% cool blue-grey concrete, water and steel; ~20% pale gold dawn rim; ~10% the red optic slit and the orange hazard striping.",
+      "atmosphere": {"mode": "air", "planes": "floodwater spray nearest, the mech, the far buildings, the dawn sky furthest", "source": "water spray exploding from each footfall and streaming off the armour, and hydraulic vapour hissing from the elbow and knee joints"},
+      "physics": "real forty-ton mass — each footfall displaces a wall of water and cracks the asphalt, the armour plates shudder, hydraulic pistons compress and extend with lag, water pours off in sheets, parked cars rock in the wave; inside the cockpit the pilot's head, shoulders and harness jolt on every step. Nothing floats, nothing teleports.",
+      "acting": "The pilot: jaw clenched, eyes locked forward, a small wince on each footfall, brow drawn; the line spoken low and steady. The mech: slow deliberate head movement with mechanical weight, the optic never blinking.",
+      "audio": "thunderous footfalls and water explosions, servo whine and hydraulic hiss, metal groaning, the crash of the lifted car, inside the cockpit the rattle of the frame, harness creak and the pilot's radio-clipped line 'Contact. Moving in.'",
+      "locks_chain": "the sequence runs in order — the stride through the flood, the pilot in the cockpit, the head turn and arm raise, the planted foot cracking the street. One mech, one pilot, the scale constant.",
+      "negative_extra": ["small mech", "toy scale", "multiple mechs", "explosions", "missiles", "glowing weapons"]
+    },
+    {
+      "id": "astronaut_dunes",
+      "label_en": "Astronaut on red dunes",
+      "label_tr": "Kızıl kumullarda astronot",
+      "hook_tr": "Kask yansımasında dev güneş, kırmızı çöl, yalnızlık. Bilim kurgu ve keşif kitlesi için epik tek an.",
+      "platforms": ["YouTube Shorts", "Instagram Reels", "TikTok"],
+      "style": "lubezki",
+      "roles": {
+        "A": {
+          "fit": ["scifi"],
+          "only": ["sci_03"],
+          "this_scene": "climbing the crest of a red dune in low gravity, stopping at the top, lowering the gold visor and looking out over an endless alien valley."
+        }
+      },
+      "default_cast": {"A": "sci_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "LOW GRAVITY", "text": "gravity is about one third of Earth's. Each step lifts slightly longer, the dust kicked up rises and falls in slow wide arcs, the suit moves heavily. It is real-time — the low gravity shows in the arcs of the dust and the stride, NOT as slow motion."}
+      ],
+      "location_label": "red desert dunes under a pale alien sky",
+      "location": "an alien red-ochre desert of tall rippled dunes, dark basalt rocks poking through the sand, a pale butterscotch sky with a small distant sun low on the horizon, a vast valley of dunes beyond the crest. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} climbs the dune from screen-LEFT, reaching the crest centre-frame, the valley and small sun beyond screen-RIGHT. Depth planes: rippled sand foreground, {A} mid-ground on the crest, the valley and horizon background.",
+      "first_frame": "already climbing, one boot sinking into the red slope, dust lifting in a slow arc.",
+      "shots": [
+        {"dur": 4.0, "name": "the climb", "lens": "84° (22mm) classic wide", "lens_note": "low on the slope below, the climber and the sky", "beat": "{A} climbs the steep slope, boots sinking and sliding back, red dust rising in slow wide arcs, breath audible inside the helmet."},
+        {"dur": 4.0, "name": "visor", "lens": "29° (85mm) portrait compression", "lens_note": "the helmet and face at the crest", "beat": "{A} reaches the crest, breathing hard, reaches up and lowers the gold visor — the valley and the small sun reflected across its curve — and the face fades behind the gold."},
+        {"dur": 4.0, "name": "the valley", "lens": "107° (16mm) architectural ultra-wide", "lens_note": "behind the astronaut, the whole valley ahead", "beat": "{A} stands tiny on the crest from behind, the endless red valley spreading below, wind lifting a thin veil of sand off the crest, the figure utterly still except for one slow turn of the helmet."}
+      ],
+      "lens_defense": "ultra_wide",
+      "camera": {"register": "gentle", "extra": "Slow floating handheld; shot 3 drifts slowly backward."},
+      "light": "low alien sun from screen-RIGHT, hard and warm, long blue-violet shadows across the rippled dunes, the suit rimmed gold, the visor burning with the reflected sun.",
+      "colour": "~70% red-ochre sand and rust dunes; ~20% pale butterscotch sky; ~10% blue-violet shadows in the dune troughs and the white suit.",
+      "atmosphere": {"mode": "air", "planes": "rippled sand nearest, the astronaut, the far dunes, the horizon palest in fine dust haze", "source": "red dust kicked up by the boots and a thin veil of sand lifted off the crest by the wind"},
+      "physics": "real suit mass in low gravity — the boots sink and slide in loose sand, each step lifts a little longer and lands softer, dust rises in slow wide ballistic arcs and settles, the suit joints bend stiffly, the arm lowering the visor moves with the suit's weight. Contact shadows on the sand. Nothing floats, nothing slides.",
+      "acting": "Awe held in — eyes wide and wet, lips parted, a slow breath fogging the inside of the helmet glass faintly, the brow lifting as the valley comes into view. Never looks into the lens.",
+      "audio": "breathing inside the helmet, the soft crunch of sand under boots, the hiss of the suit air supply, a thin whistle of wind across the crest, radio static.",
+      "locks_chain": "the sequence runs in order — the climb, the visor lowered at the crest, the lone figure over the valley. Real-time low gravity throughout. The sun always low screen-RIGHT.",
+      "negative_extra": ["slow motion", "Earth in sky", "spaceship", "second astronaut", "helmet off"]
+    },
+    {
+      "id": "android_awakening",
+      "label_en": "Android awakening",
+      "label_tr": "Android'in uyanışı",
+      "hook_tr": "Gözler açılır, parmaklar ilk kez hareket eder. 'Yapay mı gerçek mi' tartışması yorumları patlatır.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["scifi"],
+          "only": ["sci_04", "sci_01"],
+          "this_scene": "lying on a white lab table, opening the eyes for the first time, flexing the fingers one by one, then sitting up slowly and touching the seam along the jaw in wonder."
+        }
+      },
+      "default_cast": {"A": "sci_04"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "FIRST MOVEMENT", "text": "every movement is a first — slightly too careful, slightly too precise, with tiny pauses between joints, like learning the body. The movement is smooth and continuous, never robotic stop-motion, never twitching, never glitching."}
+      ],
+      "location_label": "white minimal laboratory",
+      "location": "a minimal white laboratory, a white padded examination table in the centre, a matte white floor and walls, a single long overhead soft light panel, a steel instrument tray. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the table sits centre-frame, {A} lying on it with the head screen-LEFT. The instrument tray stands screen-RIGHT beyond the table. Depth planes: the table edge foreground, {A} mid-ground, the white wall background.",
+      "first_frame": "already lying on the table, eyes closed, a first faint breath lifting the chest.",
+      "shots": [
+        {"dur": 3.0, "name": "eyes open", "lens": "12° (200mm) tele detail", "lens_note": "tight on the eyes from above", "beat": "{A.pos} eyelids flutter and open, the pale grey eyes focusing slowly on the light panel above, pupils contracting."},
+        {"dur": 3.0, "name": "fingers", "lens": "29° (85mm) portrait compression", "lens_note": "on the hand resting on the table", "beat": "the fingers flex one by one — index, middle, ring, little — then curl into a gentle fist and open again, tendons shifting under the skin."},
+        {"dur": 4.0, "name": "sitting up", "lens": "47° (50mm) standard normal", "lens_note": "waist-up, eye level beside the table", "beat": "{A} sits up slowly, the torso rising in one careful motion, and lifts a hand to trace the thin seam along the jaw with a fingertip, head tilting in wonder."}
+      ],
+      "camera": {"register": "locked", "extra": "An extremely slow push in shot 3."},
+      "light": "one long soft overhead panel, cool white and even, the face lit from above, soft shadows under the brow, the seams catching a faint line of light.",
+      "colour": "~70% clean matte white room and table; ~20% cool pale grey shadows; ~10% the warm true skin tone.",
+      "atmosphere": {"mode": "clean", "planes": "the table edge nearest, the figure, the instrument tray, the white wall furthest", "source": null},
+      "physics": "real body weight — the head presses into the padding, the torso rises using the core, the padding rebounds as the weight lifts, the fingertip gently dents the skin along the seam. Contact shadow on the table. Nothing floats, nothing slides.",
+      "acting": "Blank then curious — the brow first still, then lifting slightly with each discovery, the eyes widening, lips parting, head tilting; blinks slightly too slow. Never looks into the lens.",
+      "audio": "a soft low electrical hum of the room, a first sharp intake of breath, the creak of the padded table, the soft rustle of the jumpsuit, near silence.",
+      "locks_chain": "the sequence runs in order — eyes open, fingers flex, sit up and touch the jaw seam. The seams are always visible, the eyes always pale grey.",
+      "negative_extra": ["robot parts visible", "glowing eyes", "wires", "glitch effect", "robotic jerky motion"]
+    }
+  ]
+}

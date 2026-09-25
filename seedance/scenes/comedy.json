@@ -1,0 +1,122 @@
+{
+  "category": "comedy",
+  "scenes": [
+    {
+      "id": "terlik_anne",
+      "label_en": "The flying slipper",
+      "label_tr": "Terlikli anne — 'Sana kaç kere söyledim!'",
+      "hook_tr": "Türk sosyal medyasının en bilinen komedi arketipi. Herkes kendi annesini görür, etiketleyip paylaşır.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["comedy", "turkiye"],
+          "only": ["cmd_03", "tr_02"],
+          "this_scene": "storming into the living room doorway, scolding in Turkish, pulling one slipper off the foot and flinging it across the room, then planting the hands on the hips."
+        },
+        "B": {
+          "fit": ["comedy", "urban", "fashion", "creators", "sports"],
+          "this_scene": "sprawled on the sofa scrolling a phone, looking up in alarm at the shout, and ducking flat just as the slipper sails over and hits the cushion."
+        }
+      },
+      "default_cast": {"A": "cmd_03", "B": "cmd_01"},
+      "critical": [
+        {"title": "THE TONE", "text": "this is warm family slapstick, not violence. The slipper MISSES — it sails over the ducking head and slaps harmlessly into the sofa cushion. Nobody is hurt, nobody cries. {A} is theatrically outraged, {B} is sheepish and guilty, and it reads as affectionate everyday comedy."},
+        {"title": "THE LANGUAGE", "text": "all dialogue is spoken in Turkish with a natural Istanbul accent, fast and loud, exactly as written in quotes. No English, no subtitles."},
+        {"lib": "nobody_else"}
+      ],
+      "location_label": "Turkish family living room in the evening",
+      "location": "a cosy Turkish family living room in the evening, a brown corner sofa with lace doilies on the backrest and patterned cushions, a low coffee table with a tray of tulip tea glasses and a bowl of sunflower seeds, a patterned red carpet, a glass cabinet with china, a doorway to the hall. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the doorway sits screen-LEFT, {A} standing in it. The sofa sits screen-RIGHT with {B} sprawled on it. The coffee table sits between them in the middle. The slipper flies screen-LEFT to screen-RIGHT across the room. Depth planes: the coffee table and tea tray foreground, both figures mid-ground, the glass cabinet background.",
+      "first_frame": "already sprawled on the sofa scrolling the phone, sunflower seed shells on the chest, the doorway behind starting to fill.",
+      "shots": [
+        {"dur": 3.0, "name": "the doorway", "lens": "47° (50mm) standard normal", "lens_note": "from beside the sofa, the doorway in frame", "beat": "{A} storms into the doorway, points a finger and shouts: 'Sana kaç kere söyledim, bırak şu telefonu!' — stress on KAÇ — and on the last word reaches down and pulls off one plastic house slipper."},
+        {"dur": 3.0, "name": "the throw", "lens": "84° (22mm) classic wide", "lens_note": "wide across the room, both figures and the flight path", "beat": "{A} flings the slipper overarm; it spins end over end across the room in a true arc; {B} looks up, eyes wide, and ducks flat, and the slipper slaps into the cushion right where the head was."},
+        {"dur": 3.0, "name": "hands on hips", "lens": "29° (85mm) portrait compression", "lens_note": "{A} in the doorway, chest-up", "beat": "{A} plants both hands on the hips, eyebrows up, and says flatly: 'Bir daha görmeyeceğim!' — while in the soft background {B} slowly peeks up over the sofa back, guilty, phone hidden behind the back."}
+      ],
+      "camera": {"register": "gentle", "extra": "In shot 2 the camera whip-pans to follow the slipper, then settles."},
+      "light": "warm evening practical light from a fabric-shaded ceiling lamp above and a small table lamp screen-RIGHT, soft and homely, a cool blue glow of the phone screen on the face of the figure on the sofa in shot 1.",
+      "colour": "~70% warm tungsten amber, brown sofa and red carpet; ~20% the floral house clothes and the patterned cushions; ~10% cool phone-screen blue and the bright plastic slipper.",
+      "atmosphere": {"mode": "air", "planes": "the tea tray nearest, the sofa and the doorway, the glass cabinet furthest", "source": "a thin curl of steam rising off a fresh tulip glass of tea on the tray"},
+      "physics": "real weights — the plastic slipper spins end over end on a true ballistic arc and slaps into the cushion, the cushion dents and springs back, the sofa sags under the body ducking, sunflower seed shells scatter off the chest, the clothes swing with the throw. Contact shadows on the carpet. Nothing floats, nothing slides.",
+      "acting": "{A}: theatrical outrage — brows up and together, eyes wide, the finger jabbing, forehead creasing on KAÇ; then deadpan victory. {B}: bored scrolling, then eyes snapping wide, brows flying up, a flinch and duck; peeking up guilty with the brow knotted. Nobody looks into the lens.",
+      "audio": "the phone's faint tapping, the shout 'Sana kaç kere söyledim, bırak şu telefonu!', the whoosh of the spinning slipper, the slap into the cushion, a yelp, the sofa creaking, then the flat 'Bir daha görmeyeceğim!', a tea spoon clinking in a glass.",
+      "locks_chain": "the sequence runs in order — the shout in the doorway, the slipper pulled off, the throw and the duck, the slap into the cushion, hands on hips and the peek. One slipper thrown, it misses.",
+      "negative_extra": ["slipper hitting face", "injury", "crying", "violence", "subtitles", "phone screen text"]
+    },
+    {
+      "id": "courier_rain_dash",
+      "label_en": "Last delivery in the rain",
+      "label_tr": "Yağmurda son teslimat — yanlış bina",
+      "hook_tr": "Beş kat merdiven, nefes nefese zile basış… ve yanlış bina. Kurye ve gündelik hayat komedisi çok paylaşılır.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["comedy", "urban", "sports", "creators"],
+          "this_scene": "sprinting up a spiral staircase soaked from the rain with a yellow insulated food cube on the back, reaching the top door out of breath, then glancing at the phone and realising it is the wrong building."
+        }
+      },
+      "default_cast": {"A": "cmd_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE TONE", "text": "gentle everyday comedy. The payoff is purely in the face — a slow deflation from triumph to disbelief to resigned acceptance. No phone screen is shown, no text is read; the realisation is played by the eyes alone."}
+      ],
+      "location_label": "old apartment spiral staircase on a rainy night",
+      "location": "the stairwell of an old apartment building on a rainy night, a tight stone spiral staircase with an iron banister, worn marble steps, a flickering bulb on each landing, a wooden apartment door on the top floor with a plain brass bell button. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the stairs spiral upward counter-clockwise, {A} runs UP toward camera in shot 1; the top door sits screen-RIGHT on the landing in shots 2 and 3. Depth planes: the iron banister foreground, {A} mid-ground, the stairwell wall background.",
+      "first_frame": "already bounding up the spiral steps two at a time, rainwater dripping, the food cube bouncing.",
+      "shots": [
+        {"dur": 3.0, "name": "stairwell sprint", "lens": "84° (22mm) classic wide", "lens_note": "looking down the spiral from the landing above", "beat": "{A} races up the spiral two steps at a time, soaked, the yellow food cube bouncing on the back, wet footprints on the marble, gasping."},
+        {"dur": 3.0, "name": "the door", "lens": "47° (50mm) standard normal", "lens_note": "on the landing, waist-up, the door in frame", "beat": "{A} arrives at the top door, bent double, hands on knees, then straightens with a proud grin, presses the bell and holds out the food bag."},
+        {"dur": 3.0, "name": "the realisation", "lens": "18° (120mm) portrait tight", "lens_note": "tight on the face", "beat": "{A} glances down at the phone strapped to the forearm, freezes, blinks twice, looks slowly up at the door, then closes the eyes for a long resigned breath, water dripping off the nose."}
+      ],
+      "camera": {"register": "heavy", "extra": "Shot 3 settles into near-stillness for the deadpan beat."},
+      "light": "a single bare flickering bulb on each landing, warm and dim, the face lit hard from above, the stairwell falling off into grey-green shadow; rainy night blue through a small stairwell window.",
+      "colour": "~70% grey-green stone walls and worn marble; ~20% warm bulb amber; ~10% the saturated yellow of the food cube.",
+      "atmosphere": {"mode": "air", "planes": "the iron banister nearest, the courier, the stairwell wall, the stairwell window furthest", "source": null},
+      "physics": "real bodyweight — feet slap wet marble, each stride pushes up two steps, the food cube bounces and swings on the straps, rainwater drips and sprays off the jacket, the chest heaves, the body folds and straightens. Contact shadows on the steps. Nothing floats, nothing slides.",
+      "acting": "Determination on the stairs — brow set, jaw tight; at the door a proud open grin, brows up; the realisation a slow freeze, two blinks, the mouth falling slightly open, the brows sinking, a long exhale through the nose. Never looks into the lens.",
+      "audio": "rain hammering outside, wet footsteps slapping marble, heavy panting, the food cube's buckles rattling, a two-tone door bell, silence, a long defeated exhale, a drip falling on the marble.",
+      "locks_chain": "the sequence runs in order — the spiral sprint, the proud arrival and the bell, the glance at the phone and the resigned realisation.",
+      "negative_extra": ["phone screen visible", "text on phone", "customer opening door", "brand logos"]
+    },
+    {
+      "id": "gym_bro_fail",
+      "label_en": "Gym mirror flex fail",
+      "label_tr": "Aynada poz, bench'te rezillik",
+      "hook_tr": "Aşırı özgüven, sonra barın göğüste takılıp 'utanç yuvarlanması'. Fail videoları en çok paylaşılan türlerden.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["comedy", "fighters", "sports", "urban"],
+          "this_scene": "flexing in the gym mirror, loading far too much weight on the bench, unracking it with a grin, getting pinned, and rolling the bar down the body in embarrassment."
+        }
+      },
+      "default_cast": {"A": "cmd_04"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE TONE", "text": "light slapstick, nobody is hurt. The bar settles slowly onto the chest with safety collars on, and is rolled down over the stomach to the thighs — the classic 'roll of shame'. The comedy lives in the face: confidence collapsing into embarrassment."}
+      ],
+      "location_label": "commercial gym with a flat bench and mirror wall",
+      "location": "a commercial gym at night, a flat bench press station in front of a floor-to-ceiling mirror wall, a loaded olympic barbell on the rack, rubber floor tiles, weight plates on a tree, bright overhead strip lights. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the bench press sits centre-frame parallel to the mirror wall, {A.pos} head toward screen-LEFT when lying on it. The mirror wall runs along the background, reflecting only {A} and the equipment. Depth planes: the plate tree foreground, the bench and {A} mid-ground, the mirror wall background.",
+      "first_frame": "already posing in the mirror mid-flex, both arms up.",
+      "shots": [
+        {"dur": 3.0, "name": "mirror flex", "lens": "47° (50mm) standard normal", "lens_note": "over the shoulder, the mirror reflection", "beat": "{A} flexes both biceps at the mirror, kisses one bicep, then slides two more heavy plates onto each side of the bar with a wink."},
+        {"dur": 3.0, "name": "the unrack", "lens": "84° (22mm) classic wide", "lens_note": "low from the end of the bench", "beat": "{A} lies back, unracks the bar with a grin, lowers it — and the bar sinks onto the chest and stays there, the arms shaking, the grin melting."},
+        {"dur": 3.0, "name": "roll of shame", "lens": "29° (85mm) portrait compression", "lens_note": "tight on the face and upper body", "beat": "{A} rolls the bar slowly down over the stomach to the thighs, sits up red-faced, glances left and right to check if anyone saw, and quietly pulls two plates off."}
+      ],
+      "camera": {"register": "gentle", "extra": "Shot 3 holds nearly still for the reaction."},
+      "light": "bright even overhead strip lights, cool white, a slight top-down shadow under the brows, the mirror reflecting the light rows.",
+      "colour": "~70% cool grey rubber floor, black steel and white light; ~20% the bright colour of the gym wear; ~10% warm skin flushing red.",
+      "atmosphere": {"mode": "clean", "planes": "the plate tree nearest, the bench and lifter, the mirror wall furthest", "source": null},
+      "physics": "real steel weight — the plates slide on with a heavy clank, the bar bends slightly under the load, it sinks onto the chest and compresses the shirt, the arms tremble, the bar rolls with weight over the stomach, the bench pad compresses. Contact shadows under the bench. Nothing floats, nothing slides.",
+      "acting": "Supreme confidence — brows up, a wink, a smug grin; then the grin freezing and melting, the eyes widening, the brow knotting; then red-faced embarrassment, eyes darting left and right. Looks into the mirror, never into the lens.",
+      "audio": "the heavy clank of plates, a confident 'Let's go!', the rack clatter, a strained grunt, a squeaky whimper, the slow roll of the bar, an awkward cough, the gym's air conditioning hum.",
+      "locks_chain": "the sequence runs in order — mirror flex and loading, the unrack and the pin, the roll of shame and the glance around. One bar, one bench.",
+      "negative_extra": ["injury", "blood", "spotter", "crowd laughing", "text on mirror"]
+    }
+  ]
+}

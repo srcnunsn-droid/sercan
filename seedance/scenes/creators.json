@@ -1,0 +1,161 @@
+{
+  "category": "creators",
+  "scenes": [
+    {
+      "id": "pop_lipsync_oner",
+      "label_en": "Neon lipsync oner",
+      "label_tr": "Neon ışıkta tek plan lipsync performansı",
+      "hook_tr": "Şarkı tanıtımı için: tek plan, ağız her karede görünür, B/M/P kapanışları net. Kendi ses dosyanı @Audio 1 olarak ekle.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "neon_noir",
+      "lipsync": true,
+      "audio_ref": "the vocal track to lipsync (upload your own audio, about 10 seconds, containing the line \"Back to me, my midnight baby\")",
+      "conflict_note": "Not: @Audio 1 olarak sözü \"Back to me, my midnight baby\" olan kendi ses dosyanı yükle. Farklı bir söz kullanacaksan THE SINGING bloğundaki sözü ve kapanış sayısını da değiştir.",
+      "roles": {
+        "A": {
+          "fit": ["creators", "fashion", "urban", "historical"],
+          "this_scene": "singing out loud to the lens in a neon-lit room, full voice, one hand gripping the collar, swaying and stepping slowly toward the camera."
+        }
+      },
+      "default_cast": {"A": "crt_01"},
+      "critical": [
+        {"title": "THE SINGING IS THE PRIMARY SUBJECT", "text": "every other element is secondary. {A} sings out loud, full voice, mouth open and working hard, for the whole take without stopping — a singer delivering a vocal, not a performer mouthing along. The line is \"Back to me, my midnight baby\". \"BACK\" — BOTH LIPS PRESS FULLY AND VISIBLY TOGETHER AND SEAL SHUT on the B, then burst open wide on a bright AA, the tongue lifting at the back on the K. \"TO\" — the tongue taps behind the top teeth, lips round forward on OO. \"ME\" — a complete hard lip seal on the M, then the lips spread wide on EE. \"MY\" — another full hard seal on the M, the jaw dropping open on AH travelling to EE. \"MIDNIGHT\" — a hard seal on the M, the tongue tapping on the D and N, the jaw opening on the long I. \"BABY\" — a hard seal on the first B, opening to AY, a second hard seal on the second B, then the lips spread on the final EE, held open and sustained. THE PATTERN OF CLOSURES: six hard lip seals — the B of BACK, the M of ME, the M of MY, the M of MIDNIGHT, and both Bs of BABY. Every one is complete, flat, unmistakable and held a beat before releasing. The mouth is never lazily half-open and never mumbling between them."},
+        {"lib": "mouth_visible"},
+        {"lib": "nobody_else"}
+      ],
+      "location_label": "small room lit by neon tubes",
+      "location": "a small bare concrete room at night, two vertical neon tubes on the back wall — one magenta, one electric blue — a rain-streaked window, a bare floor. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands centre-frame facing the lens, the magenta tube behind {A.obj} screen-LEFT and the blue tube screen-RIGHT, the window behind. Depth planes: {A.pos} face and hands foreground-to-mid, the neon tubes and window background, soft.",
+      "first_frame": "already singing, mouth open on the first word, eyes on the lens.",
+      "shots": [
+        {"dur": 10.0, "name": "lipsync oner", "lens": "29° (85mm) portrait compression", "lens_note": "chest-up, the face centred, drifting slowly closer as the singer steps in", "beat": "{A} sings the line to the lens with full voice, swaying, one hand gripping the collar then pushing through the hair without ever covering the mouth, stepping slowly toward the camera so the frame tightens from chest-up to a close face, eyes locked on the lens, timing following the attached vocal exactly."}
+      ],
+      "camera": {"register": "gentle", "extra": "A slow push that meets the singer's steps; the cant stays small so the mouth always reads."},
+      "light": "hard magenta neon from behind screen-LEFT and electric blue from behind screen-RIGHT, rimming the hair and shoulders in two colours, a soft white frontal key low beside the lens keeping the mouth and teeth clearly lit at all times.",
+      "colour": "~70% deep black-blue room shadow; ~20% magenta and electric blue neon on hair, skin edges and the window; ~10% clean white key on the face and glints of jewellery and fabric.",
+      "atmosphere": {"mode": "air", "planes": "the singer's face nearest, the concrete room, the neon tubes and rain-streaked window furthest", "source": null},
+      "physics": "real bodyweight — the sway shifts weight between the feet, the hair swings with momentum and settles, fabric catches and scatters light as the torso moves, the hand grips and pulls fabric, the chest rises on each breath before a phrase. Contact shadows on the floor. Nothing floats, nothing slides.",
+      "acting": "Emotional and intimate — brows lifting on the high notes, drawing together on the held BABY, eyes glistening, a small breath before each phrase, the jaw fully working. Eyeline locked into the lens for the whole take.",
+      "audio": "the attached vocal track is the sole audio.",
+      "locks_chain": "one continuous take — the singer sings the full line to the lens, stepping closer, the mouth always visible, six hard lip seals. Magenta LEFT, blue RIGHT.",
+      "negative_extra": ["mouthing without singing", "hand covering mouth", "microphone covering mouth", "lip closures missing", "hair over mouth", "karaoke text"]
+    },
+    {
+      "id": "flame_wok_chef",
+      "label_en": "Flaming wok toss",
+      "label_tr": "Alevli wok şovu",
+      "hook_tr": "Tavadan fışkıran alev, havada dönen pilav taneleri, şefin kahkahası. Yemek içerikleri hiç eskimez.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["creators", "comedy", "urban", "turkiye"],
+          "this_scene": "tossing fried rice in a blazing wok over a roaring burner, the flame bursting up through the pan, then plating it with a flourish and laughing."
+        }
+      },
+      "default_cast": {"A": "crt_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE FIRE", "text": "the flame comes ONLY from the gas burner under the wok and from the oil in the pan catching as the rice is tossed — a burst of orange flame rising 60cm above the wok for about one second, then dying back. The fire never spreads to anything else, never touches the chef, never appears without the wok."}
+      ],
+      "location_label": "night-market street-food stall",
+      "location": "a night-market street-food stall, a roaring high-pressure gas burner under a black carbon-steel wok, a steel counter with bowls of chopped spring onions, eggs and sauces, strings of bare bulbs overhead, a busy blurred market beyond. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands behind the burner centre-frame facing camera, the wok between {A.obj} and the lens. The ingredient bowls sit on the counter screen-LEFT. Depth planes: the wok and flame foreground, {A} mid-ground, the market background soft.",
+      "first_frame": "already tossing the rice, grains flying in an arc above the wok.",
+      "shots": [
+        {"dur": 3.0, "name": "the toss", "lens": "47° (50mm) standard normal", "lens_note": "waist-up across the wok", "beat": "{A} jerks the wok, the rice flying up in a tight arc and landing back, then tips the pan edge to the burner — flame bursts up through the rice and the chef leans back laughing."},
+        {"dur": 2.0, "name": "flame macro", "lens": "12° (200mm) tele detail", "lens_note": "tight on the rice and flame in the wok", "beat": "individual grains of rice, egg and spring onion tumble through the burst of orange flame, oil droplets sizzling on the black steel."},
+        {"dur": 3.0, "name": "the plating", "lens": "29° (85mm) portrait compression", "lens_note": "the chef's face and the plate", "beat": "{A} sweeps the rice onto a plate in one motion with the ladle, taps the ladle twice on the wok rim, slides the plate toward the lens and bursts into a booming laugh."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator flinches back from the flame burst."},
+      "light": "the flame burst is a hard orange key from below on the face and forearms; warm bare bulbs above; the market behind soft in amber and red bokeh.",
+      "light_changes": true,
+      "colour": "~70% warm amber and orange from bulbs and fire; ~20% the black steel of the wok and dark clothes; ~10% fresh green spring onion and yellow egg.",
+      "atmosphere": {"mode": "air", "planes": "the wok and flame nearest, the chef, the stall's back wall, the market furthest", "source": "steam and smoke rising off the wok and the brief burst of flame, drifting up into the bulbs"},
+      "physics": "real heat and mass — the heavy wok is jerked with the wrist and the rice flies up with weight and lands back with a hiss, oil catches and flares for a second, grains tumble with gravity, steam billows upward, the ladle clanks against the steel. Nothing floats, nothing slides.",
+      "acting": "Showman's joy — eyes wide in the flame burst, brows jumping, a huge grin; the laugh at the end rolls from the belly, eyes squeezed. Never looks into the lens until the plate slide, where the eyes glance up at the lens for one beat.",
+      "audio": "the roar of the gas burner, the loud sizzle and hiss of rice hitting hot oil, the whoomph of the flame, the scrape and clank of the ladle on steel, two taps on the wok rim, a booming laugh, market chatter behind.",
+      "locks_chain": "the sequence runs in order — the toss and flame burst, the macro of rice in the flame, the plating and the laugh. One wok, fire only from the wok.",
+      "negative_extra": ["fire spreading", "burns", "extinguisher", "brand logos", "text on stall"]
+    },
+    {
+      "id": "luthier_macro",
+      "label_en": "Luthier ASMR macro",
+      "label_tr": "Enstrüman ustası — makro ASMR",
+      "hook_tr": "Rende sesi, kıvrılan talaş, parmak ucunda ahşap dokusu. ASMR ve zanaat kitlesi sonuna kadar izler.",
+      "platforms": ["YouTube Shorts", "Instagram Reels", "TikTok"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["creators", "turkiye", "comedy", "historical"],
+          "this_scene": "planing the edge of a spruce guitar top in a quiet workshop, lifting away a long curl of wood, tapping the top to hear its tone, and smiling faintly at the sound."
+        }
+      },
+      "default_cast": {"A": "crt_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE WOOD", "text": "one thin pale spruce guitar top with straight tight grain lines, lying on a felt-covered bench. The small brass block plane lifts one continuous translucent curl of wood that spirals off the blade and drops onto the bench. The top never cracks, never changes shape."}
+      ],
+      "location_label": "quiet wooden workshop with window light",
+      "location": "a quiet luthier's workshop, a thick oak workbench covered in green felt, hand tools on a wall rack, unfinished guitar bodies hanging, wood shavings on the floor, a large window with soft daylight. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the bench runs across the frame, the guitar top on it centre-frame, {A} standing behind the bench facing camera, the window screen-LEFT. Depth planes: the guitar top and shavings foreground, {A} mid-ground, the tool rack and hanging bodies background.",
+      "first_frame": "already pushing the plane along the edge, the first curl rising off the blade.",
+      "shots": [
+        {"dur": 4.0, "name": "the plane", "lens": "12° (200mm) tele detail", "lens_note": "macro on the blade and the rising curl", "beat": "the brass plane glides along the spruce edge, a long translucent curl spiralling up off the blade, light glowing through it, sawdust sparkling in the window light."},
+        {"dur": 3.0, "name": "the tap", "lens": "29° (85mm) portrait compression", "lens_note": "on the hands and the top", "beat": "{A} lifts the top by the edges, holds it near the ear and taps it lightly with a knuckle, head tilting, listening."},
+        {"dur": 3.0, "name": "the smile", "lens": "18° (120mm) portrait tight", "lens_note": "the face in window light", "beat": "{A} lowers the top, a faint smile arriving at the corners of the mouth, and brushes the shavings off the felt with one slow sweep of the hand."}
+      ],
+      "lens_defense": "macro",
+      "camera": {"register": "locked", "extra": "Tripod-weighted, the gentlest slow drift on the macro."},
+      "light": "soft daylight from the large window screen-LEFT, a single broad source, warm-neutral, falling across the bench and the hands, the far side of the face in soft shadow, the curl of wood glowing translucent.",
+      "colour": "~70% warm honey-pale spruce and oak; ~20% muted green felt and tool steel; ~10% soft cool daylight blue in the window shadows.",
+      "atmosphere": {"mode": "air", "planes": "the curl and the guitar top nearest, the craftsman, the tool rack, the hanging guitar bodies furthest", "source": "fine sawdust lifted by the plane and by the sweep of the hand, floating in the window light"},
+      "physics": "real wood — the blade bites and the curl lifts continuously and spirals with its own springiness, the thin top flexes slightly when lifted, the knuckle tap makes the top vibrate, shavings tumble and settle with gravity on the felt. Contact shadows under the hands. Nothing floats, nothing slides.",
+      "acting": "Quiet concentration — eyes lowered, the brow gently drawn, lips pressed; while listening the eyes unfocus and the brow lifts; the smile is small and private. Never looks into the lens.",
+      "audio": "the long soft hiss of the plane blade, the crisp curl falling onto felt, three light knuckle taps ringing a clear resonant tone from the wood, the brush of the hand, a clock ticking, birdsong outside the window.",
+      "locks_chain": "the sequence runs in order — the plane and the curl, the tap near the ear, the smile and the sweep. One guitar top throughout.",
+      "negative_extra": ["power tools", "cracked wood", "finished glossy guitar", "brand logos"]
+    },
+    {
+      "id": "dance_beat_drop_group",
+      "label_en": "Beat-drop crew choreography",
+      "label_tr": "Beat drop'ta dans ekibi koreografisi",
+      "hook_tr": "Ekip lideri öne çıkar, drop'ta herkes aynı anda vurur. Dans trendlerine uyarlanabilir, 'ekibini etiketle' içeriği.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["creators", "urban", "fashion", "sports", "historical"],
+          "this_scene": "leading a crew of four dancers in a parking garage, stepping to the front on the count, then hitting a sharp synchronized drop combination with the crew, ending on a frozen pose and a grin."
+        }
+      },
+      "default_cast": {"A": "crt_04"},
+      "extra_assets": [
+        {"label_en": "dance crew wardrobe sheet", "asset": "the crew — four dancers in coordinated black and white streetwear: cropped tees, oversized white shirts, black cargo pants, black and white sneakers. Permitted variation in hair and cut, each with a different face and build, all unmistakably one crew."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE UNISON", "text": "on the drop at 3.0s the lead and all four crew members hit the same shapes at the same moment — a sharp chest pop, a double arm snap, a sliding step to the RIGHT, a drop to one knee, a freeze — while each carries their own micro-timing, head angle and limb height inside the count, so the group never reads as identical mannequins. The lead is always front and centre."}
+      ],
+      "location_label": "concrete parking garage at night",
+      "location": "an empty concrete parking garage level at night, painted yellow bay lines, square concrete pillars, strip lights overhead, a ramp in the background. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} dances front and centre facing camera; the four crew members stand behind in a staggered V at different depths, NOT in a line. A pillar stands screen-LEFT, the ramp screen-RIGHT behind. Depth planes: the floor foreground, {A} mid-ground front, the crew behind, the pillars and ramp background.",
+      "first_frame": "already counting in, the lead stepping forward, the crew bouncing on the beat behind.",
+      "shots": [
+        {"dur": 3.0, "name": "the count-in", "lens": "63° (32mm) reportage wide", "lens_note": "full bodies, the whole crew", "beat": "{A} steps forward counting loudly 'five, six, seven, eight', the crew bouncing and nodding behind, each with their own groove, hair swinging."},
+        {"dur": 4.0, "name": "the drop", "lens": "84° (22mm) classic wide", "lens_note": "low and close to the front, the crew stacked behind", "beat": "on the drop everyone hits together — chest pop, double arm snap, slide RIGHT, drop to one knee — hair and shirts snapping with each hit, sneakers squeaking."},
+        {"dur": 3.0, "name": "the freeze", "lens": "47° (50mm) standard normal", "lens_note": "waist-up on the lead, the crew soft behind", "beat": "the whole crew freezes in the final pose, chests heaving, and {A} breaks into a wide grin and a laugh, a crew member behind whooping."}
+      ],
+      "camera": {"register": "heavy", "extra": "The operator bounces with the rhythm and punches in on the drop."},
+      "light": "overhead strip lights, cool white and slightly green, top-down, a warm sodium spill from the ramp screen-RIGHT rimming the crew from behind.",
+      "colour": "~70% cool grey concrete and green-white strip light; ~20% black and white crew wardrobe; ~10% warm sodium amber from the ramp and yellow bay lines.",
+      "atmosphere": {"mode": "air", "planes": "the painted floor nearest, the lead, the crew, the pillars and ramp furthest", "source": null},
+      "physics": "real bodyweight — sneakers grip and squeak on painted concrete, the chest pops snap the shirts, the slide carries momentum, the knee drop lands with real weight, hair and loose shirts lag and snap, contact shadows under every foot. Nothing floats, nothing slides.",
+      "acting": "Hype and precision — the lead's brows up and a grin on the count, then a fierce focused face on the drop, then an explosive laugh; the crew each with their own attitude, never identical. Nobody looks into the lens until the lead's grin at the end.",
+      "audio": "NO BGM in the mix — the track is not audible. Only the lead counting 'five, six, seven, eight', the crew's breaths and sharp exhales on the hits, sneakers squeaking and stamping in time to the unheard 100 BPM beat, a whoop and laughter echoing off concrete.",
+      "nobgm": false,
+      "locks_chain": "the sequence runs in order — the count-in, the unison drop combination, the freeze and the grin. The lead front and centre, four crew behind in a staggered V.",
+      "negative_extra": ["identical dancers", "dancers in a straight line", "extra dancers", "cars", "text on walls"]
+    }
+  ]
+}

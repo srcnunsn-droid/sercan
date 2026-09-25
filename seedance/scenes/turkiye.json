@@ -1,0 +1,158 @@
+{
+  "category": "turkiye",
+  "scenes": [
+    {
+      "id": "galata_ferry_dawn",
+      "label_en": "Galata Bridge dawn cast",
+      "label_tr": "Galata Köprüsü'nde şafak, olta ve vapur",
+      "hook_tr": "Sisli Haliç, Süleymaniye silueti, vapur düdüğü, martılar. Nostalji ve İstanbul özlemi yorumları getirir.",
+      "platforms": ["Instagram Reels", "YouTube Shorts", "TikTok"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["turkiye", "comedy", "historical", "urban"],
+          "this_scene": "casting a long fishing rod from the bridge rail at dawn, watching the line settle, then lifting a small glass of tea and exhaling slowly as a ferry passes below."
+        }
+      },
+      "default_cast": {"A": "tr_01"},
+      "critical": [
+        {"lib": "nobody_else", "also": ["a few other anglers far down the rail as tiny soft silhouettes"]},
+        {"title": "THE CITY SKYLINE", "text": "across the water the Süleymaniye Mosque sits on its hill with its four slender minarets and great central dome, in soft dawn silhouette, always in the background screen-LEFT, always the same shape, never duplicated, never distorted. A white-and-black passenger ferry passes under the bridge from screen-RIGHT to screen-LEFT."}
+      ],
+      "location_label": "Galata Bridge rail over the Golden Horn at dawn",
+      "location": "the upper deck rail of the Galata Bridge in Istanbul at dawn, a row of long fishing rods leaning on the steel rail, plastic bait buckets, the Golden Horn water below, the Süleymaniye skyline across the water in dawn mist. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands at the bridge rail on the RIGHT third of frame, facing the water screen-LEFT. The skyline sits across the water screen-LEFT and behind. The bait bucket stands at {A.pos} feet screen-RIGHT. Depth planes: the rail and rod butts foreground, {A} mid-ground, the water and ferry mid-background, the skyline furthest.",
+      "first_frame": "already mid-cast, the rod tip whipping forward, the line singing out over the water.",
+      "shots": [
+        {"dur": 3.0, "name": "the cast", "lens": "47° (50mm) standard normal", "lens_note": "waist-up from behind the shoulder, the rod and the water in frame", "beat": "{A} whips the long rod forward, the line arcs out glinting over the Golden Horn and the lead weight plops into the water far below, gulls lifting off the rail."},
+        {"dur": 3.0, "name": "tea and breath", "lens": "18° (120mm) portrait tight", "lens_note": "face and hands, the skyline soft behind", "beat": "{A} lifts a small tulip glass of dark red tea, blows across it, sips, and exhales slowly, a thin cloud of breath in the cold, eyes resting on the water."},
+        {"dur": 4.0, "name": "ferry under the bridge", "lens": "84° (22mm) classic wide", "lens_note": "wide from the rail, the ferry, the fisherman and the skyline together", "beat": "the ferry glides under the bridge leaving a white wake, its horn sounding long and low, gulls wheeling behind it, and {A} turns {A.pos} head to watch it pass, the rod steady in the rail holder."}
+      ],
+      "camera": {"register": "gentle", "extra": "The operator stands at the rail with the fisherman, swaying slightly in the cold wind."},
+      "light": "dawn light from behind the skyline screen-LEFT, soft and low, a pale gold rim on the beanie, moustache and rod, the face lit softly by the brightening sky. The water carries a long soft silver reflection.",
+      "colour": "~70% soft blue-grey dawn mist and water; ~20% pale gold on the sky behind the domes and on the rims; ~10% deep red of the tea glowing in the glass.",
+      "atmosphere": {"mode": "fog", "planes": "the rail and rods nearest, the fisherman, the water and ferry, the skyline softest in mist", "source": null},
+      "physics": "real bodyweight — the cast loads the rod into a deep bend and releases, the line arcs and falls with gravity, the lead sinks with a small splash ring, the tea surface trembles in the glass, the peacoat hem lifts in the wind, gulls flap with real wing weight. Contact shadows on the bridge deck. Nothing floats, nothing slides.",
+      "acting": "A weathered calm face; eyes narrowing on the cast, softening on the tea, a tiny satisfied lift of the moustache corners. Eyeline on the water and the ferry, never into the lens.",
+      "audio": "the whirr of the reel and the swish of the rod, the distant plop of the lead, gulls crying, a long low ferry horn, light traffic rumbling on the bridge deck behind, the clink of the tea glass on its saucer.",
+      "locks_chain": "the sequence runs in order — the cast, the tea and slow breath, the ferry passing under the bridge. The skyline always sits screen-LEFT across the water.",
+      "negative_extra": ["crowds on bridge", "modern towers replacing mosque", "extra minarets", "tea in a mug"]
+    },
+    {
+      "id": "yufka_bread_asmr",
+      "label_en": "Village yufka ASMR",
+      "label_tr": "Köyde oklava ile yufka açma (ASMR)",
+      "hook_tr": "Oklava sesi, un bulutu, sacda kabaran yufka. 'Köy hayatı' ve ASMR içerikleri milyonlarca izlenir.",
+      "platforms": ["YouTube Shorts", "Instagram Reels", "TikTok"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["turkiye", "creators", "comedy"],
+          "this_scene": "kneeling at a low round board rolling paper-thin yufka with a long oklava, flipping it onto a hot domed sac, pressing it with the palm and smiling at the result."
+        }
+      },
+      "default_cast": {"A": "tr_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE DOUGH", "text": "one sheet of dough, rolled from a small ball into a paper-thin translucent circle 60cm across by the long thin oklava rolling pin, the dough wrapping around the pin and unrolling onto the hot sac. The sheet stays one continuous piece, never tears, never multiplies, never changes size once rolled. A faint print of the wooden board grain shows through it when held up to the light."}
+      ],
+      "location_label": "Anatolian village courtyard with a wood-fired sac",
+      "location": "a stone village courtyard in Anatolia in the morning, a low round wooden rolling board on a woven rug, a convex iron sac griddle on three stones over a small wood fire, a stack of finished yufka on a cloth, a clay jug, a mulberry tree behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} kneels on the rug centre-frame behind the low round board, the sac and fire to {A.pos} RIGHT, screen-LEFT. The stack of finished yufka sits screen-RIGHT. Depth planes: the board and dough foreground, {A} mid-ground, the stone wall and mulberry tree background.",
+      "first_frame": "already rolling, the oklava travelling under both palms, flour drifting off the board edge.",
+      "shots": [
+        {"dur": 3.0, "name": "hands and oklava macro", "lens": "12° (200mm) tele detail", "lens_note": "tight on the palms and the rolling pin", "beat": "both floury palms roll the thin oklava forward and back, the dough thinning and widening under it, flour puffing off the board edge, the gold coin bracelet swinging."},
+        {"dur": 3.0, "name": "the wrap and flip", "lens": "47° (50mm) standard normal", "lens_note": "waist-up, the board and the sac together", "beat": "{A} wraps the whole sheet around the oklava, lifts it and unrolls it in one smooth sweep onto the hot sac, the dough settling over the dome."},
+        {"dur": 4.0, "name": "blistering and smile", "lens": "29° (85mm) portrait compression", "lens_note": "the sac and the face, the fire glowing below", "beat": "the dough blisters and bubbles on the hot iron, {A} presses it flat with a palm-flick and flips it with a thin wooden stick, then looks up with a broad warm smile, eyes crinkling."}
+      ],
+      "camera": {"register": "locked", "extra": "Each shot is tripod-weighted with the gentlest slow push on shot 3."},
+      "light": "soft morning sun from screen-RIGHT filtered through the mulberry leaves, dappled on the rug and board, warm firelight from below on the underside of the face and hands in shot 3.",
+      "colour": "~70% warm cream and flour-white of dough, board and headscarf; ~20% orange firelight from the sac fire; ~10% green mulberry leaves in the background.",
+      "atmosphere": {"mode": "air", "planes": "the board and flour nearest, the woman, the courtyard wall, the mulberry tree softest", "source": "flour dust puffing off the board edge and settling, and a thin woodsmoke ribbon rising from under the sac, dissipating within 50cm"},
+      "physics": "real soft dough — it stretches, drapes and wraps around the pin with weight, the unrolled sheet falls onto the dome and conforms to its curve, blisters swell and collapse on the hot iron, flour lifts and settles with gravity, forearm fabric creases with each push. Contact shadows under hands and board. Nothing floats, nothing slides.",
+      "acting": "Absorbed, practiced, content. Eyes lowered to the work, lips slightly pursed in concentration, the brow lifting and the face opening into a warm smile at the end. Eyeline on the dough, then up to a point just beside the lens.",
+      "audio": "the soft rolling thump of the oklava on wood, flour patting, the crackle of the wood fire, the gentle hiss and pop of dough on hot iron, a rooster far off, birds in the mulberry tree.",
+      "locks_chain": "the sequence runs in order — rolling with the oklava, wrapping and unrolling onto the sac, blistering, flipping and smiling. One sheet of dough throughout.",
+      "negative_extra": ["torn dough", "multiple dough sheets", "modern kitchen", "gloves", "gas stove"]
+    },
+    {
+      "id": "sema_spin_oner",
+      "label_en": "Whirling sema oner",
+      "label_tr": "Semazen dönüşü — tek plan",
+      "hook_tr": "Tennure'nin çan gibi açılması, hipnotik dönüş. Huzur ve estetik; tekrar tekrar izlenir.",
+      "platforms": ["Instagram Reels", "YouTube Shorts", "TikTok"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["turkiye"],
+          "only": ["tr_03"],
+          "this_scene": "beginning the whirl with arms crossed on the chest, unfolding the arms — the RIGHT palm up, the LEFT palm down — and turning in a slow steady counter-clockwise whirl as the skirt opens into a bell."
+        }
+      },
+      "default_cast": {"A": "tr_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE TURN", "text": "the dancer turns counter-clockwise on the LEFT foot as a fixed pivot, the RIGHT foot pushing each rotation, about one rotation every 1.2 seconds, steady and unhurried, never speeding up, never wobbling, never travelling across the floor. The head tilts slightly toward the RIGHT shoulder. The RIGHT palm faces up, the LEFT palm faces down, the arms fully open. The white skirt rises into a smooth wide bell and holds its shape while turning."}
+      ],
+      "location_label": "domed stone hall with a wooden floor",
+      "location": "a centuries-old domed stone hall, a polished dark wooden octagonal floor, a ring of small arched windows at the base of the dome letting in soft daylight, plain lime-washed walls. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} whirls at the exact centre of the wooden floor, centre-frame, never leaving it. The ring of arched windows sits high in the background. Depth planes: the polished floor foreground, the dancer mid-ground sharp, the lime-washed walls and windows background.",
+      "first_frame": "already standing at the centre, arms crossed on the chest, the first slow step of the turn beginning.",
+      "shots": [
+        {"dur": 12.0, "name": "the whirl", "lens": "47° (50mm) standard normal", "lens_note": "full body at eye level, then an extremely slow push to waist-up",
+         "beats": [
+           {"dur": 3.0, "text": "{A} bows the head slightly, begins turning slowly counter-clockwise with arms still crossed, the skirt starting to lift at the hem."},
+           {"dur": 3.0, "text": "the arms unfold and open — the RIGHT palm up, the LEFT palm down — the head tilting toward the RIGHT shoulder, the turn settling into its steady rhythm, the skirt rising into a bell."},
+           {"dur": 6.0, "text": "{A} whirls steadily, the skirt a full wide white bell turning smoothly, the tall felt hat perfectly upright, eyes half-closed, the face serene, the push slowly bringing the camera in to waist height."}
+         ]}
+      ],
+      "camera": {"register": "locked", "extra": "An extremely slow push-in across the whole take; no pan, no orbit."},
+      "light": "soft daylight falling from the ring of dome windows high above, diffused and cool-white, a gentle top light on the hat and shoulders, the white skirt glowing, soft shadows pooling under the bell on the polished floor.",
+      "colour": "~70% warm honey stone and lime-wash walls; ~20% luminous white of the skirt and jacket; ~10% the deep brown polished floor and the honey felt hat.",
+      "atmosphere": {"mode": "air", "planes": "the polished floor nearest, the dancer, the stone walls, the bright window ring softest", "source": null},
+      "physics": "real centrifugal force — the weighted hem lifts and holds the bell shape with real momentum, the fabric ripples in slow waves at the edge, the LEFT foot pivots flat on the wood while the RIGHT foot pushes, the torso stays upright and balanced, the sleeves flutter slightly at the wrists. A reflection and contact shadow on the polished floor. Nothing floats, nothing slides, the dancer never leaves the centre.",
+      "acting": "Deep calm — eyes half-closed and softly downcast, the brow relaxed and still, lips gently closed, a faint inward peace. Never looks into the lens.",
+      "audio": "the soft rhythmic brush of leather socks on the wooden floor, the whisper of the skirt fabric turning, quiet breath, the deep reverberant room tone of the stone dome.",
+      "locks_chain": "the sequence runs in order — arms crossed, the bow, the arms opening RIGHT palm up LEFT palm down, the steady whirl with the bell of the skirt. Always counter-clockwise, always at the centre, always the same speed.",
+      "negative_extra": ["spinning fast", "travelling across floor", "hat falling", "arms positions swapped", "multiple dancers", "coloured lights"]
+    },
+    {
+      "id": "simit_tray_crowd",
+      "label_en": "Simit tray through the crowd",
+      "label_tr": "Kalabalıkta kafada simit tablası",
+      "hook_tr": "Eminönü kalabalığında kafada 40 simit, hiç düşmüyor. 'Nasıl yapıyor?' yorumları ve tekrar izlenme getirir.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["turkiye"],
+          "only": ["tr_04"],
+          "this_scene": "weaving through a dense waterfront crowd with the tray balanced on the head, hands free, calling out, then stopping, lifting one simit off the top and handing it to a child without the tray moving."
+        }
+      },
+      "default_cast": {"A": "tr_04"},
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE TRAY NEVER FALLS", "text": "the 70cm round wooden tray of forty sesame simit rings stays balanced flat on the head the entire time, hands free, riding the walk with tiny corrections of the neck. Not one simit falls. The tray never tilts more than 5 degrees, never floats above the head, never merges with the head."}
+      ],
+      "location_label": "Eminönü waterfront crowd by the New Mosque",
+      "location": "the Eminönü waterfront square in Istanbul on a bright morning, the New Mosque's grey stone domes and a stream of pigeons behind, ferry piers, a dense crowd of commuters and tourists. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} walks toward camera through the crowd, head and tray above most heads, centre-frame. The New Mosque domes sit behind and screen-LEFT. The crowd flows in both directions at different depths, NOT in rows. The child stands screen-RIGHT in the final shot. Depth planes: shoulders and heads of passers-by foreground, {A} mid-ground sharp, the mosque and pigeons background.",
+      "first_frame": "already mid-stride in the crowd, the tray gliding level above the heads.",
+      "shots": [
+        {"dur": 4.0, "name": "through the crowd", "lens": "34° (65mm) short tele", "lens_note": "head-and-tray height, the crowd compressed around", "beat": "{A} glides through the dense crowd, turning the shoulders to slip between people, the tray level, calling out a sing-song 'Simiiit! Taze simit!' with hands swinging free."},
+        {"dur": 2.0, "name": "tray detail", "lens": "12° (200mm) tele detail", "lens_note": "tight on the stacked simit and the cloth pad", "beat": "the stacked golden simit rings ride perfectly level, sesame seeds glinting, the coiled cloth pad pressed on the curls, a pigeon flashing past behind."},
+        {"dur": 3.0, "name": "the hand-off", "lens": "47° (50mm) standard normal", "lens_note": "waist-up, the seller and the child in frame", "beat": "{A} stops, reaches up with the RIGHT hand without looking, lifts one simit off the top and bends to hand it to a small child with a wide grin, the tray staying level on the head."}
+      ],
+      "camera": {"register": "gentle", "extra": "The operator walks backward in front of the seller, occasionally bumped by passers-by."},
+      "light": "bright morning sun from screen-LEFT, hard and warm, the tray and curls rimmed, faces in the crowd moving through patches of shadow and sun.",
+      "colour": "~70% warm grey stone and muted crowd clothing; ~20% rich golden-brown simit crust and sesame; ~10% crisp white shirt and pale blue sky.",
+      "atmosphere": {"mode": "air", "planes": "passing shoulders and heads nearest, the seller, the crowd behind, the mosque and pigeons furthest", "source": null},
+      "physics": "real balance — the head and neck make tiny continuous corrections as the body walks, the tray rides level with its real weight, the simit rings shift a millimetre and settle, the RIGHT hand lifts a single ring and the stack stays put, pigeons flap with real wing weight. Contact shadows on the paving. Nothing floats, nothing slides.",
+      "acting": "Cheerful, busy, proud — eyes alert scanning the crowd, brows lifting on the street call, a wide warm grin on the hand-off. The child beams and grabs. Nobody looks into the lens.",
+      "audio": "the street call 'Simiiit! Taze simit!' in a bright tenor, crowd chatter, footsteps on stone, pigeons' wings bursting, a ferry horn, a child's delighted laugh.",
+      "locks_chain": "the sequence runs in order — gliding through the crowd with the call, the tray detail, the stop and hand-off to the child. The tray is always level on the head, forty simit, none falling.",
+      "negative_extra": ["tray falling", "simit falling", "hands holding tray", "floating tray", "crowd staring at camera"]
+    }
+  ]
+}

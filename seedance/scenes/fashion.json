@@ -1,0 +1,156 @@
+{
+  "category": "fashion",
+  "scenes": [
+    {
+      "id": "rain_runway_walk",
+      "label_en": "Rain runway walk",
+      "label_tr": "Yağmur altında podyum yürüyüşü",
+      "hook_tr": "Tek plan, uzun lens, yağmur perdesinden çıkan model. 'Aura' ve 'main character' edit'lerinde çok kullanılır.",
+      "platforms": ["TikTok", "Instagram Reels", "Pinterest"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["fashion", "urban", "scifi", "fantasy", "historical", "horror", "fighters"],
+          "this_scene": "walking the wet runway straight toward camera through falling rain, an unbroken runway stride, stopping at the end mark and holding a still, heavy gaze."
+        }
+      },
+      "default_cast": {"A": "fsh_01"},
+      "critical": [
+        {"lib": "nobody_else", "also": ["the seated audience silhouettes along both sides"]},
+        {"title": "THE RAIN", "text": "real rain falls from a rain bar high above the runway across the whole frame depth, thin bright streaks backlit against black, splashing into a 1cm sheet of standing water on the runway. The rain is steady from first frame to last, never stops, never changes density, never falls sideways. The subject is soaked — the coat darkening and shedding water, droplets running off the jaw."}
+      ],
+      "location_label": "black-box fashion show with a flooded runway",
+      "location": "a black-box fashion venue, a long narrow runway covered in a thin sheet of standing water, a single rain bar above its full length, the audience seated along both sides as dark unlit silhouettes, one hard backlight at the far end of the runway. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the runway runs straight from the far backlight to the lens, dead centre of frame. {A} walks the centre line toward camera. The seated audience silhouettes line both frame edges, LEFT and RIGHT, as dark unlit shapes, motionless except for small head turns. Depth planes: rain streaks and splashes foreground, {A} mid-ground sharp, the far backlight and rain curtain background, burning.",
+      "first_frame": "already three strides in, mid-stride, emerging from the rain curtain at the far end of the runway.",
+      "shots": [
+        {"dur": 10.0, "name": "long-lens runway oner", "lens": "18° (120mm) portrait tight", "lens_note": "locked at the end of the runway at eye level, the walk compressed toward the lens, full body at first and ending on a chest-up frame",
+         "beats": [
+           {"dur": 6.0, "text": "{A} walks straight toward camera along the centre line, an unbroken runway stride, water splashing up from each footfall, the coat hem swinging heavy and wet, rain streaks falling between the lens and {A.obj}."},
+           {"dur": 4.0, "text": "{A} arrives at the end mark and stops square to the lens, water still running off the jaw and shoulders, holds perfectly still except for breathing, chest rising, a single slow blink, gaze heavy just past the lens."}
+         ]}
+      ],
+      "lens_defense": "long",
+      "camera": {"register": "locked", "extra": "The walk grows in frame naturally as the subject approaches; no zoom, no pan."},
+      "light": "one hard backlight at the far end of the runway, cool white, rimming the head, shoulders and every rain streak, the face lit only by a soft low frontal bounce off the wet runway. Deep black surround, no fill from the sides.",
+      "colour": "~70% deep black venue and wet black runway; ~20% cool silver-white from the backlight on rain and rim; ~10% the warm true skin tone of the face held natural.",
+      "atmosphere": {"mode": "air", "planes": "rain streaks and splashes nearest, the walking figure, the rain curtain at mid-runway, the burning backlight furthest", "source": "fine mist thrown up where each raindrop hits the runway water, staying within 20cm of the surface"},
+      "physics": "real bodyweight on a wet surface — each foot plants flat with a splash crown rising and collapsing, the soaked wool coat is heavy, swinging late and slapping against the legs, water streams off the hem and sleeves, rain hits the shoulders and bursts into droplets, contact shadow and reflection under each foot on the wet runway. Nothing floats, nothing slides.",
+      "acting": "Neutral, heavy, magnetic face; jaw soft, lips closed, brows perfectly still until one slight lift on the stop, eyes steady. Eyeline fixed just past the lens, never directly into it.",
+      "audio": "steady rain hissing on the water sheet, heavy splashes of each footstep, water dripping from the coat, a faint murmur from the dark audience.",
+      "locks_chain": "the sequence runs in order — emerge from the rain curtain, walk the full runway toward the lens, stop at the end mark and hold. The rain never stops. The lens never zooms.",
+      "negative_extra": ["umbrella", "dry clothes", "rain stopping", "audience lit", "sideways rain", "zoom"]
+    },
+    {
+      "id": "old_money_yacht",
+      "label_en": "Old-money yacht deck",
+      "label_tr": "Yat güvertesinde 'old money' anı",
+      "hook_tr": "Quiet luxury trendi: Riviera ışığı, keten, rüzgar. Moda ve seyahat hesaplarında sürekli paylaşılır.",
+      "platforms": ["Instagram Reels", "Pinterest", "TikTok"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["fashion", "urban", "creators", "turkiye"],
+          "this_scene": "leaning on the teak rail of a classic yacht under way, wind in the clothes, turning from the sea to look back toward the lens with a slow calm smile."
+        }
+      },
+      "default_cast": {"A": "fsh_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE MOTION OF THE SEA", "text": "the yacht is under way at a gentle 12 knots on calm deep-blue water, the horizon gently rising and falling 2 degrees with the swell, a white wake running behind, the coastline of a rocky Mediterranean shore sliding slowly past. The deck never tilts steeply and the subject never loses balance."}
+      ],
+      "location_label": "classic wooden yacht deck on the Mediterranean",
+      "location": "the stern deck of a classic 1960s wooden motor yacht, varnished teak rail and planking, a folded navy canvas awning, cream cushions, the open deep-blue Mediterranean and a rocky coastline with white villas behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands at the teak rail on the RIGHT third of frame, facing the sea screen-RIGHT, the wake and coastline behind. The cream cushions sit screen-LEFT in the foreground. Depth planes: rail and cushions foreground, {A} mid-ground sharp, the sea, wake and coastline background.",
+      "first_frame": "already leaning on the rail, wind moving the draped sweater and loose strands at the nape.",
+      "shots": [
+        {"dur": 3.0, "name": "profile at the rail", "lens": "47° (50mm) standard normal", "lens_note": "waist-up profile from the deck, the sea filling the background", "beat": "{A} leans on the rail watching the coastline, the draped sweater sleeves lifting in the wind, fingers resting on the varnished teak."},
+        {"dur": 2.0, "name": "detail insert", "lens": "12° (200mm) tele detail", "lens_note": "tight on the hand on the rail", "beat": "the hand slides along the varnished rail, the gold watch catching the sun, spray glittering in the soft background."},
+        {"dur": 3.0, "name": "the look back", "lens": "29° (85mm) portrait compression", "lens_note": "chest-up, the sea soft and bright behind", "beat": "{A} turns slowly from the sea toward the lens, loose strands blowing across the cheek, and a slow calm closed-lip smile arrives, eyes softening."}
+      ],
+      "camera": {"register": "gentle", "extra": "The camera rides the yacht's gentle roll with the deck."},
+      "light": "high late-morning Mediterranean sun from above and screen-RIGHT, hard and clean, bright specular glitter on the water, the face lit softly by bounce off the white deck and cushions.",
+      "colour": "~70% deep Mediterranean blue sea and sky; ~20% warm honey teak, cream cushions and the camel and cream wardrobe; ~10% white highlights from the wake, glitter and villas.",
+      "atmosphere": {"mode": "air", "planes": "rail and cushions nearest, the subject, the wake, the coastline softening in a light sea haze furthest", "source": "fine salt spray lifting off the bow wave and drifting past the stern, catching the light"},
+      "physics": "real bodyweight on a moving deck — the body subtly counters the gentle roll through the knees and the hand on the rail, the draped sweater and shirt ripple and snap in the 20 km/h wind, loose strands whip and settle, the wake churns white behind. Contact shadows on the teak. Nothing floats, nothing slides.",
+      "acting": "Serene, private, unhurried. Brows soft, a tiny lift as the smile arrives, eyes crinkling slightly at the corners. Eyeline on the coast, then turning to a point just beside the lens, never directly into it.",
+      "audio": "the low diesel hum of the engine, water hissing along the hull, the wake churning, wind flapping the awning, a gull far off.",
+      "locks_chain": "the sequence runs in order — leaning at the rail, the hand on the teak, the slow turn back and the smile. The coastline slides past on the same side throughout.",
+      "negative_extra": ["storm", "tilted horizon", "sunglasses", "other boats close", "bikini"]
+    },
+    {
+      "id": "rooftop_wind_glam",
+      "label_en": "Rooftop wind glam",
+      "label_tr": "Çatıda rüzgarlı glam yürüyüşü",
+      "hook_tr": "Rüzgarda uçuşan saten, altın saat, özgüven yürüyüşü. Beden pozitif ve güzellik kitlesi bu içerikleri sever.",
+      "platforms": ["Instagram Reels", "TikTok"],
+      "style": "lubezki",
+      "roles": {
+        "A": {
+          "fit": ["fashion", "creators", "urban", "historical"],
+          "this_scene": "strutting across the rooftop into a strong wind, then stopping at the edge, throwing the head back and laughing as the dress whips around the legs."
+        }
+      },
+      "default_cast": {"A": "fsh_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE WIND", "text": "a steady strong wind of 35 km/h blows from screen-RIGHT to screen-LEFT the whole time. The satin dress presses against the body on the windward side and streams out on the leeward side, the hair blows back from the face, the open jacket flaps. The wind direction never reverses."}
+      ],
+      "location_label": "high-rise rooftop at golden hour",
+      "location": "the flat concrete rooftop of a high-rise at golden hour, a glass balustrade at the edge, an air-conditioning unit and a steel stair hatch, a city spreading to the horizon in warm haze. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} walks from the stair hatch screen-LEFT toward the glass balustrade screen-RIGHT and stops at it, the city below and behind. The sun sits low screen-RIGHT. Depth planes: rooftop concrete foreground, {A} mid-ground sharp, the city and horizon background in haze.",
+      "first_frame": "already mid-stride away from the stair hatch, dress whipping, heels striking the concrete.",
+      "shots": [
+        {"dur": 3.0, "name": "tracking strut", "lens": "63° (32mm) reportage wide", "lens_note": "full body, tracking alongside at hip height", "beat": "{A} struts into the wind with long confident steps, the emerald satin streaming screen-LEFT, the jacket flapping, bangles sliding on the wrist."},
+        {"dur": 2.0, "name": "low hero", "lens": "84° (22mm) classic wide", "lens_note": "low angle from the concrete, the sky huge above", "beat": "{A} passes over the lens from the low angle, the dress snapping in the wind against the orange sky, heels striking the concrete."},
+        {"dur": 3.0, "name": "laugh at the edge", "lens": "29° (85mm) portrait compression", "lens_note": "chest-up at the balustrade, the sun flaring at the frame edge", "beat": "{A} stops at the glass edge, rests one hand on it, throws the head back and bursts into a full laugh, curls blowing back, dimples deep, then looks back out over the city."}
+      ],
+      "camera": {"register": "gentle", "extra": "The operator walks alongside in shot 1 and crouches on the concrete in shot 2."},
+      "light": "golden-hour sun low from screen-RIGHT, a warm hard key raking across the face and the satin, bright specular sheen travelling along the dress folds, the shadow side filled softly by the bright sky.",
+      "colour": "~70% warm gold and amber from the sun and the city haze; ~20% saturated emerald from the satin dress; ~10% cool pale blue in the upper sky.",
+      "atmosphere": {"mode": "air", "planes": "the rooftop concrete nearest, the subject, the balustrade, the city in golden haze furthest", "source": null},
+      "physics": "real full-figured bodyweight — heels strike and the weight transfers through the hips, the satin clings on the windward side and ripples in waves on the leeward side, the leather jacket is heavier and flaps slower, curls stream and bounce, bangles slide and clack on the wrist. Contact shadows on the concrete. Nothing floats, nothing slides.",
+      "acting": "Supreme confidence — chin up, eyes steady, a small smile on the walk, then the brow lifts and the eyes squeeze into a full-body laugh at the edge. Eyeline ahead and out over the city, never into the lens.",
+      "audio": "strong wind gusting over the rooftop, satin fabric snapping, heels striking concrete, bangles clacking, a free rolling laugh, the distant hum of the city below.",
+      "locks_chain": "the sequence runs in order — strut into the wind, the low hero pass, the laugh at the glass edge. The wind always blows screen-RIGHT to screen-LEFT, the sun always low screen-RIGHT.",
+      "negative_extra": ["wind reversing", "hair covering face fully", "dress blowing up", "extra people"]
+    },
+    {
+      "id": "subway_platform_editorial",
+      "label_en": "Subway platform editorial",
+      "label_tr": "Metro peronunda K-moda editoryali",
+      "hook_tr": "Geçen trenin rüzgarı, floresan ışık, soğuk bakış. 'Edit' ve moda videoları için ideal.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "neon_noir",
+      "roles": {
+        "A": {
+          "fit": ["fashion", "urban", "scifi", "creators", "horror"],
+          "this_scene": "standing still at the platform edge as an express train roars past behind, the blazer and hair ripping in the train wind, then turning the head slowly toward the lens."
+        }
+      },
+      "default_cast": {"A": "fsh_04"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE TRAIN PASSES BEHIND", "text": "an express train roars through the station on the far track BEHIND the subject at 70 km/h without stopping, its lit windows streaking past as a continuous smear from screen-LEFT to screen-RIGHT. The train never stops, never opens its doors, never passes in front of the subject. The subject stands safely 2 metres from the platform edge."}
+      ],
+      "location_label": "empty underground metro platform at night",
+      "location": "an empty underground metro platform at night, white-tiled walls, a long bank of cool fluorescent tubes overhead, a yellow tactile strip at the platform edge, a far track with a passing train. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands centre-frame on the platform facing screen-LEFT in profile, 2 metres from the yellow edge strip. The far track and the passing train run BEHIND {A.obj} across the full width of frame. Depth planes: platform floor foreground, {A} mid-ground sharp, the streaking train background.",
+      "first_frame": "already standing in profile, the train's headlight flaring into the tunnel screen-LEFT, wind starting to lift the hair.",
+      "shots": [
+        {"dur": 4.0, "name": "profile as the train passes", "lens": "34° (65mm) short tele", "lens_note": "waist-up profile, the train compressed behind", "beat": "the train roars in behind and streaks past, window lights smearing, the wind rips the blazer open and throws the silver-lilac fringe across the brows, {A} stays perfectly still, eyes forward."},
+        {"dur": 4.0, "name": "the slow turn", "lens": "18° (120mm) portrait tight", "lens_note": "face and shoulders, the train still streaking behind", "beat": "{A} turns the head slowly toward the lens, the fringe settling as the last carriage whips past, the gaze landing just beside the lens, cold and calm, one slow blink."}
+      ],
+      "camera": {"register": "gentle", "extra": "The operator stands braced against the train wind, the frame shivering slightly with the rumble."},
+      "light": "cool overhead fluorescent from above, even and slightly green, hard downward shadows under the brows, the passing train windows throwing a flickering warm-white strobe of light across the side of the face and the blazer.",
+      "colour": "~70% cool green-white fluorescent on white tile; ~20% warm white flicker from the train windows; ~10% the saturated yellow of the tactile edge strip.",
+      "atmosphere": {"mode": "air", "planes": "the platform floor nearest, the subject, the far track, the tunnel mouth furthest", "source": "dust whipped off the track bed by the passing train, swirling low along the far edge only"},
+      "physics": "real bodyweight braced against a strong train wind — the blazer lapels flap and snap, the sheer mesh top presses against the torso, the wide silk trousers ripple, the silver chain earring swings, the hair whips and settles as the train clears. The floor vibrates subtly with the rumble. Nothing floats, nothing slides.",
+      "acting": "Stillness as power — face neutral, lips closed, brows level, the only movement the slow head turn and one slow blink. Eyeline forward, then to a point just beside the lens, never into it.",
+      "audio": "the rising roar of the express train, the clatter of wheels over rail joints, a pressure blast of wind, the fading rumble into the tunnel, the hum of fluorescent tubes.",
+      "light_changes": true,
+      "locks_chain": "the sequence runs in order — the train roars past behind, the wind rips through the clothes, the slow head turn toward the lens. The train always passes behind, left to right.",
+      "negative_extra": ["train stopping", "train in front of subject", "standing on the edge", "passengers", "graffiti text"]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": "2026.09.25-cinematic",
+  "data_urls": {
+    "styles": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/styles.json",
+    "data": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/data.json",
+    "data_extended": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/data_extended.json",
+    "negative_bank": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/negative_bank.json",
+    "platforms": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/platforms.json",
+    "seedance_library": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/library.json",
+    "seedance_characters": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/characters.json",
+    "seedance_scenes_urban": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/urban.json",
+    "seedance_scenes_fashion": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/fashion.json",
+    "seedance_scenes_turkiye": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/turkiye.json",
+    "seedance_scenes_sports": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/sports.json",
+    "seedance_scenes_fighters": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/fighters.json",
+    "seedance_scenes_scifi": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/scifi.json",
+    "seedance_scenes_fantasy": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/fantasy.json",
+    "seedance_scenes_historical": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/historical.json",
+    "seedance_scenes_horror": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/horror.json",
+    "seedance_scenes_comedy": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/comedy.json",
+    "seedance_scenes_creators": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/creators.json",
+    "seedance_scenes_creatures": "https://raw.githubusercontent.com/srcnunsn-droid/sercan/main/seedance/scenes/creatures.json"
+  }
+}

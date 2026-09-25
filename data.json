@@ -1,7 +1,8 @@
 {
   "modes": {
     "Social Content Kit": {},
-    "General": {}
+    "General": {},
+    "Cinematic Video Kit": {}
   },
   "category_tree": {
     "Sosyal İçerik (Social Content)": {
@@ -39,6 +40,32 @@
           "{brand} için ürün reklam görseli: {product} odak. {visual}. {composition}. {lighting}. Malzemeler: {material}. Lens: {lens}. Stil: {style_tokens}. Fayda: {benefit}. CTA: {cta}."
         ]
       }
+    },
+    "Sinematik Video (Cinematic Video)": {
+      "Seedance Sinematik Sahne (Seedance Cinematic Scene)": {
+        "en": [
+          "Cinematic live-action shot about {topic}. {visual}. {composition}. {lighting}. Lens: {lens}. Style: {style_tokens}. Photoreal, real-time 24fps, no on-screen text, NO BGM."
+        ],
+        "tr": [
+          "{topic} konulu sinematik canlı çekim. {visual}. {composition}. {lighting}. Lens: {lens}. Stil: {style_tokens}. Fotogerçekçi, gerçek zamanlı 24fps, ekranda yazı yok, arka plan müziği yok."
+        ]
+      },
+      "Viral Karakter Kısa Video (Viral Character Short)": {
+        "en": [
+          "Vertical short for {brand}: {topic}. Hook in the first second — {visual}. {composition}. {lighting}. Lens: {lens}. Style: {style_tokens}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için dikey kısa video: {topic}. İlk saniyede hook — {visual}. {composition}. {lighting}. Lens: {lens}. Stil: {style_tokens}. CTA: {cta}."
+        ]
+      },
+      "Ürün Sinematik Reklam (Product Cinematic Ad)": {
+        "en": [
+          "Cinematic product film for {brand}: {product} hero moment. {visual}. {composition}. {lighting}. Materials: {material}. Lens: {lens}. Style: {style_tokens}. Benefit: {benefit}. CTA: {cta}."
+        ],
+        "tr": [
+          "{brand} için sinematik ürün filmi: {product} kahraman anı. {visual}. {composition}. {lighting}. Malzeme: {material}. Lens: {lens}. Stil: {style_tokens}. Fayda: {benefit}. CTA: {cta}."
+        ]
+      }
     }
   },
   "pools": {
@@ -65,7 +92,19 @@
         "holiday gift guide",
         "minimal desk setup trends",
         "cozy lifestyle inspiration",
-        "summer style"
+        "summer style",
+        "rooftop gap jump at dusk",
+        "rain runway walk",
+        "flying slipper family comedy",
+        "village yufka ASMR",
+        "whirling sema at the centre of a domed hall",
+        "dragon over Cappadocia balloons",
+        "cyborg courier neon alley run",
+        "dog steals a croissant",
+        "cat pushes a glass off the table",
+        "beat-drop crew choreography",
+        "dawn heavy-bag combination",
+        "janissary charge through fog"
       ],
       "visuals": [
         "hero product on seamless background",
@@ -74,7 +113,14 @@
         "lifestyle usage scene",
         "top-down flatlay",
         "macro texture detail",
-        "splash/kinetic motion moment"
+        "splash/kinetic motion moment",
+        "already mid-action at frame one, no empty establishing hold",
+        "silhouette against a low sun",
+        "rain streaks backlit against black",
+        "dust blooming from a hard landing",
+        "breath condensing in cold air",
+        "fabric whipping in strong wind",
+        "water exploding from a footfall"
       ],
       "compositions": [
         "rule of thirds",
@@ -82,7 +128,12 @@
         "top-down flatlay",
         "diagonal balance",
         "three-quarter angle",
-        "symmetrical framing"
+        "symmetrical framing",
+        "subject scattered at different depths, not in a row",
+        "long-lens compression down a corridor",
+        "low hero angle with huge sky",
+        "over-the-shoulder reveal",
+        "dead-centre runway symmetry"
       ],
       "lightings": [
         "soft studio light",
@@ -90,7 +141,14 @@
         "golden hour feel",
         "dramatic chiaroscuro",
         "natural window light",
-        "high-key clean light"
+        "high-key clean light",
+        "low golden-hour sun from screen-right",
+        "blue-hour dusk with city lights below",
+        "single hard backlight through rain",
+        "flickering fluorescent corridor",
+        "magenta and cyan neon split",
+        "soft window daylight across a workbench",
+        "warm tungsten practicals at night"
       ],
       "ctas": [
         "shop now",
@@ -111,7 +169,14 @@
       "lenses": [
         "50mm natural",
         "85mm portrait",
-        "24mm wide"
+        "24mm wide",
+        "84° (22mm) classic wide",
+        "63° (32mm) reportage wide",
+        "47° (50mm) standard normal",
+        "29° (85mm) portrait compression",
+        "18° (120mm) portrait tight",
+        "12° (200mm) tele detail",
+        "107° (16mm) architectural ultra-wide"
       ],
       "materials": [
         "matte finish",
@@ -128,7 +193,11 @@
       ],
       "film_tokens": [
         "subtle halation",
-        "grain touch"
+        "grain touch",
+        "organic 65mm grain",
+        "real 1/48s motion blur",
+        "natural bloom at point lights",
+        "heavy 16mm grain"
       ],
       "artists": [
         "Ghibli spirit",
@@ -137,7 +206,12 @@
       "concepts": [
         "quiet luxury",
         "modern minimalism",
-        "sport performance"
+        "sport performance",
+        "main-character energy",
+        "everyday hero comedy",
+        "ancient meets fantasy",
+        "quiet craft ASMR",
+        "impossible balance"
       ],
       "benefits": [
         "lightweight comfort",
@@ -149,7 +223,11 @@
         "eye-level",
         "low angle",
         "high angle",
-        "45-degree 3/4 view"
+        "45-degree 3/4 view",
+        "alley-floor looking straight up",
+        "table-height macro",
+        "over the shoulder",
+        "inside the crowd at head height"
       ],
       "poses": [
         "flatlay arrangement",
@@ -159,7 +237,12 @@
       "movements": [
         "push-in",
         "pan left",
-        "subtle tilt"
+        "subtle tilt",
+        "locked-off extremely slow push",
+        "gentle handheld drift",
+        "heavy handheld chase",
+        "violent handheld whip-pan",
+        "walking backward in front of the subject"
       ]
     },
     "tr": {
@@ -185,7 +268,19 @@
         "yılbaşı hediye rehberi",
         "minimal masa düzeni trendleri",
         "sıcak yaşam tarzı ilhamı",
-        "yaz stili"
+        "yaz stili",
+        "gün batımında çatıdan çatıya atlayış",
+        "yağmur altında podyum yürüyüşü",
+        "terlikli anne komedisi",
+        "köyde yufka açma ASMR",
+        "kubbeli salonda sema dönüşü",
+        "Kapadokya balonları arasında ejderha",
+        "neon ara sokakta siborg kurye",
+        "kruvasan çalan köpek",
+        "masadan bardak düşüren kedi",
+        "beat drop'ta ekip koreografisi",
+        "şafakta kum torbası kombinasyonu",
+        "sisli ovada yeniçeri hücumu"
       ],
       "visuals": [
         "seamless arka planda ürün kahramanı",
@@ -194,7 +289,14 @@
         "kullanım anı sahnesi",
         "yukarıdan flatlay",
         "makro doku detayı",
-        "sıçrama/kinetik hareket anı"
+        "sıçrama/kinetik hareket anı",
+        "ilk karede aksiyon zaten başlamış, boş açılış yok",
+        "alçak güneşe karşı siluet",
+        "siyah fona karşı arkadan aydınlatılmış yağmur",
+        "sert inişten yükselen toz",
+        "soğukta yoğunlaşan nefes",
+        "sert rüzgarda savrulan kumaş",
+        "adımla patlayan su"
       ],
       "compositions": [
         "üçte bir kuralı",
@@ -202,7 +304,12 @@
         "yukarıdan flatlay",
         "diyagonal denge",
         "üç çeyrek açı",
-        "simetrik kadraj"
+        "simetrik kadraj",
+        "figürler farklı derinliklerde, sıra halinde değil",
+        "koridor boyunca uzun lens sıkıştırması",
+        "dev gökyüzüyle alttan kahraman açısı",
+        "omuz üstünden açılış",
+        "tam merkez podyum simetrisi"
       ],
       "lightings": [
         "yumuşak stüdyo ışığı",
@@ -210,7 +317,14 @@
         "altın saat hissi",
         "dramatic chiaroscuro",
         "doğal pencere ışığı",
-        "yüksek anahtar temiz ışık"
+        "yüksek anahtar temiz ışık",
+        "ekranın sağından alçak altın saat güneşi",
+        "aşağıda şehir ışıklarıyla mavi saat",
+        "yağmurun içinden tek sert arka ışık",
+        "titreşen floresan koridor",
+        "magenta ve camgöbeği neon ayrımı",
+        "tezgaha düşen yumuşak pencere ışığı",
+        "gece sıcak tungsten pratik ışıklar"
       ],
       "ctas": [
         "hemen keşfet",
@@ -230,7 +344,14 @@
       "lenses": [
         "50mm doğal",
         "85mm portre",
-        "24mm geniş"
+        "24mm geniş",
+        "84° (22mm) klasik geniş",
+        "63° (32mm) röportaj geniş",
+        "47° (50mm) standart normal",
+        "29° (85mm) portre sıkıştırma",
+        "18° (120mm) sıkı portre",
+        "12° (200mm) tele detay",
+        "107° (16mm) mimari ultra geniş"
       ],
       "materials": [
         "mat mat",
@@ -247,7 +368,11 @@
       ],
       "film_tokens": [
         "hafif halation",
-        "tane dokusu"
+        "tane dokusu",
+        "organik 65mm tane",
+        "gerçek 1/48s hareket bulanıklığı",
+        "nokta ışıklarda doğal bloom",
+        "yoğun 16mm tane"
       ],
       "artists": [
         "Ghibli ruhu",
@@ -256,7 +381,12 @@
       "concepts": [
         "sakin lüks",
         "modern minimalizm",
-        "spor performansı"
+        "spor performansı",
+        "ana karakter enerjisi",
+        "gündelik kahraman komedisi",
+        "tarih ile fantastiğin buluşması",
+        "sessiz zanaat ASMR",
+        "imkânsız denge"
       ],
       "benefits": [
         "hafif konfor",
@@ -268,7 +398,11 @@
         "göz hizası",
         "alttan açı",
         "üstten açı",
-        "45 derece üç çeyrek"
+        "45 derece üç çeyrek",
+        "ara sokak zemininden dik yukarı",
+        "masa hizası makro",
+        "omuz üstü",
+        "kalabalığın içinden baş hizası"
       ],
       "poses": [
         "flatlay düzeni",
@@ -278,7 +412,12 @@
       "movements": [
         "yakınlaşma",
         "sola pan",
-        "hafif tilt"
+        "hafif tilt",
+        "sabit, son derece yavaş yaklaşma",
+        "hafif el kamerası süzülmesi",
+        "ağır el kamerası takip",
+        "şiddetli el kamerası whip-pan",
+        "öznenin önünde geri geri yürüyüş"
       ]
     }
   }

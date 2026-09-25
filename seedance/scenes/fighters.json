@@ -1,0 +1,158 @@
+{
+  "category": "fighters",
+  "scenes": [
+    {
+      "id": "boxing_heavy_bag",
+      "label_en": "Dawn heavy-bag combo",
+      "label_tr": "Şafakta kum torbası kombinasyonu",
+      "hook_tr": "Tozlu spor salonu, pencereden ışık, torbadan fırlayan ter. Motivasyon içerikleri için klasik ama her zaman çalışır.",
+      "platforms": ["Instagram Reels", "TikTok", "YouTube Shorts"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["fighters", "sports", "urban", "comedy"],
+          "this_scene": "working a heavy bag alone at dawn — a jab, jab, cross, left hook, right uppercut combination — then stepping back, breathing hard, glaring at the swinging bag."
+        }
+      },
+      "default_cast": {"A": "fgt_01"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE COMBINATION", "text": "exactly five punches in order: LEFT jab, LEFT jab, RIGHT cross, LEFT hook, RIGHT uppercut. Each lands on the bag with visible impact — the leather dents, the bag jumps and swings on its chain. The hands stay exactly as in the reference — wrapped or bare — no boxing gloves appearing."}
+      ],
+      "location_label": "old boxing gym at dawn",
+      "location": "an old boxing gym at dawn, a cracked red leather heavy bag hanging on a chain from a steel beam, a worn wooden floor, a ring with frayed ropes behind, tall dusty factory windows along one wall. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the heavy bag hangs centre-frame, {A} on the LEFT side of the bag facing screen-RIGHT. The tall windows run along the wall behind, screen-RIGHT. The ring sits in the background. Depth planes: the bag foreground, {A} mid-ground, the ring and windows background.",
+      "first_frame": "already bouncing on the balls of the feet in front of the bag, hands up, one breath before the first jab.",
+      "shots": [
+        {"dur": 3.0, "name": "the combination", "lens": "47° (50mm) standard normal", "lens_note": "side-on at shoulder height, the bag and the full body", "beat": "{A} fires the combination — jab, jab, cross, hook, uppercut — the bag jumping on its chain with each hit, sweat flying off {A.pos} hair and shoulders."},
+        {"dur": 2.0, "name": "impact insert", "lens": "12° (200mm) tele detail", "lens_note": "tight on the wrapped fist and the bag leather", "beat": "the RIGHT uppercut drives into the leather, the surface dents deep, dust and sweat burst off the bag in the window light."},
+        {"dur": 3.0, "name": "the glare", "lens": "18° (120mm) portrait tight", "lens_note": "the face through the swinging bag", "beat": "{A} steps back, chest heaving, sweat running down the temple, and glares at the bag as it swings back across the frame, jaw tight."}
+      ],
+      "camera": {"register": "heavy", "extra": "The camera flinches slightly with each impact."},
+      "light": "low dawn sun through the tall dusty windows from screen-RIGHT, hard warm shafts falling across the floor where dust hangs, the face half in shadow, a cool blue ambience in the rest of the gym.",
+      "colour": "~70% cool blue-grey gym shadow and worn wood; ~20% warm gold dawn light through the windows; ~10% the cracked red leather of the bag.",
+      "atmosphere": {"mode": "air", "planes": "the swinging bag nearest, the boxer, the ring ropes, the bright windows furthest", "source": "old dust shaken off the bag on each impact, drifting and catching the window light, and sweat spray flicking off the braids"},
+      "physics": "real 45kg heavy bag — each punch dents the leather and swings the bag on its creaking chain, the bag's return pushes back against the next punch, the boxer's weight rotates through the hips and pivoting feet, the hair whips and slaps, sweat drops fly and fall with gravity. Contact shadows on the floor. Nothing floats, nothing slides.",
+      "acting": "Fierce and private — eyes locked on the bag, brow crushed low, a sharp exhale through the nose with every punch, jaw clenched; after the combination the nostrils flare and the brow stays hard. Never looks into the lens.",
+      "audio": "sharp exhales with each punch, deep thuds of wrapped fists into leather, the chain creaking and rattling, feet squeaking on wood, hard breathing, pigeons on the window ledge.",
+      "locks_chain": "the sequence runs in order — jab, jab, cross, hook, uppercut, the impact dent, the step back and the glare. The bag hangs centre-frame throughout.",
+      "negative_extra": ["boxing gloves", "sparring partner", "wrong punch order", "bag detaching"]
+    },
+    {
+      "id": "atlas_stone_lift",
+      "label_en": "Atlas stone lift",
+      "label_tr": "150 kg Atlas taşı kaldırma",
+      "hook_tr": "Gerçek ağırlık, titreyen kollar, taş platforma çarpar. 'Güç' içerikleri ve spor hesapları çok paylaşır.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "doc16",
+      "roles": {
+        "A": {
+          "fit": ["fighters"],
+          "only": ["fgt_02", "fan_03", "his_03", "cmd_04"],
+          "this_scene": "lapping a 150kg concrete atlas stone off the ground, rolling it up the chest and driving it onto a chest-high platform, then roaring."
+        }
+      },
+      "default_cast": {"A": "fgt_02"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE STONE IS 150KG", "text": "one rough grey concrete sphere, 60cm across, 150kg, flecked with tacky yellow resin. It moves slowly and only under full effort — it never bounces, never rolls on its own, never moves like a light ball. It ends resting on top of the platform, still."}
+      ],
+      "location_label": "outdoor strongman yard with a loading platform",
+      "location": "an outdoor strongman training yard at overcast noon, a rubber-matted floor, a chest-high black steel loading platform, chalk buckets, a chain-link fence and shipping containers behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the stone sits on the mat centre-frame, the platform directly in front of it screen-RIGHT. {A} straddles the stone from behind, facing screen-RIGHT. Depth planes: chalk bucket foreground, {A} and stone mid-ground, the fence and containers background.",
+      "first_frame": "already straddling the stone, hands wrapped around it, chalk puffing, the first pull beginning.",
+      "shots": [
+        {"dur": 3.5, "name": "the lap", "lens": "63° (32mm) reportage wide", "lens_note": "low three-quarter from the front, stone and body", "beat": "{A} drags the stone off the mat and into the lap, the back rounding, the arms shaking, a long groan through gritted teeth."},
+        {"dur": 3.0, "name": "the load", "lens": "29° (85mm) portrait compression", "lens_note": "tight on the face, forearms and the stone", "beat": "{A} rolls the stone up the chest, veins standing out, the face flushing deep red, and drives the hips forward — the stone rising to the platform edge."},
+        {"dur": 3.5, "name": "the roar", "lens": "84° (22mm) classic wide", "lens_note": "low, the platform, the stone and the body", "beat": "the stone drops onto the platform with a heavy thud and a burst of chalk, {A} slaps it twice with both palms, throws the head back and roars at the sky."}
+      ],
+      "camera": {"register": "heavy", "extra": "The camera trembles as the stone lands."},
+      "light": "flat overcast noon, a soft even top light, faces and forearms lit without hard shadow, the chalk bright white.",
+      "colour": "~70% neutral grey of the sky, concrete and containers; ~20% bright chalk white on hands and stone; ~10% flushed red skin and the black steel platform.",
+      "atmosphere": {"mode": "air", "planes": "the chalk bucket nearest, the lifter and stone, the fence, the containers furthest", "source": "chalk dust puffing from the hands and the stone on each grip and on the landing"},
+      "physics": "true 150kg mass — the mat compresses under the stone, the lifter's whole back strains, the stone rolls up the chest dragging the singlet with the tacky resin, the platform shudders on impact, the stone settles without bouncing, loose hair swings with momentum. Nothing floats, nothing slides.",
+      "acting": "Maximum strain — eyes squeezed, forehead creased hard, teeth bared, the face flushing; then the eyes fly open and the mouth opens wide on the roar. Never looks into the lens.",
+      "audio": "the scrape of the stone on rubber, a long straining groan, the slap of the stone against the singlet, a massive thud on the steel platform, two palm slaps, a thunderous roar, wind rattling the chain-link fence.",
+      "locks_chain": "the sequence runs in order — lap the stone, roll it up the chest, load it onto the platform, slap it, roar. One stone throughout.",
+      "negative_extra": ["light bouncing ball", "stone floating", "second stone", "stone falling off"]
+    },
+    {
+      "id": "wushu_courtyard_rain",
+      "label_en": "Rain-cutting sword form",
+      "label_tr": "Yağmurda kılıç formu",
+      "hook_tr": "Yağmur damlaları kılıçla ikiye bölünüyor. Estetik dövüş sanatı videoları çok kaydedilir.",
+      "platforms": ["YouTube Shorts", "Instagram Reels", "TikTok"],
+      "style": "deakins",
+      "roles": {
+        "A": {
+          "fit": ["fighters", "historical", "fantasy"],
+          "this_scene": "performing a slow flowing sword form in the rain, then one sudden explosive cut that splits the falling drops, ending in a still crouch."
+        }
+      },
+      "default_cast": {"A": "fgt_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE CUT", "text": "at 7.0s the slow form breaks into one explosive horizontal cut from LEFT to RIGHT. The blade passes through the falling rain and the drops in its path burst into a flat fan of spray. One blade, one cut, the sword never bends, never duplicates, never trails light."}
+      ],
+      "location_label": "stone temple courtyard in rain",
+      "location": "an old stone temple courtyard in steady rain, wet grey flagstones with puddles, a curved dark-tiled roof edge dripping water, a gnarled pine tree, a bronze incense burner. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} stands at the centre of the courtyard facing screen-LEFT, the pine tree behind screen-RIGHT, the roof edge along the top of frame. Depth planes: dripping roof edge and rain foreground, {A} mid-ground, the pine and temple wall background.",
+      "first_frame": "already mid-form, the sword drawing a slow arc overhead, rain hitting the blade.",
+      "shots": [
+        {"dur": 4.0, "name": "slow form", "lens": "47° (50mm) standard normal", "lens_note": "full body, eye level", "beat": "{A} flows through a slow form, the sword tracing wide circles, the red tassel swinging, the soaked clothes clinging to the arms, rain bouncing off the flagstones."},
+        {"dur": 3.0, "name": "stillness", "lens": "18° (120mm) portrait tight", "lens_note": "the face and the raised blade", "beat": "{A} draws the sword back beside the face and holds dead still, water dripping from the brows and jaw, eyes opening slowly."},
+        {"dur": 3.0, "name": "the cut", "lens": "84° (22mm) classic wide", "lens_note": "low and wide, the full cut through the rain", "beat": "{A} explodes into one horizontal cut, the blade splitting the rain into a fan of spray, and sinks into a low still crouch, the tassel swinging to rest. Brief slow motion on the blade passing through the rain only."}
+      ],
+      "slowmo": {"what": "the blade passing through the rain", "start": 7.0, "end": 7.8},
+      "camera": {"register": "locked", "extra": "Tripod-weighted throughout, stillness broken only by the subject."},
+      "light": "soft overcast rain light from above, cool and even, a faint warm glow from a paper lantern under the eaves screen-LEFT on the side of the face, the wet flagstones reflecting the pale sky.",
+      "colour": "~70% cool slate grey stone and rain; ~20% the pale wardrobe glowing softly against the grey; ~10% the red tassel and the warm lantern glow.",
+      "atmosphere": {"mode": "air", "planes": "rain streaks and roof drips nearest, the master, the pine, the temple wall furthest", "source": "rain splash rising off the flagstones and the fan of spray from the cut"},
+      "physics": "real rain and real steel — drops fall straight with gravity and burst on stone, the wet fabric is heavy and clings, the sleeves swing late, the blade's cut throws a flat sheet of spray, the tassel swings with momentum and settles, the feet grip wet stone without slipping. Contact reflections in the puddles. Nothing floats, nothing slides.",
+      "acting": "Serene, meditative, eyes half-lowered through the form; in the stillness the eyes open fully, calm and razor-sharp; the cut comes with a single sharp exhale and no change of expression. Never looks into the lens.",
+      "audio": "steady rain on stone and tile, drips from the eaves, the swish of wet fabric, the whistle of the blade, the splash of the cut spray, a single sharp exhale.",
+      "locks_chain": "the sequence runs in order — slow form, stillness with the raised blade, one horizontal cut through the rain, the crouch. The rain falls steadily throughout.",
+      "negative_extra": ["glowing blade", "light trails", "multiple swords", "rain stopping", "wire-fu floating"]
+    },
+    {
+      "id": "mma_walkout",
+      "label_en": "Fight-night walkout",
+      "label_tr": "Dövüş gecesi kafese yürüyüş",
+      "hook_tr": "Tünelden çıkış, arenanın uğultusu, sakin ve ölümcül bakış. Dövüş gecesi hype videoları için.",
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["fighters", "sports", "urban", "historical", "fantasy"],
+          "this_scene": "walking out of the dark tunnel toward the arena lights with the hood up, then pushing the hood back at the tunnel mouth and fixing a calm, deadly stare ahead."
+        }
+      },
+      "default_cast": {"A": "fgt_04"},
+      "extra_assets": [
+        {"label_en": "arena crowd wardrobe sheet", "asset": "the arena crowd — thousands of fans far off in the stands as a dark mass of silhouettes, raised arms and scattered small lights, no individual faces readable."}
+      ],
+      "critical": [
+        {"lib": "everyone_live"},
+        {"title": "THE HOOD", "text": "the hood of the black walkout robe is UP in shots 1 and 2, the face in its shadow, and is pushed back with both hands in shot 3 revealing the head. Once back, it stays back."}
+      ],
+      "location_label": "arena entrance tunnel on fight night",
+      "location": "a concrete arena entrance tunnel on fight night, black-painted walls, a rubber floor mat, the bright arena and a distant octagon cage glowing at the tunnel mouth, the dark stands full of fans beyond. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the tunnel runs from the lens straight toward the bright arena mouth, {A} walks down its centre toward the light, AWAY from camera in shots 1 and 3 and toward camera in shot 2. The cage glows beyond the mouth. Depth planes: tunnel walls foreground, {A} mid-ground, the bright arena and crowd background.",
+      "first_frame": "already walking down the tunnel, hood up, shoulders rolling.",
+      "shots": [
+        {"dur": 3.0, "name": "follow from behind", "lens": "63° (32mm) reportage wide", "lens_note": "behind the shoulder, the tunnel and the light ahead", "beat": "{A} walks toward the blazing tunnel mouth, hood up, gloved hands loose at the sides, the crowd roar swelling ahead."},
+        {"dur": 3.0, "name": "face in the hood", "lens": "18° (120mm) portrait tight", "lens_note": "leading from the front, the face half-shadowed", "beat": "only the lower face and eyes show under the hood, lit from the arena behind the lens, eyes calm, jaw working slowly, a slow breath out."},
+        {"dur": 3.0, "name": "the reveal", "lens": "84° (22mm) classic wide", "lens_note": "low behind at the tunnel mouth, the arena exploding with light", "beat": "{A} steps into the light at the mouth, pushes the hood back with both hands, rolls the neck, and fixes a still, deadly stare on the cage ahead."}
+      ],
+      "camera": {"register": "gentle", "extra": "The operator walks backward in shot 2 and follows in shots 1 and 3."},
+      "light": "the tunnel dark and cool, the arena mouth a wall of hard white light ahead, silhouetting the fighter, the face lit only by the arena glow bouncing off the tunnel floor.",
+      "colour": "~70% near-black tunnel and silhouettes; ~20% hard white arena light; ~10% the gold side panel of the fight shorts catching the light.",
+      "atmosphere": {"mode": "air", "planes": "tunnel walls nearest, the fighter, the tunnel mouth, the arena and cage furthest in bloom", "source": null},
+      "physics": "real bodyweight — relaxed heavy steps on the rubber mat, the robe swinging with the stride, the hood falling back with its weight, the neck roll loosening the shoulders. Contact shadows on the floor. Nothing floats, nothing slides.",
+      "acting": "Absolute calm menace — eyelids heavy, brow level, a slow blink, no smile; on the reveal the chin lifts slightly and the eyes narrow. Eyeline fixed ahead on the cage, never into the lens.",
+      "audio": "the rising roar of the arena crowd echoing down the tunnel, footsteps on the rubber mat, the rustle of the robe, a slow exhale, the crowd erupting as the hood comes back.",
+      "locks_chain": "the sequence runs in order — walk down the tunnel hood up, the shadowed face, the reveal at the tunnel mouth and the stare. Hood up until shot 3, then down.",
+      "negative_extra": ["entourage", "hood flickering", "gloves missing", "text on robe"]
+    }
+  ]
+}

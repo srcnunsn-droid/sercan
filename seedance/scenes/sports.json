@@ -1,0 +1,168 @@
+{
+  "category": "sports",
+  "scenes": [
+    {
+      "id": "blade_sprint_track",
+      "label_en": "Blade sprint start",
+      "label_tr": "Protez bacakla start bloğundan çıkış",
+      "hook_tr": "Güç, azim ve yavaş çekimde ter damlaları. İlham veren, duygusal paylaşım alan içerik.",
+      "platforms": ["Instagram Reels", "TikTok", "YouTube Shorts"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "fit": ["sports", "fighters", "urban"],
+          "this_scene": "settling into the blocks under stadium lights, exploding out on the start, driving through the first steps and rising into a full sprint down the lane."
+        }
+      },
+      "default_cast": {"A": "spt_01"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE BLADE", "text": "the matte black carbon J-curve running blade on the LEFT leg is present and identical in every shot — it compresses on each ground contact and springs back, it never turns into a foot, never swaps to the RIGHT leg, never duplicates. The RIGHT foot always wears the single red spike shoe."}
+      ],
+      "location_label": "empty athletics stadium at night",
+      "location": "an empty athletics stadium at night, a red rubber track with crisp white lane lines, a set of steel starting blocks in lane four, banks of stadium floodlights high on masts, empty dark stands. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} is in lane four, the lanes running from the lens straight away into depth in shot 1, then running screen-LEFT to screen-RIGHT in shots 2 and 3. The floodlight masts rise behind, screen-RIGHT. Depth planes: the red track and lane lines foreground, {A} mid-ground, the dark stands and lights background.",
+      "first_frame": "already crouched in the blocks, fingertips on the line, one slow breath out before the rise.",
+      "shots": [
+        {"dur": 3.0, "name": "blocks from the front", "lens": "29° (85mm) portrait compression", "lens_note": "low on the track in front, the face and hands", "beat": "{A} rises into the set position, hips lifting, fingertips bridged on the white line, eyes lifting up the lane, one drop of sweat falling from the chin."},
+        {"dur": 2.5, "name": "the explosion", "lens": "84° (22mm) classic wide", "lens_note": "side-on at track level, the blocks and the first strides", "beat": "{A} explodes out of the blocks, the blade and the red spike driving alternately into the rubber, arms punching, the body low and rising stride by stride. Brief slow motion on the first push only."},
+        {"dur": 2.5, "name": "tracking sprint", "lens": "47° (50mm) standard normal", "lens_note": "tracking alongside at hip height", "beat": "{A} hits full upright sprint at 32 km/h, the blade flexing and springing on every contact, twists bouncing, the lane lines streaking by below."}
+      ],
+      "slowmo": {"what": "the first push out of the blocks", "start": 3.0, "end": 3.8},
+      "camera": {"register": "heavy", "extra": "The tracking shot rides a fast handheld run alongside the lane."},
+      "light": "hard white floodlight from high masts behind screen-RIGHT, a crisp rim on the shoulders and the blade, the face lit by bounce from the red track, deep black sky above the stands.",
+      "colour": "~70% deep red rubber track and black night; ~20% cool white floodlight on skin, lines and carbon; ~10% the saturated red of the kit and spike shoe.",
+      "atmosphere": {"mode": "air", "planes": "the track surface nearest, the sprinter, the infield grass, the stands and floodlights furthest with bloom", "source": "a faint spray of rubber crumb kicked up at each push-off, falling within 30cm"},
+      "physics": "real athletic mass — the push against the blocks drives the body forward, the carbon blade compresses 5cm on each contact and returns energy with a spring, the spike bites and releases rubber crumb, the shoulders counter-rotate, sweat droplets fly off with real gravity, twists bounce and lag. Hard contact shadows on the track. Nothing floats, nothing slides.",
+      "acting": "Absolute focus — eyes locked down the lane, jaw set, nostrils flaring, the brow drawn hard; on the explosion the mouth opens on a sharp exhale. Never looks into the lens.",
+      "audio": "the scrape of fingertips on the track, a single sharp breath, the bang of the push-off against the blocks, the rhythmic slap of spike and blade on rubber, hard breathing, the hum of the floodlights in the empty stadium.",
+      "locks_chain": "the sequence runs in order — set position in the blocks, explosion out, full sprint. Lane four throughout. The blade on the LEFT leg, the red spike on the RIGHT foot.",
+      "negative_extra": ["two blades", "blade on right leg", "prosthetic turning into foot", "crowd", "starting gun smoke"]
+    },
+    {
+      "id": "motocross_whip",
+      "label_en": "Motocross whip",
+      "label_tr": "Motokros whip atlayışı",
+      "hook_tr": "Toz patlaması, havada yan yatan motor, güneş karşısında siluet. Ekstrem spor kanallarının favorisi.",
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "fit": ["sports"],
+          "only": ["spt_02"],
+          "this_scene": "hitting the dirt jump at speed, whipping the bike sideways in the air against the sun, straightening and landing hard, then roosting away in a spray of dirt."
+        }
+      },
+      "default_cast": {"A": "spt_02"},
+      "extra_assets": [
+        {"label_en": "the motocross bike", "asset": "one 450cc motocross bike, white and orange plastics scuffed with dirt, black number plate with a white 27, knobby tyres packed with mud, a chrome exhaust stained gold with heat. Plain panels, no brand graphics. It stays one bike, the same bike, in every shot."}
+      ],
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE WHIP", "text": "at the top of the jump the rider kicks the rear of the bike sideways so the bike lies almost flat, 70 degrees off vertical, the rider's body upright over it, then straightens the bike fully before touchdown. The rider never separates from the bike, the wheels never detach, the bike lands straight, rear wheel first."}
+      ],
+      "location_label": "desert motocross track at golden hour",
+      "location": "a dusty desert motocross track at golden hour, a tall dirt tabletop jump with a steep lip, packed brown dirt, dry scrub, low rocky hills, a low sun on the horizon. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the jump lip sits centre-frame, the rider approaches from screen-LEFT and flies screen-LEFT to screen-RIGHT. The low sun sits directly behind the apex of the jump. Depth planes: dirt clods and scrub foreground, rider and jump mid-ground, the hills and sun background.",
+      "first_frame": "already approaching the lip at full throttle, the rear tyre roosting dirt.",
+      "shots": [
+        {"dur": 2.5, "name": "approach", "lens": "63° (32mm) reportage wide", "lens_note": "low beside the jump face, the bike coming at the lens", "beat": "{A} charges the jump face at 60 km/h, standing on the pegs, the engine screaming, the rear tyre throwing a rooster tail of dirt."},
+        {"dur": 3.0, "name": "the whip in silhouette", "lens": "84° (22mm) classic wide", "lens_note": "from below the jump, the bike against the sun", "beat": "{A} leaves the lip and whips the bike sideways, the bike laid nearly flat against the sun in a black silhouette, dust trailing from the tyres, then straightens it. Brief slow motion on the whip only."},
+        {"dur": 2.5, "name": "landing and roost", "lens": "47° (50mm) standard normal", "lens_note": "trackside at the landing, the impact and exit", "beat": "the rear wheel slams down, the suspension bottoms out, {A} is thrown forward and absorbs it, then twists the throttle and roosts away screen-RIGHT in a spray of dirt."}
+      ],
+      "slowmo": {"what": "the whip at the apex", "start": 3.3, "end": 4.6},
+      "camera": {"register": "violent", "extra": "The landing shot is hit by flying dirt clods."},
+      "light": "a low golden sun directly behind the jump, hard backlight, the rider and dust rimmed gold, the front of the bike falling into warm shadow, the dust glowing where the sun hits it.",
+      "colour": "~70% warm ochre and brown dirt and hills; ~20% golden sunlight glowing in the dust; ~10% neon orange of the jersey and plastics.",
+      "atmosphere": {"mode": "air", "planes": "dirt clods and scrub nearest, the bike and jump, the dust cloud, the hills and sun furthest", "source": "dust and dirt thrown by the rear tyre on the approach and the landing, blooming and drifting downwind"},
+      "physics": "real 110kg bike and 80kg rider — the suspension compresses on the lip and rebounds, the bike follows a true ballistic arc, the whip rotates the mass around the rider's hips, the landing bottoms the forks and rear shock with a hard jolt, the rider's elbows and knees absorb, dirt clods fly and fall with gravity. Contact shadow on the landing slope. Nothing floats, nothing teleports.",
+      "acting": "Behind the visor only the eyes read — narrowed and locked on the landing. On the landing a raw shout of adrenaline. Never looks into the lens.",
+      "audio": "a screaming 450cc four-stroke engine at full rev, the rear tyre ripping dirt, silence of wind in the air, the crunch and bang of the landing, suspension clunk, the engine roaring away, a whooping shout inside the helmet.",
+      "locks_chain": "the sequence runs in order — full throttle approach, whip in silhouette against the sun, straighten, land and roost away. One bike, number 27 throughout.",
+      "negative_extra": ["rider falling off", "bike breaking", "second bike", "brand logos", "crowd"]
+    },
+    {
+      "id": "wave_barrel",
+      "label_en": "Wave barrel ride",
+      "label_tr": "Dalga tüpünün içinden geçiş",
+      "hook_tr": "Işık saçan dalga tüpü, içinden çıkış anında çığlık. Doğa ve macera kitlesi için güçlü.",
+      "platforms": ["Instagram Reels", "YouTube Shorts", "TikTok"],
+      "style": "lubezki",
+      "roles": {
+        "A": {
+          "fit": ["sports"],
+          "only": ["spt_03"],
+          "this_scene": "crouched on the board deep inside a glassy breaking barrel, trailing one hand on the wave face, then shooting out of the tube as it collapses behind and throwing the arms up."
+        }
+      },
+      "default_cast": {"A": "spt_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE BARREL", "text": "a glassy blue-green wave 3 metres high throws its lip forward over the surfer into a perfect hollow tube, sunlight glowing through the thin lip. The wave breaks from screen-LEFT to screen-RIGHT and the surfer rides screen-RIGHT, always ahead of the collapsing section, never swallowed, never wiped out."}
+      ],
+      "location_label": "tropical reef break at morning",
+      "location": "a tropical reef break at morning, clear turquoise water over a visible dark reef, glassy offshore conditions, a green headland and palm trees on the shore. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the wave breaks screen-LEFT to screen-RIGHT across the frame, the surfer riding screen-RIGHT inside it. The shore and headland sit behind the wave in shot 3. Depth planes: the curling lip and water droplets foreground, the surfer mid-ground inside the tube, the tube opening and the sky background.",
+      "first_frame": "already inside the barrel, crouched low, the lip pitching over.",
+      "shots": [
+        {"dur": 3.0, "name": "inside the tube", "lens": "84° (22mm) classic wide", "lens_note": "from deeper inside the barrel looking out past the surfer to the round opening", "beat": "{A} crouches low on the board inside the spinning blue tube, the RIGHT hand trailing on the wave face, the round bright opening ahead."},
+        {"dur": 2.5, "name": "lip over head", "lens": "29° (85mm) portrait compression", "lens_note": "from the channel, the face under the glowing lip", "beat": "the thin lip curls over {A.pos} head glowing green-gold with sunlight, spray sheeting off it, {A} focused and low, wet hair flat against the neck."},
+        {"dur": 3.0, "name": "the exit", "lens": "47° (50mm) standard normal", "lens_note": "from the channel at water level, the spit and the exit", "beat": "the barrel collapses and spits a burst of spray, {A} shoots out of the tube in the spray, stands tall and throws both arms up, whooping, the board carving up the shoulder."}
+      ],
+      "camera": {"register": "heavy", "extra": "In shot 1 the camera is inside the barrel with water sheeting around the lens; in shots 2 and 3 it bobs at water level in the channel."},
+      "light": "strong morning sun from behind the wave, screen-LEFT, shining through the thin lip and turning it luminous green-gold, the surfer lit by the glowing water, bright caustic ripples on the skin.",
+      "colour": "~70% luminous turquoise and deep blue-green water; ~20% bright white spray and foam; ~10% warm golden-brown skin and the teal wetsuit panels.",
+      "atmosphere": {"mode": "air", "planes": "spray droplets nearest, the surfer, the tube wall, the opening and bright sky furthest", "source": "spray sheeting off the lip and the spit blasting out of the tube"},
+      "physics": "real water mass — the lip throws forward and falls with weight, the tube spins, spray bursts and falls with gravity, the board carves with its rail buried, the rider's knees absorb the chop, wet hair and wetsuit cling and drip. Nothing floats, nothing slides.",
+      "acting": "Deep calm focus inside the tube — eyes wide, locked on the opening, lips pressed. On the exit a huge open-mouthed whoop, brows flying up. Never looks into the lens.",
+      "audio": "the hollow roaring rush inside the tube, the crash of the lip landing behind, the explosive spit of spray, the board hissing across the water, a joyful whoop, gulls far off.",
+      "locks_chain": "the sequence runs in order — crouched inside the tube, the lip glowing overhead, the spit and the exit with arms up. One board, one wave, riding screen-RIGHT.",
+      "negative_extra": ["wipeout", "shark", "second surfer", "board snapping", "murky water"]
+    },
+    {
+      "id": "wheelchair_breaking_strobe",
+      "label_en": "Wheelchair breaking under strobe",
+      "label_tr": "Strobe ışıkta tekerlekli sandalye breakdans",
+      "hook_tr": "Tek teker dönüş ve freeze, strobe ışıkta donan anlar. 'İmkânsız' dedirten ve paylaşılan hareketler.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "neon_noir",
+      "roles": {
+        "A": {
+          "fit": ["sports"],
+          "only": ["spt_04"],
+          "this_scene": "spinning the chair on one wheel in a tight circle, popping a wheelie, then planting one hand on the floor and freezing the chair upside-down in a one-hand handstand before dropping back and pointing at the crowd."
+        }
+      },
+      "default_cast": {"A": "spt_04"},
+      "extra_assets": [
+        {"label_en": "cypher crowd wardrobe sheet", "asset": "the cypher crowd — about twenty dancers in streetwear standing in a loose circle: hoodies, tracksuit tops, baggy jeans, bucket hats, sneakers. Permitted variation in colour and cut, all street, nobody in costume, faces mostly in shadow."}
+      ],
+      "critical": [
+        {"lib": "strobe", "vars": {"BPM": "128", "SECONDARY": "deep magenta"}},
+        {"lib": "everyone_live"},
+        {"title": "THE CHAIR FREEZE", "text": "at 6.5s the breaker plants the LEFT palm on the floor and holds the whole chair upside-down above the body in a one-hand freeze, legs strapped to the seat, for a full second, then rolls back down onto both wheels. The breaker never leaves the chair, the chair never breaks or disappears."}
+      ],
+      "location_label": "underground warehouse cypher under strobe",
+      "location": "an underground concrete warehouse at night, a smooth grey concrete floor, a circle of dancers, raw pillars, a single strobe rig overhead and a magenta practical light on the back wall. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "{A} performs at the centre of a loose circle of dancers. The magenta wall light sits behind, screen-LEFT. The crowd circle surrounds at different depths, NOT in a line. Depth planes: crowd legs and shoulders foreground, {A} mid-ground centre, pillars and the magenta wall background.",
+      "first_frame": "already spinning on one wheel at the centre of the circle, the crowd shouting.",
+      "shots": [
+        {"dur": 3.0, "name": "one-wheel spin", "lens": "84° (22mm) classic wide", "lens_note": "low from inside the circle, the full chair and the crowd", "beat": "{A} spins the chair on the RIGHT wheel in a tight circle, the LEFT wheel lifted, arms driving the push-rim, the crowd leaning in and shouting."},
+        {"dur": 3.0, "name": "wheelie hop", "lens": "47° (50mm) standard normal", "lens_note": "side-on, chair and body", "beat": "{A} pops a high wheelie and hops the chair twice on the back wheels, the anti-tip bar clearing the floor, the crowd throwing their hands up."},
+        {"dur": 3.0, "name": "the freeze", "lens": "29° (85mm) portrait compression", "lens_note": "low and close, the hand, the upside-down chair and the face", "beat": "{A} plants the LEFT palm and freezes upside-down with the chair held overhead, arm shaking, for one full second, then rolls down onto both wheels and points at the crowd with a grin."}
+      ],
+      "strobe": true,
+      "camera": {"register": "violent", "extra": "The operator is inside the circle, jostled by the crowd."},
+      "light": "hard white strobe from the overhead rig, with a dim constant deep magenta glow from the back wall holding forms readable in the black intervals.",
+      "light_changes": true,
+      "colour": "~70% near-black concrete and shadow; ~20% hard white strobe flash on skin, chair and floor; ~10% deep magenta glow from the back wall.",
+      "atmosphere": {"mode": "air", "planes": "crowd shoulders nearest, the breaker, the far side of the circle, the pillars and magenta wall furthest", "source": null},
+      "physics": "real upper-body power — the push-rims are driven hard, the chair pivots on one tyre with rubber squeaking on concrete, the wheelie loads the rear axle, the freeze puts the whole weight of body and chair through one straight locked arm that trembles, the drop lands on both wheels with a bounce. Contact shadows under wheels and palm. Nothing floats, nothing slides.",
+      "acting": "Fierce joy — teeth bared in effort on the spin, eyes wild, brow crushed down; on the freeze the forehead strains; on the point a huge open grin. The crowd faces shout and gasp. Nobody looks into the lens.",
+      "audio": "NO BGM in the mix — the track is not audible. Only the crowd clapping in time to the unheard 128 BPM beat and shouting, tyres squeaking on concrete, the rattle of the chair frame, hard breathing, a roar from the crowd on the freeze.",
+      "nobgm": false,
+      "locks_chain": "the sequence runs in order — one-wheel spin, wheelie hops, the upside-down one-hand freeze, the drop and point. One chair throughout, the breaker never leaves it.",
+      "negative_extra": ["standing up", "leaving the chair", "broken chair", "choppy footage", "coloured strobe"]
+    }
+  ]
+}

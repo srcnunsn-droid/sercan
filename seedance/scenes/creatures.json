@@ -1,0 +1,131 @@
+{
+  "category": "creatures",
+  "scenes": [
+    {
+      "id": "dog_croissant_heist",
+      "label_en": "Croissant heist",
+      "label_tr": "Köpeğin kruvasan soygunu",
+      "hook_tr": "Sahibi arkasını döner, köpek kruvasanı kapar ve masum bakar. Hayvan komedisi en çok paylaşılan tür.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "needs": "creature",
+          "only": ["cre_01"],
+          "this_scene": "sitting politely beside the kitchen counter, then, when the owner turns away, rising on the hind legs, snatching a croissant off the plate, dropping down and sitting again with the croissant hidden and an innocent face."
+        },
+        "B": {
+          "fit": ["comedy", "urban", "fashion", "creators", "turkiye"],
+          "this_scene": "making morning coffee at the counter, turning away to the coffee machine, then turning back, noticing the empty plate, and slowly looking down at the dog."
+        }
+      },
+      "default_cast": {"A": "cre_01", "B": "cmd_01"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE TONE", "text": "gentle pet comedy. The dog is a real dog behaving like a real dog — no human expressions, no talking, no winking. The comedy lives in the timing and the owner's slow realisation. One croissant on one white plate; after the snatch the plate is empty and a few flakes remain."}
+      ],
+      "location_label": "bright home kitchen in the morning",
+      "location": "a bright home kitchen in the morning, a light oak counter, a white plate with one golden croissant at the counter edge, a small espresso machine, a window with morning sun, a tiled floor. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the counter runs across the frame, the plate at its edge screen-LEFT. {B} stands at the counter screen-RIGHT, the espresso machine further RIGHT. {A} sits on the floor beside the counter screen-LEFT, below the plate. Depth planes: the counter edge and plate foreground, both figures mid-ground, the window background.",
+      "first_frame": "already sitting perfectly upright beside the counter, eyes locked on the croissant, tail sweeping the tiles.",
+      "shots": [
+        {"dur": 3.0, "name": "the set-up", "lens": "47° (50mm) standard normal", "lens_note": "waist height, the counter, the plate, the owner and the dog", "beat": "{B} sets the croissant plate down at the counter edge and turns away to the espresso machine; {A} watches the back of {B}, then the croissant, then the back again, tail slowing."},
+        {"dur": 3.0, "name": "the snatch", "lens": "29° (85mm) portrait compression", "lens_note": "low at dog height, the counter edge above", "beat": "{A} rises silently on the hind legs, front paws on the counter edge, snatches the croissant in the mouth, drops back down and sits, the croissant tucked behind the front leg, flakes on the whiskers."},
+        {"dur": 3.0, "name": "the look", "lens": "47° (50mm) standard normal", "lens_note": "over the dog's head toward the owner", "beat": "{B} turns back with the coffee, sees the empty plate, freezes, then slowly looks down; {A} looks up with huge soft eyes, perfectly still, one flake falling off the lip."}
+      ],
+      "camera": {"register": "gentle", "extra": "Shot 3 holds still for the stare."},
+      "light": "warm morning sun through the window from behind screen-LEFT, a soft rim on the dog's coat and the croissant, the kitchen filled with soft bounce light.",
+      "colour": "~70% warm cream and light oak kitchen; ~20% golden coat and golden croissant; ~10% the red collar and the cool blue sky in the window.",
+      "atmosphere": {"mode": "air", "planes": "the counter edge and plate nearest, the dog and owner, the window furthest", "source": "a thin curl of steam rising from the espresso cup"},
+      "physics": "real 30kg dog — the paws land on the counter edge and the counter takes the weight, the fur shifts and bunches as the dog rises and drops, the croissant crumbles slightly in the soft grip of the mouth, flakes fall with gravity, the tail sweeps the tiles. Contact shadows under the dog and plate. Nothing floats, nothing slides.",
+      "acting": "{B}: sleepy and oblivious, then a slow freeze, the brow lifting, the mouth falling open, a slow suspicious squint. {A}: natural dog behaviour — ears forward, nose working, then ears soft and eyes wide and still. Nobody looks into the lens.",
+      "audio": "the espresso machine hissing, claws tapping on tiles, the soft scrape of paws on the counter, a gentle crunch of pastry, the clink of the cup, silence, a slow sniff.",
+      "locks_chain": "the sequence runs in order — the plate set down and the owner turning away, the snatch and the sit, the empty plate, the slow look down and the innocent stare. One croissant, one plate.",
+      "negative_extra": ["talking dog", "human expressions on dog", "second croissant", "cartoon dog", "dog winking"]
+    },
+    {
+      "id": "cat_glass_push",
+      "label_en": "Cat pushes the glass",
+      "label_tr": "Kedinin masadan bardağı itmesi",
+      "hook_tr": "Kedi göz göze bakarak bardağı iter ve yavaş çekimde düşer. İnternetin en klasik kedi anı.",
+      "platforms": ["TikTok", "Instagram Reels", "YouTube Shorts"],
+      "style": "large_format",
+      "roles": {
+        "A": {
+          "needs": "creature",
+          "only": ["cre_03"],
+          "this_scene": "sitting on a wooden table beside a glass of water, slowly reaching out one white paw, pushing the glass inch by inch to the edge while staring, and nudging it off."
+        }
+      },
+      "default_cast": {"A": "cre_03"},
+      "critical": [
+        {"lib": "nobody_else"},
+        {"title": "THE GLASS", "text": "one clear drinking glass two-thirds full of water. It slides across the table only when the paw pushes it, tips over the edge at 5.0s, falls with real gravity and shatters on the tiled floor with the water splashing out. It falls once; the shatter is real, no reversal, no floating."}
+      ],
+      "location_label": "sunny living room with a wooden side table",
+      "location": "a sunny living room in the afternoon, a small round wooden side table, a clear glass of water on it, a terracotta tiled floor below, a potted plant and a sofa behind. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the table sits centre-frame, {A} sitting on it screen-LEFT, the glass screen-RIGHT near the edge. The glass falls off the RIGHT edge to the floor. Depth planes: the table top foreground, {A} mid-ground, the sofa and plant background.",
+      "first_frame": "already sitting on the table beside the glass, one paw lifting.",
+      "shots": [
+        {"dur": 3.0, "name": "the push", "lens": "29° (85mm) portrait compression", "lens_note": "table height, the cat and the glass", "beat": "{A} extends one white paw and pushes the glass a few centimetres toward the edge, pauses, pushes again, the water sloshing."},
+        {"dur": 2.0, "name": "eye contact", "lens": "18° (120mm) portrait tight", "lens_note": "the cat's face", "beat": "{A} turns its head and stares directly into the lens, unblinking, amber eyes wide, the paw still resting on the glass."},
+        {"dur": 3.0, "name": "the fall", "lens": "84° (22mm) classic wide", "lens_note": "low near the floor, the table edge above", "beat": "the paw gives one final nudge, the glass tips off the edge, tumbles, and shatters on the tiles, water bursting outward; {A} peers down over the edge, ears forward. Brief slow motion on the glass falling and shattering only."}
+      ],
+      "slowmo": {"what": "the glass falling and shattering", "start": 5.2, "end": 6.6},
+      "camera": {"register": "locked", "extra": "Tripod-weighted, shot 3 locked low near the floor."},
+      "light": "warm afternoon sun through a window from screen-RIGHT, long soft beams of warm light across the table, the glass throwing a bright caustic pattern on the wood, the cat's fur rimmed gold.",
+      "colour": "~70% warm terracotta and honey wood; ~20% orange tabby fur; ~10% clear bright water highlights and green plant leaves.",
+      "atmosphere": {"mode": "air", "planes": "the table top nearest, the cat, the sofa, the window furthest", "source": null},
+      "physics": "real mass — the paw pushes the glass with small scraping slides, the water sloshes and climbs the glass wall, the glass tips past its balance point and falls with gravity, it shatters into real shards that skitter across the tiles, water splashes out in a crown. The cat's fur shifts as it leans. Nothing floats.",
+      "acting": "The cat is a real cat — calm, unblinking, ears forward, whiskers twitching, tail tip flicking; the stare into the lens is flat and unimpressed, no human expression.",
+      "audio": "the scrape of glass on wood, water sloshing, a small chirp, silence, the loud crash of glass shattering on tile, water splashing, the soft padding of the cat's paws.",
+      "locks_chain": "the sequence runs in order — the push, the stare into the lens, the final nudge, the fall and the shatter. One glass, falling once off the RIGHT edge.",
+      "negative_extra": ["glass reversing", "glass floating", "cartoon cat", "cat talking", "human hand catching glass"]
+    },
+    {
+      "id": "dragon_cappadocia",
+      "label_en": "Dragon over Cappadocia",
+      "label_tr": "Kapadokya balonları arasında ejderha",
+      "hook_tr": "Gün doğumunda sıcak hava balonları ve aralarından süzülen dev ejderha. Türkiye + fantastik: yüksek viral potansiyel.",
+      "platforms": ["YouTube Shorts", "TikTok", "Instagram Reels"],
+      "style": "hoytema",
+      "roles": {
+        "A": {
+          "needs": "creature",
+          "only": ["cre_04"],
+          "this_scene": "gliding low between the hot-air balloons over the fairy chimneys at sunrise, beating its wings once, banking past a balloon, and landing on top of a rock chimney with a roar."
+        },
+        "B": {
+          "fit": ["any"],
+          "this_scene": "standing in the wicker basket of a hot-air balloon at sunrise, turning to see the dragon pass, gripping the basket rim in awe."
+        }
+      },
+      "default_cast": {"A": "cre_04", "B": "urb_03"},
+      "extra_assets": [
+        {"label_en": "hot-air balloons reference sheet", "asset": "the hot-air balloons — about thirty balloons in plain solid and striped colours, red, yellow, blue, orange, with wicker baskets, floating at different heights and depths across the valley. Plain envelopes with no text and no logos."}
+      ],
+      "critical": [
+        {"lib": "nobody_else", "also": ["tiny unrecognisable passengers in the distant balloon baskets"]},
+        {"title": "THE SCALE", "text": "the dragon's 22-metre wingspan is about as wide as a hot-air balloon is tall. Balloons are 30 metres tall. The dragon never shrinks to bird size and never grows larger than the fairy chimneys. It passes BETWEEN balloons, never through them, never setting anything on fire."}
+      ],
+      "location_label": "Cappadocia valley of fairy chimneys at sunrise",
+      "location": "the Cappadocia valley at sunrise, tall cone-shaped rock fairy chimneys in pale tuff, soft rolling valleys, dozens of hot-air balloons rising, a pastel pink and gold sky. Controls geography, materials, atmosphere and light direction only.",
+      "geometry": "the valley spreads below, balloons scattered at different heights and depths. {B} stands in a balloon basket in the foreground screen-LEFT in shot 2. {A} flies from screen-RIGHT to screen-LEFT through the balloons and lands on a tall fairy chimney centre-frame in shot 3. The sun rises behind the valley screen-RIGHT. Depth planes: the near basket and balloon foreground, {A} and the middle balloons mid-ground, the far valley and sunrise background.",
+      "first_frame": "already gliding low between two balloons, wings spread, its shadow sliding over the rock chimneys.",
+      "shots": [
+        {"dur": 4.0, "name": "glide through the balloons", "lens": "84° (22mm) classic wide", "lens_note": "from a balloon basket at mid-height, the valley and balloons in frame", "beat": "{A} glides between the balloons, beats its wings once with a deep crack, dust shaken off its scales, banking gently past a red striped balloon, its shadow sweeping over the valley."},
+        {"dur": 3.0, "name": "the passenger", "lens": "29° (85mm) portrait compression", "lens_note": "on the passenger in the basket, the dragon passing behind", "beat": "{B} turns in the basket as {A} passes 40 metres behind, the wind of the wingbeat hitting the balloon, both hands gripping the wicker rim, eyes wide, mouth open."},
+        {"dur": 5.0, "name": "landing and roar", "lens": "47° (50mm) standard normal", "lens_note": "across the valley, the fairy chimney and the dragon landing", "beat": "{A} flares its wings, lands on top of a tall fairy chimney with its claws gripping the rock, pebbles breaking off and tumbling down, folds its wings, raises its head to the rising sun and roars, a cloud of breath steaming in the cold air."}
+      ],
+      "camera": {"register": "gentle", "extra": "The camera floats with the balloon basket and sways in the wingbeat's wind."},
+      "light": "sunrise from screen-RIGHT, low and warm, pink and gold, raking across the fairy chimneys and throwing long shadows, the balloons glowing where the sun shines through them, a warm rim along the dragon's scales and wing edges.",
+      "colour": "~70% soft pastel pink and gold sky and pale tuff rock; ~20% saturated balloon colours; ~10% charcoal dragon scales with ember-orange glow in the cracks.",
+      "atmosphere": {"mode": "air", "planes": "the near basket and balloon nearest, the dragon, the middle balloons, the far valley and sunrise furthest in soft morning haze", "source": "dust shaken off the dragon's scales on the wingbeat, pebble dust breaking off the chimney on landing, and the dragon's breath condensing in the cold morning air"},
+      "physics": "real eight-ton mass — each wingbeat pushes a gust that rocks the nearby balloons, the glide sinks and rises with air, the landing grips and cracks the soft tuff, pebbles tumble down the chimney with gravity, the wings fold with real membrane weight, the tail swings for balance. The basket sways in the gust. Nothing floats weightlessly, nothing teleports.",
+      "acting": "{B}: awe — brows high, eyes wide and wet, lips parted, breath held. {A}: animal behaviour — the head tracking with the eyes, nostrils flaring, the roar rising from the chest. Nobody looks into the lens.",
+      "audio": "the soft roar of balloon burners, a deep leathery wing crack, the rush of wind, a gasp in the basket, the scrape and crack of claws on rock, pebbles tumbling, a long deep roar echoing across the valley.",
+      "locks_chain": "the sequence runs in order — the glide through the balloons, the passenger's awe, the landing on the fairy chimney and the roar. The dragon's scale constant, the sun rising screen-RIGHT.",
+      "negative_extra": ["fire breathing", "burning balloons", "tiny dragon", "cartoon dragon", "balloon logos", "text on balloons"]
+    }
+  ]
+}

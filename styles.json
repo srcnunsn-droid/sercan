@@ -31,5 +31,53 @@
     "creamy light",
     "airy mood",
     "whispered contrast"
+  ],
+  "Large-Format Cinematic (Büyük Format Sinematik)": [
+    "8K photorealism",
+    "large-format film",
+    "organic 65mm film grain",
+    "natural halation",
+    "creamy focus falloff",
+    "180-degree shutter motion blur",
+    "photochemical look"
+  ],
+  "Neon Noir (Neon Noir)": [
+    "practical neon light",
+    "wet reflective asphalt",
+    "magenta and cyan split light",
+    "35mm film grain",
+    "night-city realism",
+    "shallow depth of field"
+  ],
+  "Documentary 16mm (Belgesel 16mm)": [
+    "observational handheld",
+    "heavy 16mm grain",
+    "gate weave",
+    "found framing",
+    "gritty street texture",
+    "available light"
+  ],
+  "Epic Natural Light (Epik Doğal Işık)": [
+    "natural available light",
+    "long flowing takes",
+    "wide lens held close",
+    "golden hour rim",
+    "atmospheric depth",
+    "breathing camera"
+  ],
+  "Restrained Silhouette (Sade Silüet)": [
+    "single motivated source",
+    "strong silhouettes",
+    "clean negative space",
+    "naturalistic exposure",
+    "precise composition"
+  ],
+  "Anatolian Warmth (Anadolu Sıcaklığı)": [
+    "warm morning sun",
+    "dappled light through leaves",
+    "flour and woodsmoke",
+    "earthy terracotta palette",
+    "handmade textures",
+    "village realism"
   ]
 }
