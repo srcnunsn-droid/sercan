@@ -1,0 +1,371 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, CX = W / 2;
+const cv = document.getElementById('c');
+const g = cv.getContext('2d');
+
+// Brand
+const NAVY = '#0a2a5e', ICE = '#3ec6ff', MINT = '#7ef0d0', WHITE = '#ffffff', SNOW = '#eaf8ff';
+const HOT1 = '#ff5e2b', HOT2 = '#ffb347', HOT3 = '#ffe08a';
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOut3 = t => 1 - Math.pow(1 - t, 3);
+const eOut5 = t => 1 - Math.pow(1 - t, 5);
+const eIn3 = t => t * t * t;
+const eInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const eBack = t => { const c1 = 1.8, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function text(str, x, y, { size = 100, w = 800, fam = 'Inter', color = WHITE, align = 'center', alpha = 1, spacing = 0 } = {}) {
+  if (alpha <= 0) return;
+  g.save(); g.globalAlpha *= alpha; g.font = `${w} ${size}px "${fam}"`; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'middle';
+  if (spacing) g.letterSpacing = spacing + 'px';
+  g.fillText(str, x, y); g.restore();
+}
+function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function lin(y0, y1, stops) { const gr = g.createLinearGradient(0, y0, 0, y1); stops.forEach(([o, c]) => gr.addColorStop(o, c)); return gr; }
+
+// ---------- shared room pieces ----------
+function room(hot, t) {
+  // hot: 1 = scorching, 0 = cool
+  const wallTop = mix('#0e3a7a', '#ff6a2e', hot), wallBot = mix('#57c3f5', '#ffc15a', hot);
+  g.fillStyle = lin(0, H, [[0, wallTop], [1, wallBot]]); g.fillRect(0, 0, W, H);
+  // floor
+  g.fillStyle = lin(1500, H, [[0, mix('#0b2f66', '#c9431f', hot)], [1, mix('#082350', '#8f2a12', hot)]]); g.fillRect(0, 1500, W, H - 1500);
+  // window
+  const wx = 110, wy = 640, ww = 400, wh = 520;
+  rr(wx - 16, wy - 16, ww + 32, wh + 32, 26); g.fillStyle = mix('#dff4ff', '#fff1d6', hot); g.fill();
+  g.save(); rr(wx, wy, ww, wh, 16); g.clip();
+  g.fillStyle = lin(wy, wy + wh, [[0, mix('#8fdcff', '#ff9a3c', hot)], [1, mix('#d6f3ff', '#ffe29a', hot)]]); g.fillRect(wx, wy, ww, wh);
+  // sun
+  const sx = wx + ww * .55, sy = wy + wh * .38, sr = lerp(60, 95, hot);
+  if (hot > 0.02) {
+    g.save(); g.translate(sx, sy); g.rotate(t * .6); g.globalAlpha = hot;
+    for (let i = 0; i < 12; i++) { g.rotate(Math.PI / 6); g.fillStyle = '#fff3b0'; g.beginPath(); g.moveTo(sr + 14, -12); g.lineTo(sr + 70 + Math.sin(t * 6 + i) * 12, 0); g.lineTo(sr + 14, 12); g.fill(); }
+    g.restore();
+  }
+  g.globalAlpha = 1;
+  g.beginPath(); g.arc(sx, sy, sr, 0, 7); g.fillStyle = mix('#ffffff', '#fff1a0', hot); g.fill();
+  // clouds when cool
+  if (hot < 1) { g.globalAlpha = 1 - hot; [[wx + 90, wy + 330, 1], [wx + 290, wy + 250, .8]].forEach(([x, y, s]) => puff(x + Math.sin(t * .5) * 10, y, s)); g.globalAlpha = 1; }
+  g.restore();
+  // window cross
+  g.fillStyle = mix('#dff4ff', '#fff1d6', hot); g.fillRect(wx + ww / 2 - 8, wy, 16, wh); g.fillRect(wx, wy + wh / 2 - 8, ww, 16);
+}
+function puff(x, y, s) { g.fillStyle = '#ffffff'; [[0, 0, 50], [45, -20, 42], [85, 5, 38], [-40, 10, 34]].forEach(([dx, dy, r]) => { g.beginPath(); g.arc(x + dx * s, y + dy * s, r * s, 0, 7); g.fill(); }); }
+function mix(a, b, t) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const r = Math.round(lerp(pa >> 16, pb >> 16, t)), gg = Math.round(lerp((pa >> 8) & 255, (pb >> 8) & 255, t)), bl = Math.round(lerp(pa & 255, pb & 255, t));
+  return `rgb(${r},${gg},${bl})`;
+}
+function plant(x, y, droop, hot) {
+  // pot
+  g.fillStyle = mix('#1d5fb8', '#b5471f', hot);
+  g.beginPath(); g.moveTo(x - 90, y); g.lineTo(x + 90, y); g.lineTo(x + 70, y + 170); g.lineTo(x - 70, y + 170); g.closePath(); g.fill();
+  rr(x - 105, y - 24, 210, 36, 12); g.fill();
+  const leaf = mix('#2fd18a', '#9c8a2b', hot), dark = mix('#1a9e66', '#7a6a1c', hot);
+  const leaves = [[-0.9, 250], [-0.45, 300], [0, 330], [0.45, 300], [0.9, 250]];
+  leaves.forEach(([a, len], i) => {
+    const ang = -Math.PI / 2 + a * (1 + droop * .9) + (a === 0 ? droop * 1.2 : Math.sign(a) * droop * 1.1);
+    const L = len * (1 - droop * .25);
+    g.save(); g.translate(x, y - 20); g.rotate(ang + Math.PI / 2);
+    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(-60, -L * .5, 0, -L); g.quadraticCurveTo(60, -L * .5, 0, 0);
+    g.fillStyle = i % 2 ? dark : leaf; g.fill();
+    g.strokeStyle = 'rgba(0,0,0,.15)'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -L * .9); g.stroke();
+    g.restore();
+  });
+}
+function thermo(x, y, temp, hot) {
+  // temp in °C, scale 15..45
+  const h = 500, f = clamp((temp - 15) / 30);
+  rr(x - 38, y - h, 76, h + 20, 38); g.fillStyle = 'rgba(255,255,255,.9)'; g.fill();
+  const col = mix('#2aa8ff', '#ff3b1f', clamp((temp - 20) / 20));
+  g.beginPath(); g.arc(x, y + 50, 70, 0, 7); g.fillStyle = 'rgba(255,255,255,.9)'; g.fill();
+  g.beginPath(); g.arc(x, y + 50, 52, 0, 7); g.fillStyle = col; g.fill();
+  rr(x - 18, y - h * f + 10, 36, h * f + 40, 18); g.fill();
+  g.fillStyle = 'rgba(10,42,94,.35)';
+  for (let i = 0; i <= 6; i++) g.fillRect(x + 20, y - 20 - i * (h - 60) / 6, 16, 5);
+}
+function ac(x, y, open, t, led) {
+  // wall split unit
+  g.save(); g.translate(x, y);
+  g.fillStyle = 'rgba(0,0,0,.18)'; rr(-392, 18, 784, 230, 60); g.fill();
+  g.fillStyle = lin(-10, 230, [[0, '#ffffff'], [1, '#dce8f2']]); rr(-400, 0, 800, 230, 60); g.fill();
+  g.fillStyle = 'rgba(10,42,94,.08)'; rr(-360, 30, 720, 16, 8); g.fill();
+  // brand mark on unit
+  logoMark(-300, 110, 34, 0, NAVY);
+  text('SERİNOVA', -250, 112, { size: 30, w: 800, color: NAVY, align: 'left', spacing: 4 });
+  // LED
+  rr(210, 80, 130, 64, 14); g.fillStyle = '#0b1f3f'; g.fill();
+  if (led) text(led, 275, 113, { size: 40, w: 500, fam: 'JetBrains Mono', color: ICE });
+  // flap
+  g.save(); g.translate(0, 205); g.rotate(-0.0);
+  const fl = open * 36;
+  g.fillStyle = '#c7d7e6'; g.beginPath(); g.moveTo(-370, 0); g.lineTo(370, 0); g.lineTo(355, fl + 6); g.lineTo(-355, fl + 6); g.closePath(); g.fill();
+  g.fillStyle = '#0b1f3f'; g.globalAlpha = open; rr(-360, 0, 720, 6, 3); g.fill();
+  g.restore();
+  g.restore();
+}
+function airflow(x, y, amt, t) {
+  if (amt <= 0) return;
+  g.save(); g.lineCap = 'round';
+  for (let i = 0; i < 9; i++) {
+    const phase = ((t * .8 + i / 9) % 1);
+    const xs = x - 320 + i * 80;
+    const len = 520 * amt;
+    const y0 = y + phase * 700;
+    g.globalAlpha = Math.sin(phase * Math.PI) * .55 * amt;
+    g.strokeStyle = i % 3 === 0 ? MINT : '#ffffff'; g.lineWidth = 8;
+    g.beginPath(); g.moveTo(xs + Math.sin(y0 * .01 + t * 3) * 30, y0);
+    for (let k = 1; k <= 10; k++) { const yy = y0 + k * 22; g.lineTo(xs + (yy - y) * .18 + Math.sin(yy * .012 + t * 3 + i) * 30, yy); }
+    g.stroke();
+  }
+  g.restore(); g.globalAlpha = 1;
+}
+function snowflake(x, y, r, rot, a = 1, color = WHITE, lw = null) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.globalAlpha *= a; g.strokeStyle = color; g.lineWidth = lw || Math.max(2, r * .16); g.lineCap = 'round';
+  for (let i = 0; i < 6; i++) {
+    g.rotate(Math.PI / 3); g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -r);
+    g.moveTo(0, -r * .55); g.lineTo(-r * .28, -r * .8); g.moveTo(0, -r * .55); g.lineTo(r * .28, -r * .8); g.stroke();
+  }
+  g.restore();
+}
+function logoMark(x, y, r, t, color = WHITE, bg = null) {
+  g.save(); g.translate(x, y);
+  if (bg) { g.beginPath(); g.arc(0, 0, r * 1.25, 0, 7); g.fillStyle = bg; g.fill(); }
+  snowflake(0, 0, r * .72, t, 1, color, r * .13);
+  // wind swirl arc
+  g.strokeStyle = color; g.lineWidth = r * .13; g.lineCap = 'round';
+  g.beginPath(); g.arc(0, 0, r, Math.PI * .9 + t, Math.PI * 2.35 + t); g.stroke();
+  g.restore();
+}
+const FLAKES = (() => { const r = rng(9); return Array.from({ length: 34 }, () => ({ x: r() * W, y: r() * H, s: 10 + r() * 26, sp: 80 + r() * 160, rot: r() * 6, dr: (r() - .5) * 2 })); })();
+function snow(t, a, t0) {
+  if (a <= 0) return;
+  const dt = t - t0;
+  FLAKES.forEach(f => {
+    const y = (f.y + dt * f.sp) % (H + 60) - 30, x = f.x + Math.sin(dt * 1.2 + f.rot) * 30;
+    snowflake(x, y, f.s, f.rot + dt * f.dr, a * .8);
+  });
+}
+function heatWaves(t, a) {
+  if (a <= 0) return;
+  g.save(); g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 6; g.lineCap = 'round'; g.globalAlpha = a;
+  for (let i = 0; i < 6; i++) {
+    const x0 = 140 + i * 160, ph = (t * .6 + i * .17) % 1, y0 = 1500 - ph * 700;
+    g.globalAlpha = a * Math.sin(ph * Math.PI) * .9;
+    g.beginPath();
+    for (let k = 0; k <= 12; k++) { const yy = y0 - k * 18; const xx = x0 + Math.sin(k * .8 + t * 5 + i) * 18; k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+    g.stroke();
+  }
+  g.restore();
+}
+
+// ================= SCENES =================
+const AC_Y = 250;
+function tempAt(t) {
+  if (t < 3.6) return lerp(31, 42, eOut3(prog(t, .2, 2.6)));
+  return lerp(42, 22, eInOut(prog(t, 3.9, 6.2)));
+}
+function sceneRoom(t, hot) {
+  // hot: 1 hot, 0 cool
+  room(hot, t);
+  const droop = hot * (0.6 + Math.sin(t * 2) * .05) + (1 - hot) * 0;
+  const cool = 1 - hot;
+  plant(820, 1360, t < 3.6 ? eOut3(prog(t, 0, 2.5)) * .85 : .85 * (1 - eBack(prog(t, 4.4, 5.6))), hot);
+  thermo(840, 1090, tempAt(t), hot);
+  heatWaves(t, hot);
+  // big temperature readout
+  const temp = Math.round(tempAt(t));
+  const tcol = temp > 30 ? '#ffffff' : '#ffffff';
+  const jit = hot > .5 ? Math.sin(t * 40) * 3 * hot : 0;
+  text(`${temp}°C`, 330 + jit, 1320, { size: 190, w: 900, color: tcol });
+  text(hot > .5 ? 'İÇ MEKÂN' : 'İDEAL', 330, 1440, { size: 34, w: 800, color: 'rgba(255,255,255,.75)', spacing: 8 });
+}
+function s1(t) { // 0 - 3.6 hot room
+  sceneRoom(t, 1);
+  // headline
+  const a = eOut5(prog(t, .3, .8));
+  const wob = Math.sin(t * 3) * 4;
+  const out = eIn3(prog(t, 2.9, 3.25));
+  text('Bunaltıcı', CX, 1690 + (1 - a) * 80 + out * 300 + wob, { size: 130, w: 900, alpha: a * (1 - out) });
+  const b = eOut5(prog(t, .6, 1.1));
+  text('sıcak mı?', CX, 1830 + (1 - b) * 80 + out * 300 - wob, { size: 130, w: 900, color: HOT3, alpha: b * (1 - out) });
+  const tg = prog(t, .2, .6) * (1 - prog(t, 2.8, 3.0));
+  text('TEMMUZ · ÖĞLEN 14:00', CX, 300, { size: 40, w: 800, color: 'rgba(255,255,255,.85)', alpha: tg, spacing: 6 });
+  // sweat drops
+  const r = rng(4);
+  for (let i = 0; i < 10; i++) { const ph = (t * .9 + r()) % 1, x = 100 + r() * 880, y = 520 + ph * 300;
+    g.globalAlpha = Math.sin(ph * Math.PI) * .8 * prog(t, 1, 1.6); g.fillStyle = '#ffffff';
+    g.beginPath(); g.moveTo(x, y - 22); g.quadraticCurveTo(x + 14, y, x, y + 8); g.quadraticCurveTo(x - 14, y, x, y - 22); g.fill(); }
+  g.globalAlpha = 1;
+}
+function s2(t) { // 3.0 - 8.2 : AC arrives, cold wave, cool room
+  // AC drop-in (3.0 -> 3.5), flap opens 3.55 -> 3.8, wave 3.7 -> 4.6
+  const drop = eBack(prog(t, 3.0, 3.5));
+  const acy = lerp(-300, AC_Y, drop);
+  const open = eOut3(prog(t, 3.55, 3.8));
+  const wave = eInOut(prog(t, 3.7, 4.6));
+  // base: hot room (with fading headline)
+  if (wave < 1) { s1(Math.min(t, 3.6)); }
+  if (wave > 0) {
+    g.save();
+    g.beginPath();
+    const R = wave * 2300;
+    for (let k = 0; k <= 64; k++) { const a = k / 64 * Math.PI * 2; const rr_ = R * (1 + .05 * Math.sin(a * 7 + t * 8)); const x = CX + Math.cos(a) * rr_, y = AC_Y + 200 + Math.sin(a) * rr_; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.closePath(); g.clip();
+    sceneRoom(t, 0);
+    snow(t, prog(t, 3.8, 4.3), 3.7);
+    airflow(CX, AC_Y + 260, eOut3(prog(t, 3.8, 4.4)), t);
+    // headline cool
+    const a = eOut5(prog(t, 4.7, 5.2)), b = eOut5(prog(t, 4.95, 5.45));
+    text('Serinova ile', CX, 1680 - (1 - a) * 60, { size: 92, w: 800, alpha: a });
+    text('anında serinlik.', CX, 1790 - (1 - b) * 60, { size: 92, w: 900, color: MINT, alpha: b });
+    g.restore();
+    // frosty wave edge
+    if (wave < 1) {
+      g.save(); g.strokeStyle = 'rgba(234,248,255,.9)'; g.lineWidth = 24 * (1 - wave) + 4; g.beginPath();
+      const R2 = wave * 2300;
+      for (let k = 0; k <= 64; k++) { const a = k / 64 * Math.PI * 2; const rr_ = R2 * (1 + .05 * Math.sin(a * 7 + t * 8)); const x = CX + Math.cos(a) * rr_, y = AC_Y + 200 + Math.sin(a) * rr_; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.closePath(); g.stroke(); g.restore();
+    }
+  }
+  const led = open > .5 ? `${Math.round(Math.max(22, tempAt(t)))}°` : '';
+  ac(CX, acy, open, t, led);
+  // click flash
+  const fl = 1 - clamp((t - 3.7) / .15);
+  if (t > 3.7 && fl > 0) { g.fillStyle = `rgba(234,248,255,${fl * .6})`; g.fillRect(0, 0, W, H); }
+}
+const FEATS = [
+  ['Ücretsiz keşif', 'Evinize gelip ölçüyoruz', 'search'],
+  ['Aynı gün montaj', 'Bugün ara, bu akşam serin', 'bolt'],
+  ['5 yıl garanti', 'Montaj dahil tam güvence', 'shield'],
+  ['A+++ tasarruf', 'Faturada %40\'a varan düşüş', 'leaf'],
+];
+function icon(kind, x, y, s) {
+  g.save(); g.translate(x, y); g.strokeStyle = NAVY; g.fillStyle = NAVY; g.lineWidth = s * .12; g.lineCap = 'round'; g.lineJoin = 'round';
+  if (kind === 'search') { g.beginPath(); g.arc(-s * .1, -s * .1, s * .32, 0, 7); g.stroke(); g.beginPath(); g.moveTo(s * .14, s * .14); g.lineTo(s * .4, s * .4); g.stroke(); }
+  if (kind === 'bolt') { g.beginPath(); g.moveTo(s * .08, -s * .45); g.lineTo(-s * .25, s * .05); g.lineTo(0, s * .05); g.lineTo(-s * .08, s * .45); g.lineTo(s * .25, -s * .05); g.lineTo(0, -s * .05); g.closePath(); g.fill(); }
+  if (kind === 'shield') { g.beginPath(); g.moveTo(0, -s * .42); g.lineTo(s * .34, -s * .28); g.quadraticCurveTo(s * .34, s * .22, 0, s * .44); g.quadraticCurveTo(-s * .34, s * .22, -s * .34, -s * .28); g.closePath(); g.stroke();
+    g.beginPath(); g.moveTo(-s * .14, 0); g.lineTo(-s * .02, s * .12); g.lineTo(s * .17, -s * .1); g.stroke(); }
+  if (kind === 'leaf') { g.beginPath(); g.moveTo(-s * .32, s * .34); g.quadraticCurveTo(-s * .4, -s * .4, s * .38, -s * .38); g.quadraticCurveTo(s * .36, s * .38, -s * .32, s * .34); g.closePath(); g.stroke();
+    g.beginPath(); g.moveTo(-s * .32, s * .34); g.lineTo(s * .12, -s * .1); g.stroke(); }
+  g.restore();
+}
+function coolBg(t) {
+  g.fillStyle = lin(0, H, [[0, '#061a3d'], [.55, NAVY], [1, '#0f4f9a']]); g.fillRect(0, 0, W, H);
+  // flowing wind lines
+  g.save(); g.lineWidth = 3; g.lineCap = 'round';
+  for (let i = 0; i < 14; i++) {
+    const y = 120 + i * 130, ph = t * 160 + i * 90;
+    g.strokeStyle = `rgba(62,198,255,${.08 + (i % 3) * .03})`;
+    g.beginPath(); for (let x = -40; x <= W + 40; x += 30) { const yy = y + Math.sin((x + ph) * .006) * 40; x < 0 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.stroke();
+  }
+  g.restore();
+}
+function s3(t) { // 8.0 - 11.8 features
+  const lt = t - 8.0;
+  coolBg(t);
+  snow(t, .18, 0);
+  const h = eOut5(prog(lt, 0.05, .5));
+  text('Neden', CX, 330 - (1 - h) * 60, { size: 80, w: 800, color: 'rgba(255,255,255,.7)', alpha: h });
+  text('Serinova?', CX, 440 - (1 - h) * 60, { size: 140, w: 900, color: WHITE, alpha: h });
+  FEATS.forEach(([title, sub, ic], i) => {
+    const st = .45 + i * .38;
+    const k = eOut5(prog(lt, st, st + .45));
+    const y = 640 + i * 250;
+    const x = lerp(W + 100, 90, k);
+    g.save(); g.globalAlpha = clamp(k * 1.5);
+    rr(x, y, W - 180, 200, 36); g.fillStyle = 'rgba(255,255,255,.1)'; g.fill();
+    g.strokeStyle = 'rgba(126,240,208,.35)'; g.lineWidth = 2; g.stroke();
+    const pop = eBack(prog(lt, st + .15, st + .5));
+    g.save(); g.translate(x + 110, y + 100); g.scale(pop, pop);
+    g.beginPath(); g.arc(0, 0, 66, 0, 7); g.fillStyle = MINT; g.fill(); icon(ic, 0, 0, 84); g.restore();
+    text(title, x + 210, y + 78, { size: 62, w: 800, align: 'left' });
+    text(sub, x + 210, y + 138, { size: 36, w: 400, align: 'left', color: 'rgba(234,248,255,.75)' });
+    // check tick
+    const tk = prog(lt, st + .35, st + .55);
+    if (tk > 0) { g.strokeStyle = MINT; g.lineWidth = 9; g.lineCap = 'round'; g.beginPath();
+      const cx = x + W - 260, cy = y + 100; g.moveTo(cx - 22, cy); g.lineTo(cx - 6, cy + 18 * Math.min(1, tk * 2)); if (tk > .5) g.lineTo(cx - 6 + 34 * (tk - .5) * 2, cy + 18 - 40 * (tk - .5) * 2); g.stroke(); }
+    g.restore();
+  });
+}
+function s4(t) { // 11.6 - 15 logo + CTA
+  const lt = t - 11.6;
+  g.fillStyle = lin(0, H, [[0, '#dff6ff'], [1, '#a9e4ff']]); g.fillRect(0, 0, W, H);
+  // soft rings
+  for (let i = 0; i < 5; i++) { const k = ((lt * .35 + i / 5) % 1); g.strokeStyle = `rgba(62,198,255,${(1 - k) * .35})`; g.lineWidth = 3;
+    g.beginPath(); g.arc(CX, 700, 200 + k * 700, 0, 7); g.stroke(); }
+  snow(t, .0, 0);
+  const m = eBack(prog(lt, .1, .7));
+  g.save(); g.translate(CX, 700); g.scale(m, m); g.rotate((1 - m) * -1.5);
+  logoMark(0, 0, 150, lt * .4, WHITE, NAVY);
+  g.restore();
+  // wordmark with mask
+  const wm = eOut5(prog(lt, .45, .95));
+  g.save(); g.beginPath(); g.rect(0, 900, W, 200); g.clip();
+  text('Serinova', CX, 1000 + (1 - wm) * 180, { size: 180, w: 900, color: NAVY, spacing: -4 });
+  g.restore();
+  text('K L İ M A', CX, 1120, { size: 44, w: 800, color: '#1b7fd1', alpha: prog(lt, .8, 1.1), spacing: 10 });
+  // slogan
+  const sl = eOut5(prog(lt, 1.05, 1.5));
+  text('Sıcağa inat, hep serin.', CX, 1250 + (1 - sl) * 40, { size: 70, w: 800, color: NAVY, alpha: sl });
+  // campaign badge
+  const bd = eBack(prog(lt, 1.5, 1.9));
+  if (bd > 0) { g.save(); g.translate(860, 420); g.rotate(.22); g.scale(bd, bd);
+    const pulse = 1 + Math.sin(lt * 8) * .03 * prog(lt, 1.9, 2.1); g.scale(pulse, pulse);
+    g.beginPath(); for (let k = 0; k < 32; k++) { const a = k / 32 * Math.PI * 2, r = k % 2 ? 128 : 145; k ? g.lineTo(Math.cos(a) * r, Math.sin(a) * r) : g.moveTo(Math.cos(a) * r, Math.sin(a) * r); } g.closePath();
+    g.fillStyle = '#ff5e2b'; g.fill();
+    text('YAZ', 0, -52, { size: 34, w: 800, spacing: 3 }); text('%20', 0, 5, { size: 78, w: 900 }); text('İNDİRİM', 0, 60, { size: 30, w: 800, spacing: 2 });
+    g.restore(); }
+  // CTA
+  const ct = eBack(prog(lt, 1.8, 2.25));
+  if (ct > 0) { g.save(); g.translate(CX, 1470); g.scale(ct, ct);
+    rr(-450, -80, 900, 160, 80); g.fillStyle = NAVY; g.fill();
+    text('Hemen ara', -385, -2, { size: 46, w: 800, color: MINT, align: 'left' });
+    text('0 (212) 000 00 00', 390, 0, { size: 44, w: 500, fam: 'JetBrains Mono', color: WHITE, align: 'right' });
+    g.restore(); }
+  text('Satış · Montaj · Bakım · Servis', CX, 1640, { size: 40, w: 400, color: '#1b4f8f', alpha: prog(lt, 2.3, 2.7) });
+  text('www.serinova-ornek.com', CX, 1720, { size: 34, w: 500, fam: 'JetBrains Mono', color: '#3a6ea8', alpha: prog(lt, 2.45, 2.85) });
+}
+
+// ================= MASTER =================
+window.draw = function (t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  if (t < 3.0) s1(t);
+  else if (t < 8.0) s2(t);
+  else if (t < 11.6) s3(t);
+  else s4(t);
+  // transitions
+  // 7.75 -> 8.05 : navy panel slides up with curved edge
+  const up = prog(t, 7.7, 8.05);
+  if (up > 0 && up < 1) {
+    const y = H * (1 - eInOut(up));
+    g.fillStyle = '#061a3d'; g.beginPath(); g.moveTo(0, y + 120); g.quadraticCurveTo(CX, y - 120, W, y + 120); g.lineTo(W, H); g.lineTo(0, H); g.closePath(); g.fill();
+  }
+  // 11.35 -> 11.7 : ice panel sweep
+  const sw = prog(t, 11.35, 11.7);
+  if (sw > 0 && sw < 1) {
+    const x = -W * .3 + eInOut(sw) * W * 1.6;
+    g.fillStyle = '#dff6ff'; g.beginPath(); g.moveTo(x - W * 1.3, 0); g.lineTo(x, 0); g.lineTo(x - 300, H); g.lineTo(x - W * 1.3 - 300, H); g.closePath(); g.fill();
+    g.fillStyle = MINT; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 40, 0); g.lineTo(x - 260, H); g.lineTo(x - 300, H); g.closePath(); g.fill();
+  }
+  // fade in
+  const fi = 1 - prog(t, 0, .25);
+  if (fi > 0) { g.fillStyle = `rgba(0,0,0,${fi})`; g.fillRect(0, 0, W, H); }
+};
+window.ready = (async () => {
+  const sample = 'AaĞğŞşİıÇçÖöÜüâ0123456789%+·°';
+  for (const f of ['900 100px "Inter"', '800 100px "Inter"', '400 100px "Inter"', '500 100px "JetBrains Mono"'])
+    await document.fonts.load(f, sample);
+  await document.fonts.ready;
+})();
+</script>
+</body></html>
