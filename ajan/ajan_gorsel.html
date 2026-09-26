@@ -1,0 +1,328 @@
+<title>Prompt Asistanı Ajanı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --sunk:#E3E8ED; --ink:#15212E; --muted:#5A6878; --line:#CDD5DE;
+  --accent:#C2560F; --accent-soft:#FBE7D8; --tool:#1F6F8B; --tool-soft:#DCEEF4; --ok:#2E7D4F; --bad:#B3261E;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F161E; --surface:#16202B; --sunk:#1D2935; --ink:#E6ECF2; --muted:#93A3B4; --line:#2B3A49;
+    --accent:#F08A45; --accent-soft:#3A2618; --tool:#5DB8D6; --tool-soft:#15323D; --ok:#6CC592; --bad:#F2877F;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F161E; --surface:#16202B; --sunk:#1D2935; --ink:#E6ECF2; --muted:#93A3B4; --line:#2B3A49;
+  --accent:#F08A45; --accent-soft:#3A2618; --tool:#5DB8D6; --tool-soft:#15323D; --ok:#6CC592; --bad:#F2877F;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 48px;display:flex;flex-direction:column;gap:22px}
+h1{font:700 clamp(28px,4.4vw,42px)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.lede{margin:8px 0 0;color:var(--muted);max-width:64ch}
+.lede code{font-family:var(--mono);font-size:13px}
+.label{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* Döngü şeması */
+.loop{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.nodes{display:flex;align-items:stretch;gap:6px;overflow-x:auto;padding-bottom:4px}
+.node{flex:1 0 118px;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);transition:border-color .2s,background .2s,transform .2s}
+.node b{display:block;font:600 14px/1.2 var(--display)}
+.node small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:3px}
+.node.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+.node.tool.on{border-color:var(--tool);background:var(--tool-soft)}
+.arrow{align-self:center;color:var(--muted);font:500 16px var(--mono);flex:0 0 auto}
+.back{font:12px/1.4 var(--mono);color:var(--muted)}
+.back span{color:var(--tool)}
+
+/* İki sütun */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:460px}
+.panel header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel h2{font:600 17px/1.2 var(--display);margin:0}
+.scroll{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-height:560px}
+
+.msg{max-width:92%;padding:10px 13px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.user{align-self:flex-end;background:var(--ink);color:var(--bg);border-bottom-right-radius:3px}
+.msg.agent{align-self:flex-start;background:var(--sunk);border-bottom-left-radius:3px}
+.msg.agent.wait{color:var(--muted);font-style:italic}
+.who{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.msg.user .who{color:inherit;opacity:.7}
+
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+textarea{flex:1 1 240px;min-height:44px;max-height:140px;resize:vertical;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:600 14px var(--body);border-radius:8px;padding:10px 16px;cursor:pointer;border:1px solid transparent}
+.primary{background:var(--accent);color:#fff}
+.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px}
+.chip{font:13px var(--body);background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:999px}
+.note{padding:0 16px 12px;color:var(--muted);font-size:13px}
+.note:empty{display:none}
+
+/* İz (trace) */
+.step{border-left:3px solid var(--line);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+.step .top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.step .n{font:500 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.step .kind{font:600 13px var(--body)}
+.step pre{margin:0;font:12.5px/1.5 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow-y:auto}
+.step.user{border-color:var(--ink)}
+.step.think{border-color:var(--accent)} .step.think .kind{color:var(--accent)}
+.step.tool{border-color:var(--tool)} .step.tool .kind{color:var(--tool)}
+.step.done{border-color:var(--ok)} .step.done .kind{color:var(--ok)}
+.step.err{border-color:var(--bad)} .step.err .kind{color:var(--bad)}
+.empty{color:var(--muted);font-size:14px}
+
+.code{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.code h2{font:600 17px/1.2 var(--display);margin:0}
+.code pre{margin:0;font:12.5px/1.6 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px 14px;overflow-x:auto}
+.code p{margin:0;color:var(--muted);max-width:70ch}
+.kw{color:var(--accent)} .cm{color:var(--muted)} .fn{color:var(--tool)}
+@media (prefers-reduced-motion: reduce){.node{transition:none}.node.on{transform:none}}
+</style>
+
+<div class="wrap">
+  <div>
+    <div class="label">ajan/basit_ajan.py · tarayıcı sürümü</div>
+    <h1>Prompt Asistanı Ajanı</h1>
+    <p class="lede">Soldan ajana bir istek yaz. Sağda ajanın her adımını izle: ne zaman düşündüğünü, hangi aracı çağırdığını, araçtan ne döndüğünü ve son cevabı. Araçlar depodaki <code>styles.json</code> ve <code>negative_bank.json</code> verilerini okur, Python dosyasındakiyle aynı üç araçtır.</p>
+  </div>
+
+  <section class="loop" aria-label="Ajan döngüsü">
+    <div class="label">Ajan döngüsü — şu an hangi adımda?</div>
+    <div class="nodes">
+      <div class="node" id="n-user"><b>1 · Sen</b><small>İsteğini yazarsın</small></div>
+      <div class="arrow">→</div>
+      <div class="node" id="n-think"><b>2 · Claude karar verir</b><small>Cevap mı, araç mı?</small></div>
+      <div class="arrow">→</div>
+      <div class="node tool" id="n-tool"><b>3 · Araç çalışır</b><small>stop_reason = "tool_use"</small></div>
+      <div class="arrow">→</div>
+      <div class="node" id="n-done"><b>4 · Son cevap</b><small>stop_reason = "end_turn"</small></div>
+    </div>
+    <div class="back"><span>↺</span> 3. adımdaki sonuç Claude'a geri gider ve 2. adım tekrarlanır. Claude araç istemeyi bırakınca döngü biter.</div>
+  </section>
+
+  <div class="grid">
+    <section class="panel" aria-label="Sohbet">
+      <header><h2>Sohbet</h2><button class="ghost" type="button" id="reset">Sıfırla</button></header>
+      <div class="scroll" id="chat"></div>
+      <div class="chips" id="chips">
+        <button class="chip" type="button">Kahve markam için sinematik bir Instagram görseli promptu yaz</button>
+        <button class="chip" type="button">Hangi stiller var?</button>
+        <button class="chip" type="button">Lüks bir parfüm reklamı için prompt hazırla</button>
+      </div>
+      <div class="note" id="note"></div>
+      <form id="form">
+        <label for="q" class="label" style="position:absolute;left:-9999px">Mesajın</label>
+        <textarea id="q" placeholder="Ajana bir istek yaz…" rows="2"></textarea>
+        <button class="primary" id="send" type="submit">Gönder</button>
+        <button class="ghost" id="stop" type="button" hidden>Durdur</button>
+      </form>
+    </section>
+
+    <section class="panel" aria-label="Ajanın adımları">
+      <header><h2>Ajanın adımları</h2><button class="ghost" type="button" id="demo">Örnek akışı oynat</button></header>
+      <div class="scroll" id="trace"></div>
+    </section>
+  </div>
+
+  <section class="code">
+    <h2>Python'daki karşılığı</h2>
+    <p>Sağ paneldeki her adım, <code>basit_ajan.py</code> içindeki bu döngünün bir turudur.</p>
+<pre><span class="kw">for</span> adim <span class="kw">in</span> range(1, MAX_ADIM + 1):
+    yanit = client.beta.messages.create(..., tools=ARACLAR, messages=mesajlar)   <span class="cm"># 2 · Claude karar verir</span>
+    mesajlar.append({<span class="fn">"role"</span>: <span class="fn">"assistant"</span>, <span class="fn">"content"</span>: yanit.content})
+    <span class="kw">if</span> yanit.stop_reason != <span class="fn">"tool_use"</span>:
+        <span class="kw">return</span> cevap_metni                                                  <span class="cm"># 4 · Son cevap</span>
+    <span class="kw">for</span> blok <span class="kw">in</span> yanit.content:
+        <span class="kw">if</span> blok.type == <span class="fn">"tool_use"</span>:
+            sonuc = araci_calistir(blok.name, blok.input)                      <span class="cm"># 3 · Araç çalışır</span>
+    mesajlar.append({<span class="fn">"role"</span>: <span class="fn">"user"</span>, <span class="fn">"content"</span>: sonuclar})            <span class="cm"># ↺ sonuç geri gider</span></pre>
+  </section>
+</div>
+
+<script>
+// ---- Depodaki veriler (styles.json, negative_bank.json) ----
+const STYLES = {
+  "Cinematic Realism (Sinematik Gerçekçilik)": ["cinematic depth","soft DOF","global illumination","filmic contrast","subtle halation","volumetric light","natural color balance"],
+  "Minimal Editorial (Minimal Editoryal)": ["clean negative space","balanced grid","gentle gradients","soft shadows","neutral palette","geometric layout"],
+  "Luxury Editorial (Lüks Editoryal)": ["glossy reflections","rich textures","gold accents","black on black","selective highlights","premium finish"],
+  "Dreamy Pastel (Düşsel Pastel)": ["pastel tones","haze","soft bloom","creamy light","airy mood","whispered contrast"]
+};
+const NEGATIVE = ["blurry","low-res","watermark","deformed hands","bad anatomy","extra fingers","text","logo","oversharpen","compression artifacts","wrong perspective","harsh shadow","warped typography"];
+
+// ---- Araç fonksiyonları (Python'dakilerle aynı) ----
+function stilleri_listele(){ return Object.keys(STYLES); }
+function stil_detayi({stil_adi}){
+  const q = String(stil_adi ?? "").toLowerCase();
+  const ad = Object.keys(STYLES).find(k => k.toLowerCase().includes(q));
+  if (!q || !ad) throw new Error(`'${stil_adi}' adında bir stil bulunamadı. Önce stilleri_listele aracını kullan.`);
+  return {stil: ad, kelimeler: STYLES[ad]};
+}
+function negatif_kelimeler(){ return NEGATIVE; }
+
+const RULES = `Sen Türkçe konuşan bir görsel prompt asistanısın.
+Kullanıcının Midjourney benzeri araçlar için İngilizce prompt yazmasına yardım edersin.
+Stil ve negatif kelimeler için uydurma; her zaman araçları kullanarak depodaki verilere bak.
+Cevabın sonunda hazır prompt'u ve negatif kelimeleri ayrı ayrı göster. Kısa ve düz metin yaz, Markdown başlığı kullanma.`;
+
+// ---- Arayüz yardımcıları ----
+const $ = id => document.getElementById(id);
+const chat = $("chat"), trace = $("trace"), note = $("note");
+let stepNo = 0, turns = [], ctl = null, busy = false, demoTimer = null;
+
+function light(which){
+  for (const id of ["n-user","n-think","n-tool","n-done"]) $(id).classList.toggle("on", id === "n-" + which);
+}
+function addStep(kind, title, body){
+  trace.querySelector(".empty")?.remove();
+  const el = document.createElement("div");
+  el.className = "step " + kind;
+  const top = document.createElement("div"); top.className = "top";
+  const n = document.createElement("span"); n.className = "n"; n.textContent = String(++stepNo).padStart(2,"0");
+  const k = document.createElement("span"); k.className = "kind"; k.textContent = title;
+  top.append(n, k); el.append(top);
+  if (body != null){ const pre = document.createElement("pre"); pre.textContent = body; el.append(pre); }
+  trace.append(el); trace.scrollTop = trace.scrollHeight;
+  return el;
+}
+function addMsg(role, text){
+  const el = document.createElement("div");
+  el.className = "msg " + (role === "user" ? "user" : "agent");
+  const who = document.createElement("div"); who.className = "who"; who.textContent = role === "user" ? "Sen" : "Ajan";
+  const body = document.createElement("div"); body.textContent = text;
+  el.append(who, body); chat.append(el); chat.scrollTop = chat.scrollHeight;
+  return body;
+}
+function pretty(v){ return typeof v === "string" ? v : JSON.stringify(v, null, 2); }
+function emptyState(){
+  trace.innerHTML = '<p class="empty">Henüz adım yok. Soldan bir istek gönder ya da “Örnek akışı oynat” düğmesine bas.</p>';
+  chat.innerHTML = "";
+  addMsg("agent", "Merhaba! Bir görsel fikri yaz, senin için depodaki stil ve negatif kelimelerle hazır bir prompt oluşturayım.");
+}
+function setBusy(b){
+  busy = b; $("send").disabled = b; $("demo").disabled = b; $("stop").hidden = !b;
+  for (const c of document.querySelectorAll(".chip")) c.disabled = b;
+}
+
+// ---- Araç tanımları: execute çalıştığında adımı panele yazar ----
+function wrap(name, description, fn, inputSchema){
+  return { name, description, ...(inputSchema ? {inputSchema} : {}),
+    execute(input){
+      light("tool");
+      addStep("tool", `Araç çağrısı: ${name}`, "girdi: " + JSON.stringify(input ?? {}));
+      try {
+        const out = fn(input ?? {});
+        addStep("tool", `Araç sonucu: ${name}`, pretty(out));
+        return out;
+      } catch (e) {
+        addStep("err", `Araç hatası: ${name}`, e.message);
+        throw e;
+      } finally {
+        setTimeout(() => { if (busy){ light("think"); addStep("think", "Claude sonucu okuyor ve yeniden karar veriyor…"); } }, 0);
+      }
+    }};
+}
+const TOOLS = [
+  wrap("stilleri_listele", "Depodaki tüm görsel stil adlarını liste olarak döndürür.", stilleri_listele),
+  wrap("stil_detayi", "Verilen stilin prompt'a eklenecek anahtar kelimelerini döndürür.", stil_detayi,
+       {type:"object", properties:{stil_adi:{type:"string", description:"Stil adı veya bir parçası, örn. 'Cinematic'"}}, required:["stil_adi"]}),
+  wrap("negatif_kelimeler", "Prompt'un negatif kısmına eklenecek istenmeyen öğelerin listesini döndürür.", negatif_kelimeler),
+];
+
+const ERR = {
+  not_granted:"Bu sayfanın Claude'u kullanmasına izin verilmedi. Sağdaki örnek akışı yine de izleyebilirsin.",
+  sampling_disabled:"Bu hesapta Claude'a sayfadan erişim kapalı. Örnek akışı izleyebilirsin.",
+  tools_unavailable:"Bu görünüm araç çalıştıramıyor. Claude uygulamasının güncel sürümünde ya da claude.ai'de aç.",
+  rate_limited:"Çok sık istek gönderildi. Biraz bekleyip tekrar dene.",
+  session_expired:"Oturum süresi doldu. Tekrar giriş yapıp dene.",
+  refused:"Claude bu isteği yanıtlamadı. İsteği değiştirip tekrar dene.",
+  prompt_too_large:"Sohbet çok uzadı. Sıfırla'ya basıp yeniden başla."
+};
+
+let samplePromise = null;
+function getSample(){ return samplePromise ??= (window.claude?.use ? window.claude.use("sample") : Promise.resolve(null)); }
+
+async function ask(text){
+  if (busy || !text.trim()) return;
+  stopDemo(); note.textContent = "";
+  const sample = await getSample();
+  if (!sample){ note.textContent = "Canlı ajan bu görünümde çalışamıyor. Sağdaki örnek akışı izleyebilirsin."; return; }
+  setBusy(true);
+  addMsg("user", text); turns.push({role:"user", content:text});
+  light("user"); addStep("user", "Kullanıcı isteği", text);
+  light("think"); addStep("think", "Claude düşünüyor: cevap mı verecek, araç mı çağıracak?");
+  const bubble = addMsg("agent", "Düşünüyor…"); bubble.parentElement.classList.add("wait");
+  ctl = new AbortController();
+  try {
+    const {text: answer, truncated} = await sample([{role:"user", content:RULES}, ...turns], {
+      tools: TOOLS, signal: ctl.signal,
+      onText: ({text}) => { bubble.parentElement.classList.remove("wait"); bubble.textContent = text; }
+    });
+    turns.push({role:"assistant", content:answer});
+    bubble.textContent = answer; bubble.parentElement.classList.remove("wait");
+    light("done"); addStep("done", "Son cevap (end_turn) — döngü bitti");
+    if (truncated) note.textContent = "Cevap uzunluk sınırında kesildi.";
+  } catch (e) {
+    bubble.parentElement.classList.remove("wait");
+    turns.pop();
+    if (e?.code === "cancelled"){ bubble.textContent = e.text || "(Durduruldu.)"; addStep("err", "Kullanıcı durdurdu"); }
+    else {
+      bubble.textContent = e?.text || "(Cevap alınamadı.)";
+      note.textContent = ERR[e?.code] || "Bağlantı sorunu oldu. Tekrar dene.";
+      addStep("err", "Hata: " + (e?.code || "bilinmiyor"));
+    }
+    light(null);
+  } finally { setBusy(false); ctl = null; }
+}
+
+// ---- Örnek akış (canlı Claude çağırmaz, kayıtlı bir örnektir) ----
+const DEMO = [
+  ["user","user","Kullanıcı isteği","Kahve markam için sinematik bir Instagram görseli promptu yaz"],
+  ["think","think","Claude düşünüyor: önce hangi stiller var, bakmalıyım"],
+  ["tool","tool","Araç çağrısı: stilleri_listele","girdi: {}"],
+  ["tool","tool","Araç sonucu: stilleri_listele",pretty(stilleri_listele())],
+  ["think","think","Claude sonucu okuyor: 'Cinematic Realism' uygun, detayını istemeli"],
+  ["tool","tool","Araç çağrısı: stil_detayi",'girdi: {"stil_adi": "Cinematic"}'],
+  ["tool","tool","Araç sonucu: stil_detayi",pretty(stil_detayi({stil_adi:"Cinematic"}))],
+  ["tool","tool","Araç çağrısı: negatif_kelimeler","girdi: {}"],
+  ["tool","tool","Araç sonucu: negatif_kelimeler",pretty(NEGATIVE)],
+  ["done","done","Son cevap (end_turn) — döngü bitti",
+   "Prompt: Steaming latte on a rustic wooden café table at golden hour, brand cup in focus, " +
+   "cinematic depth, soft DOF, volumetric light, filmic contrast, natural color balance --ar 4:5\n\n" +
+   "Negatif: blurry, low-res, watermark, text, logo, harsh shadow"]
+];
+function stopDemo(){ if (demoTimer){ clearTimeout(demoTimer); demoTimer = null; $("demo").textContent = "Örnek akışı oynat"; } }
+function playDemo(){
+  if (demoTimer){ stopDemo(); return; }
+  trace.innerHTML = ""; stepNo = 0;
+  addStep("think", "Örnek akış — kayıtlı bir örnektir, Claude'a istek gönderilmez");
+  let i = 0; $("demo").textContent = "Örneği durdur";
+  const next = () => {
+    if (i >= DEMO.length){ demoTimer = null; $("demo").textContent = "Örnek akışı tekrar oynat"; return; }
+    const [node, kind, title, body] = DEMO[i++];
+    light(node); addStep(kind, title, body);
+    demoTimer = setTimeout(next, 1100);
+  };
+  demoTimer = setTimeout(next, 500);
+}
+
+// ---- Olaylar ----
+$("form").addEventListener("submit", e => { e.preventDefault(); const v = $("q").value; $("q").value = ""; ask(v); });
+$("q").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); $("form").requestSubmit(); } });
+$("stop").addEventListener("click", () => ctl?.abort());
+$("demo").addEventListener("click", playDemo);
+$("reset").addEventListener("click", () => { if (busy) return; stopDemo(); turns = []; stepNo = 0; note.textContent = ""; light(null); emptyState(); });
+for (const c of document.querySelectorAll(".chip")) c.addEventListener("click", () => ask(c.textContent));
+
+emptyState();
+</script>
