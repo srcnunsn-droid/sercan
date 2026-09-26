@@ -7,6 +7,7 @@ Bu depo iki şey içerir:
 
 Başlangıç noktaları:
 
+- **Uygulama:** [`app/seedance-studio.html`](app/seedance-studio.html). İndir ve çift tıkla; kurulum gerekmez, internetsiz de çalışır.
 - Kullanım rehberi: [`SEEDANCE_REHBER.md`](SEEDANCE_REHBER.md)
 - Karakter ve sahne kataloğu: [`seedance/KATALOG.md`](seedance/KATALOG.md)
 - Kopyala-yapıştır hazır promptlar: [`prompts/README.md`](prompts/README.md)

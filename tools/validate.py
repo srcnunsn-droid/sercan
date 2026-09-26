@@ -217,6 +217,17 @@ def main():
         print("WARN ", w)
     for e in errors:
         print("ERROR", e)
+    import subprocess
+    parity = subprocess.run([sys.executable, os.path.join(sc.ROOT, "tools", "test_app_parity.py")], capture_output=True, text=True)
+    print(parity.stdout.strip())
+    if parity.returncode != 0:
+        err("web app composer output differs from tools/seedance_compose.py — see tools/test_app_parity.py")
+    app = os.path.join(sc.ROOT, "app", "seedance-studio.html")
+    if os.path.exists(app):
+        import build_app
+        with open(app, encoding="utf-8") as f:
+            if build_app.build_page() not in f.read():
+                err("app/seedance-studio.html is out of date — run python3 tools/build_app.py")
     print("OK" if not errors else f"{len(errors)} error(s)")
     sys.exit(1 if errors else 0)
 

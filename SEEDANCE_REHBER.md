@@ -12,7 +12,22 @@ Kopyalanmaya hazır 86 prompt için (43 sahne × 2 sürüm): [`prompts/README.md
 
 ---
 
-## 1. En hızlı yol: hazır promptu kopyala
+## 0. Uygulama: Seedance Stüdyo (kurulum gerektirmez)
+
+**`app/seedance-studio.html`** dosyasını indirip çift tıklaman yeterli. Tarayıcıda açılır ve internet olmadan da çalışır. Telefonda da açılır.
+
+1. **Sahne.** Kategori seç veya ara ("terlik", "ejderha"...). Listeden sahneye tıkla.
+2. **Oyuncular.** Her rol için o sahneye uyan karakterlerden birini seç. "Oyuncuları karıştır" yeni bir kadro kurar. "Rastgele viral kombinasyon" hem sahneyi hem kadroyu rastgele seçer. "Kimlik metnini kopyala" ile karakterin referans görselini üretmek için gereken tanımı alırsın.
+3. **Ayarlar.** Seedance 2.0 veya 2.5, görüntü yönetmeni stili ve negatif prompt seçimi.
+4. **Promptu kopyala** ve Seedance'e yapıştır. Görselleri "Referans yükleme sırası" listesindeki sırayla yükle.
+
+Uygulama son seçimlerini tarayıcında hatırlar. Karakter veya sahne JSON'larını değiştirirsen uygulamayı yeniden üret:
+
+```bash
+python3 tools/build_app.py
+```
+
+## 1. Hazır promptu dosyadan kopyala
 
 1. `prompts/2.0/` klasörünü aç. Seedance 2.5 kullanıyorsan `prompts/2.5/` klasörünü aç.
 2. Bir sahne dosyası seç, örneğin `terlik_anne.md`.
@@ -122,6 +137,7 @@ Kurallar:
 ```bash
 python3 tools/validate.py                      # hepsi OK olmalı
 python3 tools/seedance_compose.py --build-examples   # prompts/ ve KATALOG.md yenilenir
+python3 tools/build_app.py                           # app/seedance-studio.html yenilenir
 ```
 
 Doğrulayıcı şunları yakalar:
