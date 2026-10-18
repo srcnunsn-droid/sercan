@@ -1,0 +1,65 @@
+{
+  "model": "gpt_image_2_5 (Higgsfield, quality=high, resolution=2k, 16:9)",
+  "images": [
+    {
+      "file": "00_castle.jpg",
+      "job_id": "87998b59-c71d-4b82-b5b2-9b6f2dd28a21",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142250_87998b59-c71d-4b82-b5b2-9b6f2dd28a21.png",
+      "prompt": "Cinematic wide establishing shot of a colossal gothic castle perched on a jagged cliff at night, huge full moon behind its spires, violent thunderstorm, a fork of lightning striking the tallest tower, rain sheets, swirling dark clouds, a few bats silhouetted against the moon, Transylvanian mountains, cold blue moonlight with a faint warm glow from one high window. Classic horror film mood, photorealistic, anamorphic lens, deep shadows, volumetric mist, film grain. No text, no logo, no watermark."
+    },
+    {
+      "file": "01_dracula.jpg",
+      "job_id": "3c06d889-c0a4-4935-af24-bdcff514500d",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142250_3c06d889-c0a4-4935-af24-bdcff514500d.png",
+      "prompt": "Cinematic close-up portrait of Count Dracula, classic aristocratic vampire, gaunt pale face, slicked-back black hair with sharp widow's peak, glowing blood-red eyes, mouth open in a snarl revealing long white fangs, high stiff collar black cape with deep crimson silk lining, ornate gold medallion with red stone, black tailcoat. Dark gothic stone hall background with candlelight, cold blue rim light, menacing expression, photorealistic, highly detailed skin texture, shallow depth of field, anamorphic film look, film grain. Framed on the right third of the frame, facing left. No text, no watermark."
+    },
+    {
+      "file": "02_monster.jpg",
+      "job_id": "21ca2507-156e-476a-89d9-a9d77aa52003",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142250_21ca2507-156e-476a-89d9-a9d77aa52003.png",
+      "prompt": "Cinematic close-up portrait of Frankenstein's monster, massive hulking creature, flat-topped heavy skull, thick brow ridge, grey-green stitched patchwork skin with crude surgical staples and scars, metal electrode bolts on the sides of the neck crackling with blue electric sparks, sunken furious eyes, clenched jaw, ragged black wool coat too small for his shoulders. Dark laboratory background with arcing Tesla coils, cold blue electric light and warm sparks, photorealistic, highly detailed skin texture, shallow depth of field, anamorphic film look, film grain. Framed on the left third of the frame, facing right. No text, no watermark."
+    },
+    {
+      "file": "03_faceoff.jpg",
+      "job_id": "34399441-b12c-40d7-90bf-f07d27be4552",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142427_34399441-b12c-40d7-90bf-f07d27be4552.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg"],
+      "prompt": "Use the vampire from the first reference image and the monster from the second reference image, keep their faces and costumes identical. Cinematic wide shot: face-off standoff inside a ruined gothic castle great hall at night. Count Dracula stands on the right, cape spread, red eyes glowing, fangs bared. Frankenstein's monster stands on the left, fists clenched, neck bolts sparking blue electricity. Between them a cracked stone floor, toppled candelabras, broken stained-glass window behind them with lightning flashing outside, rain pouring through the shattered roof, mist on the floor. Symmetrical composition, dramatic backlight, cold blue moonlight and warm candle fire, photorealistic, anamorphic film still, film grain. No text, no watermark."
+    },
+    {
+      "file": "04_lunge.jpg",
+      "job_id": "893d64d3-7ce7-4216-8130-236b5ed6ddc0",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142427_893d64d3-7ce7-4216-8130-236b5ed6ddc0.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg"],
+      "prompt": "Use the vampire from the first reference image and the monster from the second reference image, keep their faces and costumes identical. Dynamic action film still: Count Dracula leaps through the air toward Frankenstein's monster, claws outstretched, mouth wide open with fangs, black cape flaring open like giant bat wings with crimson lining, motion blur on the cape edges. The monster braces in the lower left foreground, seen from behind his shoulder. Ruined gothic great hall, flying debris, rain, lightning through a broken window. Low camera angle, extreme dynamism, photorealistic, anamorphic, film grain. No text, no watermark."
+    },
+    {
+      "file": "05_punch.jpg",
+      "job_id": "fec1a33d-766a-41f4-9e82-f10cacb30d80",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142428_fec1a33d-766a-41f4-9e82-f10cacb30d80.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg"],
+      "prompt": "Use the vampire from the first reference image and the monster from the second reference image, keep their faces and costumes identical. Action film still at the moment of impact: Frankenstein's monster lands a massive punch on Count Dracula's jaw, Dracula's head snapping sideways, his cape whipping, a burst of blue electric sparks exploding from the monster's fist and neck bolts, a visible shockwave of dust and rain droplets radiating from the impact, stone chunks flying. Ruined gothic great hall, dramatic side lighting, photorealistic, high shutter speed frozen motion, anamorphic, film grain. No text, no watermark."
+    },
+    {
+      "file": "06_bats.jpg",
+      "job_id": "369dcf57-749d-44dd-a60e-0daac22ba9ca",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142427_369dcf57-749d-44dd-a60e-0daac22ba9ca.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg"],
+      "prompt": "Use the vampire from the first reference image and the monster from the second reference image, keep their faces and costumes identical. Action film still: Count Dracula's body is dissolving into a huge swirling swarm of hundreds of black bats with tiny red eyes, his face still visible at the center of the swarm snarling, the bats engulfing Frankenstein's monster who swings his arms wildly to fight them off, electricity arcing from his neck bolts and lighting up the bats. Ruined gothic great hall, moonlight beams through the broken roof, rain, photorealistic, anamorphic, film grain. No text, no watermark."
+    },
+    {
+      "file": "07_grab.jpg",
+      "job_id": "401c6352-c6fa-4998-855d-47651f5bdef0",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142426_401c6352-c6fa-4998-855d-47651f5bdef0.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg"],
+      "prompt": "Use the vampire from the first reference image and the monster from the second reference image, keep their faces and costumes identical. Action film still: Frankenstein's monster grabs Count Dracula by the throat with one huge stitched hand and lifts him off the ground, Dracula clawing at the monster's arm and hissing with fangs bared, red eyes blazing, cape hanging. Behind them a giant shattered gothic window, a massive bolt of lightning splitting the sky and silhouetting both figures, rain blowing in, electricity crackling along the monster's arm. Low angle, photorealistic, anamorphic, film grain. No text, no watermark."
+    },
+    {
+      "file": "08_rooftop.jpg",
+      "job_id": "1e66ad71-ef7f-4fc7-9cf7-8eba7e25bd8d",
+      "url": "https://d8j0ntlcm91z4.cloudfront.net/user_31Nmy8MPfEsDKgS8FMatamMEHkF/hf_20261018_142427_1e66ad71-ef7f-4fc7-9cf7-8eba7e25bd8d.png",
+      "references": ["01_dracula.jpg", "02_monster.jpg", "00_castle.jpg"],
+      "prompt": "Use the vampire from the first reference image, the monster from the second reference image and the castle from the third reference image. Epic cinematic wide shot: Count Dracula and Frankenstein's monster clash on the top of the castle's highest tower, locked in combat, Dracula's cape spread wide, the monster's fist raised, both seen as strong silhouettes against an enormous full moon, lightning forks across the stormy sky, rain, bats circling, the castle and cliffs below. Epic poster composition, cold blue and silver palette with crimson accents, photorealistic, anamorphic, film grain. No text, no watermark."
+    }
+  ]
+}
