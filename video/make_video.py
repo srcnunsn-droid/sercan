@@ -41,28 +41,34 @@ FONT_BOLD = find_font("LiberationSerif-Bold.ttf", "DejaVuSerif-Bold.ttf", "FreeS
 FONT_ITALIC = find_font("LiberationSerif-Italic.ttf", "FreeSerifItalic.ttf", "DejaVuSerif.ttf")
 
 # Planlar. zoom: (başlangıç, bitiş); c0/c1: görsel içindeki kamera merkezi (0..1);
-# grade: (kontrast, doygunluk, RGB tonu)
+# grade: (kontrast, doygunluk, RGB tonu). Kıvılcım ve ark konumları görsel koordinatındadır,
+# kamerayla birlikte hareket ederler.
 SHOTS = [
-    dict(name="castle", img="00_castle.jpg", zoom=(1.0, 1.15), c0=(0.50, 0.52), c1=(0.52, 0.42),
+    dict(name="castle", img="00_castle.jpg", zoom=(1.0, 1.18), c0=(0.55, 0.50), c1=(0.62, 0.36),
          ease="out", grade=(1.06, 0.85, (0.92, 0.97, 1.10)), rain=1.0, bats="far"),
-    dict(name="dracula", img="01_dracula.jpg", zoom=(1.04, 1.22), c0=(0.60, 0.50), c1=(0.64, 0.40),
+    dict(name="dracula", img="01_dracula.jpg", zoom=(1.04, 1.26), c0=(0.62, 0.46), c1=(0.67, 0.36),
          ease="inout", grade=(1.08, 0.95, (1.04, 0.96, 0.96))),
-    dict(name="monster", img="02_monster.jpg", zoom=(1.04, 1.22), c0=(0.40, 0.50), c1=(0.36, 0.40),
-         ease="inout", grade=(1.08, 0.92, (0.95, 1.00, 1.07)), electric=True),
-    dict(name="faceoff", img="03_faceoff.jpg", zoom=(1.0, 1.16), c0=(0.50, 0.54), c1=(0.50, 0.50),
+    dict(name="monster", img="02_monster.jpg", zoom=(1.04, 1.24), c0=(0.38, 0.46), c1=(0.33, 0.38),
+         ease="inout", grade=(1.08, 0.92, (0.95, 1.00, 1.07)), electric=True,
+         arcs=[(0.16, 0.43, 0.11, 0.30), (0.16, 0.43, 0.22, 0.48), (0.16, 0.44, 0.12, 0.54),
+               (0.31, 0.62, 0.32, 0.72)]),
+    dict(name="faceoff", img="03_faceoff.jpg", zoom=(1.0, 1.14), c0=(0.50, 0.56), c1=(0.52, 0.46),
          ease="inout", grade=(1.06, 0.9, (0.95, 0.98, 1.06)), rain=0.6, fog=0.5, xfade=0.4),
-    dict(name="lunge", img="04_lunge.jpg", zoom=(1.0, 1.45), c0=(0.50, 0.50), c1=(0.56, 0.40),
+    dict(name="lunge", img="04_lunge.jpg", zoom=(1.0, 1.5), c0=(0.50, 0.52), c1=(0.58, 0.32),
          ease="in", grade=(1.08, 0.95, (1.0, 0.97, 1.0)), rain=0.6, blur=True),
-    dict(name="punch", img="05_punch.jpg", zoom=(1.24, 1.06), c0=(0.50, 0.46), c1=(0.50, 0.50),
-         ease="out", grade=(1.1, 0.95, (0.98, 0.98, 1.04)), rain=0.5,
-         sparks=[(beat(4), (0.50, 0.45), 110, "mixed")]),
-    dict(name="bats", img="06_bats.jpg", zoom=(1.12, 1.24), c0=(0.42, 0.50), c1=(0.58, 0.46),
+    dict(name="punch", img="05_punch.jpg", zoom=(1.26, 1.06), c0=(0.64, 0.45), c1=(0.55, 0.48),
+         ease="out", grade=(1.1, 0.95, (0.98, 0.98, 1.04)), rain=0.5, electric=True,
+         sparks=[(beat(4), (0.68, 0.44), 120, "mixed")],
+         arcs=[(0.40, 0.46, 0.66, 0.44), (0.46, 0.64, 0.62, 0.55), (0.12, 0.27, 0.08, 0.18)]),
+    dict(name="bats", img="06_bats.jpg", zoom=(1.12, 1.24), c0=(0.40, 0.55), c1=(0.56, 0.36),
          ease="inout", grade=(1.06, 0.9, (0.96, 0.97, 1.05)), rain=0.3, bats="swarm"),
-    dict(name="grab", img="07_grab.jpg", zoom=(1.0, 1.2), c0=(0.50, 0.62), c1=(0.50, 0.42),
+    dict(name="grab", img="07_grab.jpg", zoom=(1.0, 1.2), c0=(0.48, 0.50), c1=(0.55, 0.36),
          ease="inout", grade=(1.08, 0.9, (0.94, 0.98, 1.08)), rain=0.9, electric=True,
-         sparks=[(beat(15), (0.50, 0.38), 50, "blue")]),
-    dict(name="rooftop", img="08_rooftop.jpg", zoom=(1.3, 1.02), c0=(0.50, 0.42), c1=(0.50, 0.50),
-         ease="out", grade=(1.06, 0.88, (0.94, 0.97, 1.08)), rain=0.9, bats="circle"),
+         sparks=[(beat(15), (0.68, 0.30), 60, "blue")],
+         arcs=[(0.47, 0.57, 0.64, 0.38), (0.43, 0.60, 0.57, 0.68), (0.62, 0.40, 0.68, 0.48),
+               (0.22, 0.47, 0.17, 0.52)]),
+    dict(name="rooftop", img="08_rooftop.jpg", zoom=(1.32, 1.02), c0=(0.48, 0.20), c1=(0.50, 0.40),
+         ease="out", grade=(1.06, 0.88, (0.94, 0.97, 1.08)), rain=0.9, bats="circle", moon=(0.485, 0.11)),
 ]
 for _i, _s in enumerate(SHOTS):
     _s["t0"], _s["t1"] = CUTS[_s["name"]]
@@ -223,6 +229,7 @@ def init_worker(W, H, img_dir):
 
     yy, xx = np.mgrid[-1:1:H * 1j, -1:1:W * 1j].astype(np.float32)
     G["vignette"] = (1 - 0.42 * ((xx ** 2 + yy ** 2) / 2) ** 1.3)[..., None]
+    G["shade"] = (np.clip((ys - 0.5) / 0.4, 0, 1) ** 1.5)[..., None]
 
     grain = rng.standard_normal((8, (H + 1) // 2, (W + 1) // 2)).astype(np.float32)
     G["grain"] = grain.repeat(2, 1).repeat(2, 2)[:, :H, :W]
@@ -273,15 +280,30 @@ def cam_params(s, t):
     return z, cx, cy, dx, dy, rot
 
 
-def camera_view(img, W, H, z, cx, cy, dx, dy, rot):
-    sw, sh = img.size
+def cam_geom(s, t):
+    """Ölçek, görseldeki kamera merkezi (px) ve dönüş."""
+    W, H = G["W"], G["H"]
+    sw, sh = G["imgs"][s["name"]].size
+    z, cx, cy, dx, dy, rot = cam_params(s, t)
     S = max(W / sw, H / sh) * z
-    hw, hh = W / (2 * S), H / (2 * S)
+    hw, hh = W / (2 * S), (H / 2 - G["bar"]) / S  # sinemaskop bantları arasındaki görünür alan
     m = 0.03 * min(sw, sh)  # sarsıntı payı
     px = min(max(cx * sw, hw + m), sw - hw - m) if sw - 2 * hw > 2 * m else sw / 2
     py = min(max(cy * sh, hh + m), sh - hh - m) if sh - 2 * hh > 2 * m else sh / 2
     px = min(max(px - dx / S, hw), sw - hw)
     py = min(max(py - dy / S, hh), sh - hh)
+    return S, px, py, rot, sw, sh
+
+
+def to_screen(geom, x, y):
+    S, px, py, rot, sw, sh = geom
+    ix, iy = x * sw - px, y * sh - py
+    c, sn = math.cos(rot), math.sin(rot)
+    return G["W"] / 2 + S * (c * ix - sn * iy), G["H"] / 2 + S * (sn * ix + c * iy)
+
+
+def camera_view(img, W, H, geom):
+    S, px, py, rot = geom[:4]
     c, sn = math.cos(rot), math.sin(rot)
     a, b, d, e = c / S, sn / S, -sn / S, c / S
     return img.transform((W, H), Image.AFFINE,
@@ -292,13 +314,13 @@ def camera_view(img, W, H, z, cx, cy, dx, dy, rot):
 def render_base(s, t):
     img, W, H = G["imgs"][s["name"]], G["W"], G["H"]
     if not s.get("blur"):
-        return np.asarray(camera_view(img, W, H, *cam_params(s, t)), np.float32) / 255
+        return np.asarray(camera_view(img, W, H, cam_geom(s, t)), np.float32) / 255
     # hızlı hamle: 180° obtüratörlü hareket bulanıklığı
     acc = np.zeros((H, W, 3), np.float32)
     n = 4
     for k in range(n):
         tk = t + (k / (n - 1) - 0.5) * 0.5 / FPS
-        acc += np.asarray(camera_view(img, W, H, *cam_params(s, tk)), np.float32)
+        acc += np.asarray(camera_view(img, W, H, cam_geom(s, tk)), np.float32)
     return acc / (255 * n)
 
 
@@ -323,7 +345,7 @@ def add_fog(frame, s, t):
     frame[:] = 1 - (1 - frame) * (1 - fog[..., None] * col)
 
 
-def add_bats(frame, ov, s, t):
+def add_bats(frame, ov, s, t, geom):
     kind = s["bats"]
     W, H, U = G["W"], G["H"], G["U"]
     tl = t - s["t0"]
@@ -353,13 +375,14 @@ def add_bats(frame, ov, s, t):
             d.polygon(bat_points(x, y, size, 2 * math.pi * fr * tl + ph, 0.35 * math.sin(ang)), fill=255)
             if size > 30 * U:
                 eyes.append((x, y, size, 0.35 * math.sin(ang)))
-    else:  # circle
+    else:  # ayın etrafında dönenler
+        mx, my = to_screen(geom, *s["moon"])
         for _ in range(16):
             rx, a0 = rng.uniform(0.18, 0.46) * W, rng.uniform(0, 2 * math.pi)
             om, size = rng.uniform(0.5, 1.1) * rng.choice([-1, 1]), rng.uniform(7, 18) * U
             fr, ph = rng.uniform(5, 8), rng.uniform(0, 6.3)
             ang = a0 + om * tl
-            x, y = 0.5 * W + rx * math.cos(ang), 0.30 * H + 0.3 * rx * math.sin(ang)
+            x, y = mx + rx * math.cos(ang), my + 0.3 * rx * math.sin(ang)
             d.polygon(bat_points(x, y, size, 2 * math.pi * fr * tl + ph), fill=255)
     m = np.asarray(mask.filter(ImageFilter.GaussianBlur(0.8 * U)), np.float32)[..., None] / 255
     frame *= 1 - 0.95 * m
@@ -372,7 +395,7 @@ def add_bats(frame, ov, s, t):
             od.ellipse([px - r, py - r, px + r, py + r], fill=(255, 30, 10))
 
 
-def add_sparks(ov, s, t):
+def add_sparks(ov, s, t, geom):
     W, H, U = G["W"], G["H"], G["U"]
     d = ImageDraw.Draw(ov)
     palettes = {"mixed": [(1.0, 0.62, 0.22), (1.0, 0.85, 0.5), (0.6, 0.8, 1.0)], "blue": [(0.6, 0.8, 1.0), (0.85, 0.95, 1.0)]}
@@ -382,6 +405,7 @@ def add_sparks(ov, s, t):
             continue
         rng = np.random.default_rng(1000 + 10 * s["seed"] + bi)
         cols = palettes[pal]
+        sx, sy = to_screen(geom, ox, oy)
         for _ in range(n):
             ang, spd = rng.uniform(0, 2 * math.pi), rng.uniform(250, 1500) * U
             life, col = rng.uniform(0.25, 1.0), cols[int(rng.integers(len(cols)))]
@@ -392,22 +416,25 @@ def add_sparks(ov, s, t):
 
             def pos(tt):
                 drag = (1 - math.exp(-2.5 * tt)) / 2.5
-                return ox * W + vx * drag, oy * H + vy * drag + 0.5 * g * tt * tt
+                return sx + vx * drag, sy + vy * drag + 0.5 * g * tt * tt
 
             fade = (1 - dt / life) ** 1.5
             d.line([pos(max(dt - 0.03, 0)), pos(dt)], fill=tuple(int(c * 255 * fade) for c in col),
                    width=max(1, round(3 * U)))
 
 
-def add_arcs(ov, s, t, i):
+def add_arcs(ov, s, t, i, geom):
     """Rastgele kareliklerde titreyen elektrik arkları."""
     rng = np.random.default_rng(7000 + i)
     if rng.random() > 0.55:
         return 0.0
-    W, H, U = G["W"], G["H"], G["U"]
+    U = G["U"]
     d = ImageDraw.Draw(ov)
     for (x0, y0, x1, y1) in s.get("arcs", []):
-        pts = jagged((x0 * W, y0 * H), (x1 * W, y1 * H), rng)
+        if rng.random() < 0.3:
+            continue
+        j = rng.normal(0, 0.012, 2)
+        pts = jagged(to_screen(geom, x0, y0), to_screen(geom, x1 + j[0], y1 + j[1]), rng)
         d.line(pts, fill=(150, 200, 255), width=max(1, round(3 * U)))
         d.line(pts, fill=(235, 245, 255), width=max(1, round(1 * U)))
     return rng.uniform(0.4, 1.0)
@@ -422,12 +449,13 @@ def render_shot(s, t, i, L):
         add_fog(frame, s, t)
     if s.get("bats") or s.get("sparks") or s.get("electric"):
         ov = Image.new("RGB", (G["W"], G["H"]), 0)
+        geom = cam_geom(s, t)
     if s.get("bats"):
-        add_bats(frame, ov, s, t)
+        add_bats(frame, ov, s, t, geom)
     if s.get("sparks"):
-        add_sparks(ov, s, t)
+        add_sparks(ov, s, t, geom)
     if s.get("electric"):
-        flick = add_arcs(ov, s, t, i)
+        flick = add_arcs(ov, s, t, i, geom)
         frame *= 1 + flick * np.array([0.02, 0.08, 0.22], np.float32)
     if ov is not None:
         o = np.asarray(ov, np.float32) / 255
@@ -450,9 +478,13 @@ def lightning_level(t):
     return min(v, 1.6)
 
 
+def lt_alpha(t, t_in, t_out):
+    return smooth((t - t_in) / 0.4) * smooth((t_out - t) / 0.35)
+
+
 def lower_third(frame, layers, x, y, t, t_in, t_out, align):
     U = G["U"]
-    a = smooth((t - t_in) / 0.4) * smooth((t_out - t) / 0.35)
+    a = lt_alpha(t, t_in, t_out)
     if a <= 0:
         return
     slide = (1 - smooth((t - t_in) / 0.7)) * 70 * U * (-1 if align == "left" else 1)
@@ -464,6 +496,11 @@ def lower_third(frame, layers, x, y, t, t_in, t_out, align):
 def add_text(frame, t):
     W, H, U, bar, T = G["W"], G["H"], G["U"], G["bar"], G["text"]
     base = H - bar - int(40 * U)
+    # okunabilirlik için yazıların altını hafifçe karart
+    shade = max(0.5 * lt_alpha(t, 0.9, 2.5), lt_alpha(t, 2.85, 4.3), lt_alpha(t, 4.65, 6.1),
+                smooth((t - TITLE_T) / 0.6))
+    if shade > 0:
+        frame *= 1 - 0.55 * shade * G["shade"]
     lower_third(frame, [(T["place"], -T["place"].shape[0])], 90 * U, base, t, 0.9, 2.5, "left")
     lower_third(frame, [(T["drac"], -T["drac"].shape[0] - 48 * U), (T["drac_sub"], -T["drac_sub"].shape[0])],
                 90 * U, base, t, 2.85, 4.3, "left")
@@ -502,7 +539,7 @@ def apply_global(frame, t, i):
                 frame[..., 2] = np.roll(frame[..., 2], -sh, axis=1)
     frame *= G["vignette"]
     add_text(frame, t)
-    frame += G["grain"][i % 8][..., None] * 0.02
+    frame += G["grain"][i % 8][..., None] * 0.016
     bar = G["bar"]
     frame[:bar] = 0
     frame[H - bar:] = 0
@@ -575,7 +612,7 @@ def main():
         cmd = ["ffmpeg", "-y", "-loglevel", "error",
                "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
                "-i", wav,
-               "-c:v", "libx264", "-preset", "slow", "-crf", "21", "-pix_fmt", "yuv420p",
+               "-c:v", "libx264", "-preset", "slow", "-crf", "23", "-maxrate", "10M", "-bufsize", "20M", "-pix_fmt", "yuv420p",
                "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-shortest", out]
         proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
         t0 = time.time()
