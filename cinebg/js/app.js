@@ -964,6 +964,28 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutFrame());
   }
 
+  /* Karakter & Yarışma stüdyosu için dış API */
+  CB.app = {
+    current: () => ({ cat: S.cat, seed: S.seed, spec: S.spec, prompts: S.prompts, visual: S.visual, ov: clone(S.ov) }),
+    aspect, toast, saveFile, thumb: thumbOf, redraw: () => draw(), stamp,
+    renderThumb(cat, seed, ov, w, h) {
+      if (!R) return '';
+      try {
+        const spec = CB.makeSpec(cat, seed, Object.assign({}, S.ov, ov || {}));
+        const v = visualFromSpec(spec);
+        const X = exportRenderer(); X.render(rstate(v, seed, 0), w, h, spec.time0);
+        return X.canvas.toDataURL('image/jpeg', 0.82);
+      } catch (e) { return ''; }
+    },
+    openBg(cat, seed, ov) { S.ov = Object.assign({}, S.ov, ov || {}); store.set('ov', S.ov); syncOverrides(); load(cat, seed, true); },
+    addShot(cat, seed, ov, name, note, thumb) {
+      const spec = CB.makeSpec(cat, seed, Object.assign({}, S.ov, ov || {}));
+      const sh = shotFrom(cat, seed, Object.assign({}, S.ov, ov || {}), visualFromSpec(spec), thumb);
+      sh.name = name || cat.tr; sh.note = note || '';
+      S.project.shots.push(sh); saveProject(); renderProject();
+    },
+  };
+
   function init() {
     const combos = CB.combinationCount();
     $('counter').replaceChildren(el('b', { text: CB.CATS.length.toLocaleString('tr-TR') }), ' kategori · ', el('b', { text: Object.keys(CB.ENGINES).length + ' motor' }), ' · ',

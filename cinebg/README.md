@@ -18,6 +18,23 @@ Her sahne iki çıktı verir:
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
 
+## v4: Karakter & Yarışma Stüdyosu
+
+Üst bardaki **Arka Plan / Karakter / Yarışma** düğmeleriyle üç stüdyo arasında geçilir.
+
+**Karakter stüdyosu**
+- 37 arketip (girişimci, içerik üreticisi, şef, boksör, dedektif, ajan, astronot, uzay piyadesi, android, şövalye, samuray, yeniçeri, Viking, büyücü, kovboy, korsan, steampunk mucit, Osmanlı paşası, moda modeli…). Her arketipin kostüm, aksesuar, siluet imzası ve aksiyon havuzu var.
+- Görünüm oluşturucu: yaş, yapı, köken tipi, yüz, saç, sakal, ayırt edici iz, vurgu rengi. Tek tıkla görünümü ya da kostümü karıştır.
+- **Referans kişi** modu: gerçek bir kişinin kimliği yalnızca resmî referans görsellerden ve Soul ID'den gelir. Promptlar kişiyi isimle anmaz, yüzünü tarif etmez. Yalnızca kostüm, rol, poz ve sahne değişir.
+- Sheet promptları (skill kurallarıyla): Soul 2.0 üç panel film sheet'i (Lira), kimlik kilit sayfası T4, kahraman plakası T1 (başsız ön panel), yakın plan T3, ifade sayfası, poz sayfası, referans görselden sheet T5a, durum varyantı (savaş hasarlı, ıslak, kar, yaşlanmış, gençleşmiş, gala). Her birinde ayar satırı, QC ve dosya adı var.
+- **Sahneye yerleştir:** mevcut arka planla Soul Cinema sahne karesi, NBP kompozit düzenlemesi ve Seedance I2V klip promptu.
+- Karakter kartı PNG: yapım dosyası için ön/arka/yakın plan şablonu ve tüm özellikler.
+
+**Yarışma kiti**
+- 6 format (sinematik reklam, kısa film, fragman, komedi, çılgın konsept, meme) ve 12 konsept: Tek Kişilik Prodüksiyon, Kapıdan Kapıya, Zaman Yolcusu Yatırımcı, Son Toplantı, Yatırımcı: Destan, Ağ, Ekip Nerede?, Beklenti / Gerçek, Her Saniye Yeni Evren, Minyatür Dünya, POV: Bütçe Sıfır, Kimse / Ben.
+- Her konsept için logline, kanca, çekim listesi (arka plan küçük resmi, kamera, aksiyon, ses, ekran yazısı). Her çekimde Soul Cinema görsel promptu ve Seedance klip promptu var. Ayrıca en fazla 3 çekimlik Seedance storyboard'ları, TR/EN paylaşım metni ve kontrol listesi hazırlanır.
+- Konsept boyunca saat, hava ve renk grade'i sabit tutulur. "Yeni varyasyon" arka planları değiştirir. Arka planlar tek tıkla projeye aktarılır, oradan ZIP olarak indirilir.
+
 ## v3'te neler yeni
 
 - **26 kamera açısı:** solucan gözü, kuş bakışı, Hollanda açısı, birinci şahıs POV, yan takip, aşırı uzak plan, detay, havadan yörünge, içeriden dışarı, ters açı, yansıma seviyesi ve ürün çekimi açıları (önden, 3/4, kahraman, flat lay, makro). Her açının önizlemede bir kadraj karşılığı var.
@@ -80,3 +97,5 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 | `js/looks.js` | Paletler, grade'ler, en-boy oranları, saat, hava, kamera ve ışık sözlükleri |
 | `js/spec.js` | Seed'li sahne spesifikasyonu ve prompt motoru |
 | `js/app.js` | Arayüz, dışa aktarma, video, toplu üretim |
+| `js/chars.js` | Karakter arketipleri, görünüm havuzları, yarışma konseptleri |
+| `js/studio.js` | Karakter stüdyosu ve yarışma kiti |
