@@ -1306,22 +1306,51 @@ Uçurum Patikası|cliff path cut into a rock face
     },
   };
 
-  /* Genişletilmiş satırları ayrıştır */
-  const CATS = [];
-  GROUPS.forEach((g, gi) => {
-    g.index = gi;
-    g.cats = [];
-    g.items.trim().split('\n').forEach((line, li) => {
+  /* Tür etiketleri (katalog filtresi) */
+  CB.GENRES = [
+    { id: 'war', tr: 'Savaş' }, { id: 'scifi', tr: 'Bilimkurgu' }, { id: 'fantasy', tr: 'Fantastik' }, { id: 'horror', tr: 'Korku & Gerilim' },
+    { id: 'history', tr: 'Tarihi & Dönem' }, { id: 'nature', tr: 'Doğa' }, { id: 'urban', tr: 'Şehir' }, { id: 'interior', tr: 'İç mekan' },
+    { id: 'space', tr: 'Uzay' }, { id: 'abstract', tr: 'Soyut & Grafik' },
+  ];
+  const GENRE_OF = {
+    'battle-ancient': ['war', 'history'], 'battle-modern': ['war', 'history'], 'battle-future': ['war', 'scifi'], siege: ['war', 'history', 'fantasy'],
+    postapoc: ['scifi', 'horror'], urban: ['urban'], cyber: ['scifi', 'urban'], historic: ['history'], industrial: ['urban', 'interior'],
+    military: ['war', 'interior'], mountains: ['nature'], desert: ['nature'], forest: ['nature'], jungle: ['nature'], polar: ['nature'],
+    coast: ['nature'], rivers: ['nature'], plains: ['nature'], volcanic: ['nature'], caves: ['nature', 'fantasy'], underwater: ['nature'],
+    space: ['space', 'scifi'], starship: ['scifi', 'interior', 'space'], fantasy: ['fantasy'], darkfantasy: ['fantasy', 'horror'],
+    horror: ['horror', 'interior'], sacred: ['history', 'interior'], palace: ['history', 'interior'], residential: ['interior'],
+    public: ['interior', 'urban'], transport: ['urban', 'interior'], western: ['history'], noir: ['history', 'urban'], eastasia: ['history', 'urban'],
+    anatolia: ['history'], sky: ['nature', 'abstract'], arena: ['war', 'urban'], nightlife: ['urban', 'interior'], lab: ['scifi', 'interior'],
+    dystopia: ['scifi', 'urban'], myth: ['fantasy', 'history'], disaster: ['war', 'scifi'], africa: ['nature', 'history'], villages: ['history', 'nature'],
+    roads: ['nature', 'urban'],
+  };
+
+  /* Ayrıştırıcı: kategori kimliği = grup kimliği + sıra numarası (sahne kodları sabit kalır) */
+  CB.GROUPS = [];
+  CB.CATS = [];
+  CB.ARCH = ARCH;
+  function parseInto(g, text) {
+    text.trim().split('\n').forEach((line) => {
       const [tr, en] = line.split('|');
       if (!tr || !en) return;
-      const c = { id: g.id + ':' + li, tr: tr.trim(), en: en.trim(), group: g };
+      const c = { id: g.id + ':' + g.cats.length, tr: tr.trim(), en: en.trim(), group: g };
       g.cats.push(c);
-      CATS.push(c);
+      CB.CATS.push(c);
     });
+  }
+  CB.addGroup = function (g) {
+    g.index = CB.GROUPS.length;
+    g.cats = [];
+    g.genres = g.genres || GENRE_OF[g.id] || [];
+    CB.GROUPS.push(g);
+    parseInto(g, g.items || '');
     delete g.items;
-  });
-
-  CB.GROUPS = GROUPS;
-  CB.CATS = CATS;
-  CB.ARCH = ARCH;
+  };
+  CB.extendGroup = function (id, text) {
+    const g = CB.GROUPS.find((x) => x.id === id);
+    if (!g) throw new Error('Grup yok: ' + id);
+    parseInto(g, text);
+  };
+  CB.extendArch = function (id, pools) { ARCH[id] = pools; };
+  GROUPS.forEach(CB.addGroup);
 })();

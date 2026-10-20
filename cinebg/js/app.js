@@ -1,4 +1,4 @@
-/* CineBG Studio — arayüz ve uygulama durumu. */
+/* CineBG Studio — arayüz ve uygulama durumu (v2). */
 (function () {
   const CB = window.CB;
   const $ = (id) => document.getElementById(id);
@@ -21,18 +21,22 @@
   const newSeed = () => (Math.random() * 4294967296) >>> 0;
   const hexLin = (h) => [1, 3, 5].map((i) => Math.pow(parseInt(h.substr(i, 2), 16) / 255, 2.2));
   const slug = (t) => t.toLowerCase().replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const CTX_TR = { ext: 'Dış mekan', int: 'İç mekan', space: 'Uzay', water: 'Su altı', sky: 'Gökyüzü' };
+  const CTX_TR = { ext: 'Dış mekan', int: 'İç mekan', space: 'Uzay', water: 'Su altı', sky: 'Gökyüzü', abstract: 'Soyut / grafik' };
   const LOOK_KEYS = ['exposure', 'contrast', 'saturation', 'temperature', 'tint', 'fade', 'shadows', 'highlights', 'bloom', 'threshold', 'flare', 'flareColor', 'halation', 'ca', 'vignette', 'grain', 'grainSize'];
   const lookFrom = (g) => { const o = {}; LOOK_KEYS.forEach((k) => { o[k] = Array.isArray(g[k]) ? g[k].slice() : g[k]; }); return o; };
+  const ATMOS_KEYS = [['rain', 'Yağmur'], ['snow', 'Kar'], ['fog', 'Sis'], ['embers', 'Kor & kıvılcım'], ['ash', 'Kül'], ['dust', 'Toz'], ['lightning', 'Şimşek'], ['leak', 'Işık sızıntısı']];
+  const TAU = Math.PI * 2;
 
   /* ---------------- durum ---------------- */
   const S = {
-    cat: null, seed: 0, spec: null, prompts: null, visual: null, t: 0,
+    cat: null, seed: 0, spec: null, prompts: null, visual: null, t: 0, tStart: 0,
     ov: store.get('ov', { time: '', weather: '', camera: '', palette: '', grade: '', impossible: 'auto' }),
-    mode: store.get('mode', 'all'),
+    mode: store.get('mode', 'all'), genres: new Set(store.get('genres', [])),
     aspectId: store.get('aspect', '16:9'), res: store.get('res', 2160), fmt: store.get('fmt', 'png'), q: 0.95,
-    bars: 0, guides: false,
+    bars: 0, move: store.get('move', 'pushin'),
+    title: store.get('title', { title: '', sub: '', style: 'epic', pos: 'center', on: false }),
     history: [], hIndex: -1, favs: store.get('favs', []), stripMode: 'hist',
+    project: store.get('project', { name: '', shots: [] }),
     animating: false, flow: null, batch: [],
   };
   const aspect = () => CB.ASPECTS.find((a) => a.id === S.aspectId) || CB.ASPECTS[0];
@@ -42,8 +46,38 @@
   try { R = new CB.Renderer($('view'), { preserve: true }); } catch (e) { R = null; }
   const exportRenderer = () => { if (!RX) RX = new CB.Renderer(document.createElement('canvas'), { preserve: true }); return RX; };
 
-  function rstate(v, seed) {
-    return { engine: v.engine, seedF: (seed % 20000) / 100, params: v.params, linColors: v.colors.flatMap(hexLin), look: Object.assign({}, v.look, { bars: S.bars }) };
+  function normVisual(v) {
+    v.atmos = Object.assign({ rain: 0, snow: 0, fog: 0, embers: 0, ash: 0, dust: 0, lightning: 0, leak: 0 }, v.atmos || {});
+    v.frame = Object.assign({ zoom: 1, px: 0, py: 0 }, v.frame || {});
+    v.move = v.move || S.move;
+    return v;
+  }
+  /* u: 0..1 hareket ilerlemesi */
+  function camFor(v, u) {
+    let z = v.frame.zoom, x = v.frame.px, y = v.frame.py;
+    switch (v.move) {
+      case 'pushin': z *= 1 + 0.18 * u; break;
+      case 'pullout': z *= 1.18 - 0.18 * u; break;
+      case 'panleft': z *= 1.12; x += 0.09 - 0.18 * u; break;
+      case 'panright': z *= 1.12; x += -0.09 + 0.18 * u; break;
+      case 'rise': z *= 1.12; y += -0.07 + 0.14 * u; break;
+      case 'drift': z *= 1.06; x += Math.sin(u * TAU) * 0.03; y += Math.sin(u * TAU * 2) * 0.015; break;
+      default: break;
+    }
+    return [z, x, y];
+  }
+  /* döngü için git-gel ilerleme (süzülme zaten periyodik) */
+  function progress(v, t, period, loop) {
+    const f = ((t % period) + period) % period / period;
+    if (v.move === 'drift') return f;
+    if (loop) return 0.5 - 0.5 * Math.cos(f * TAU);
+    return Math.min(1, t / period);
+  }
+  function rstate(v, seed, u) {
+    return {
+      engine: v.engine, seedF: (seed % 20000) / 100, params: v.params, linColors: v.colors.flatMap(hexLin),
+      look: Object.assign({}, v.look, { bars: S.bars }), atmos: v.atmos, cam: camFor(v, u || 0),
+    };
   }
 
   function layoutFrame() {
@@ -57,6 +91,7 @@
     if (h > ah) { h = ah; w = ah * a; }
     fr.style.width = Math.floor(w) + 'px';
     fr.style.height = Math.floor(h) + 'px';
+    layoutTitle(h);
     return { w, h };
   }
 
@@ -67,7 +102,8 @@
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const budget = S.animating ? 0.75e6 : 1.8e6;
     let k = dpr; if (w * h * k * k > budget) k = Math.sqrt(budget / (w * h));
-    try { R.render(rstate(S.visual, S.seed), w * k, h * k, S.t); } catch (e) { showFatal(e.message); }
+    const u = S.animating ? progress(S.visual, S.t - S.tStart, 24, true) : 0;
+    try { R.render(rstate(S.visual, S.seed, u), w * k, h * k, S.t); } catch (e) { showFatal(e.message); }
   }
   function requestDraw() { if (!raf) raf = requestAnimationFrame((ts) => { raf = 0; draw(); if (S.animating) tick(ts); }); }
   function tick(ts) {
@@ -77,19 +113,76 @@
     requestDraw();
   }
   function showFatal(msg) {
-    $('frame').replaceChildren(el('div', { class: 'fatal', text: 'Görsel önizleme bu cihazda çalışmıyor (' + msg + '). Prompt üretimi, toplu üretim ve dışa aktarma promptları çalışmaya devam eder.' }));
+    $('frame').replaceChildren(el('div', { class: 'fatal', text: 'Görsel önizleme bu cihazda çalışmıyor (' + msg + '). Prompt üretimi, toplu üretim ve proje dışa aktarımı çalışmaya devam eder.' }));
+  }
+
+  /* ---------------- başlık kartı ---------------- */
+  const TITLE_FONTS = {
+    epic: { t: (h) => `700 ${h * 0.105}px Cinzel, 'Trajan Pro', 'Times New Roman', serif`, ls: 0.08, upper: true },
+    cond: { t: (h) => `800 ${h * 0.17}px 'Big Shoulders Display', 'Oswald', 'Arial Narrow', sans-serif`, ls: 0.04, upper: true },
+    clean: { t: (h) => `600 ${h * 0.085}px 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif`, ls: 0.0, upper: false },
+  };
+  const subFont = (h) => `500 ${h * 0.03}px 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif`;
+  const titleOn = () => S.title.on && (S.title.title.trim() || S.title.sub.trim());
+  function layoutTitle(h) {
+    const tc = $('titleCard');
+    tc.hidden = !titleOn();
+    if (tc.hidden) return;
+    const F = TITLE_FONTS[S.title.style] || TITLE_FONTS.epic;
+    tc.dataset.pos = S.title.pos;
+    const t = $('tcTitle'), s = $('tcSub');
+    t.textContent = F.upper ? S.title.title.toLocaleUpperCase('tr') : S.title.title;
+    t.style.font = F.t(h); t.style.letterSpacing = F.ls + 'em';
+    s.textContent = S.title.sub; s.style.font = subFont(h);
+  }
+  function drawTitle(ctx, w, h) {
+    if (!titleOn()) return;
+    const F = TITLE_FONTS[S.title.style] || TITLE_FONTS.epic;
+    const pos = S.title.pos;
+    const left = pos === 'lowerleft' || pos === 'upperleft';
+    const x = left ? w * 0.08 : w / 2;
+    ctx.save();
+    ctx.textAlign = left ? 'left' : 'center';
+    ctx.fillStyle = '#f4efe6';
+    ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = h * 0.025; ctx.shadowOffsetY = h * 0.003;
+    const title = F.upper ? S.title.title.toLocaleUpperCase('tr') : S.title.title;
+    const sub = S.title.sub.toLocaleUpperCase('tr');
+    const th = parseFloat(F.t(h).split(' ')[1]);
+    const sh = h * 0.03;
+    const block = (title ? th : 0) + (sub ? sh * 1.9 : 0);
+    let y0 = pos === 'center' ? (h - block) / 2 : pos === 'upperleft' ? h * 0.1 : h * 0.88 - block;
+    ctx.textBaseline = 'top';
+    if (title) {
+      ctx.font = F.t(h);
+      if ('letterSpacing' in ctx) ctx.letterSpacing = F.ls * th + 'px';
+      let fs = th; const maxW = w * 0.84;
+      while (ctx.measureText(title).width > maxW && fs > 10) { fs *= 0.92; ctx.font = F.t(h).replace(/[\d.]+px/, fs + 'px'); }
+      ctx.fillText(title, x, y0); y0 += th;
+    }
+    if (sub) {
+      ctx.font = subFont(h);
+      if ('letterSpacing' in ctx) ctx.letterSpacing = 0.3 * sh + 'px';
+      ctx.globalAlpha = 0.85;
+      ctx.fillText(sub, x, y0 + sh * 0.6);
+    }
+    ctx.restore();
+  }
+  function composite(src, w, h) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const ctx = c.getContext('2d'); ctx.drawImage(src, 0, 0, w, h); drawTitle(ctx, w, h);
+    return c;
   }
 
   /* ---------------- sahne yükleme ---------------- */
   function visualFromSpec(s) {
-    return { engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]) };
+    return normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move });
   }
   function load(cat, seed, push, visual) {
     S.cat = cat; S.seed = seed >>> 0;
     S.spec = CB.makeSpec(cat, S.seed, S.ov);
     S.prompts = CB.prompts(S.spec, aspect());
-    S.visual = visual ? clone(visual) : visualFromSpec(S.spec);
-    S.t = S.spec.time0;
+    S.visual = visual ? normVisual(clone(visual)) : visualFromSpec(S.spec);
+    S.t = S.spec.time0; S.tStart = S.t;
     if (push) pushHistory();
     store.set('last', { cat: cat.id, seed: S.seed });
     renderAll();
@@ -100,10 +193,12 @@
     S.visual = visualFromSpec(S.spec);
     renderAll();
   }
+  const genreOk = (g) => !S.genres.size || g.genres.some((x) => S.genres.has(x));
+  function pool() { const p = CB.CATS.filter((c) => genreOk(c.group)); return p.length ? p : CB.CATS; }
   function chooseCat() {
     if (S.mode === 'cat' && S.cat) return S.cat;
     if (S.mode === 'group' && S.cat) { const cs = S.cat.group.cats; return cs[Math.floor(Math.random() * cs.length)]; }
-    return CB.CATS[Math.floor(Math.random() * CB.CATS.length)];
+    const p = pool(); return p[Math.floor(Math.random() * p.length)];
   }
   function generate() { load(chooseCat(), newSeed(), true); }
 
@@ -126,19 +221,27 @@
     const i = S.hIndex + d; if (i < 0 || i >= S.history.length) return;
     S.hIndex = i; openEntry(S.history[i], false);
   }
+  const catById = (id) => CB.CATS.find((c) => c.id === id);
   function openEntry(e, push) {
-    const cat = CB.CATS.find((c) => c.id === e.cat); if (!cat) return;
-    S.ov = clone(e.ov); syncOverrides();
+    const cat = catById(e.cat); if (!cat) return toast('Bu kategori bulunamadı');
+    S.ov = clone(e.ov || S.ov); syncOverrides();
     load(cat, e.seed, push, e.visual);
   }
 
   /* ---------------- katalog ---------------- */
   const openGroups = new Set();
+  function renderGenres() {
+    $('genres').replaceChildren(...CB.GENRES.map((g) => el('button', {
+      type: 'button', class: S.genres.has(g.id) ? 'on' : '', 'aria-pressed': S.genres.has(g.id) ? 'true' : 'false', text: g.tr,
+      onclick: () => { S.genres.has(g.id) ? S.genres.delete(g.id) : S.genres.add(g.id); store.set('genres', [...S.genres]); renderGenres(); renderCatalog(); },
+    })));
+  }
   function renderCatalog() {
     const q = $('search').value.trim().toLocaleLowerCase('tr');
     const box = $('groups'); box.replaceChildren();
     let shown = 0;
     CB.GROUPS.forEach((g) => {
+      if (!genreOk(g)) return;
       const cats = q ? g.cats.filter((c) => (c.tr + ' ' + c.en + ' ' + g.tr).toLocaleLowerCase('tr').includes(q)) : g.cats;
       if (!cats.length) return;
       shown += cats.length;
@@ -153,12 +256,12 @@
       }
       box.append(wrap);
     });
-    if (!shown) box.append(el('p', { class: 'hint', style: 'padding:14px', text: 'Eşleşen mekan yok. Başka bir kelime dene: "kale", "neon", "siper".' }));
-    $('catCount').textContent = q ? `${shown} sonuç` : `${CB.CATS.length} kategori · ${CB.GROUPS.length} grup`;
+    if (!shown) box.append(el('p', { class: 'hint', style: 'padding:14px', text: 'Eşleşen mekan yok. Başka bir kelime dene ya da tür filtresini temizle.' }));
+    const total = q || S.genres.size ? `${shown.toLocaleString('tr-TR')} sonuç` : `${CB.CATS.length.toLocaleString('tr-TR')} kategori · ${CB.GROUPS.length} grup`;
+    $('catCount').textContent = total;
   }
   function markCurrent() {
-    document.querySelectorAll('.group li button.cur').forEach((b) => b.classList.remove('cur'));
-    if (S.cat && !openGroups.has(S.cat.group.id) && !$('search').value) { openGroups.add(S.cat.group.id); renderCatalog(); return; }
+    if (S.cat && !openGroups.has(S.cat.group.id) && !$('search').value) openGroups.add(S.cat.group.id);
     renderCatalog();
   }
 
@@ -169,8 +272,9 @@
     items.forEach(([v, t]) => sel.append(el('option', { value: v, text: t })));
     sel.value = cur || '';
   }
+  const tctxOf = (s) => (s ? (s.ctx === 'sky' ? 'ext' : s.ctx) : 'ext');
   function syncOverrides() {
-    const ctx = S.spec ? (S.spec.ctx === 'sky' ? 'ext' : S.spec.ctx) : 'ext';
+    const ctx = tctxOf(S.spec);
     fillSelect($('oTime'), CB.TIMES[ctx].map((t) => [t.id, t.tr]), S.ov.time, 'Rastgele');
     fillSelect($('oWeather'), CB.WEATHER[ctx].map((t) => [t.id, t.tr]), S.ov.weather, 'Rastgele');
     fillSelect($('oCamera'), CB.CAMERAS.map((t) => [t.id, t.tr]), S.ov.camera, 'Rastgele');
@@ -184,9 +288,7 @@
   }
   function copy(text, label) {
     const done = () => toast(label + ' kopyalandı');
-    try {
-      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, label));
-    } catch (e) { fallbackCopy(text, label); }
+    try { navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, label)); } catch (e) { fallbackCopy(text, label); }
   }
   function fallbackCopy(text, label) {
     const ta = el('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select();
@@ -200,18 +302,23 @@
       ['Kategori', s.cat.tr], ['Grup', s.group.tr], ['Bağlam', CTX_TR[s.ctx]], ['Saat', s.time.tr], ['Hava', s.weather.tr],
       ['Mevsim', s.season ? s.season.tr : '—'], ['Durum', s.cond.tr], ['Kamera', `${s.camera.tr} · ${s.camera.lens}`], ['Işık', s.light.tr],
       ['Palet', s.palette.tr], ['Grade', CB.GRADES[s.gradeId].tr], ['Yer işaretleri', `Sol: ${s.landmarks.left} · Merkez: ${s.landmarks.center} · Sağ: ${s.landmarks.right} · Uzak: ${s.landmarks.far}`],
-      ['Ölçek', s.size ? `~${s.size} m` : 'Kozmik'], ['İmkansız', s.impossible || '—'],
+      ['Ölçek', s.size ? `~${s.size} m` : s.ctx === 'abstract' ? 'Tam kadraj' : 'Kozmik'], ['İmkansız', s.impossible || '—'],
     ];
     $('facts').replaceChildren(...facts.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })]));
     const cards = [
       ['Higgsfield Soul Cinema', 'Lira mekan şablonu', P.soul, `Ayarlar arayüzde: oran ${soulAspect(a)}, kalite 2k. Oranı prompta yazma. Karakter eklemek için Soul ID kullan.`],
-      ['GPT Image 2 · Seedream · NBP', 'ONE SHOT W1 lokasyon plakası', P.oneshot, 'Ters açı için aynı promptu kullan, SOL ve SAĞ yer işaretlerini yer değiştir ve bunu yaz.'],
-      ['Midjourney v7', 'Kısa form + parametreler', P.mj, `--ar ${a.mj} seçili en-boy oranından geliyor.`],
-      ['Seedance 2.0 · Kling · Higgsfield Video', '10 sn hareketli arka plan', P.video, 'Önce Soul Cinema karesini üret, ilk kare (I2V) olarak bu promptla canlandır.'],
-      ['Negatif liste', 'Stable Diffusion / Flux', P.negative, 'Soul Cinema ve Seedance negatif alanı kullanmaz. Bu liste yalnızca negatif alanı olan modeller için.'],
+      ['GPT Image 2 · Seedream · NBP', 'ONE SHOT W1 lokasyon plakası', P.oneshot, 'Aynı mekanın başka açıları için aşağıdaki ters açı ve referans sayfası promptlarını kullan.'],
     ];
+    if (s.ctx !== 'abstract' && s.ctx !== 'space') {
+      cards.push(['Ters açı', 'ONE SHOT W2 · aynı mekan, karşı taraftan', P.reverse, 'Önce W1 karesini üret, sonra bunu referans görselle birlikte kullan. GPT Image 2 açı değişiminde en iyisidir.']);
+      cards.push(['Lokasyon referans sayfası', 'ONE SHOT W3 · çok açılı tutarlılık', P.refsheet, 'Aynı mekanı farklı sahnelerde tutarlı tutmak için tek tuval üzerinde 7 panel.']);
+    }
+    cards.push(['Midjourney v7', 'Kısa form + parametreler', P.mj, `--ar ${a.mj} seçili en-boy oranından geliyor.`]);
+    cards.push(['Seedance 2.0 · Kling · Higgsfield Video', '10 sn hareketli arka plan', P.video, 'Önce Soul Cinema karesini üret, ilk kare (I2V) olarak bu promptla canlandır.']);
+    cards.push(['Negatif liste', 'Stable Diffusion / Flux', P.negative, 'Soul Cinema ve Seedance negatif alanı kullanmaz. Bu liste yalnızca negatif alanı olan modeller için.']);
     $('prompts').replaceChildren(el('h3', { text: 'Promptlar' }), ...cards.map(([t, sub, text, foot]) => el('article', { class: 'pcard' },
-      el('header', null, el('strong', { text: t }), el('span', { text: sub }), el('button', { class: 'btn small', type: 'button', text: 'Kopyala', onclick: () => copy(text, t) })),
+      el('header', null, el('strong', { text: t }), el('span', { text: sub }), el('span', { class: 'count', text: `${text.split(/\s+/).length} kelime · ${text.length} kr` }),
+        el('button', { class: 'btn small', type: 'button', text: 'Kopyala', onclick: () => copy(text, t) })),
       el('pre', { text }), el('footer', { text: foot }))));
   }
 
@@ -233,9 +340,17 @@
     const v = S.visual;
     fillSelect($('vEngine'), Object.entries(CB.ENGINES).map(([k, e]) => [k, e.name]), v.engine);
     $('vParams').replaceChildren(...CB.ENGINES[v.engine].params.map((lab, i) => slider('vp' + i, lab, 0, 1, 0.01, v.params[i], (x) => { v.params[i] = x; requestDraw(); })),
-      slider('vtime', 'Zaman (kare)', 0, 200, 0.1, S.t % 200, (x) => { S.t = x; requestDraw(); }));
+      slider('vtime', 'Zaman (kare)', 0, 200, 0.1, S.t % 200, (x) => { S.t = x; S.tStart = x; requestDraw(); }));
+    $('vAtmos').replaceChildren(...ATMOS_KEYS.map(([k, lab]) => slider('va_' + k, lab, 0, 1, 0.01, v.atmos[k], (x) => { v.atmos[k] = x; requestDraw(); })));
+    $('vFrame').replaceChildren(
+      slider('vf_zoom', 'Yakınlaştırma', 1, 2.5, 0.01, v.frame.zoom, (x) => { v.frame.zoom = x; requestDraw(); }),
+      slider('vf_px', 'Yatay kaydırma', -0.6, 0.6, 0.01, v.frame.px, (x) => { v.frame.px = x; requestDraw(); }),
+      slider('vf_py', 'Dikey kaydırma', -0.4, 0.4, 0.01, v.frame.py, (x) => { v.frame.py = x; requestDraw(); }));
+    $('vMove').value = v.move;
+    fillSelect($('vPalette'), CB.PALETTES.map((p) => [p.id, p.tr]), '', 'Seç…');
     $('vSwatches').replaceChildren(...v.colors.map((c, i) => {
-      const inp = el('input', { type: 'color', value: c, 'aria-label': ['Derin ton', 'Orta ton', 'Işık', 'Vurgu'][i], title: ['Derin ton', 'Orta ton', 'Işık', 'Vurgu'][i] });
+      const lab = ['Derin ton', 'Orta ton', 'Işık', 'Vurgu'][i];
+      const inp = el('input', { type: 'color', value: c, 'aria-label': lab, title: lab });
       inp.addEventListener('input', () => { v.colors[i] = inp.value; requestDraw(); });
       return inp;
     }));
@@ -243,7 +358,7 @@
     $('vLook').replaceChildren(...LOOK_SLIDERS.map(([k, lab, mn, mx, st]) => slider('vl_' + k, lab, mn, mx, st, v.look[k], (x) => { v.look[k] = x; requestDraw(); })));
   }
 
-  /* ---------------- sahne üstü slate + şerit ---------------- */
+  /* ---------------- slate + şerit ---------------- */
   function renderSlate() {
     const s = S.spec;
     $('slate').replaceChildren(
@@ -252,6 +367,7 @@
       el('span', { class: 'tag', text: `${s.time.tr} · ${s.weather.tr}` }),
       el('span', { class: 'tag', text: `${s.camera.lens} · ${CB.GRADES[s.gradeId].tr}` }),
     );
+    $('slate').hidden = titleOn();
     const fav = isFav();
     $('btnFav').firstChild.textContent = fav ? '★ ' : '☆ ';
     $('btnFav').classList.toggle('on', fav);
@@ -266,7 +382,7 @@
     if (!list.length) { box.append(el('span', { class: 'empty', text: S.stripMode === 'hist' ? 'Ürettiğin sahneler burada birikir.' : 'Beğendiğin sahneyi ☆ ile favorilere ekle.' })); return; }
     list.slice().reverse().forEach((e, ri) => {
       const i = list.length - 1 - ri;
-      const cat = CB.CATS.find((c) => c.id === e.cat);
+      const cat = catById(e.cat);
       const cur = S.stripMode === 'hist' ? i === S.hIndex : (e.cat === S.cat.id && e.seed === S.seed);
       const b = el('button', { type: 'button', class: cur ? 'cur' : '', title: cat ? cat.tr : '', onclick: () => { if (S.stripMode === 'hist') { S.hIndex = i; openEntry(e, false); } else openEntry(e, true); } },
         e.thumb ? el('img', { src: e.thumb, alt: cat ? cat.tr : '' }) : null);
@@ -277,7 +393,7 @@
   function isFav() { return S.favs.some((f) => f.cat === S.cat.id && f.seed === S.seed); }
   function toggleFav() {
     if (isFav()) S.favs = S.favs.filter((f) => !(f.cat === S.cat.id && f.seed === S.seed));
-    else { const e = entry(); e.thumb = thumbOf(); S.favs.push(e); if (S.favs.length > 120) S.favs.shift(); }
+    else { const e = entry(); e.thumb = thumbOf(); S.favs.push(e); if (S.favs.length > 150) S.favs.shift(); }
     store.set('favs', S.favs);
     toast(isFav() ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı');
     renderSlate(); renderStrip();
@@ -294,7 +410,7 @@
   }
   let lastCtx = null;
   function syncOverridesIfCtxChanged() {
-    const c = S.spec.ctx === 'sky' ? 'ext' : S.spec.ctx;
+    const c = tctxOf(S.spec);
     if (c !== lastCtx) { lastCtx = c; syncOverrides(); }
   }
 
@@ -315,25 +431,26 @@
     toast('İndiriliyor: ' + name);
     return true;
   }
-  function exportSize() {
-    const a = aspect(); const short = +S.res;
+  function sizeFor(short, r) {
     let w, h;
-    if (a.r >= 1) { h = short; w = Math.round(short * a.r / 2) * 2; } else { w = short; h = Math.round(short / a.r / 2) * 2; }
+    if (r >= 1) { h = short; w = Math.round(short * r / 2) * 2; } else { w = short; h = Math.round(short / r / 2) * 2; }
     const max = R ? R.maxSize : 8192;
     const k = Math.min(1, max / Math.max(w, h));
     return { w: Math.round(w * k / 2) * 2, h: Math.round(h * k / 2) * 2, clamped: k < 1 };
   }
+  const exportSize = () => sizeFor(+S.res, aspect().r);
   function updateSizeHint() {
     const { w, h, clamped } = exportSize();
-    $('eSize').textContent = `${w} × ${h} piksel` + (clamped ? ' · Bu ekran kartının sınırına göre küçültüldü.' : '');
+    $('eSize').textContent = `${w} × ${h} piksel` + (clamped ? ' · Bu ekran kartının sınırına göre küçültüldü.' : '') + (titleOn() ? ' · Başlık kartı eklenecek.' : '');
   }
   function busy(msg) { $('busy').hidden = !msg; if (msg) $('busy').replaceChildren(msg); }
   function renderToBlob(v, seed, t, w, h) {
     const X = exportRenderer();
-    X.render(rstate(v, seed), w, h, t);
-    const mime = 'image/' + S.fmt;
-    return new Promise((res) => X.canvas.toBlob((b) => res(b), mime, +S.q));
+    X.render(rstate(v, seed, 0), w, h, t);
+    const src = titleOn() ? composite(X.canvas, w, h) : X.canvas;
+    return new Promise((res) => src.toBlob((b) => res(b), 'image/' + S.fmt, +S.q));
   }
+  const ext = () => (S.fmt === 'jpeg' ? 'jpg' : S.fmt);
   async function exportImage() {
     if (!R) return toast('Bu cihazda görsel dışa aktarılamıyor');
     const { w, h } = exportSize();
@@ -343,7 +460,7 @@
       const blob = await renderToBlob(S.visual, S.seed, S.t, w, h);
       exportRenderer().releaseTargets();
       if (!blob) throw new Error('boş çıktı');
-      await saveFile(blob, `cinebg_${slug(S.cat.tr)}_${CB.specCode(S.spec)}_${w}x${h}.${S.fmt === 'jpeg' ? 'jpg' : S.fmt}`);
+      await saveFile(blob, `cinebg_${slug(S.cat.tr)}_${CB.specCode(S.spec)}_${w}x${h}.${ext()}`);
     } catch (e) { toast('Dışa aktarma başarısız: ' + e.message); }
     busy('');
   }
@@ -354,16 +471,16 @@
     if (recording) return;
     if (typeof MediaRecorder === 'undefined') return toast('Bu tarayıcı video kaydını desteklemiyor');
     const dur = +$('vDur').value, loop = $('vLoop').value === '1';
-    const a = aspect(); const short = +$('vRes').value;
-    let w, h; if (a.r >= 1) { h = short; w = Math.round(short * a.r / 2) * 2; } else { w = short; h = Math.round(short / a.r / 2) * 2; }
+    const { w, h } = sizeFor(+$('vRes').value, aspect().r);
     const X = exportRenderer();
-    const st = rstate(S.visual, S.seed);
-    X.render(st, w, h, 0, loop ? { length: dur } : null);
+    const v = S.visual;
+    X.render(rstate(v, S.seed, 0), w, h, 0, loop ? { length: dur } : null);
+    const comp = titleOn() ? composite(X.canvas, w, h) : null;
     const types = ['video/mp4;codecs=avc1.640028', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     const mime = types.find((t) => MediaRecorder.isTypeSupported(t));
     if (!mime) return toast('Video biçimi desteklenmiyor');
-    let stream; try { stream = X.canvas.captureStream(30); } catch (e) { return toast('Video yakalanamadı'); }
-    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: short >= 1080 ? 16e6 : 8e6 });
+    let stream; try { stream = (comp || X.canvas).captureStream(30); } catch (e) { return toast('Video yakalanamadı'); }
+    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: h >= 1080 ? 16e6 : 8e6 });
     const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     recording = true; $('btnVideo').classList.add('on');
     const t0base = loop ? 0 : S.t;
@@ -372,10 +489,12 @@
     const start = performance.now();
     await new Promise((resolve) => {
       const step = () => {
-        const el2 = (performance.now() - start) / 1000;
-        if (el2 >= dur) return resolve();
-        X.render(st, w, h, t0base + el2, loop ? { length: dur } : null);
-        busy(el('span', null, el('span', { class: 'recdot' }), `Kayıt ${el2.toFixed(1)} / ${dur} sn`));
+        const tt = (performance.now() - start) / 1000;
+        if (tt >= dur) return resolve();
+        const u = progress(v, tt, dur, loop);
+        X.render(rstate(v, S.seed, u), w, h, t0base + tt, loop ? { length: dur } : null);
+        if (comp) { const ctx = comp.getContext('2d'); ctx.drawImage(X.canvas, 0, 0); drawTitle(ctx, w, h); }
+        busy(el('span', null, el('span', { class: 'recdot' }), `Kayıt ${tt.toFixed(1)} / ${dur} sn`));
         requestAnimationFrame(step);
       };
       step();
@@ -383,35 +502,76 @@
     rec.stop(); await stopped;
     recording = false; $('btnVideo').classList.remove('on'); busy('');
     X.releaseTargets();
-    const ext = mime.includes('mp4') ? 'mp4' : 'webm';
-    await saveFile(new Blob(chunks, { type: mime.split(';')[0] }), `cinebg_${slug(S.cat.tr)}_${CB.specCode(S.spec)}_${dur}s.${ext}`);
+    await saveFile(new Blob(chunks, { type: mime.split(';')[0] }), `cinebg_${slug(S.cat.tr)}_${CB.specCode(S.spec)}_${dur}s.${mime.includes('mp4') ? 'mp4' : 'webm'}`);
+  }
+
+  /* ---------------- satırlar (CSV/JSON/TXT) ---------------- */
+  function rowOf(cat, seed, ov, extra) {
+    const spec = CB.makeSpec(cat, seed, ov || S.ov); const p = CB.prompts(spec, aspect());
+    return Object.assign(extra || {}, {
+      kod: CB.specCode(spec), grup: spec.group.tr, kategori: cat.tr, baglam: CTX_TR[spec.ctx], saat: spec.time.tr, hava: spec.weather.tr,
+      kamera: spec.camera.tr, palet: spec.palette.tr, grade: CB.GRADES[spec.gradeId].tr,
+      soul_cinema: p.soul, oneshot: p.oneshot, ters_aci: p.reverse, referans_sayfasi: p.refsheet, midjourney: p.mj, video: p.video,
+    });
+  }
+  function toCSV(rows) {
+    if (!rows.length) return '';
+    const keys = Object.keys(rows[0]);
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    return '﻿' + [keys.join(','), ...rows.map((r) => keys.map((k) => esc(r[k])).join(','))].join('\r\n');
+  }
+  function toTXT(rows) {
+    return rows.map((r, i) => `#${i + 1} ${r.sahne ? r.sahne + ' — ' : ''}${r.kod} — ${r.kategori} (${r.grup})\n${r.saat} · ${r.hava} · ${r.kamera} · ${r.grade}${r.not ? '\nNot: ' + r.not : ''}\n\n[Soul Cinema]\n${r.soul_cinema}\n\n[ONE SHOT]\n${r.oneshot}\n\n[Ters açı]\n${r.ters_aci}\n\n[Midjourney]\n${r.midjourney}\n\n[Video]\n${r.video}\n`).join('\n' + '='.repeat(72) + '\n\n');
+  }
+  const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+  async function zipItems(items, label) {
+    if (!items.length) return;
+    if (!window.JSZip) return toast('ZIP kütüphanesi yüklenemedi. İnternet bağlantısını kontrol et.');
+    if (!R) return toast('Bu cihazda görsel üretilemiyor. Promptları CSV/JSON olarak indirebilirsin.');
+    const zip = new window.JSZip();
+    const { w, h } = exportSize();
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      busy(`ZIP: ${i + 1} / ${items.length} · ${w}×${h}`);
+      if (!$('sheet').hidden) { $('sheetInfo').textContent = `ZIP: ${i + 1} / ${items.length} · ${w}×${h}`; $('sheetProg').style.width = ((i + 1) / items.length) * 100 + '%'; }
+      await new Promise((r) => setTimeout(r, 0));
+      const blob = await renderToBlob(it.visual, it.seed, it.t, w, h);
+      if (blob) zip.file(`${String(i + 1).padStart(3, '0')}_${slug(it.name)}_${it.code}.${ext()}`, blob);
+    }
+    exportRenderer().releaseTargets();
+    const rows = items.map((it) => it.row);
+    zip.file('promptlar.csv', toCSV(rows));
+    zip.file('promptlar.json', JSON.stringify(rows, null, 2));
+    zip.file('cekim_listesi.txt', toTXT(rows));
+    busy('ZIP paketleniyor…');
+    const out = await zip.generateAsync({ type: 'blob' });
+    busy('');
+    if (!$('sheet').hidden) $('sheetInfo').textContent = `${items.length} sahne hazır`;
+    await saveFile(out, `cinebg_${label}_${items.length}_${stamp()}.zip`);
   }
 
   /* ---------------- toplu üretim ---------------- */
   let batchRun = 0;
-  async function runBatch() {
-    const n = +$('bCount').value, scope = $('bScope').value;
-    const pool = scope === 'cat' ? [S.cat] : scope === 'group' ? S.cat.group.cats : CB.CATS;
+  async function runBatch(count, scope) {
+    const n = count || +$('bCount').value, sc = scope || $('bScope').value;
+    const P = sc === 'cat' ? [S.cat] : sc === 'group' ? S.cat.group.cats : pool();
     const run = ++batchRun;
     S.batch = [];
     $('sheet').hidden = false; $('sheetGrid').replaceChildren();
-    $('sheetTitle').textContent = `Toplu üretim · ${n} sahne`;
+    $('sheetTitle').textContent = sc === 'cat' ? `Varyasyonlar · ${S.cat.tr}` : `Toplu üretim · ${n} sahne`;
     const a = aspect(); const tw = 320, th = Math.round(320 / Math.max(a.r, 0.6));
     for (let i = 0; i < n; i++) {
       if (run !== batchRun || $('sheet').hidden) return;
-      const cat = pool[Math.floor(Math.random() * pool.length)];
+      const cat = P[Math.floor(Math.random() * P.length)];
       const seed = newSeed();
       const spec = CB.makeSpec(cat, seed, S.ov);
-      const item = { cat, seed, spec, prompts: CB.prompts(spec, a), visual: visualFromSpec(spec), thumb: '' };
+      const item = { cat, seed, spec, visual: visualFromSpec(spec), thumb: '' };
       if (R) {
-        try {
-          const X = exportRenderer(); X.render(rstate(item.visual, seed), tw, th, spec.time0);
-          item.thumb = X.canvas.toDataURL('image/jpeg', 0.8);
-        } catch (e) { item.thumb = ''; }
+        try { const X = exportRenderer(); X.render(rstate(item.visual, seed, 0), tw, th, spec.time0); item.thumb = X.canvas.toDataURL('image/jpeg', 0.8); } catch (e) { item.thumb = ''; }
       }
       S.batch.push(item);
       $('sheetGrid').append(el('button', { type: 'button', class: 'tile', onclick: () => { $('sheet').hidden = true; load(item.cat, item.seed, true, item.visual); } },
-        item.thumb ? el('img', { src: item.thumb, alt: cat.tr }) : el('img', { alt: '' }),
+        el('img', item.thumb ? { src: item.thumb, alt: cat.tr } : { alt: '' }),
         el('div', null, el('b', { text: cat.tr }), el('span', { text: `${CB.specCode(spec)} · ${spec.time.tr} · ${spec.weather.tr}` }))));
       $('sheetProg').style.width = ((i + 1) / n) * 100 + '%';
       $('sheetInfo').textContent = `${i + 1} / ${n}`;
@@ -419,46 +579,79 @@
     }
     if (RX) RX.releaseTargets();
   }
-  function batchRows() {
-    return S.batch.map((b) => ({
-      kod: CB.specCode(b.spec), grup: b.spec.group.tr, kategori: b.cat.tr, baglam: CTX_TR[b.spec.ctx], saat: b.spec.time.tr, hava: b.spec.weather.tr,
-      kamera: b.spec.camera.tr, palet: b.spec.palette.tr, grade: CB.GRADES[b.spec.gradeId].tr,
-      soul_cinema: b.prompts.soul, oneshot: b.prompts.oneshot, midjourney: b.prompts.mj, video: b.prompts.video,
-    }));
+  const batchItems = () => S.batch.map((b) => ({ visual: b.visual, seed: b.seed, t: b.spec.time0, name: b.cat.tr, code: CB.specCode(b.spec), row: rowOf(b.cat, b.seed, S.ov) }));
+
+  /* ---------------- proje ---------------- */
+  function saveProject() { store.set('project', S.project); $('projCount').textContent = String(S.project.shots.length); }
+  function shotFrom(cat, seed, ov, visual, thumb) {
+    return { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: `${cat.tr}`, note: '', cat: cat.id, seed, ov: clone(ov), visual: clone(visual), thumb: thumb || '' };
   }
-  function toCSV(rows) {
-    if (!rows.length) return '';
-    const keys = Object.keys(rows[0]);
-    const esc = (v) => '"' + String(v).replace(/"/g, '""') + '"';
-    return '﻿' + [keys.join(','), ...rows.map((r) => keys.map((k) => esc(r[k])).join(','))].join('\r\n');
+  function addToProject() {
+    S.project.shots.push(shotFrom(S.cat, S.seed, S.ov, S.visual, thumbOf()));
+    saveProject(); renderProject();
+    toast(`Projeye eklendi · ${S.project.shots.length}. sahne`);
   }
-  function toTXT(rows) {
-    return rows.map((r, i) => `#${i + 1} ${r.kod} — ${r.kategori} (${r.grup})\n${r.saat} · ${r.hava} · ${r.kamera} · ${r.grade}\n\n[Soul Cinema]\n${r.soul_cinema}\n\n[ONE SHOT]\n${r.oneshot}\n\n[Midjourney]\n${r.midjourney}\n\n[Video]\n${r.video}\n`).join('\n' + '='.repeat(72) + '\n\n');
-  }
-  const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-  async function batchZip() {
-    if (!S.batch.length) return;
-    if (!window.JSZip) return toast('ZIP kütüphanesi yüklenemedi. İnternet bağlantısını kontrol et.');
-    if (!R) return toast('Bu cihazda görsel üretilemiyor. Promptları CSV/JSON olarak indirebilirsin.');
-    const zip = new window.JSZip();
-    const { w, h } = exportSize();
-    const ext = S.fmt === 'jpeg' ? 'jpg' : S.fmt;
-    for (let i = 0; i < S.batch.length; i++) {
-      const b = S.batch[i];
-      $('sheetInfo').textContent = `ZIP: ${i + 1} / ${S.batch.length} · ${w}×${h}`;
-      $('sheetProg').style.width = ((i + 1) / S.batch.length) * 100 + '%';
-      await new Promise((r) => setTimeout(r, 0));
-      const blob = await renderToBlob(b.visual, b.seed, b.spec.time0, w, h);
-      if (blob) zip.file(`${String(i + 1).padStart(3, '0')}_${slug(b.cat.tr)}_${CB.specCode(b.spec)}.${ext}`, blob);
+  function renderProject() {
+    $('projName').value = S.project.name || '';
+    const box = $('projList'); box.replaceChildren();
+    if (!S.project.shots.length) {
+      box.append(el('p', { class: 'note', text: 'Henüz sahne yok. Beğendiğin sahnede "＋ Projeye ekle" düğmesine bas ya da P tuşunu kullan.' }));
+      return;
     }
-    exportRenderer().releaseTargets();
-    const rows = batchRows();
-    zip.file('promptlar.csv', toCSV(rows));
-    zip.file('promptlar.json', JSON.stringify(rows, null, 2));
-    $('sheetInfo').textContent = 'ZIP paketleniyor…';
-    const out = await zip.generateAsync({ type: 'blob' });
-    $('sheetInfo').textContent = `${S.batch.length} sahne hazır`;
-    await saveFile(out, `cinebg_toplu_${S.batch.length}_${stamp()}.zip`);
+    const list = el('div', { class: 'proj' });
+    S.project.shots.forEach((sh, i) => {
+      const cat = catById(sh.cat);
+      const move = (d) => { const j = i + d; if (j < 0 || j >= S.project.shots.length) return; const arr = S.project.shots; [arr[i], arr[j]] = [arr[j], arr[i]]; saveProject(); renderProject(); };
+      const nameIn = el('input', { type: 'text', value: sh.name, 'aria-label': 'Sahne adı' });
+      nameIn.addEventListener('change', () => { sh.name = nameIn.value; saveProject(); });
+      const noteIn = el('textarea', { rows: '2', placeholder: 'Not: oyuncu girişi, diyalog, ses…', 'aria-label': 'Sahne notu' });
+      noteIn.value = sh.note || '';
+      noteIn.addEventListener('change', () => { sh.note = noteIn.value; saveProject(); });
+      const open = () => openEntry(sh, true);
+      list.append(el('div', { class: 'shot' },
+        sh.thumb ? el('img', { src: sh.thumb, alt: sh.name, onclick: open, title: 'Sahneyi aç' }) : el('div', { class: 'noimg', onclick: open }),
+        el('div', { class: 'meta' },
+          el('div', { class: 'row' }, el('span', { class: 'num', text: String(i + 1).padStart(2, '0') }), nameIn),
+          el('small', { text: `${cat ? cat.tr : '?'} · ${cat ? CB.specCode(CB.makeSpec(cat, sh.seed, sh.ov)) : ''}` }),
+          noteIn,
+          el('div', { class: 'ctl' },
+            el('button', { class: 'btn small', type: 'button', text: 'Aç', onclick: open }),
+            el('button', { class: 'btn small', type: 'button', text: 'Güncelle', title: 'Bu sahneyi şu anki görüntüyle değiştir', onclick: () => { Object.assign(sh, { cat: S.cat.id, seed: S.seed, ov: clone(S.ov), visual: clone(S.visual), thumb: thumbOf() }); saveProject(); renderProject(); toast('Sahne güncellendi'); } }),
+            el('button', { class: 'btn small icon', type: 'button', text: '↑', 'aria-label': 'Yukarı taşı', onclick: () => move(-1) }),
+            el('button', { class: 'btn small icon', type: 'button', text: '↓', 'aria-label': 'Aşağı taşı', onclick: () => move(1) }),
+            el('button', { class: 'btn small', type: 'button', text: 'Sil', onclick: () => { S.project.shots.splice(i, 1); saveProject(); renderProject(); } })))));
+    });
+    box.append(list);
+  }
+  function projectItems() {
+    return S.project.shots.map((sh, i) => {
+      const cat = catById(sh.cat); if (!cat) return null;
+      const spec = CB.makeSpec(cat, sh.seed, sh.ov);
+      return { visual: normVisual(clone(sh.visual)), seed: sh.seed, t: spec.time0, name: `${String(i + 1).padStart(2, '0')}_${sh.name}`, code: CB.specCode(spec), row: rowOf(cat, sh.seed, sh.ov, { sahne: `${i + 1}. ${sh.name}`, not: sh.note || '' }) };
+    }).filter(Boolean);
+  }
+  const projSlug = () => slug(S.project.name || 'proje') || 'proje';
+
+  /* ---------------- yedekleme ---------------- */
+  function backup() {
+    const data = { app: 'cinebg', version: 2, saved: new Date().toISOString(), favs: S.favs, project: S.project };
+    saveFile(new Blob([JSON.stringify(data)], { type: 'application/json' }), `cinebg_yedek_${stamp()}.json`);
+  }
+  function restore(file) {
+    const fr = new FileReader();
+    fr.onload = () => {
+      try {
+        const d = JSON.parse(fr.result);
+        if (d.app !== 'cinebg') throw new Error('CineBG yedeği değil');
+        let nf = 0, ns = 0;
+        (d.favs || []).forEach((f) => { if (!S.favs.some((x) => x.cat === f.cat && x.seed === f.seed)) { S.favs.push(f); nf++; } });
+        (d.project && d.project.shots || []).forEach((sh) => { if (!S.project.shots.some((x) => x.id === sh.id)) { S.project.shots.push(sh); ns++; } });
+        if (!S.project.name && d.project && d.project.name) S.project.name = d.project.name;
+        store.set('favs', S.favs); saveProject(); renderProject(); renderStrip();
+        toast(`Yüklendi: ${nf} favori, ${ns} proje sahnesi`);
+      } catch (e) { toast('Yedek okunamadı: ' + e.message); }
+    };
+    fr.readAsText(file);
   }
 
   /* ---------------- kod ile aç ---------------- */
@@ -475,10 +668,10 @@
   let toastT = 0;
   function toast(msg) {
     const t = $('toast'); t.textContent = msg; t.hidden = false;
-    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2200);
+    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400);
   }
   function setAnim(on) {
-    S.animating = on; lastT = 0;
+    S.animating = on; lastT = 0; S.tStart = S.t;
     $('btnAnim').classList.toggle('on', on);
     $('btnAnim').firstChild.textContent = on ? '❚❚ ' : '▶ ';
     if (on) requestDraw(); else draw();
@@ -490,8 +683,16 @@
   }
   function setTab(name) {
     document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
-    ['prompt', 'visual', 'export'].forEach((n) => { $('pane-' + n).hidden = n !== name; });
+    ['prompt', 'visual', 'export', 'project'].forEach((n) => { $('pane-' + n).hidden = n !== name; });
     store.set('tab', name);
+  }
+  function syncTitleInputs() {
+    $('tTitle').value = S.title.title; $('tSub').value = S.title.sub; $('tStyle').value = S.title.style; $('tPos').value = S.title.pos; $('tOn').value = S.title.on ? '1' : '0';
+  }
+  function onTitleChange() {
+    S.title = { title: $('tTitle').value, sub: $('tSub').value, style: $('tStyle').value, pos: $('tPos').value, on: $('tOn').value === '1' };
+    store.set('title', S.title);
+    layoutFrame(); renderSlate(); updateSizeHint();
   }
 
   /* ---------------- bağlantılar ---------------- */
@@ -500,17 +701,32 @@
     $('btnPrev').onclick = () => goHistory(-1);
     $('btnNext').onclick = () => goHistory(1);
     $('btnFav').onclick = toggleFav;
+    $('btnProj').onclick = addToProject;
+    $('btnVar').onclick = () => runBatch(12, 'cat');
     $('btnAnim').onclick = () => setAnim(!S.animating);
     $('btnFlow').onclick = () => setFlow(!S.flow);
     $('btnDl').onclick = exportImage;
     $('btnExport').onclick = exportImage;
     $('btnVideo').onclick = recordVideo;
-    $('btnBatch').onclick = runBatch;
+    $('btnBatch').onclick = () => runBatch();
     $('bClose').onclick = () => { $('sheet').hidden = true; batchRun++; };
-    $('bCsv').onclick = () => S.batch.length && saveFile(new Blob([toCSV(batchRows())], { type: 'text/csv' }), `cinebg_promptlar_${stamp()}.csv`);
-    $('bJson').onclick = () => S.batch.length && saveFile(new Blob([JSON.stringify(batchRows(), null, 2)], { type: 'application/json' }), `cinebg_promptlar_${stamp()}.json`);
-    $('bTxt').onclick = () => S.batch.length && saveFile(new Blob([toTXT(batchRows())], { type: 'text/plain' }), `cinebg_promptlar_${stamp()}.txt`);
-    $('bZip').onclick = batchZip;
+    $('bCsv').onclick = () => S.batch.length && saveFile(new Blob([toCSV(batchItems().map((x) => x.row))], { type: 'text/csv' }), `cinebg_promptlar_${stamp()}.csv`);
+    $('bJson').onclick = () => S.batch.length && saveFile(new Blob([JSON.stringify(batchItems().map((x) => x.row), null, 2)], { type: 'application/json' }), `cinebg_promptlar_${stamp()}.json`);
+    $('bTxt').onclick = () => S.batch.length && saveFile(new Blob([toTXT(batchItems().map((x) => x.row))], { type: 'text/plain' }), `cinebg_promptlar_${stamp()}.txt`);
+    $('bZip').onclick = () => zipItems(batchItems(), 'toplu');
+    $('bAll2Proj').onclick = () => {
+      S.batch.forEach((b) => S.project.shots.push(shotFrom(b.cat, b.seed, S.ov, b.visual, b.thumb)));
+      saveProject(); renderProject(); toast(`${S.batch.length} sahne projeye eklendi`);
+    };
+    $('pCsv').onclick = () => { const it = projectItems(); if (it.length) saveFile(new Blob([toCSV(it.map((x) => x.row))], { type: 'text/csv' }), `cinebg_${projSlug()}_${stamp()}.csv`); };
+    $('pTxt').onclick = () => { const it = projectItems(); if (it.length) saveFile(new Blob([`${S.project.name || 'Proje'} — çekim listesi\n\n` + toTXT(it.map((x) => x.row))], { type: 'text/plain' }), `cinebg_${projSlug()}_cekim_listesi.txt`); };
+    $('pJson').onclick = () => { const it = projectItems(); if (it.length) saveFile(new Blob([JSON.stringify({ proje: S.project.name, sahneler: it.map((x) => x.row) }, null, 2)], { type: 'application/json' }), `cinebg_${projSlug()}.json`); };
+    $('pZip').onclick = () => zipItems(projectItems(), projSlug());
+    $('projName').addEventListener('change', () => { S.project.name = $('projName').value; saveProject(); });
+    $('btnBackup').onclick = backup;
+    $('restoreIn').addEventListener('change', () => { const f = $('restoreIn').files[0]; if (f) restore(f); $('restoreIn').value = ''; });
+    ['tTitle', 'tSub'].forEach((id) => $(id).addEventListener('input', onTitleChange));
+    ['tStyle', 'tPos', 'tOn'].forEach((id) => $(id).addEventListener('change', onTitleChange));
     $('btnCode').onclick = () => openCode($('codeIn').value);
     $('codeIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') openCode($('codeIn').value); });
     $('btnHelp').onclick = () => { $('help').hidden = false; };
@@ -532,6 +748,9 @@
       const r = CB.rng(S.seed ^ 0x9e3779b9); v.params = Array.from({ length: 8 }, () => 0.2 + 0.65 * r());
       renderVisual(); draw();
     };
+    $('vMove').onchange = () => { S.visual.move = S.move = $('vMove').value; store.set('move', S.move); S.tStart = S.t; requestDraw(); };
+    $('vPalette').onchange = () => { const p = CB.PALETTES.find((x) => x.id === $('vPalette').value); if (p) { S.visual.colors = p.c.slice(); renderVisual(); draw(); } };
+    $('btnPalRnd').onclick = () => { const p = CB.PALETTES[Math.floor(Math.random() * CB.PALETTES.length)]; S.visual.colors = p.c.slice(); renderVisual(); draw(); toast('Palet: ' + p.tr); };
     $('vGrade').onchange = () => { S.visual.gradeId = $('vGrade').value; S.visual.look = lookFrom(CB.GRADES[S.visual.gradeId]); renderVisual(); draw(); };
     $('vBars').onchange = () => { S.bars = +$('vBars').value; draw(); };
     $('vGuides').onchange = () => { $('guides').hidden = $('vGuides').value !== '1'; };
@@ -551,6 +770,8 @@
       else if (k === 'arrowleft') goHistory(-1);
       else if (k === 'arrowright') goHistory(1);
       else if (k === 'f') toggleFav();
+      else if (k === 'p') addToProject();
+      else if (k === 'v') runBatch(12, 'cat');
       else if (k === 'a') setAnim(!S.animating);
       else if (k === 'd') exportImage();
       else if (k === 'c') copy(S.prompts.soul, 'Soul Cinema promptu');
@@ -558,16 +779,21 @@
     let rz = 0;
     window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(draw); });
     if (R) R.canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); showFatal('WebGL bağlamı kaybedildi, sayfayı yenile'); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutFrame());
   }
 
   function init() {
     const combos = CB.combinationCount();
-    $('counter').replaceChildren(el('b', { text: CB.CATS.length.toLocaleString('tr-TR') }), ' kategori · ', el('b', { text: Math.floor(combos / 1e9).toLocaleString('tr-TR') + ' milyar+' }), ' sahne kurgusu · sınırsız seed');
+    $('counter').replaceChildren(el('b', { text: CB.CATS.length.toLocaleString('tr-TR') }), ' kategori · ', el('b', { text: Object.keys(CB.ENGINES).length + ' motor' }), ' · ',
+      el('b', { text: Math.floor(combos / 1e9).toLocaleString('tr-TR') + ' milyar+' }), ' sahne kurgusu');
     wire();
+    renderGenres();
+    syncTitleInputs();
+    saveProject(); renderProject();
     if (!R) showFatal('WebGL2 yok');
     setTab(store.get('tab', 'prompt'));
     const last = store.get('last', null);
-    const cat = (last && CB.CATS.find((c) => c.id === last.cat)) || CB.CATS[Math.floor(Math.random() * CB.CATS.length)];
+    const cat = (last && catById(last.cat)) || CB.CATS[Math.floor(Math.random() * CB.CATS.length)];
     syncOverrides();
     load(cat, last ? last.seed : newSeed(), true);
   }

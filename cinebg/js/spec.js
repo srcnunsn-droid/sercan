@@ -32,10 +32,40 @@
     palace: ['kodak', 'epic', 'pastel', 'neonoir'], interior: ['kodak', 'eterna', 'natural', 'pastel'], western: ['spice', 'kodak', 'bleach', 'war'],
     eastasia: ['eterna', 'kodak', 'natural', 'neon'], anatolia: ['kodak', 'spice', 'epic', 'eterna'], sky: ['natural', 'blockbuster', 'epic', 'moonlight'],
     arena: ['blockbuster', 'neonoir', 'war', 'epic'], dystopia: ['bleach', 'digital', 'scifi', 'noir'],
+    micro: ['scifi', 'neon', 'natural', 'pastel'], abstract: ['neon', 'pastel', 'blockbuster', 'natural', 'scifi', 'kodak'],
   };
 
   /* Motor parametrelerini sahneye göre yönlendir (indeksler glsl.js'deki parametre sırasına göre) */
+  const ATMOS = {
+    rain: { rain: 0.65, fog: 0.15 }, drizzle: { rain: 0.3, fog: 0.1 }, afterrain: { fog: 0.1 }, snow: { snow: 0.55 }, blizzard: { snow: 1, fog: 0.45 },
+    fog: { fog: 0.75 }, mist: { fog: 0.4 }, smoke: { fog: 0.3, ash: 0.15 }, ash: { ash: 0.7, fog: 0.2 }, dust: { dust: 0.7 }, storm: { lightning: 0.7, rain: 0.4 },
+    heat: { dust: 0.2 }, wind: { dust: 0.25 }, motes: { dust: 0.15 }, smokeint: { fog: 0.25 }, steam: { fog: 0.3 }, rainwin: { rain: 0.2 },
+    snoww: { snow: 0.25 }, silt: { fog: 0.35 }, dustcos: { dust: 0.2 }, particles: { dust: 0.2 }, liquid: { fog: 0.3 },
+  };
+  const HINT = {
+    'battle-ancient': 'on an ancient or medieval battlefield', 'battle-modern': 'in a twentieth-century war zone', 'battle-future': 'in a future war', siege: 'in a besieged medieval fortress',
+    postapoc: 'after the collapse of civilisation', urban: 'in a modern city', cyber: 'in a neon cyberpunk megacity', historic: 'in a historic period setting',
+    industrial: 'in a heavy industrial setting', military: 'at a military installation', mountains: 'high in the mountains', desert: 'in an arid desert', forest: 'deep in a forest',
+    jungle: 'in a humid tropical jungle', polar: 'in the frozen polar north', coast: 'on a wild sea coast', rivers: 'by fresh water', plains: 'in open countryside',
+    volcanic: 'in volcanic terrain', caves: 'deep underground', underwater: 'deep underwater', space: 'in deep space', starship: 'aboard a large starship',
+    fantasy: 'in a high-fantasy realm', darkfantasy: 'in a dark gothic fantasy realm', horror: 'in a horror film setting', sacred: 'in a sacred place of worship',
+    palace: 'inside a grand palace', residential: 'inside a home', public: 'inside a public building', transport: 'in a transport hub', western: 'on the 1870s American frontier',
+    noir: 'in a mid-century film-noir city', eastasia: 'in East Asia', anatolia: 'in Anatolia and the Middle East', sky: 'in the open sky', arena: 'in an arena built for combat or spectacle',
+    nightlife: 'in a nightlife district', lab: 'in a high-tech laboratory', dystopia: 'in a totalitarian dystopia', myth: 'in a mythological realm', disaster: 'during a catastrophe',
+    africa: 'in Africa', villages: 'in a traditional village', roads: 'on the open road', egypt: 'in ancient Egypt', greco: 'in the ancient Greco-Roman world',
+    norse: 'in the Viking-age north', pirates: 'in the golden age of sail', steampunk: 'in a steampunk Victorian world of brass and steam', dieselpunk: 'in a dieselpunk art deco future',
+    solarpunk: 'in a lush solarpunk future', alien: 'on an alien planet', zombie: 'during a zombie outbreak', prison: 'inside a prison', southasia: 'in South and Southeast Asia',
+    latam: 'in Latin America', parks: 'in a North American national park', academy: 'inside an old academy of magic and learning', modernarch: 'in contemporary architecture',
+    vehicles: 'inside a vehicle', filmset: 'on a film studio lot', crime: 'in a crime-film underworld', fairytale: 'in a storybook fairy-tale world', medievallife: 'in everyday medieval life',
+    navalair: 'in a naval and air war', micro: 'at microscopic scale', abstract: 'as an abstract cinematic graphic',
+  };
+  CB.locText = function (cat) {
+    const h = HINT[cat.group.id];
+    return h && cat.en.split(' ').length <= 5 ? `${cat.en} ${h}` : cat.en;
+  };
   const HOOKS = {
+    clouds: (p, s) => { p[2] = s.time.sun * 0.9; },
+    rainglass: (p, s) => { p[1] = /rain|drizzle/.test(s.weather.id) ? rr(s.r, 0.6, 1) : p[1] * 0.6; },
     mountains: (p, s) => { p[2] = s.time.sun * 0.9; p[6] = /fog|mist/.test(s.weather.id) ? rr(s.r, 0.6, 1) : p[6]; p[7] = /storm|overcast|rain/.test(s.weather.id + s.time.id) ? rr(s.r, 0.6, 1) : p[7]; },
     ocean: (p, s) => { p[2] = s.time.sun * 0.85; p[4] = /storm|rain|overcast/.test(s.weather.id + s.time.id) ? rr(s.r, 0.6, 1) : p[4]; },
     dunes: (p, s) => { p[2] = s.time.sun * 0.9; p[7] = s.weather.id === 'dust' ? rr(s.r, 0.7, 1) : p[7]; p[5] = s.weather.id === 'heat' ? 0.9 : p[5]; },
@@ -58,14 +88,42 @@
     return INT_RE.test(cat.en) ? 'int' : 'ext';
   }
 
+  /* Kategori metnindeki anahtar kelimeler motor seçimini yönlendirir */
+  const KEYS = [
+    [/forest|wood|tree|grove|jungle|bamboo|redwood|sequoia|birch|pine|cedar|maple|rainforest/i, ['forest', 'godrays']],
+    [/fire|burning|blaze|wildfire|inferno|forge|furnace|flame|pyre/i, ['fire']],
+    [/\bsea\b|ocean|coast|beach|harbou?r|wave|\bbay\b|lagoon|pier|shore|island|fjord|\bport\b|ship/i, ['ocean']],
+    [/desert|dune|sand|oasis|salt flat|caravan|sahara/i, ['dunes']],
+    [/mountain|peak|summit|ridge|alpine|himalaya|\bpass\b|highland|plateau/i, ['mountains']],
+    [/canyon|gorge|ravine|slot/i, ['canyon']],
+    [/lava|volcan|magma|caldera/i, ['lava']],
+    [/cloud|\bsky\b|storm|thunder|lightning|hurricane|tornado/i, ['storm', 'clouds']],
+    [/aurora|northern lights/i, ['aurora']],
+    [/castle|fortress|citadel|stronghold|watchtower|\bfort\b|keep/i, ['castle']],
+    [/city|street|skyline|skyscraper|downtown|metropolis|avenue|megacity|town/i, ['skyline', 'city']],
+    [/neon|cyber|night market|nightclub|casino|arcade|bokeh/i, ['city', 'rainglass']],
+    [/\brain|window/i, ['rainglass']],
+    [/battle|\bwar\b|trench|siege|front line|battlefield|aftermath|bomb|ambush|raid/i, ['battlefield']],
+    [/space|planet|moon|orbit|asteroid|nebula|\bstars?\b|comet|galactic/i, ['planet', 'nebula']],
+    [/galaxy|spiral|black hole|accretion/i, ['galaxy', 'nebula']],
+    [/underwater|reef|sunken|kelp|seabed|abyss|submerged|coral/i, ['underwater']],
+    [/cave|cavern|underground|grotto|\bmine\b|catacomb|crypt|cellar|dungeon/i, ['godrays', 'tunnel']],
+    [/corridor|hallway|tunnel|subway|metro/i, ['tunnel']],
+    [/\bhall\b|cathedral|church|temple|palace|library|throne|nave|chapel|mosque|ballroom|monastery/i, ['hall', 'godrays']],
+    [/\bcells?\b|neuron|dna|virus|bacteria|micro|blood|tissue/i, ['cells']],
+    [/snow|\bice\b|frozen|winter|glacier|arctic|polar|blizzard/i, ['mountains', 'aurora']],
+    [/light leak|gradient|orb|glow|particle|lens flare|spotlight/i, ['orbs', 'anamorphic']],
+    [/smoke|ink|fog layer/i, ['smoke']],
+  ];
+  const INT_OK = ['hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk', 'tunnel', 'rainglass', 'orbs', 'fire', 'cells'];
   function enginesFor(cat, ctx) {
-    const list = cat.group.engines.slice();
-    if (ctx === 'int') {
-      const ok = list.filter((e) => ['hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk'].includes(e));
-      return ok.length ? ok : ['hall', 'godrays'];
-    }
-    const ok = list.filter((e) => e !== 'hall');
-    return ok.length ? ok : ['mountains'];
+    const allowed = (e) => (ctx === 'int' ? INT_OK.includes(e) : ctx === 'abstract' ? true : e !== 'hall' && e !== 'tunnel');
+    // metinde ilk geçen kavram kazanır (ör. "WWI trench … sandbag" → savaş alanı, kum tepesi değil)
+    const hits = KEYS.map(([re, list]) => ({ i: cat.en.search(re), list: list.filter(allowed) }))
+      .filter((h) => h.i >= 0 && h.list.length).sort((a, b) => a.i - b.i);
+    if (hits.length) return [...new Set(hits.filter((h) => h.i === hits[0].i).flatMap((h) => h.list))];
+    const ok = cat.group.engines.filter(allowed);
+    return ok.length ? ok : ctx === 'int' ? ['hall', 'godrays'] : ['mountains'];
   }
 
   /* opts: { engine?, time?, weather?, camera?, palette?, grade?, impossible?: 'auto'|'on'|'off' } — 'auto'/undefined = seed'den */
@@ -91,15 +149,17 @@
     let cams = CB.CAMERAS;
     if (ctx === 'space') cams = cams.filter((c) => ['est', 'tele', 'silhouette', 'sym'].includes(c.id));
     if (ctx === 'int') cams = cams.filter((c) => c.id !== 'drone' && c.id !== 'silhouette');
+    if (ctx === 'abstract') cams = cams.filter((c) => ['sym', 'tele', 'eye', 'frame'].includes(c.id));
     s.camera = (opts.camera && CB.CAMERAS.find((c) => c.id === opts.camera)) || pick(r, cams);
     s.light = pick(r, s.time.night ? CB.LIGHTS.night : CB.LIGHTS.day);
+    if (ctx === 'abstract') s.light = { tr: s.time.tr, en: 'soft volumetric light shaping the forms' };
 
     const A = CB.ARCH[g.arch];
     s.landmarks = { center: pick(r, A.center), left: pick(r, A.left), right: pick(r, A.right), far: pick(r, A.far) };
     s.floor = pick(r, A.floor);
     const m1 = pick(r, A.materials); let m2 = pick(r, A.materials); if (m2 === m1) m2 = A.materials[(A.materials.indexOf(m1) + 1) % A.materials.length];
     s.materials = [m1, m2];
-    s.size = ctx === 'int' ? Math.round(rr(r, 14, 90)) : ctx === 'space' ? null : Math.round(rr(r, 3, 40)) * 50;
+    s.size = ctx === 'int' ? Math.round(rr(r, 14, 90)) : ctx === 'space' || ctx === 'abstract' ? null : Math.round(rr(r, 3, 40)) * 50;
     s.farDist = s.size ? Math.round(s.size * rr(r, 0.5, 0.9)) : null;
 
     const imp = opts.impossible || 'auto';
@@ -129,6 +189,9 @@
     if (HOOKS[s.engine]) HOOKS[s.engine](s.params, s);
     s.params = s.params.map((v) => Math.min(1, Math.max(0, v)));
     s.time0 = rr(r, 0, 120);
+    // atmosfer katmanı: havadan ve durumdan türetilir (seed dizisini değiştirmez)
+    s.atmos = Object.assign({}, ATMOS[s.weather.id] || {});
+    if (/burning|smoldering|erupting|active/.test(condId)) s.atmos.embers = Math.max(s.atmos.embers || 0, 0.5);
     return s;
   };
 
@@ -150,12 +213,15 @@
     const L = s.landmarks;
     const grade = CB.GRADES[s.gradeId];
     const season = s.season ? `, ${s.season.en}` : '';
-    const empty = s.ctx === 'space' ? 'An empty, silent vista.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
-    const sizeTxt = s.size ? `roughly ${s.size} metres across` : 'vast beyond scale';
+    const empty = s.ctx === 'space' ? 'An empty, silent vista.' : s.ctx === 'abstract' ? 'Clean uncluttered background with generous negative space for titles.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
+    const sizeTxt = s.size ? `roughly ${s.size} metres across` : s.ctx === 'abstract' ? 'filling the whole frame' : 'vast beyond scale';
+    const loc = CB.locText(s.cat);
+    const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space'].includes(s.group.arch);
+    const build = natural ? `with textures of ${s.materials[0]} and ${s.materials[1]}` : `built from ${s.materials[0]} and ${s.materials[1]}`;
     const imp = s.impossible ? ` One impossible detail: ${s.impossible}.` : '';
 
     // Lira · Higgsfield Soul Cinema mekan şablonu
-    const soul = strip(`${cap(s.camera.en)}, ${s.camera.lens} lens, rule of thirds composition. ${cap(s.cat.en)}, ${s.cond.en}${season}, ${sizeTxt}, built from ${s.materials[0]} and ${s.materials[1]}. ` +
+    const soul = strip(`${cap(s.camera.en)}, ${s.camera.lens} lens, rule of thirds composition. ${cap(loc)}, ${s.cond.en}${season}, ${sizeTxt}, ${build}. ` +
       `${cap(L.left)} rises on the left, ${L.right} stands on the right, ${L.center} marks the centre, and ${L.far} closes the far end. The ground is ${s.floor}. ` +
       `${cap(s.time.en)}; ${s.light.en}. ${cap(s.weather.en)}, volumetric haze separating foreground, mid-ground and background.${imp} ` +
       `Refined ${paletteLine(s)}; ${grade.en}. ${CB.TECH[s.tech]}. ${s.cine}. ${empty}`);
@@ -163,7 +229,7 @@
     // ONE SHOT · W1 lokasyon plakası blokları (GPT Image 2 / Seedream / NBP)
     const oneshot = [
       `CAMERA: ${cap(s.camera.en)}, ${s.camera.lens} lens, grounded composition, rule of thirds.`,
-      `SCENE: ${cap(s.cat.en)}, ${s.cond.en}${season}, ${sizeTxt}, built from ${s.materials[0]} and ${s.materials[1]}.`,
+      `SCENE: ${cap(loc)}, ${s.cond.en}${season}, ${sizeTxt}, ${build}.`,
       `LANDMARKS, fixed positions:`,
       `- CENTRE: ${L.center}`,
       `- LEFT: ${L.left}`,
@@ -179,7 +245,7 @@
 
     // Midjourney
     const ar = aspect ? aspect.mj : '16:9';
-    const mj = strip(`cinematic film still, ${s.camera.en.split(',')[0]}, ${s.cat.en}, ${s.cond.en}${season}, ${s.weather.en}, ${s.time.en}, ${s.light.en.split(',')[0]}, ${s.palette.w.slice(0, 3).join(', ')}, ${grade.en.split(',')[0]}, ${s.tech === 'film' ? '35mm film grain, anamorphic' : 'clean digital cinema'}, empty location`) +
+    const mj = strip(`cinematic film still, ${s.camera.en.split(',')[0]}, ${loc}, ${s.cond.en}${season}, ${s.weather.en}, ${s.time.en}, ${s.light.en.split(',')[0]}, ${s.palette.w.slice(0, 3).join(', ')}, ${grade.en.split(',')[0]}, ${s.tech === 'film' ? '35mm film grain, anamorphic' : 'clean digital cinema'}, empty location`) +
       ` --ar ${ar} --style raw --v 7 --no people, text, logo, watermark, cartoon`;
 
     // Seedance / video arka plan plakası (Lira: "states not transitions", rule of thirds)
@@ -195,11 +261,31 @@
       dustcos: 'cosmic dust drifting slowly', debris: 'debris tumbling slowly', solarwind: 'glowing solar wind rippling', void: 'stars slowly turning',
       clearw: 'light rays swaying from the surface', snoww: 'marine snow drifting down', silt: 'silt clouds billowing slowly', current: 'plants and particles bending in the current',
     }[s.weather.id] || 'subtle ambient motion';
-    const video = strip(`10-second cinematic background plate, single continuous shot, ${pick(s.r, moves)}, ${s.camera.lens} lens, rule of thirds. ${cap(s.cat.en)}, ${s.cond.en}${season}. ` +
+    const video = strip(`10-second cinematic background plate, single continuous shot, ${pick(s.r, moves)}, ${s.camera.lens} lens, rule of thirds. ${cap(loc)}, ${s.cond.en}${season}. ` +
       `Ambient motion only: ${motion}. ${cap(s.time.en)}; ${s.light.en}. ${cap(paletteLine(s))}; ${grade.en}. ${CB.TECH[s.tech]}. ${empty}`);
 
     const negative = CB.NEGATIVE.join(', ');
-    return { soul, oneshot: oneshot.join('\n'), mj, video, negative };
+
+    // ONE SHOT · W2 ters açı: sol ve sağ yer değiştirir
+    const reverse = [
+      `Same ${loc}, same layout, same materials. Low wide 24mm shot at chest height from ${L.far}, looking back across the space.`,
+      `${cap(L.center)} in the mid-ground, ${L.left} now on the RIGHT, ${L.right} now on the LEFT, the original camera position now behind them.`,
+      `The surface is ${s.floor}, dark and readable. ${cap(s.time.en)}; ${s.light.en}. ${cap(s.weather.en)}.`,
+      `Same atmosphere, same grade: ${grade.en}, ${paletteLine(s)}. ${s.ctx === 'abstract' ? empty : 'EMPTY of people.'}`,
+    ].join('\n');
+
+    // ONE SHOT · W3 lokasyon referans sayfası
+    const refsheet = [
+      'Create a location reference sheet of ONE place, arranged in two horizontal rows on a single canvas, no text, no borders.',
+      'TOP ROW: straight-on frontal view / left angled perspective / right angled perspective / reverse wide view.',
+      `BOTTOM ROW: three detail close-ups of ${s.materials[0]}, ${s.materials[1]} and ${s.floor}.`,
+      'Match one consistent realistic visual style, lighting quality, colour treatment and texture across all panels.',
+      `SCENE: ${cap(loc)}, ${s.cond.en}${season}, ${sizeTxt}, ${build}.`,
+      `LANDMARKS: centre ${L.center}; left ${L.left}; right ${L.right}; far end ${L.far}.`,
+      `LIGHT: ${cap(s.time.en)}; ${s.light.en}. ${grade.en}, ${paletteLine(s)}.`,
+      'LOCKS: the same identical place in every panel — same architecture, materials, weather, time of day and light direction; EMPTY of people; no text, no watermark.',
+    ].join('\n');
+    return { soul, oneshot: oneshot.join('\n'), mj, video, negative, reverse, refsheet };
   };
 
   CB.specCode = function (s) {

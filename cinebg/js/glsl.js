@@ -99,10 +99,76 @@ float sparkles(vec2 uv, float scale, float dens, float speed){
 `;
 
   const MAIN = `
+uniform vec4 u_wx;   // yağmur, kar, sis, kor
+uniform vec4 u_wx2;  // kül, toz, şimşek, ışık sızıntısı
+uniform vec3 u_cam;  // yakınlaştırma, kaydırma x, kaydırma y
+float flake(vec2 uv, float scale, float speed, float drift, float sz, float dens, float sl){
+  vec2 g=uv*scale; g.y+=u_time*speed; g.x+=sin(g.y*.35+sl)*drift;
+  vec2 id=floor(g), f=fract(g); float h=hash12(id+sl);
+  if(h>dens) return 0.;
+  vec2 o=hash22(id+sl*2.)*.7+.15; float d=length(f-o)/scale;
+  float r=sz*(.5+hash12(id+5.));
+  return smoothstep(r, r*.35, d);
+}
+vec3 atmos(vec3 c, vec2 uv){
+  float t=u_time;
+  float L=lum(c);
+  vec3 amb=mix(u_c[1], u_c[2], .35);
+  if(u_wx.z>.001){
+    float n=fbm4(uv*vec2(1.2,2.2)+vec2(t*.015,0.)+SEED2)*.5+.5;
+    float k=u_wx.z*(.35+.65*n)*mix(.55,1.,smoothstep(.55,-.45,uv.y));
+    c=mix(c, mix(amb,vec3(lum(amb)),.45)*.55+L*.15, sat(k*.8));
+  }
+  if(u_wx2.y>.001){
+    float n=fbm4(uv*vec2(.8,4.)+vec2(t*.08,0.)+SEED2*1.3)*.5+.5;
+    c=mix(c, mix(u_c[1],u_c[2],.5)*.7, sat(u_wx2.y*n*.6));
+    c+=mix(u_c[2],vec3(1.),.3)*sparkles(uv*rot(1.4),80.,u_wx2.y,-.4)*.5;
+  }
+  if(u_wx.x>.001){
+    vec3 rc=mix(amb, vec3(1.), .5)*.35;
+    for(int i=0;i<3;i++){
+      float fi=float(i);
+      vec2 ru=uv*rot(.12+fi*.03);
+      vec2 g=ru*vec2(70.+fi*45., 2.2+fi*.8)+vec2(fi*7.1, u_time*(9.+fi*4.));
+      vec2 id=floor(g); vec2 f=fract(g); float h=hash12(id+fi*13.);
+      float on=step(1.-u_wx.x*.35, h);
+      float line=smoothstep(.12,.0,abs(f.x-.5-(hash12(id+3.)-.5)*.6))*smoothstep(0.,.25,f.y)*smoothstep(1.,.55,f.y);
+      c+=rc*on*line*(.5+.5*u_wx.x)*(1.-fi*.25);
+    }
+    c=mix(c, amb*.4, u_wx.x*.12);
+  }
+  if(u_wx.y>.001){
+    vec3 sc=mix(vec3(1.), amb, .25)*mix(.6,1.2,L+.3);
+    float f=flake(uv,10.,.08,.6,.006,u_wx.y*.5,1.)+flake(uv,22.,.12,.5,.0035,u_wx.y*.5,7.)*.8+flake(uv,48.,.16,.4,.002,u_wx.y*.6,13.)*.6;
+    c=mix(c, sc, sat(f));
+  }
+  if(u_wx2.x>.001){
+    float f=flake(uv,14.,.03,.9,.004,u_wx2.x*.45,3.)+flake(uv,30.,.05,.7,.0025,u_wx2.x*.5,9.)*.7;
+    c=mix(c, vec3(.42,.4,.38)*mix(.5,1.,L+.2), sat(f*.85));
+  }
+  if(u_wx.w>.001){
+    vec3 ec=vec3(1.,.42,.12)*3.;
+    c+=ec*(sparkles(uv*rot(-.25),36.,u_wx.w*.5,.12)+sparkles(uv*rot(.2),75.,u_wx.w*.4,.2)*.7+sparkles(uv,140.,u_wx.w*.4,.3)*.5);
+    c+=vec3(1.,.35,.08)*u_wx.w*.08*smoothstep(.1,-.6,uv.y);
+  }
+  if(u_wx2.z>.001){
+    float tb=floor(t*1.3);
+    float fl=step(.72,hash11(tb+SEED2.x))*exp(-fract(t*1.3)*7.)*(.6+.4*step(.5,fract(t*9.)));
+    c+=vec3(.75,.82,1.)*fl*u_wx2.z*(.35+sat(uv.y+.5))*1.4;
+  }
+  if(u_wx2.w>.001){
+    vec2 lp=vec2(sin(t*.05+SEED2.x)*A*.5, .55);
+    c+=mix(u_c[3],u_c[2],.4)*exp(-length((uv-lp)*vec2(.7,1.))*2.2)*u_wx2.w*1.2;
+    c+=u_c[3]*smoothstep(.2,.9,((uv.x/A)+.5))*u_wx2.w*.15;
+  }
+  return c;
+}
 void main(){
-  vec2 st=gl_FragCoord.xy/u_res;
-  vec2 uv=(gl_FragCoord.xy-.5*u_res)/u_res.y;
+  vec2 uv0=(gl_FragCoord.xy-.5*u_res)/u_res.y;
+  vec2 uv=uv0/max(u_cam.x,.01)+u_cam.yz;
+  vec2 st=(uv*u_res.y+.5*u_res)/u_res;
   vec3 c=scene(uv, st);
+  c=atmos(max(c,0.), uv);
   c=max(c, 0.);
   if(c.r!=c.r||c.g!=c.g||c.b!=c.b) c=vec3(0.);
   if(u_enc>.5) c=sqrt(c/(1.+c));
@@ -884,6 +950,295 @@ vec3 scene(vec2 uv, vec2 st){
   float mist=smoothstep(.12,-.05,abs(uv.y-ry+.02))*u_p[4]*(fbm(uv*vec2(2.,6.)+u_time*.01)*.5+.6);
   col=mix(col, u_c[1]*.7+u_c[2]*.08, mist*.7);
   col+=u_c[1]*sparkles(uv,50.,u_p[7]*.3,.015)*.6;
+  return col;
+}`,
+  };
+
+  /* ---------- v2 motorları ---------- */
+  const VORO = `
+vec3 voro(vec2 x, float t){
+  vec2 n=floor(x), f=fract(x); float md=8., md2=8.; vec2 mr=vec2(0);
+  for(int j=-1;j<=1;j++) for(int i=-1;i<=1;i++){
+    vec2 g=vec2(i,j); vec2 o=hash22(n+g+SEED2); o=.5+.45*sin(t+TAU*o);
+    vec2 r=g+o-f; float d=dot(r,r);
+    if(d<md){ md2=md; md=d; mr=r; } else if(d<md2) md2=d;
+  }
+  return vec3(sqrt(md), sqrt(md2)-sqrt(md), hash12(n+floor(mr+f)));
+}`;
+
+  E.orbs = {
+    name: 'Işık Küreleri & Degrade',
+    params: ['Küre sayısı', 'Hareket genliği', 'Küre boyutu', 'Parlaklık', 'Doku', 'Işık çizgileri', 'Koyu zemin', 'Hız'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  float t=u_time*(.02+.1*u_p[7]);
+  vec3 col=u_c[0]*mix(.5,.08,u_p[6]);
+  int N=3+int(u_p[0]*6.99);
+  for(int i=0;i<10;i++){
+    if(i>=N) break;
+    float fi=float(i);
+    vec2 h=hash22(vec2(fi*1.7,3.1)+SEED2);
+    vec2 p=(h-.5)*vec2(A,1.)*.95+vec2(sin(t*(.6+h.x)+fi*2.1), cos(t*(.5+h.y)+fi*1.3))*.18*u_p[1];
+    float r=mix(.12,.5,hash11(fi*3.7+SEED2.x))*mix(.6,1.5,u_p[2]);
+    float k=mod(fi,4.);
+    vec3 cl=k<1.?u_c[2]:(k<2.?u_c[1]*1.6:(k<3.?u_c[3]:mix(u_c[2],u_c[3],.5)));
+    col+=cl*exp(-pow(length(uv-p)/r,2.)*2.2)*mix(.35,1.5,u_p[3]);
+  }
+  col*=1.+fbm(uv*2.5+t*.5+SEED2)*u_p[4]*.6;
+  if(u_p[5]>.05){
+    vec2 q=rot(.35)*uv; float l=0.;
+    for(int i=0;i<4;i++){ float fi=float(i); l+=exp(-abs(q.y-(hash11(fi+SEED2.y)-.5)*.8-sin(q.x*1.5+t+fi)*.05)*mix(260.,90.,hash11(fi*2.)))*(.4+.6*hash11(fi+5.)); }
+    col+=mix(u_c[2],vec3(1.),.4)*l*u_p[5]*.6;
+  }
+  return col;
+}`,
+  };
+
+  E.rainglass = {
+    name: 'Yağmurlu Cam',
+    params: ['Damla yoğunluğu', 'Akan damlalar', 'Bokeh boyutu', 'Kırılma', 'Buğu', 'Işık yoğunluğu', 'Arka plan bulanıklığı', 'Akış hızı'],
+    glsl: `
+vec3 bgLights(vec2 uv){
+  vec3 col=mix(u_c[1]*.35, u_c[0]*.4, smoothstep(-.5,.6,uv.y));
+  for(int L=0;L<2;L++){
+    float sc=mix(4.,9.,float(L)); vec2 g=uv*sc; vec2 id=floor(g);
+    for(int j=-1;j<=1;j++) for(int i=-1;i<=1;i++){
+      vec2 cid=id+vec2(i,j); float h=hash12(cid+float(L)*9.+SEED2);
+      if(h>mix(.06,.3,u_p[5])) continue;
+      vec2 c=(cid+hash22(cid+3.))/sc;
+      float rad=(.25+.5*hash12(cid+5.))*mix(.5,1.3,u_p[2])/sc;
+      float d=length(uv-c)/rad;
+      float k=hash12(cid+8.);
+      vec3 cl=k<.4?u_c[2]:(k<.75?u_c[3]:u_c[1]*2.);
+      col+=cl*smoothstep(1.,mix(.9,.3,u_p[6]),d)*(.15+.45*hash12(cid+1.));
+    }
+  }
+  return col;
+}
+vec3 scene(vec2 uv, vec2 st){
+  float t=u_time*(.2+.8*u_p[7]);
+  vec2 g=uv*mix(14.,34.,u_p[0]); vec2 id=floor(g); vec2 f=fract(g)-.5;
+  vec2 o=(hash22(id+SEED2)-.5)*.6; float r=.06+.2*hash12(id+3.);
+  float sd=length(f-o);
+  float drop=smoothstep(r, r*.75, sd)*step(.35,hash12(id+7.));
+  vec2 n=(f-o)/max(r,.01)*drop;
+  float cx=uv.x*mix(4.,10.,u_p[1]); float cid=floor(cx); float fx=fract(cx)-.5;
+  float hh=hash11(cid+SEED2.x);
+  float y=fract(-t*(.05+.08*hh)+hh)*1.4-.7;
+  vec2 dp=vec2((fx+sin(uv.y*20.+hh*9.)*.05)*.9, (uv.y-y)*mix(4.,10.,u_p[1])*.35);
+  float rd=length(dp*vec2(1.,1.3));
+  float run=smoothstep(.2,.14,rd)*step(.45,hh)*u_p[1];
+  float trail=smoothstep(.06,.0,abs(fx))*smoothstep(y, y+.35, uv.y)*smoothstep(y+.6,y,uv.y)*step(.45,hh)*u_p[1];
+  vec2 nr=dp/.2*run;
+  vec2 N=n+nr;
+  float m=max(drop, run);
+  vec3 bg=bgLights(uv);
+  vec3 refr=bgLights(uv-N*.12*mix(.3,1.5,u_p[3]));
+  vec3 col=mix(bg, refr*1.15, m);
+  col=mix(col, col*.7+mix(u_c[1],u_c[2],.3)*.18, u_p[4]*(1.-m)*(.6+.4*fbm(uv*3.+SEED2)));
+  col+=vec3(1.)*pow(max(0.,1.-length(N-vec2(.3,.4))),6.)*m*.25;
+  col+=mix(u_c[2],vec3(1.),.5)*trail*.08;
+  return col;
+}`,
+  };
+
+  E.fire = {
+    name: 'Alev Duvarı & Yangın',
+    params: ['Alev genişliği', 'Alev yüksekliği', 'Türbülans', 'Parlaklık', 'Duman', 'Ön plan siluetleri', 'Kor', 'Hız'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  float t=u_time*(.25+.9*u_p[7]);
+  vec2 p=uv*vec2(mix(1.6,4.,u_p[0]),1.5)+SEED2;
+  float n=fbm(p+vec2(0.,-t*1.1))+.55*fbm(p*2.1+vec2(1.3,-t*2.));
+  float h=uv.y+.5;
+  float flame=sat(1.-h*mix(2.8,1.15,u_p[1])+n*mix(.55,1.3,u_p[2]));
+  flame=pow(flame,1.6);
+  vec3 col=u_c[0]*.08;
+  vec3 fc=mix(u_c[3]*.5, mix(u_c[2]*1.2, u_c[2]*1.6+vec3(.5,.4,.3), smoothstep(.7,1.,flame)), smoothstep(.15,.6,flame));
+  col+=fc*smoothstep(.04,.3,flame)*mix(.3,1.2,u_p[3]);
+  col+=u_c[2]*exp(-h*2.5)*.35*u_p[3];
+  float sm=fbm(uv*1.8+vec2(t*.05,-t*.25)+7.)*.5+.5;
+  col=mix(col, u_c[0]*.15+u_c[1]*.12+fc*.05, smoothstep(.0,.6,h-mix(.75,.35,u_p[1]))*sm*u_p[4]);
+  if(u_p[5]>.05){
+    float gy=-.42+fbm4(vec2(uv.x*2.+SEED2.y,4.))*.05;
+    float cell=uv.x*mix(9.,18.,u_p[5])+SEED2.x; float id=floor(cell); float fx=fract(cell)-.5;
+    float th=mix(.12,.42,hash11(id))*(.6+.6*u_p[5]);
+    float tri=step(abs(fx), .48*(1.-(uv.y-gy)/th))*step(gy,uv.y)*step(uv.y,gy+th)*step(.3,hash11(id*1.7));
+    float trunk=step(abs(fx),.03)*step(uv.y,gy+th*.25)*step(.3,hash11(id*1.7));
+    float ground=smoothstep(gy+PX*1.5,gy-PX*1.5,uv.y);
+    col=mix(col, u_c[0]*.01, max(max(tri,trunk),ground));
+  }
+  col+=vec3(1.,.5,.15)*(sparkles(uv,50.,u_p[6]*.4,.35)+sparkles(uv*rot(.2),100.,u_p[6]*.3,.5)*.7)*3.;
+  return col;
+}`,
+  };
+
+  E.tunnel = {
+    name: 'Sonsuz Koridor & Tünel',
+    params: ['Işık halkası sıklığı', 'Panel çizgileri', 'Halka parlaklığı', 'Uç ışığı', 'Kesit (kare↔geniş)', 'Derinlik sisi', 'Merkez kayması', 'Hız'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  vec2 p=uv-vec2((u_p[6]-.5)*.3, 0.);
+  float sx=mix(1.,.55,u_p[4]);
+  float r=max(abs(p.x)*sx, abs(p.y));
+  r=max(r,.002);
+  float z=.22/r+u_time*mix(.05,.8,u_p[7])+SEED2.x;
+  float side=abs(p.x)*sx>abs(p.y)?p.y/r:p.x*sx/r;
+  float ring=smoothstep(.04,.0,abs(fract(z*mix(.6,2.5,u_p[0]))-.5)-.465);
+  float panel=smoothstep(.04,.0,abs(fract(side*mix(2.,7.,u_p[1])*.5+.5)-.5)-.46);
+  float seam=smoothstep(.03,.0,abs(fract(z*mix(.6,2.5,u_p[0])*4.)-.5)-.47);
+  float depth=exp(-(.22/r)*mix(.15,.8,u_p[5]));
+  vec3 wall=u_c[0]*.1+u_c[1]*.14*(.4+.6*vnoise(vec2(side*6.,z*3.)));
+  wall+=u_c[1]*.12*(panel+seam*.5);
+  vec3 col=wall*(.15+r*1.2)*depth;
+  col+=u_c[2]*ring*mix(.25,1.1,u_p[2])*(.08+r*.9)*depth;
+  float floorRefl=step(p.y,0.)*step(abs(p.x)*sx,abs(p.y))*.3;
+  col+=u_c[2]*ring*floorRefl*depth*.4;
+  col+=u_c[3]*exp(-r*mix(40.,9.,u_p[3]))*1.4;
+  col+=u_c[3]*(1.-depth)*.12*u_p[5];
+  return col;
+}`,
+  };
+
+  E.canyon = {
+    name: 'Kanyon & Kaya Yarığı',
+    params: ['Yarık genişliği', 'Duvar katmanları', 'Tabaka çizgileri', 'Tepe ışığı', 'Işık huzmesi', 'Pus', 'Kıvrım', 'Zemin kumu'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  vec3 sky=mix(u_c[2]*.8, u_c[1]*.6, smoothstep(.2,.5,uv.y));
+  vec3 col=sky;
+  float w=mix(.05,.35,u_p[0]);
+  int N=3+int(u_p[1]*3.99);
+  for(int i=0;i<7;i++){
+    if(i>=N) break;
+    float fi=float(i)/float(N-1);
+    float sp=w*(1.+ (1.-fi)*.9);
+    float y=uv.y;
+    float wob=fbm4(vec2(y*mix(2.,4.,u_p[6])+float(i)*7., float(i)+SEED2.x))*.25*mix(.4,1.4,u_p[6]);
+    float jag=gnoise(vec2(y*30., float(i)))*.015;
+    float xl=-sp+wob+jag, xr=sp+wob*.8-jag+fbm4(vec2(y*3.,float(i)+9.))*.12;
+    float m=max(smoothstep(xl+PX*2.,xl-PX*2.,uv.x), smoothstep(xr-PX*2.,xr+PX*2.,uv.x));
+    float strata=sin(y*mix(20.,60.,u_p[2])+fbm4(vec2(uv.x*3.,y*2.)+fi)*4.)*.5+.5;
+    vec3 rock=mix(u_c[1]*.8, u_c[3]*.7, strata*.3)*(.85+.3*fbm4(vec2(uv.x*12.,y*20.)+fi));
+    float topL=smoothstep(-.3,.5,y)*u_p[3];
+    rock*=mix(.08,.9,topL)*mix(1.,.3,fi);
+    rock=mix(rock, sky*.5, (1.-fi)*u_p[5]*.6);
+    col=mix(col, rock, m);
+  }
+  float beam=exp(-abs(uv.x-(uv.y-.5)*.35)*mix(30.,8.,u_p[4]))*smoothstep(.5,-.5,uv.y)*u_p[4];
+  col+=u_c[2]*beam*(.5+.5*fbm4(uv*4.+u_time*.02))*1.2;
+  float gy=-.38+gnoise(vec2(uv.x*2.,3.))*.03;
+  vec3 sand=mix(u_c[1]*.6, u_c[2]*.4, u_p[7])*(.6+.4*fbm4(uv*vec2(8.,30.)));
+  col=mix(col, sand*.7+u_c[2]*beam*.4, smoothstep(gy+PX*2.,gy-PX*2.,uv.y));
+  col+=u_c[2]*sparkles(uv,60.,u_p[4]*.5,.01)*beam*4.;
+  return col;
+}`,
+  };
+
+  E.cells = {
+    name: 'Mikro Dünya & Hücreler',
+    params: ['Hücre ölçeği', 'Zar parlaklığı', 'Çekirdek', 'Derin katman', 'Hareket', 'Biyolüminesans', 'Sıvı pus', 'Partiküller'],
+    glsl: VORO + `
+vec3 scene(vec2 uv, vec2 st){
+  float t=u_time*(.05+.4*u_p[4]);
+  vec3 col=u_c[0]*.15+u_c[1]*.1*(fbm(uv*1.5+SEED2)*.5+.5);
+  vec3 v2=voro(uv*mix(2.,5.,u_p[0])*.6+vec2(t*.1,0.)+7.,t*.7);
+  col+=u_c[1]*.35*exp(-v2.y*12.)*u_p[3];
+  vec3 v=voro(uv*mix(2.,5.,u_p[0])+vec2(0.,t*.05),t);
+  float mem=exp(-v.y*mix(40.,12.,u_p[1]));
+  float nuc=smoothstep(.22,.12,v.x)*u_p[2];
+  vec3 cc=mix(u_c[2],u_c[3],v.z);
+  col+=cc*mem*mix(.4,1.8,u_p[1]);
+  col+=cc*.08*(1.-v.x);
+  col=mix(col, mix(u_c[3],u_c[2],.3)*1.2, nuc*.8);
+  col+=cc*u_p[5]*.4*pow(sat(1.-v.x*1.8),3.);
+  col=mix(col, u_c[1]*.3, u_p[6]*.4*(fbm(uv*2.-t*.1)*.5+.5));
+  col+=mix(u_c[2],vec3(1.),.5)*sparkles(uv,70.,u_p[7],.02)*1.5;
+  return col;
+}`,
+  };
+
+  E.clouds = {
+    name: 'Bulut Denizi',
+    params: ['Ufuk', 'Güneş X', 'Güneş yüksekliği', 'Bulut kabarıklığı', 'Bulut ölçeği', 'Bulut kuleleri', 'Güneş parıltısı', 'Akış'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  float hz=mix(-.15,.12,u_p[0]);
+  vec2 sun=vec2((u_p[1]-.5)*A*.8, hz+mix(-.02,.35,u_p[2]));
+  vec3 sky=skyGrad(uv, hz, sun, .03, .3+.7*u_p[6]);
+  vec3 col=sky;
+  if(u_p[5]>.05){
+    float x=uv.x*2.+SEED2.x;
+    float tw=hz+max(0.,fbm4(vec2(x,2.))+.15)*.35*u_p[5];
+    float tm=smoothstep(tw+.01,tw-.02,uv.y)*step(hz-.01,uv.y);
+    float sh=fbm(uv*vec2(4.,6.)+SEED2)*.5+.5;
+    vec3 tc=mix(u_c[1]*.7, u_c[2]*1.3, sat(sh*1.2-.2)*exp(-length(uv-sun)*1.5)+.2*sh);
+    col=mix(col, tc, tm*.95);
+  }
+  if(uv.y<hz){
+    float dy=hz-uv.y; float z=1./(dy+.015);
+    vec2 P=vec2(uv.x*z, z)*.12*mix(.5,2.,u_p[4])+vec2(SEED2.x, u_time*.02*(.2+u_p[7]));
+    float c=fbm(P)+.5*fbm(P*2.3+3.);
+    float cl=fbm(P+vec2(.05,.05))+.5*fbm((P+vec2(.05,.05))*2.3+3.);
+    float lit=sat((c-cl)*6.*mix(.5,2.,u_p[3])+.5);
+    vec3 base=mix(u_c[1]*.55, mix(u_c[2],vec3(1.),.4)*1.1, lit);
+    base+=u_c[2]*exp(-abs(uv.x-sun.x)*2.)*exp(-dy*3.)*.6;
+    float haze=exp(-dy*14.);
+    col=mix(base*(.6+.4*smoothstep(-.4,.4,c)), sky, haze);
+  }
+  return col;
+}`,
+  };
+
+  E.lava = {
+    name: 'Lav & Magma Ovası',
+    params: ['Çatlak ölçeği', 'Akış bükülmesi', 'Çatlak genişliği', 'Akkor parlaklık', 'Duman', 'Ufuk', 'Kor', 'Akış hızı'],
+    glsl: VORO + `
+vec3 scene(vec2 uv, vec2 st){
+  float t=u_time*(.02+.15*u_p[7]);
+  float hz=mix(-.05,.3,u_p[5]);
+  vec3 col;
+  if(uv.y>hz){
+    float h=uv.y-hz;
+    col=mix(u_c[0]*.25+u_c[3]*.12, u_c[0]*.12, smoothstep(0.,.5,h));
+    float sm=fbm(uv*vec2(1.5,3.)+vec2(t,-t*.5)+SEED2)*.5+.5;
+    col=mix(col, u_c[0]*.1+u_c[3]*.15*exp(-h*4.), u_p[4]*sm*.8);
+    col+=u_c[2]*exp(-h*12.)*.4;
+  } else {
+    float dy=hz-uv.y; float z=1./(dy+.01);
+    vec2 P=vec2(uv.x*z, z)*.35*mix(.6,2.,u_p[0])+vec2(0.,t)+SEED2;
+    P+=vec2(fbm4(P*.4), fbm4(P*.4+3.))*u_p[1]*1.5;
+    vec3 v=voro(P, 0.);
+    float glow=exp(-v.y*mix(30.,6.,u_p[2]));
+    float crust=fbm4(P*3.)*.5+.5;
+    col=u_c[0]*.08*crust;
+    col+=mix(u_c[3]*.8, u_c[2]*2.5, glow)*glow*mix(.6,3.,u_p[3]);
+    col=mix(col, mix(u_c[3]*.6,u_c[2]*.5,.5), exp(-dy*10.)*.6);
+  }
+  col+=vec3(1.,.45,.12)*sparkles(uv,60.,u_p[6]*.4,.12)*3.;
+  return col;
+}`,
+  };
+
+  E.galaxy = {
+    name: 'Sarmal Galaksi',
+    params: ['Kol sayısı', 'Sarmal sıkılığı', 'Kol keskinliği', 'Çekirdek boyutu', 'Eğim', 'Yıldızlar', 'Dönüş', 'Toz şeritleri'],
+    glsl: `
+vec3 scene(vec2 uv, vec2 st){
+  vec2 p=rot(u_p[6]*TAU)*uv;
+  p.y/=mix(.35,1.,u_p[4]);
+  float r=length(p); float a=atan(p.y,p.x);
+  float arms=floor(mix(2.,5.,u_p[0]));
+  float s=sin(arms*(a-log(r+.02)*mix(1.5,4.5,u_p[1]))+u_time*.01);
+  float arm=pow(sat(s*.5+.5), mix(1.,6.,u_p[2]));
+  float disk=exp(-r*mix(6.,3.,u_p[3]));
+  float dust=fbm(p*9.+SEED2)*.5+.5;
+  vec3 col=u_c[0]*.08;
+  col+=mix(u_c[3], u_c[1]*1.4, sat(r*2.5))*arm*disk*(.5+.9*dust)*1.6;
+  col*=1.-u_p[7]*.7*smoothstep(.45,.75,fbm(p*14.+SEED2*2.)*.5+.5)*disk*2.;
+  col+=u_c[2]*exp(-r*mix(30.,10.,u_p[3]))*2.2;
+  col+=mix(u_c[2],vec3(1.),.3)*sparkles(p,90.,arm*disk*3.,0.)*2.;
+  col+=starfield(uv, .2+.8*u_p[5]);
   return col;
 }`,
   };

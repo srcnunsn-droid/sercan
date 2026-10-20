@@ -74,6 +74,10 @@
     { id: '3:2', tr: '3:2 · Fotoğraf', r: 3 / 2, mj: '3:2' },
     { id: '4:3', tr: '4:3 · Klasik', r: 4 / 3, mj: '4:3' },
     { id: '32:9', tr: '32:9 · Çift monitör', r: 32 / 9, mj: '32:9' },
+    { id: '16:10', tr: '16:10 · Dizüstü duvar kağıdı', r: 16 / 10, mj: '16:10' },
+    { id: '19.5:9', tr: '19.5:9 · Telefon duvar kağıdı', r: 9 / 19.5, mj: '9:19' },
+    { id: '2:3', tr: '2:3 · Film afişi', r: 2 / 3, mj: '2:3' },
+    { id: '3:1', tr: '3:1 · YouTube / Twitter kapak', r: 3, mj: '3:1' },
   ];
   CB.RESOLUTIONS = [
     { id: 720, tr: 'HD 720p' }, { id: 1080, tr: 'Full HD 1080p' }, { id: 1440, tr: 'QHD 1440p' },
@@ -120,6 +124,13 @@
     ],
   };
   CB.TIMES.sky = CB.TIMES.ext;
+  CB.TIMES.abstract = [
+    { id: 'studio', tr: 'Yumuşak stüdyo ışığı', en: 'soft diffused studio glow from above', sun: 0.5, pal: ['day', 'dawn', 'palace'] },
+    { id: 'backlit', tr: 'Arkadan aydınlatma', en: 'strong backlight creating luminous rims and halos', sun: 0.2, pal: ['golden', 'space'] },
+    { id: 'darkfield', tr: 'Karanlık alan', en: 'dark-field illumination, glowing edges on a black ground', sun: 0.0, pal: ['night', 'space', 'water'] },
+    { id: 'neonrim', tr: 'Neon kenar ışığı', en: 'saturated neon rim light against deep black', sun: 0.0, pal: ['neon'] },
+    { id: 'goldenrim', tr: 'Altın parıltı', en: 'warm golden glow pooling from one side', sun: 0.15, pal: ['golden', 'fire'] },
+  ];
 
   CB.WEATHER = {
     ext: [
@@ -160,6 +171,12 @@
     ],
   };
   CB.WEATHER.sky = CB.WEATHER.ext;
+  CB.WEATHER.abstract = [
+    { id: 'particles', tr: 'Süzülen parçacıklar', en: 'fine particles drifting slowly through the frame' },
+    { id: 'liquid', tr: 'Sıvı pus', en: 'soft liquid haze between layers' },
+    { id: 'stillabs', tr: 'Durgun', en: 'perfectly still, calm composition' },
+    { id: 'flow', tr: 'Akış', en: 'gentle flowing motion across the frame' },
+  ];
 
   CB.SEASONS = [
     { id: 'spring', tr: 'İlkbahar', en: 'spring, fresh green growth' },
