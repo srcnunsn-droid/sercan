@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CineBG Studio</title>
+<meta name="description" content="1000+ kategoride sınırsız sinematik film arka planı ve AI prompt üreticisi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<!--BODY-->
+<div class="app" id="app" data-m="insp">
+  <header class="top">
+    <div class="brand">
+      <h1>Cine<b>BG</b> Studio</h1>
+      <small>Sinematik arka plan üreticisi</small>
+    </div>
+    <div class="spacer"></div>
+    <div class="counter" id="counter"></div>
+    <button class="btn small ghost" id="btnHelp" type="button" aria-expanded="false">Kısayollar</button>
+  </header>
+
+  <aside class="catalog" aria-label="Kategori kataloğu">
+    <div class="catalog-head">
+      <div class="eyebrow" id="catCount">Katalog</div>
+      <input class="search" id="search" type="search" placeholder="Mekan ara: siper, kale, neon, mağara…" autocomplete="off">
+      <div class="mode" role="group" aria-label="Üret düğmesi neyi değiştirsin">
+        <button type="button" data-mode="cat" title="Aynı kategori, yeni varyasyon">Kategori</button>
+        <button type="button" data-mode="group" title="Aynı grupta rastgele kategori">Grup</button>
+        <button type="button" data-mode="all" title="Tüm kataloğdan rastgele">Tümü</button>
+      </div>
+    </div>
+    <div class="groups" id="groups"></div>
+  </aside>
+
+  <main class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="frame" id="frame">
+        <canvas id="view" aria-label="Üretilen arka plan önizlemesi"></canvas>
+        <div class="guides" id="guides" hidden><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><i class="safe"></i></div>
+        <div class="slate" id="slate"></div>
+        <div class="busy" id="busy" hidden></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary generate" id="btnGen" type="button">Üret <span class="kbd">Space</span></button>
+      <button class="btn icon" id="btnPrev" type="button" title="Önceki (←)" aria-label="Önceki">‹</button>
+      <button class="btn icon" id="btnNext" type="button" title="Sonraki (→)" aria-label="Sonraki">›</button>
+      <button class="btn" id="btnFav" type="button" title="Favori (F)">☆ <span class="label-opt">Favori</span></button>
+      <button class="btn" id="btnAnim" type="button" title="Canlı önizleme (A)">▶ <span class="label-opt">Canlı</span></button>
+      <button class="btn" id="btnFlow" type="button" title="Her 4 saniyede yeni sahne">∞ <span class="label-opt">Sonsuz akış</span></button>
+      <span class="grow"></span>
+      <button class="btn" id="btnDl" type="button" title="Görseli indir (D)">⤓ <span class="label-opt">Görseli indir</span></button>
+    </div>
+    <div class="strip" id="strip" aria-label="Geçmiş"></div>
+  </main>
+
+  <nav class="mtabs" id="mtabs">
+    <button type="button" data-m="insp" class="on">Prompt &amp; Ayarlar</button>
+    <button type="button" data-m="cat">Kategoriler</button>
+  </nav>
+
+  <aside class="insp" aria-label="Denetçi">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="prompt" class="on">Prompt</button>
+      <button type="button" role="tab" data-tab="visual">Görsel</button>
+      <button type="button" role="tab" data-tab="export">Dışa aktar</button>
+    </div>
+
+    <div class="pane" id="pane-prompt">
+      <section class="section">
+        <h3>Sahne kartı <span class="eyebrow" id="specCode"></span></h3>
+        <dl class="facts" id="facts"></dl>
+      </section>
+      <section class="section">
+        <h3>Kilitler</h3>
+        <p class="hint">"Rastgele" bırakılan her şey her üretimde değişir. Seçtiklerin sabit kalır.</p>
+        <div class="chips">
+          <div class="field"><label for="oTime">Saat / ışık</label><select id="oTime"></select></div>
+          <div class="field"><label for="oWeather">Hava</label><select id="oWeather"></select></div>
+          <div class="field"><label for="oCamera">Kamera</label><select id="oCamera"></select></div>
+          <div class="field"><label for="oPalette">Palet</label><select id="oPalette"></select></div>
+          <div class="field"><label for="oGrade">Renk grade</label><select id="oGrade"></select></div>
+          <div class="field"><label for="oImp">İmkansız unsur</label><select id="oImp"><option value="auto">Otomatik</option><option value="on">Her zaman</option><option value="off">Asla</option></select></div>
+        </div>
+      </section>
+      <section class="section" id="prompts"></section>
+    </div>
+
+    <div class="pane" id="pane-visual" hidden>
+      <section class="section">
+        <h3>Görsel motor</h3>
+        <p class="hint">Önizleme, tarayıcıda sınırsız ve ücretsiz çizilen prosedürel bir arka plan plakasıdır. Her kaydırıcı sahneyi anında günceller.</p>
+        <div class="field"><label for="vEngine">Motor</label><select id="vEngine"></select></div>
+        <div class="sliders" id="vParams"></div>
+      </section>
+      <section class="section">
+        <h3>Palet</h3>
+        <div class="swatches" id="vSwatches"></div>
+      </section>
+      <section class="section">
+        <h3>Grade &amp; lens</h3>
+        <div class="field"><label for="vGrade">Grade preset</label><select id="vGrade"></select></div>
+        <div class="sliders" id="vLook"></div>
+        <div class="row">
+          <div class="field"><label for="vBars">Letterbox</label>
+            <select id="vBars"><option value="0">Yok</option><option value="1.85">1.85:1</option><option value="2.39">2.39:1</option><option value="2.76">2.76:1 (Ultra Panavision)</option></select></div>
+          <div class="field"><label for="vGuides">Kılavuz</label>
+            <select id="vGuides"><option value="0">Kapalı</option><option value="1">Üçler kuralı + güvenli alan</option></select></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="pane" id="pane-export" hidden>
+      <section class="section">
+        <h3>Görsel çıktı</h3>
+        <div class="row">
+          <div class="field"><label for="eAspect">En-boy oranı</label><select id="eAspect"></select></div>
+          <div class="field"><label for="eRes">Çözünürlük</label><select id="eRes"></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="eFmt">Biçim</label><select id="eFmt"><option value="png">PNG (kayıpsız)</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></div>
+          <div class="field"><label for="eQ">Kalite</label><select id="eQ"><option value="0.95">%95</option><option value="0.9">%90</option><option value="0.8">%80</option></select></div>
+        </div>
+        <p class="hint" id="eSize"></p>
+        <button class="btn primary" id="btnExport" type="button">Görseli indir</button>
+      </section>
+      <section class="section">
+        <h3>Hareketli arka plan</h3>
+        <p class="hint">Sahne yavaşça hareket eder. Kusursuz döngü seçilirse ilk ve son kare birbirine bağlanır, video sonsuz tekrar edebilir.</p>
+        <div class="row">
+          <div class="field"><label for="vDur">Süre</label><select id="vDur"><option value="6">6 sn</option><option value="10" selected>10 sn</option><option value="15">15 sn</option><option value="20">20 sn</option></select></div>
+          <div class="field"><label for="vRes">Video çözünürlüğü</label><select id="vRes"><option value="720">720p</option><option value="1080" selected>1080p</option></select></div>
+          <div class="field"><label for="vLoop">Döngü</label><select id="vLoop"><option value="1">Kusursuz döngü</option><option value="0">Doğrusal</option></select></div>
+        </div>
+        <button class="btn rec" id="btnVideo" type="button">● Video kaydet</button>
+      </section>
+      <section class="section">
+        <h3>Toplu üretim</h3>
+        <p class="hint">Tek tıkla onlarca sahne ve prompt üret. Sınır yok. İstediğin kadar tekrar çalıştırabilirsin.</p>
+        <div class="row">
+          <div class="field"><label for="bCount">Adet</label><select id="bCount"><option>12</option><option selected>24</option><option>48</option><option>100</option><option>250</option></select></div>
+          <div class="field"><label for="bScope">Kapsam</label><select id="bScope"><option value="cat">Bu kategori</option><option value="group">Bu grup</option><option value="all" selected>Tüm katalog</option></select></div>
+        </div>
+        <button class="btn primary" id="btnBatch" type="button">Toplu üret</button>
+      </section>
+      <section class="section">
+        <h3>Kod ile aç</h3>
+        <p class="hint">Her sahnenin bir kodu var (ör. CB-0103-1A2B3C). Kodu girersen aynı kategori ve seed tekrar açılır.</p>
+        <div class="row">
+          <div class="field"><label for="codeIn">Sahne kodu</label><input id="codeIn" type="text" placeholder="CB-0103-1A2B3C" autocomplete="off"></div>
+          <button class="btn" id="btnCode" type="button" style="align-self:end">Aç</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <header>
+      <h2 id="sheetTitle">Toplu üretim</h2>
+      <span class="counter" id="sheetInfo"></span>
+      <span style="flex:1"></span>
+      <button class="btn small" id="bCsv" type="button">Promptlar CSV</button>
+      <button class="btn small" id="bJson" type="button">JSON</button>
+      <button class="btn small" id="bTxt" type="button">TXT</button>
+      <button class="btn small primary" id="bZip" type="button">Görseller ZIP</button>
+      <button class="btn small" id="bClose" type="button">Kapat</button>
+    </header>
+    <div class="progress"><i id="sheetProg"></i></div>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+</div>
+
+<div class="sheet" id="help" hidden>
+  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="helpTitle" style="width:min(520px,100%)">
+    <header><h2 id="helpTitle">Kısayollar</h2><span style="flex:1"></span><button class="btn small" id="helpClose" type="button">Kapat</button></header>
+    <div class="pane">
+      <dl class="facts">
+        <dt>Space / G</dt><dd>Yeni sahne üret</dd>
+        <dt>← →</dt><dd>Geçmişte gezin</dd>
+        <dt>F</dt><dd>Favorilere ekle / çıkar</dd>
+        <dt>A</dt><dd>Canlı önizlemeyi aç / kapat</dd>
+        <dt>D</dt><dd>Görseli seçili çözünürlükte indir</dd>
+        <dt>C</dt><dd>Soul Cinema promptunu kopyala</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<!--/BODY-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="js/glsl.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/looks.js"></script>
+<script src="js/spec.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
