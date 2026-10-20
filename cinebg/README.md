@@ -1,6 +1,6 @@
 # CineBG Studio
 
-Sinematik film sahneleri için sınırsız arka plan üreticisi. 68 grupta **3071 kategori**: savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, mikro dünyalar, soyut motion grafik ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 378 milyarı aşar, seed sayısı ise sınırsızdır.
+Sinematik film sahneleri için sınırsız arka plan üreticisi. 79 grupta **3430 kategori**: savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 1 trilyonu aşar, seed sayısı ise sınırsızdır.
 
 Her sahne iki çıktı verir:
 
@@ -17,6 +17,17 @@ Her sahne iki çıktı verir:
 
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
+
+## v3'te neler yeni
+
+- **26 kamera açısı:** solucan gözü, kuş bakışı, Hollanda açısı, birinci şahıs POV, yan takip, aşırı uzak plan, detay, havadan yörünge, içeriden dışarı, ters açı, yansıma seviyesi ve ürün çekimi açıları (önden, 3/4, kahraman, flat lay, makro). Her açının önizlemede bir kadraj karşılığı var.
+- **Açı seti (S tuşu):** aynı sahneyi tüm açılarda üretir. Mekan, yer işaretleri ve palet sabit kalır. Saat seti ve hava seti de var. Her kare için ONE SHOT W8 "referanstan yeni açı" promptu hazırlanır (NBP / GPT Image 2). Set, kontakt sayfası olarak tek PNG'ye dökülebilir.
+- **Günümüz mekanları (5 grup):** şehir hayatı, modern iş ve teknoloji mekanları, günümüz evleri, AVM ve mağazalar, spor ve modern eğlence.
+- **Yaratıcı reklam arka planları (6 grup):** ürün podyumları ve stüdyo setleri, sürreal konseptler, doğal ürün sahneleri, lüks fonlar, yemek ve içecek, teknoloji ve otomotiv. Stüdyo ışık kurulumları (softbox, gobo, high-key, low-key, renkli jel) ve ticari fotoğraf teknik bloğu içerir.
+- **Ürün podyumu motoru:** ışın izlemeli gerçek 3B stüdyo seti. Sonsuz fon, podyum düzenleri, kemer paneli, yumuşak gölge, pencere gobosu. Kamera açıları burada gerçek bir yörünge kamerasını sürer.
+- **Referans görselden palet:** bir fotoğraf ya da film karesi yükle, 4 renk çıkarılır, görsele ve prompta (renk adlarıyla) uygulanır.
+- **Hızlı MP4:** WebCodecs + [mp4-muxer](https://github.com/Vanilagy/mp4-muxer) (MIT) ile video kare kare, gerçek zamanı beklemeden kodlanır. 4K ve 24/30/60 fps desteklenir. H.264 yoksa MP4 içinde VP9 veya AV1 kullanılır, WebCodecs yoksa gerçek zamanlı kayda geçilir.
+- **Kilit düzeltmesi:** bir alanı kilitlemek artık sahnenin geri kalanını değiştirmiyor.
 
 ## v2'de neler yeni
 
@@ -35,7 +46,7 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 
 - **Katalog:** Arama yapabilirsin. Üret düğmesi üç modda çalışır: aynı kategoride yeni varyasyon, grup içinde rastgele kategori ya da tüm katalogdan rastgele.
 - **Kilitler:** Saat, hava, kamera, palet, grade ve imkansız unsuru sabitleyebilirsin. Kilitlemediklerin her üretimde değişir.
-- **Görsel ayarları:** 28 sahne motoru, her motor için 8 parametre, 8 atmosfer katmanı, 4 renkli palet ve 16 grade preset'i var. Pozlama, kontrast, bloom, anamorfik flare, halation, kromatik sapma, vinyet ve film greni ayarlanabilir. Letterbox (1.85 / 2.39 / 2.76) ve kılavuz çizgileri de bulunur.
+- **Görsel ayarları:** 29 sahne motoru, her motor için 8 parametre, 8 atmosfer katmanı, 4 renkli palet ve 16 grade preset'i var. Pozlama, kontrast, bloom, anamorfik flare, halation, kromatik sapma, vinyet ve film greni ayarlanabilir. Letterbox (1.85 / 2.39 / 2.76) ve kılavuz çizgileri de bulunur.
 - **En-boy oranları:** 16:9, 2.39:1, 21:9, 1.85:1, 9:16, 4:5, 1:1, 3:2, 4:3, 32:9, 16:10, 19.5:9, 2:3 ve 3:1. Çözünürlük 720p ile 8K arasında seçilebilir.
 - **Toplu üretim:** 12 ile 500 arasında sahneyi tek tıkla üretir. Görselleri ZIP olarak, promptları CSV, JSON veya TXT olarak indirebilirsin.
 - **Sonsuz akış:** Her 4 saniyede otomatik olarak yeni sahne üretir.
@@ -52,17 +63,20 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 | D | Görseli indir |
 | P | Sahneyi projeye ekle |
 | V | Bu kategoriden 12 varyasyon |
+| S | Açı seti |
 | C | Soul Cinema promptunu kopyala |
 
 ## Dosyalar
 
 | Dosya | İçerik |
 | --- | --- |
-| `js/glsl.js` | Ortak shader kütüphanesi, 28 sahne motoru, atmosfer katmanı, kamera dönüşümü, film son işlem geçişi (bloom, flare, ACES, grade, gren) |
+| `js/glsl.js` | Ortak shader kütüphanesi, 29 sahne motoru, atmosfer katmanı, kamera dönüşümü, film son işlem geçişi (bloom, flare, ACES, grade, gren) |
 | `js/renderer.js` | WebGL2 render hattı: HDR doku, mipmap bloom, kusursuz döngü için çapraz geçiş |
 | `js/categories.js` | İlk 45 grup, tür etiketleri, arketip yer işareti ve malzeme havuzları, grup kayıt sistemi |
 | `js/cat-extra-a.js`, `js/cat-extra-b.js` | Mevcut gruplara eklenen mekanlar |
-| `js/cat-new-a.js`, `js/cat-new-b.js` | 23 yeni grup |
+| `js/cat-new-a.js`, `js/cat-new-b.js` | v2'de eklenen 23 grup |
+| `js/cat-v3.js` | Günümüz mekanları ve reklam arka planları (11 grup) |
+| `vendor/mp4-muxer.js` | MP4 kapsayıcı (MIT lisansı `vendor/mp4-muxer.LICENSE`) |
 | `js/looks.js` | Paletler, grade'ler, en-boy oranları, saat, hava, kamera ve ışık sözlükleri |
 | `js/spec.js` | Seed'li sahne spesifikasyonu ve prompt motoru |
 | `js/app.js` | Arayüz, dışa aktarma, video, toplu üretim |

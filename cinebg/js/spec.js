@@ -33,6 +33,7 @@
     eastasia: ['eterna', 'kodak', 'natural', 'neon'], anatolia: ['kodak', 'spice', 'epic', 'eterna'], sky: ['natural', 'blockbuster', 'epic', 'moonlight'],
     arena: ['blockbuster', 'neonoir', 'war', 'epic'], dystopia: ['bleach', 'digital', 'scifi', 'noir'],
     micro: ['scifi', 'neon', 'natural', 'pastel'], abstract: ['neon', 'pastel', 'blockbuster', 'natural', 'scifi', 'kodak'],
+    modern: ['natural', 'kodak', 'blockbuster', 'eterna', 'neonoir'], product: ['natural', 'pastel', 'kodak', 'eterna', 'blockbuster'],
   };
 
   /* Motor parametrelerini sahneye göre yönlendir (indeksler glsl.js'deki parametre sırasına göre) */
@@ -41,6 +42,7 @@
     fog: { fog: 0.75 }, mist: { fog: 0.4 }, smoke: { fog: 0.3, ash: 0.15 }, ash: { ash: 0.7, fog: 0.2 }, dust: { dust: 0.7 }, storm: { lightning: 0.7, rain: 0.4 },
     heat: { dust: 0.2 }, wind: { dust: 0.25 }, motes: { dust: 0.15 }, smokeint: { fog: 0.25 }, steam: { fog: 0.3 }, rainwin: { rain: 0.2 },
     snoww: { snow: 0.25 }, silt: { fog: 0.35 }, dustcos: { dust: 0.2 }, particles: { dust: 0.2 }, liquid: { fog: 0.3 },
+    hazest: { fog: 0.2, leak: 0.25 }, petals: { dust: 0.2 }, floatgeo: { leak: 0.2 },
   };
   const HINT = {
     'battle-ancient': 'on an ancient or medieval battlefield', 'battle-modern': 'in a twentieth-century war zone', 'battle-future': 'in a future war', siege: 'in a besieged medieval fortress',
@@ -58,12 +60,16 @@
     latam: 'in Latin America', parks: 'in a North American national park', academy: 'inside an old academy of magic and learning', modernarch: 'in contemporary architecture',
     vehicles: 'inside a vehicle', filmset: 'on a film studio lot', crime: 'in a crime-film underworld', fairytale: 'in a storybook fairy-tale world', medievallife: 'in everyday medieval life',
     navalair: 'in a naval and air war', micro: 'at microscopic scale', abstract: 'as an abstract cinematic graphic',
+    'modern-city': 'in a contemporary city today', 'modern-work': 'in a contemporary workplace', 'modern-home': 'in a contemporary home', 'modern-retail': 'in a contemporary retail space',
+    'modern-leisure': 'in a contemporary leisure venue', 'ad-podium': 'as an advertising product set', 'ad-surreal': 'as a surreal advertising set', 'ad-nature': 'as a natural product advertising set',
+    'ad-luxury': 'as a luxury advertising set', 'ad-food': 'as a food and drink advertising set', 'ad-tech': 'as a tech and automotive advertising set',
   };
   CB.locText = function (cat) {
     const h = HINT[cat.group.id];
     return h && cat.en.split(' ').length <= 5 ? `${cat.en} ${h}` : cat.en;
   };
   const HOOKS = {
+    podium: (p, s) => { p[4] = /gobo|golden/.test(s.time.id) ? rr(s.r, 0.45, 0.85) : 0; p[6] = s.time.id === 'lowkey' ? 0.15 : p[6]; },
     clouds: (p, s) => { p[2] = s.time.sun * 0.9; },
     rainglass: (p, s) => { p[1] = /rain|drizzle/.test(s.weather.id) ? rr(s.r, 0.6, 1) : p[1] * 0.6; },
     mountains: (p, s) => { p[2] = s.time.sun * 0.9; p[6] = /fog|mist/.test(s.weather.id) ? rr(s.r, 0.6, 1) : p[6]; p[7] = /storm|overcast|rain/.test(s.weather.id + s.time.id) ? rr(s.r, 0.6, 1) : p[7]; },
@@ -82,6 +88,16 @@
     planet: (p, s) => { p[3] = rr(s.r, 0.2, 0.8); },
   };
 
+  /* Bağlama uygun kamera havuzu */
+  CB.camerasFor = function (ctx) {
+    const C = CB.CAMERAS;
+    if (ctx === 'studio') return C.filter((c) => c.only === 'studio').concat(C.filter((c) => ['sym', 'detail', 'dutch', 'tele'].includes(c.id)));
+    const base = C.filter((c) => !c.only);
+    if (ctx === 'space') return base.filter((c) => ['est', 'tele', 'silhouette', 'sym', 'xls', 'orbit', 'dutch'].includes(c.id));
+    if (ctx === 'abstract') return base.filter((c) => ['sym', 'tele', 'eye', 'frame', 'dutch', 'detail'].includes(c.id));
+    if (ctx === 'int') return base.filter((c) => !['drone', 'silhouette', 'bird', 'orbit', 'xls'].includes(c.id));
+    return base;
+  };
   function contextOf(cat) {
     const g = cat.group;
     if (g.ctx !== 'mixed') return g.ctx;
@@ -90,6 +106,7 @@
 
   /* Kategori metnindeki anahtar kelimeler motor seçimini yönlendirir */
   const KEYS = [
+    [/podium|pedestal|plinth|product stage|display stand|turntable|cyclorama|studio set|product/i, ['podium']],
     [/forest|wood|tree|grove|jungle|bamboo|redwood|sequoia|birch|pine|cedar|maple|rainforest/i, ['forest', 'godrays']],
     [/fire|burning|blaze|wildfire|inferno|forge|furnace|flame|pyre/i, ['fire']],
     [/\bsea\b|ocean|coast|beach|harbou?r|wave|\bbay\b|lagoon|pier|shore|island|fjord|\bport\b|ship/i, ['ocean']],
@@ -115,9 +132,9 @@
     [/light leak|gradient|orb|glow|particle|lens flare|spotlight/i, ['orbs', 'anamorphic']],
     [/smoke|ink|fog layer/i, ['smoke']],
   ];
-  const INT_OK = ['hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk', 'tunnel', 'rainglass', 'orbs', 'fire', 'cells'];
+  const INT_OK = ['hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk', 'tunnel', 'rainglass', 'orbs', 'fire', 'cells', 'podium'];
   function enginesFor(cat, ctx) {
-    const allowed = (e) => (ctx === 'int' ? INT_OK.includes(e) : ctx === 'abstract' ? true : e !== 'hall' && e !== 'tunnel');
+    const allowed = (e) => (ctx === 'int' || ctx === 'studio' ? INT_OK.includes(e) : ctx === 'abstract' ? true : e !== 'hall' && e !== 'tunnel' && e !== 'podium');
     // metinde ilk geçen kavram kazanır (ör. "WWI trench … sandbag" → savaş alanı, kum tepesi değil)
     const hits = KEYS.map(([re, list]) => ({ i: cat.en.search(re), list: list.filter(allowed) }))
       .filter((h) => h.i >= 0 && h.list.length).sort((a, b) => a.i - b.i);
@@ -135,31 +152,32 @@
     const s = { cat, group: g, seed, ctx, r };
 
     const times = CB.TIMES[tctx];
-    s.time = (opts.time && times.find((t) => t.id === opts.time)) || pick(r, times);
+    s.time = pick(r, times);
+    if (opts.time) s.time = times.find((t) => t.id === opts.time) || s.time;
     let weathers = CB.WEATHER[tctx];
     if (tctx === 'ext') {
       weathers = weathers.filter((w) => !((w.id === 'snow' || w.id === 'blizzard') && NO_SNOW.test(g.id)) && !((w.id === 'dust' || w.id === 'heat') && NO_DUST.test(g.id)));
     }
-    s.weather = (opts.weather && weathers.find((w) => w.id === opts.weather)) || pick(r, weathers);
+    s.weather = pick(r, weathers);
+    if (opts.weather) s.weather = weathers.find((w) => w.id === opts.weather) || s.weather;
     s.season = tctx === 'ext' && ['nature', 'fortress', 'battle', 'ancient', 'western', 'eastasia'].includes(g.arch) && r() < 0.55 ? pick(r, CB.SEASONS) : null;
     if (s.season && /snow|blizzard/.test(s.weather.id)) s.season = CB.SEASONS[3];
     const condId = pick(r, g.cond);
     s.cond = Object.assign({ id: condId }, CB.CONDITIONS[condId] || { tr: condId, en: condId });
 
-    let cams = CB.CAMERAS;
-    if (ctx === 'space') cams = cams.filter((c) => ['est', 'tele', 'silhouette', 'sym'].includes(c.id));
-    if (ctx === 'int') cams = cams.filter((c) => c.id !== 'drone' && c.id !== 'silhouette');
-    if (ctx === 'abstract') cams = cams.filter((c) => ['sym', 'tele', 'eye', 'frame'].includes(c.id));
-    s.camera = (opts.camera && CB.CAMERAS.find((c) => c.id === opts.camera)) || pick(r, cams);
+    const cams = CB.camerasFor(ctx);
+    s.camera = pick(r, cams);
+    if (opts.camera) s.camera = CB.CAMERAS.find((c) => c.id === opts.camera) || s.camera;
     s.light = pick(r, s.time.night ? CB.LIGHTS.night : CB.LIGHTS.day);
     if (ctx === 'abstract') s.light = { tr: s.time.tr, en: 'soft volumetric light shaping the forms' };
+    if (ctx === 'studio') s.light = { tr: s.time.tr, en: 'controlled studio lighting with soft contact shadows under every object' };
 
     const A = CB.ARCH[g.arch];
     s.landmarks = { center: pick(r, A.center), left: pick(r, A.left), right: pick(r, A.right), far: pick(r, A.far) };
     s.floor = pick(r, A.floor);
     const m1 = pick(r, A.materials); let m2 = pick(r, A.materials); if (m2 === m1) m2 = A.materials[(A.materials.indexOf(m1) + 1) % A.materials.length];
     s.materials = [m1, m2];
-    s.size = ctx === 'int' ? Math.round(rr(r, 14, 90)) : ctx === 'space' || ctx === 'abstract' ? null : Math.round(rr(r, 3, 40)) * 50;
+    s.size = ctx === 'int' ? Math.round(rr(r, 14, 90)) : ctx === 'space' || ctx === 'abstract' ? null : ctx === 'studio' ? Math.round(rr(r, 4, 12)) : Math.round(rr(r, 3, 40)) * 50;
     s.farDist = s.size ? Math.round(s.size * rr(r, 0.5, 0.9)) : null;
 
     const imp = opts.impossible || 'auto';
@@ -177,14 +195,17 @@
     if (g.id === 'cyber' || g.id === 'nightlife') want.add('neon');
     if (g.arch === 'palace') want.add('palace');
     const cands = CB.PALETTES.filter((p) => p.tags.some((t) => want.has(t)));
-    s.palette = (opts.palette && CB.PALETTES.find((p) => p.id === opts.palette)) || pick(r, cands.length ? cands : CB.PALETTES);
+    s.palette = pick(r, cands.length ? cands : CB.PALETTES);
+    if (opts.palette) s.palette = CB.PALETTES.find((p) => p.id === opts.palette) || s.palette;
     let grades = GRADE_BY_ARCH[g.arch] || ['natural'];
     if (s.time.night && r() < 0.3) grades = ['moonlight', 'neonoir'];
-    s.gradeId = opts.grade && CB.GRADES[opts.grade] ? opts.grade : pick(r, grades);
+    s.gradeId = pick(r, grades);
+    if (opts.grade && CB.GRADES[opts.grade]) s.gradeId = opts.grade;
 
     // görsel motor + parametreler
     const engs = enginesFor(cat, ctx);
-    s.engine = opts.engine && CB.ENGINES[opts.engine] ? opts.engine : pick(r, engs);
+    s.engine = pick(r, engs);
+    if (opts.engine && CB.ENGINES[opts.engine]) s.engine = opts.engine;
     s.params = Array.from({ length: 8 }, () => rr(r, 0.2, 0.85));
     if (HOOKS[s.engine]) HOOKS[s.engine](s.params, s);
     s.params = s.params.map((v) => Math.min(1, Math.max(0, v)));
@@ -213,8 +234,8 @@
     const L = s.landmarks;
     const grade = CB.GRADES[s.gradeId];
     const season = s.season ? `, ${s.season.en}` : '';
-    const empty = s.ctx === 'space' ? 'An empty, silent vista.' : s.ctx === 'abstract' ? 'Clean uncluttered background with generous negative space for titles.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
-    const sizeTxt = s.size ? `roughly ${s.size} metres across` : s.ctx === 'abstract' ? 'filling the whole frame' : 'vast beyond scale';
+    const empty = s.ctx === 'space' ? 'An empty, silent vista.' : s.ctx === 'abstract' ? 'Clean uncluttered background with generous negative space for titles.' : s.ctx === 'studio' ? 'Empty set with a clear, unoccupied product placement area in the centre and generous negative space for copy.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
+    const sizeTxt = s.ctx === 'studio' ? `a studio set about ${s.size} metres wide` : s.size ? `roughly ${s.size} metres across` : s.ctx === 'abstract' ? 'filling the whole frame' : 'vast beyond scale';
     const loc = CB.locText(s.cat);
     const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space'].includes(s.group.arch);
     const build = natural ? `with textures of ${s.materials[0]} and ${s.materials[1]}` : `built from ${s.materials[0]} and ${s.materials[1]}`;
@@ -222,9 +243,9 @@
 
     // Lira · Higgsfield Soul Cinema mekan şablonu
     const soul = strip(`${cap(s.camera.en)}, ${s.camera.lens} lens, rule of thirds composition. ${cap(loc)}, ${s.cond.en}${season}, ${sizeTxt}, ${build}. ` +
-      `${cap(L.left)} rises on the left, ${L.right} stands on the right, ${L.center} marks the centre, and ${L.far} closes the far end. The ground is ${s.floor}. ` +
+      `${s.camera.rev ? `${cap(L.right)} now stands on the left, ${L.left} on the right` : `${cap(L.left)} rises on the left, ${L.right} stands on the right`}, ${L.center} marks the centre, and ${s.camera.rev ? 'the original camera position' : L.far} closes the far end. The ground is ${s.floor}. ` +
       `${cap(s.time.en)}; ${s.light.en}. ${cap(s.weather.en)}, volumetric haze separating foreground, mid-ground and background.${imp} ` +
-      `Refined ${paletteLine(s)}; ${grade.en}. ${CB.TECH[s.tech]}. ${s.cine}. ${empty}`);
+      `Refined ${paletteLine(s)}; ${grade.en}. ${s.ctx === 'studio' ? CB.TECH.studio : CB.TECH[s.tech]}. ${s.ctx === 'studio' ? 'Polished advertising campaign look' : s.cine}. ${empty}`);
 
     // ONE SHOT · W1 lokasyon plakası blokları (GPT Image 2 / Seedream / NBP)
     const oneshot = [
@@ -262,7 +283,7 @@
       clearw: 'light rays swaying from the surface', snoww: 'marine snow drifting down', silt: 'silt clouds billowing slowly', current: 'plants and particles bending in the current',
     }[s.weather.id] || 'subtle ambient motion';
     const video = strip(`10-second cinematic background plate, single continuous shot, ${pick(s.r, moves)}, ${s.camera.lens} lens, rule of thirds. ${cap(loc)}, ${s.cond.en}${season}. ` +
-      `Ambient motion only: ${motion}. ${cap(s.time.en)}; ${s.light.en}. ${cap(paletteLine(s))}; ${grade.en}. ${CB.TECH[s.tech]}. ${empty}`);
+      `Ambient motion only: ${motion}. ${cap(s.time.en)}; ${s.light.en}. ${cap(paletteLine(s))}; ${grade.en}. ${s.ctx === 'studio' ? CB.TECH.studio : CB.TECH[s.tech]}. ${empty}`);
 
     const negative = CB.NEGATIVE.join(', ');
 
@@ -285,7 +306,18 @@
       `LIGHT: ${cap(s.time.en)}; ${s.light.en}. ${grade.en}, ${paletteLine(s)}.`,
       'LOCKS: the same identical place in every panel — same architecture, materials, weather, time of day and light direction; EMPTY of people; no text, no watermark.',
     ].join('\n');
-    return { soul, oneshot: oneshot.join('\n'), mj, video, negative, reverse, refsheet };
+    // ONE SHOT · W8 referans görselden yeni açı (NBP / GPT Image 2)
+    const arrange = s.camera.rev
+      ? `In this view ${L.left} is now on the RIGHT, ${L.right} is now on the LEFT, and ${L.center} stays in the middle ground.`
+      : `${cap(L.left)} stays on the left, ${L.right} on the right, ${L.center} in the centre, ${L.far} at the far end.`;
+    const fromRef = [
+      'Using Image 1 as the location reference: PRESERVE EXACTLY the architecture, materials, layout, proportions and landmark positions.',
+      `CHANGE ONLY the camera angle: ${s.camera.en}, ${s.camera.lens} lens.`,
+      arrange,
+      `Same light: ${s.time.en}; ${s.light.en}. Same weather, same grade (${grade.en}), same palette.`,
+      s.ctx === 'studio' || s.ctx === 'abstract' ? empty : 'EMPTY of people.',
+    ].join('\n');
+    return { soul, oneshot: oneshot.join('\n'), mj, video, negative, reverse, refsheet, fromRef };
   };
 
   CB.specCode = function (s) {

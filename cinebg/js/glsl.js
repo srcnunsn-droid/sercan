@@ -17,6 +17,10 @@ uniform float u_seed;
 uniform float u_p[8];
 uniform vec3 u_c[4];
 uniform float u_enc;
+uniform vec4 u_wx;   // yağmur, kar, sis, kor
+uniform vec4 u_wx2;  // kül, toz, şimşek, ışık sızıntısı
+uniform vec3 u_cam;  // yakınlaştırma, kaydırma x, kaydırma y
+uniform float u_roll; // kamera yatırma (dutch açı)
 out vec4 fragColor;
 
 #define PI 3.14159265
@@ -99,9 +103,6 @@ float sparkles(vec2 uv, float scale, float dens, float speed){
 `;
 
   const MAIN = `
-uniform vec4 u_wx;   // yağmur, kar, sis, kor
-uniform vec4 u_wx2;  // kül, toz, şimşek, ışık sızıntısı
-uniform vec3 u_cam;  // yakınlaştırma, kaydırma x, kaydırma y
 float flake(vec2 uv, float scale, float speed, float drift, float sz, float dens, float sl){
   vec2 g=uv*scale; g.y+=u_time*speed; g.x+=sin(g.y*.35+sl)*drift;
   vec2 id=floor(g), f=fract(g); float h=hash12(id+sl);
@@ -165,7 +166,7 @@ vec3 atmos(vec3 c, vec2 uv){
 }
 void main(){
   vec2 uv0=(gl_FragCoord.xy-.5*u_res)/u_res.y;
-  vec2 uv=uv0/max(u_cam.x,.01)+u_cam.yz;
+  vec2 uv=rot(u_roll)*(uv0*vec2(u_cam.x<0.?-1.:1.,1.))/max(abs(u_cam.x),.01)+u_cam.yz;
   vec2 st=(uv*u_res.y+.5*u_res)/u_res;
   vec3 c=scene(uv, st);
   c=atmos(max(c,0.), uv);
@@ -1239,6 +1240,92 @@ vec3 scene(vec2 uv, vec2 st){
   col+=u_c[2]*exp(-r*mix(30.,10.,u_p[3]))*2.2;
   col+=mix(u_c[2],vec3(1.),.3)*sparkles(p,90.,arm*disk*3.,0.)*2.;
   col+=starfield(uv, .2+.8*u_p[5]);
+  return col;
+}`,
+  };
+
+
+  E.podium = {
+    name: 'Ürün Podyumu & Stüdyo Seti',
+    params: ['Düzen (tek / basamak / kemer)', 'Podyum yüksekliği', 'Kemer paneli', 'Dekor küreler', 'Pencere gölgesi (gobo)', 'Işık açısı', 'Yumuşak gölge', 'Kamera yüksekliği'],
+    glsl: `
+float sdCyl(vec3 p, float r, float h){ vec2 d=abs(vec2(length(p.xz),p.y))-vec2(r,h); return min(max(d.x,d.y),0.)+length(max(d,0.)); }
+float sdBox(vec3 p, vec3 b){ vec3 q=abs(p)-b; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.); }
+float smin(float a, float b, float k){ float h=sat(.5+.5*(b-a)/k); return mix(b,a,h)-k*h*(1.-h); }
+vec2 pmap(vec3 p){
+  float cyc=smin(p.y, 2.6-p.z, .9);
+  vec2 r=vec2(cyc, 0.);
+  float ph=mix(.12,.45,u_p[1]);
+  float lay=u_p[0];
+  float pod;
+  if(lay<.34){
+    pod=sdCyl(p-vec3(0.,ph,0.), .75, ph);
+    pod=min(pod, sdCyl(p-vec3(-.95,ph*.5,.35), .42, ph*.5));
+  } else if(lay<.67){
+    pod=sdCyl(p-vec3(0.,ph*.5,0.), 1.05, ph*.5);
+    pod=min(pod, sdCyl(p-vec3(0.,ph*1.5,0.), .78, ph*.5));
+    pod=min(pod, sdCyl(p-vec3(0.,ph*2.5,0.), .5, ph*.5));
+  } else {
+    pod=sdBox(p-vec3(0.,ph,0.), vec3(.7,ph,.55))-.02;
+    pod=min(pod, sdBox(p-vec3(.95,ph*.6,.2), vec3(.32,ph*.6,.32))-.02);
+  }
+  if(pod<r.x) r=vec2(pod,1.);
+  if(u_p[2]>.2){
+    vec3 q=p-vec3(0.,0.,1.9);
+    float w=mix(.7,1.1,u_p[2]);
+    float body=sdBox(q-vec3(0.,1.,0.), vec3(w,1.,.06));
+    float top=max(length(q.xy-vec2(0.,2.))-w, abs(q.z)-.06);
+    float arch=min(body, max(top, -(q.y-2.)));
+    if(arch<r.x) r=vec2(arch,2.);
+  }
+  if(u_p[3]>.2){
+    float sp=length(p-vec3(1.25,.32,-.35))-.32;
+    sp=min(sp, length(p-vec3(-1.5,.2,-.6))-.2*u_p[3]-.05);
+    if(sp<r.x) r=vec2(sp,3.);
+  }
+  return r;
+}
+vec3 pnorm(vec3 p){ vec2 e=vec2(.002,0.); return normalize(vec3(pmap(p+e.xyy).x-pmap(p-e.xyy).x, pmap(p+e.yxy).x-pmap(p-e.yxy).x, pmap(p+e.yyx).x-pmap(p-e.yyx).x)); }
+float pshadow(vec3 ro, vec3 rd, float k){
+  float res=1., t=.02;
+  for(int i=0;i<40;i++){ float h=pmap(ro+rd*t).x; res=min(res, k*h/t); t+=clamp(h,.02,.25); if(res<.002||t>8.) break; }
+  return sat(res);
+}
+float pao(vec3 p, vec3 n){ float o=0., s=1.; for(int i=1;i<=5;i++){ float h=.04*float(i); o+=(h-pmap(p+n*h).x)*s; s*=.7; } return sat(1.-2.2*o); }
+vec3 scene(vec2 uv, vec2 st){
+  // podyum gerçek 3B: kadraj kaydırması yörünge ve yüksekliğe dönüşür
+  uv=rot(u_roll)*((gl_FragCoord.xy-.5*u_res)/u_res.y)/max(abs(u_cam.x),.01);
+  float orb=u_cam.y*4.;
+  float hgt=mix(.5,2.4,u_p[7])-u_cam.z*14.;
+  vec3 ro=vec3(sin(orb)*5.2, max(hgt,.12), -cos(orb)*5.2);
+  vec3 ta=vec3(0., .55-u_cam.z*.8, .4);
+  vec3 ww=normalize(ta-ro), uu=normalize(cross(abs(ww.y)>.98?vec3(0,0,1):vec3(0,1,0),ww)), vv=cross(ww,uu);
+  vec3 rd=normalize(uv.x*uu+uv.y*vv+1.9*ww);
+  float t=0.; vec2 h=vec2(0.);
+  for(int i=0;i<96;i++){ h=pmap(ro+rd*t); if(h.x<.001||t>20.) break; t+=h.x; }
+  vec3 bgc=mix(u_c[1], u_c[2], .35);
+  if(t>20.) return bgc*.6;
+  vec3 p=ro+rd*t, n=pnorm(p);
+  float la=mix(-1.1,1.1,u_p[5]);
+  vec3 L=normalize(vec3(sin(la)*1.2, 1.3, -cos(la)*.6-.3));
+  float sh=pshadow(p+n*.003, L, mix(28.,5.,u_p[6]));
+  if(u_p[4]>.05){
+    vec2 g=(p.xy+p.zx*.6+vec2(p.z*L.x, p.z*L.y)*.4)*1.6+vec2(.3,.1);
+    float pane=step(.12,fract(g.x))*step(.12,fract(g.y*.8));
+    sh*=mix(1., pane, u_p[4]*smoothstep(.0,.4,p.y+p.z*.1+.4));
+  }
+  float dif=sat(dot(n,L));
+  float ao=pao(p,n);
+  vec3 alb=mix(u_c[1], u_c[2], .55);
+  if(h.y==1.) alb=mix(u_c[2], vec3(lum(u_c[2])), .2)*1.05;
+  else if(h.y==2.) alb=mix(u_c[1], u_c[3], .35);
+  else if(h.y==3.) alb=u_c[3];
+  vec3 key=mix(vec3(1.,.95,.88), u_c[2]*1.2/max(lum(u_c[2]),.1)*.35+.65, .3);
+  vec3 amb=mix(u_c[1], bgc, .5)*.55;
+  vec3 col=alb*(key*dif*sh*1.25+amb*ao*(.55+.45*n.y));
+  vec3 hv=normalize(L-rd);
+  col+=key*pow(sat(dot(n,hv)), 48.)*.25*sh*(h.y==3.?1.6:.6);
+  col*=.92+.08*smoothstep(8.,2.,t);
   return col;
 }`,
   };

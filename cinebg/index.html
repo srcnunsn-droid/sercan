@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CineBG Studio</title>
-<meta name="description" content="3000+ kategoride sınırsız sinematik film arka planı ve AI prompt üreticisi.">
+<meta name="description" content="3400+ kategoride sınırsız sinematik film arka planı ve AI prompt üreticisi.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -16,7 +16,7 @@
   <header class="top">
     <div class="brand">
       <h1>Cine<b>BG</b> Studio</h1>
-      <small>Sinematik arka plan üreticisi · v2</small>
+      <small>Sinematik arka plan üreticisi · v3</small>
     </div>
     <div class="spacer"></div>
     <div class="counter" id="counter"></div>
@@ -54,6 +54,7 @@
       <button class="btn" id="btnFav" type="button" title="Favori (F)">☆ <span class="label-opt">Favori</span></button>
       <button class="btn" id="btnProj" type="button" title="Projeye ekle (P)">＋ <span class="label-opt">Projeye ekle</span></button>
       <button class="btn" id="btnVar" type="button" title="Bu kategoriden 12 varyasyon (V)">▦ <span class="label-opt">Varyasyonlar</span></button>
+      <button class="btn" id="btnSet" type="button" title="Aynı sahne, tüm kamera açıları (S)">◫ <span class="label-opt">Açı seti</span></button>
       <button class="btn" id="btnAnim" type="button" title="Canlı önizleme (A)">▶ <span class="label-opt">Canlı</span></button>
       <button class="btn" id="btnFlow" type="button" title="Her 4 saniyede yeni sahne">∞ <span class="label-opt">Sonsuz akış</span></button>
       <span class="grow"></span>
@@ -110,6 +111,7 @@
       <section class="section">
         <h3>Kadraj &amp; kamera hareketi</h3>
         <div class="sliders" id="vFrame"></div>
+        <div class="field"><label for="vMirror">Yön</label><select id="vMirror"><option value="0">Normal</option><option value="1">Aynalı (ters açı)</option></select></div>
         <div class="field"><label for="vMove">Kamera hareketi (canlı önizleme ve video)</label>
           <select id="vMove">
             <option value="static">Sabit</option><option value="pushin">Yavaş yaklaşma (dolly-in)</option><option value="pullout">Yavaş uzaklaşma</option>
@@ -122,6 +124,11 @@
         <div class="row">
           <div class="field"><label for="vPalette">Hazır palet</label><select id="vPalette"></select></div>
           <button class="btn small" id="btnPalRnd" type="button" style="align-self:end">Rastgele palet</button>
+        </div>
+        <div class="row">
+          <label class="btn small" for="refImg">Referans görselden palet</label>
+          <input id="refImg" type="file" accept="image/*" hidden>
+          <span class="hint" id="refInfo">Bir fotoğraf ya da film karesi yükle. Renkleri hem görsele hem prompta uygulanır.</span>
         </div>
         <div class="swatches" id="vSwatches"></div>
       </section>
@@ -166,13 +173,23 @@
         </div>
       </section>
       <section class="section">
+        <h3>Set üret</h3>
+        <p class="hint">Aynı sahneyi (aynı mekan, yer işaretleri, palet) farklı kamera açılarında, günün farklı saatlerinde ya da farklı havalarda üret. Her kare için "referanstan yeni açı" promptu da hazırlanır.</p>
+        <div class="row">
+          <div class="field"><label for="setMode">Set türü</label><select id="setMode"><option value="angles">Kamera açıları</option><option value="times">Günün saatleri</option><option value="weathers">Hava durumları</option></select></div>
+          <button class="btn primary" id="btnSet2" type="button" style="align-self:end">Set üret</button>
+        </div>
+      </section>
+      <section class="section">
         <h3>Hareketli arka plan</h3>
         <p class="hint">Kamera hareketi Görsel sekmesinden seçilir. Kusursuz döngüde hareket başladığı yere döner, video sonsuz tekrar edebilir.</p>
         <div class="row">
           <div class="field"><label for="vDur">Süre</label><select id="vDur"><option value="6">6 sn</option><option value="10" selected>10 sn</option><option value="15">15 sn</option><option value="20">20 sn</option></select></div>
-          <div class="field"><label for="vRes">Video çözünürlüğü</label><select id="vRes"><option value="720">720p</option><option value="1080" selected>1080p</option><option value="1440">1440p</option></select></div>
+          <div class="field"><label for="vRes">Video çözünürlüğü</label><select id="vRes"><option value="720">720p</option><option value="1080" selected>1080p</option><option value="1440">1440p</option><option value="2160">4K 2160p</option></select></div>
+          <div class="field"><label for="vFps">Kare hızı</label><select id="vFps"><option value="24">24 fps (sinema)</option><option value="30" selected>30 fps</option><option value="60">60 fps</option></select></div>
           <div class="field"><label for="vLoop">Döngü</label><select id="vLoop"><option value="1">Kusursuz döngü</option><option value="0">Doğrusal</option></select></div>
         </div>
+        <p class="hint" id="encInfo"></p>
         <button class="btn rec" id="btnVideo" type="button">● Video kaydet</button>
       </section>
       <section class="section">
@@ -226,6 +243,7 @@
       <h2 id="sheetTitle">Toplu üretim</h2>
       <span class="counter" id="sheetInfo"></span>
       <span style="flex:1"></span>
+      <button class="btn small" id="bContact" type="button">Kontakt sayfası PNG</button>
       <button class="btn small" id="bAll2Proj" type="button">Hepsini projeye ekle</button>
       <button class="btn small" id="bCsv" type="button">Promptlar CSV</button>
       <button class="btn small" id="bJson" type="button">JSON</button>
@@ -248,6 +266,7 @@
         <dt>F</dt><dd>Favorilere ekle / çıkar</dd>
         <dt>P</dt><dd>Sahneyi projeye ekle</dd>
         <dt>V</dt><dd>Bu kategoriden 12 varyasyon</dd>
+        <dt>S</dt><dd>Açı seti: aynı sahne, tüm kamera açıları</dd>
         <dt>A</dt><dd>Canlı önizlemeyi aç / kapat</dd>
         <dt>D</dt><dd>Görseli seçili çözünürlükte indir</dd>
         <dt>C</dt><dd>Soul Cinema promptunu kopyala</dd>
@@ -258,6 +277,7 @@
 <div class="toast" id="toast" hidden></div>
 <!--/BODY-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="vendor/mp4-muxer.js"></script>
 <script src="js/glsl.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/categories.js"></script>
@@ -265,6 +285,7 @@
 <script src="js/cat-extra-b.js"></script>
 <script src="js/cat-new-a.js"></script>
 <script src="js/cat-new-b.js"></script>
+<script src="js/cat-v3.js"></script>
 <script src="js/looks.js"></script>
 <script src="js/spec.js"></script>
 <script src="js/app.js"></script>

@@ -21,7 +21,7 @@
   const newSeed = () => (Math.random() * 4294967296) >>> 0;
   const hexLin = (h) => [1, 3, 5].map((i) => Math.pow(parseInt(h.substr(i, 2), 16) / 255, 2.2));
   const slug = (t) => t.toLowerCase().replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const CTX_TR = { ext: 'Dış mekan', int: 'İç mekan', space: 'Uzay', water: 'Su altı', sky: 'Gökyüzü', abstract: 'Soyut / grafik' };
+  const CTX_TR = { ext: 'Dış mekan', int: 'İç mekan', space: 'Uzay', water: 'Su altı', sky: 'Gökyüzü', abstract: 'Soyut / grafik', studio: 'Stüdyo / reklam seti' };
   const LOOK_KEYS = ['exposure', 'contrast', 'saturation', 'temperature', 'tint', 'fade', 'shadows', 'highlights', 'bloom', 'threshold', 'flare', 'flareColor', 'halation', 'ca', 'vignette', 'grain', 'grainSize'];
   const lookFrom = (g) => { const o = {}; LOOK_KEYS.forEach((k) => { o[k] = Array.isArray(g[k]) ? g[k].slice() : g[k]; }); return o; };
   const ATMOS_KEYS = [['rain', 'Yağmur'], ['snow', 'Kar'], ['fog', 'Sis'], ['embers', 'Kor & kıvılcım'], ['ash', 'Kül'], ['dust', 'Toz'], ['lightning', 'Şimşek'], ['leak', 'Işık sızıntısı']];
@@ -48,23 +48,23 @@
 
   function normVisual(v) {
     v.atmos = Object.assign({ rain: 0, snow: 0, fog: 0, embers: 0, ash: 0, dust: 0, lightning: 0, leak: 0 }, v.atmos || {});
-    v.frame = Object.assign({ zoom: 1, px: 0, py: 0 }, v.frame || {});
+    v.frame = Object.assign({ zoom: 1, px: 0, py: 0, roll: 0, mirror: false }, v.frame || {});
     v.move = v.move || S.move;
     return v;
   }
   /* u: 0..1 hareket ilerlemesi */
   function camFor(v, u) {
-    let z = v.frame.zoom, x = v.frame.px, y = v.frame.py;
+    let z = v.frame.zoom, x = v.frame.px, y = v.frame.py, roll = v.frame.roll || 0;
     switch (v.move) {
       case 'pushin': z *= 1 + 0.18 * u; break;
       case 'pullout': z *= 1.18 - 0.18 * u; break;
       case 'panleft': z *= 1.12; x += 0.09 - 0.18 * u; break;
       case 'panright': z *= 1.12; x += -0.09 + 0.18 * u; break;
       case 'rise': z *= 1.12; y += -0.07 + 0.14 * u; break;
-      case 'drift': z *= 1.06; x += Math.sin(u * TAU) * 0.03; y += Math.sin(u * TAU * 2) * 0.015; break;
+      case 'drift': z *= 1.06; x += Math.sin(u * TAU) * 0.03; y += Math.sin(u * TAU * 2) * 0.015; roll += Math.sin(u * TAU) * 0.01; break;
       default: break;
     }
-    return [z, x, y];
+    return [v.frame.mirror ? -z : z, x, y, roll];
   }
   /* döngü için git-gel ilerleme (süzülme zaten periyodik) */
   function progress(v, t, period, loop) {
@@ -174,8 +174,12 @@
   }
 
   /* ---------------- sahne yükleme ---------------- */
+  function frameFromCamera(cam) {
+    const c = cam.cam || [1, 0, 0, 0];
+    return { zoom: Math.abs(c[0]), px: c[1], py: c[2], roll: c[3] || 0, mirror: c[0] < 0 };
+  }
   function visualFromSpec(s) {
-    return normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move });
+    return normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move, frame: frameFromCamera(s.camera) });
   }
   function load(cat, seed, push, visual) {
     S.cat = cat; S.seed = seed >>> 0;
@@ -343,9 +347,11 @@
       slider('vtime', 'Zaman (kare)', 0, 200, 0.1, S.t % 200, (x) => { S.t = x; S.tStart = x; requestDraw(); }));
     $('vAtmos').replaceChildren(...ATMOS_KEYS.map(([k, lab]) => slider('va_' + k, lab, 0, 1, 0.01, v.atmos[k], (x) => { v.atmos[k] = x; requestDraw(); })));
     $('vFrame').replaceChildren(
-      slider('vf_zoom', 'Yakınlaştırma', 1, 2.5, 0.01, v.frame.zoom, (x) => { v.frame.zoom = x; requestDraw(); }),
+      slider('vf_zoom', 'Yakınlaştırma', 0.8, 2.5, 0.01, v.frame.zoom, (x) => { v.frame.zoom = x; requestDraw(); }),
       slider('vf_px', 'Yatay kaydırma', -0.6, 0.6, 0.01, v.frame.px, (x) => { v.frame.px = x; requestDraw(); }),
-      slider('vf_py', 'Dikey kaydırma', -0.4, 0.4, 0.01, v.frame.py, (x) => { v.frame.py = x; requestDraw(); }));
+      slider('vf_py', 'Dikey kaydırma', -0.4, 0.4, 0.01, v.frame.py, (x) => { v.frame.py = x; requestDraw(); }),
+      slider('vf_roll', 'Yatırma (dutch)', -0.5, 0.5, 0.01, v.frame.roll, (x) => { v.frame.roll = x; requestDraw(); }));
+    $('vMirror').value = v.frame.mirror ? '1' : '0';
     $('vMove').value = v.move;
     fillSelect($('vPalette'), CB.PALETTES.map((p) => [p.id, p.tr]), '', 'Seç…');
     $('vSwatches').replaceChildren(...v.colors.map((c, i) => {
@@ -465,13 +471,68 @@
     busy('');
   }
 
+  const fastMp4 = () => typeof window.VideoEncoder !== 'undefined' && typeof window.VideoFrame !== 'undefined' && !!window.Mp4Muxer;
+  /* H.264 en uyumlusu; yoksa MP4 içinde VP9 ya da AV1 */
+  async function pickCodec(w, h, fps, bitrate) {
+    const list = [['avc1.640034', 'avc'], ['avc1.4d0034', 'avc'], ['avc1.640028', 'avc'], ['avc1.42003e', 'avc'], ['vp09.00.51.08', 'vp9'], ['vp09.00.41.08', 'vp9'], ['av01.0.12M.08', 'av1'], ['av01.0.08M.08', 'av1']];
+    for (const [codec, mux] of list) {
+      try { const r = await VideoEncoder.isConfigSupported({ codec, width: w, height: h, bitrate, framerate: fps }); if (r && r.supported) return { codec, mux }; } catch (e) { /* sıradaki */ }
+    }
+    return null;
+  }
+  async function encodeMp4(v, w, h, fps, dur, loop) {
+    const bitrate = Math.round(Math.min(60e6, w * h * fps * 0.12));
+    const pick = await pickCodec(w, h, fps, bitrate);
+    if (!pick) return null;
+    const codec = pick.codec;
+    const muxer = new Mp4Muxer.Muxer({ target: new Mp4Muxer.ArrayBufferTarget(), video: { codec: pick.mux, width: w, height: h, frameRate: fps }, fastStart: 'in-memory' });
+    let err = null;
+    const enc = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { err = e; } });
+    enc.configure({ codec, width: w, height: h, bitrate, framerate: fps });
+    const X = exportRenderer();
+    const comp = titleOn() ? composite(X.canvas, w, h) : null;
+    const N = Math.round(dur * fps), t0 = loop ? 0 : S.t;
+    for (let i = 0; i < N; i++) {
+      if (err) throw err;
+      const tt = i / fps;
+      X.render(rstate(v, S.seed, progress(v, tt, dur, loop)), w, h, t0 + tt, loop ? { length: dur } : null);
+      let src = X.canvas;
+      if (comp) { const c2 = comp.getContext('2d'); c2.drawImage(X.canvas, 0, 0); drawTitle(c2, w, h); src = comp; }
+      const frame = new VideoFrame(src, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) });
+      enc.encode(frame, { keyFrame: i % (fps * 2) === 0 });
+      frame.close();
+      while (enc.encodeQueueSize > 6) await new Promise((r) => setTimeout(r, 2));
+      if (i % 5 === 0) { busy(el('span', null, el('span', { class: 'recdot' }), `MP4 ${w}×${h} · kare ${i + 1} / ${N}`)); await new Promise((r) => setTimeout(r, 0)); }
+    }
+    await enc.flush();
+    if (err) throw err;
+    muxer.finalize();
+    return new Blob([muxer.target.buffer], { type: 'video/mp4' });
+  }
+
   let recording = false;
   async function recordVideo() {
+    if (R && !recording && fastMp4()) {
+      const dur = +$('vDur').value, loop = $('vLoop').value === '1', fps = +$('vFps').value;
+      const { w, h } = sizeFor(+$('vRes').value, aspect().r);
+      recording = true; $('btnVideo').classList.add('on');
+      try {
+        const blob = await encodeMp4(S.visual, w, h, fps, dur, loop);
+        if (blob) {
+          await saveFile(blob, `cinebg_${slug(S.cat.tr)}_${CB.specCode(S.spec)}_${w}x${h}_${fps}fps_${dur}s.mp4`);
+          return;
+        }
+      } catch (e) { toast('Hızlı MP4 başarısız, gerçek zamanlı kayda geçiliyor'); }
+      finally { recording = false; $('btnVideo').classList.remove('on'); busy(''); exportRenderer().releaseTargets(); }
+    }
+    return recordRealtime();
+  }
+  async function recordRealtime() {
     if (!R) return toast('Bu cihazda video üretilemiyor');
     if (recording) return;
     if (typeof MediaRecorder === 'undefined') return toast('Bu tarayıcı video kaydını desteklemiyor');
     const dur = +$('vDur').value, loop = $('vLoop').value === '1';
-    const { w, h } = sizeFor(+$('vRes').value, aspect().r);
+    const { w, h } = sizeFor(Math.min(+$('vRes').value, 1440), aspect().r);
     const X = exportRenderer();
     const v = S.visual;
     X.render(rstate(v, S.seed, 0), w, h, 0, loop ? { length: dur } : null);
@@ -479,7 +540,7 @@
     const types = ['video/mp4;codecs=avc1.640028', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     const mime = types.find((t) => MediaRecorder.isTypeSupported(t));
     if (!mime) return toast('Video biçimi desteklenmiyor');
-    let stream; try { stream = (comp || X.canvas).captureStream(30); } catch (e) { return toast('Video yakalanamadı'); }
+    let stream; try { stream = (comp || X.canvas).captureStream(+$('vFps').value); } catch (e) { return toast('Video yakalanamadı'); }
     const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: h >= 1080 ? 16e6 : 8e6 });
     const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     recording = true; $('btnVideo').classList.add('on');
@@ -511,7 +572,7 @@
     return Object.assign(extra || {}, {
       kod: CB.specCode(spec), grup: spec.group.tr, kategori: cat.tr, baglam: CTX_TR[spec.ctx], saat: spec.time.tr, hava: spec.weather.tr,
       kamera: spec.camera.tr, palet: spec.palette.tr, grade: CB.GRADES[spec.gradeId].tr,
-      soul_cinema: p.soul, oneshot: p.oneshot, ters_aci: p.reverse, referans_sayfasi: p.refsheet, midjourney: p.mj, video: p.video,
+      soul_cinema: p.soul, oneshot: p.oneshot, referanstan_aci: p.fromRef, ters_aci: p.reverse, referans_sayfasi: p.refsheet, midjourney: p.mj, video: p.video,
     });
   }
   function toCSV(rows) {
@@ -521,7 +582,7 @@
     return '﻿' + [keys.join(','), ...rows.map((r) => keys.map((k) => esc(r[k])).join(','))].join('\r\n');
   }
   function toTXT(rows) {
-    return rows.map((r, i) => `#${i + 1} ${r.sahne ? r.sahne + ' — ' : ''}${r.kod} — ${r.kategori} (${r.grup})\n${r.saat} · ${r.hava} · ${r.kamera} · ${r.grade}${r.not ? '\nNot: ' + r.not : ''}\n\n[Soul Cinema]\n${r.soul_cinema}\n\n[ONE SHOT]\n${r.oneshot}\n\n[Ters açı]\n${r.ters_aci}\n\n[Midjourney]\n${r.midjourney}\n\n[Video]\n${r.video}\n`).join('\n' + '='.repeat(72) + '\n\n');
+    return rows.map((r, i) => `#${i + 1} ${r.sahne ? r.sahne + ' — ' : ''}${r.varyant ? r.varyant + ' — ' : ''}${r.kod} — ${r.kategori} (${r.grup})\n${r.saat} · ${r.hava} · ${r.kamera} · ${r.grade}${r.not ? '\nNot: ' + r.not : ''}\n\n[Soul Cinema]\n${r.soul_cinema}\n\n[ONE SHOT]\n${r.oneshot}\n\n[Referanstan bu açı · NBP / GPT Image 2]\n${r.referanstan_aci}\n\n[Ters açı]\n${r.ters_aci}\n\n[Midjourney]\n${r.midjourney}\n\n[Video]\n${r.video}\n`).join('\n' + '='.repeat(72) + '\n\n');
   }
   const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
   async function zipItems(items, label) {
@@ -565,12 +626,12 @@
       const cat = P[Math.floor(Math.random() * P.length)];
       const seed = newSeed();
       const spec = CB.makeSpec(cat, seed, S.ov);
-      const item = { cat, seed, spec, visual: visualFromSpec(spec), thumb: '' };
+      const item = { cat, seed, spec, ov: clone(S.ov), visual: visualFromSpec(spec), thumb: '' };
       if (R) {
         try { const X = exportRenderer(); X.render(rstate(item.visual, seed, 0), tw, th, spec.time0); item.thumb = X.canvas.toDataURL('image/jpeg', 0.8); } catch (e) { item.thumb = ''; }
       }
       S.batch.push(item);
-      $('sheetGrid').append(el('button', { type: 'button', class: 'tile', onclick: () => { $('sheet').hidden = true; load(item.cat, item.seed, true, item.visual); } },
+      $('sheetGrid').append(el('button', { type: 'button', class: 'tile', onclick: () => { $('sheet').hidden = true; S.ov = clone(item.ov); load(item.cat, item.seed, true, item.visual); syncOverrides(); } },
         el('img', item.thumb ? { src: item.thumb, alt: cat.tr } : { alt: '' }),
         el('div', null, el('b', { text: cat.tr }), el('span', { text: `${CB.specCode(spec)} · ${spec.time.tr} · ${spec.weather.tr}` }))));
       $('sheetProg').style.width = ((i + 1) / n) * 100 + '%';
@@ -579,7 +640,122 @@
     }
     if (RX) RX.releaseTargets();
   }
-  const batchItems = () => S.batch.map((b) => ({ visual: b.visual, seed: b.seed, t: b.spec.time0, name: b.cat.tr, code: CB.specCode(b.spec), row: rowOf(b.cat, b.seed, S.ov) }));
+  const batchItems = () => S.batch.map((b) => ({ visual: b.visual, seed: b.seed, t: b.spec.time0, name: b.label ? `${b.cat.tr} ${b.label}` : b.cat.tr, label: b.label || b.cat.tr, code: CB.specCode(b.spec), row: rowOf(b.cat, b.seed, b.ov || S.ov, b.label ? { varyant: b.label } : undefined) }));
+
+  /* ---------------- set üretimi: aynı sahne, farklı açı / saat / hava ---------------- */
+  const SET_TR = { angles: 'Açı seti', times: 'Saat seti', weathers: 'Hava seti' };
+  async function runSet(mode) {
+    const run = ++batchRun;
+    S.batch = [];
+    const ctx = tctxOf(S.spec);
+    const variants = mode === 'angles' ? CB.camerasFor(S.spec.ctx).map((c) => ({ key: 'camera', id: c.id, label: c.tr }))
+      : mode === 'times' ? CB.TIMES[ctx].map((t) => ({ key: 'time', id: t.id, label: t.tr }))
+        : CB.WEATHER[ctx].map((w) => ({ key: 'weather', id: w.id, label: w.tr }));
+    $('sheet').hidden = false; $('sheetGrid').replaceChildren();
+    $('sheetTitle').textContent = `${SET_TR[mode]} · ${S.cat.tr}`;
+    const a = aspect(); const tw = 320, th = Math.round(320 / Math.max(a.r, 0.6));
+    const base = clone(S.visual);
+    for (let i = 0; i < variants.length; i++) {
+      if (run !== batchRun || $('sheet').hidden) return;
+      const vr = variants[i];
+      const ov = Object.assign({}, S.ov, { [vr.key]: vr.id });
+      const spec = CB.makeSpec(S.cat, S.seed, ov);
+      let visual;
+      if (mode === 'angles') { visual = clone(base); visual.frame = frameFromCamera(spec.camera); }
+      else { visual = visualFromSpec(spec); visual.frame = clone(base.frame); visual.move = base.move; }
+      const item = { cat: S.cat, seed: S.seed, spec, ov, visual, label: vr.label, thumb: '' };
+      if (R) {
+        try { const X = exportRenderer(); X.render(rstate(visual, S.seed, 0), tw, th, spec.time0); item.thumb = X.canvas.toDataURL('image/jpeg', 0.8); } catch (e) { item.thumb = ''; }
+      }
+      S.batch.push(item);
+      $('sheetGrid').append(el('button', { type: 'button', class: 'tile', onclick: () => { $('sheet').hidden = true; S.ov = clone(ov); store.set('ov', S.ov); load(item.cat, item.seed, true, item.visual); syncOverrides(); } },
+        el('img', item.thumb ? { src: item.thumb, alt: vr.label } : { alt: '' }),
+        el('div', null, el('b', { text: `${i + 1}. ${vr.label}` }), el('span', { text: `${spec.camera.lens} · ${spec.time.tr} · ${spec.weather.tr}` }))));
+      $('sheetProg').style.width = ((i + 1) / variants.length) * 100 + '%';
+      $('sheetInfo').textContent = `${i + 1} / ${variants.length}`;
+      await new Promise((r) => requestAnimationFrame(() => r()));
+    }
+    if (RX) RX.releaseTargets();
+  }
+
+  /* kontakt sayfası: setin tamamı tek PNG */
+  async function contactSheet() {
+    const items = batchItems(); if (!items.length) return;
+    if (!R) return toast('Bu cihazda görsel üretilemiyor');
+    const a = aspect();
+    const cols = items.length <= 4 ? 2 : items.length <= 9 ? 3 : 4;
+    const cw = 640, ch = Math.round(cw / Math.max(a.r, 0.6)), pad = 28, lab = 54, head = 110;
+    const rowsN = Math.ceil(items.length / cols);
+    const W = cols * cw + (cols + 1) * pad, H = head + rowsN * (ch + lab + pad) + pad;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#0e0d0c'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ece6dc'; ctx.font = "800 46px 'Big Shoulders Display', 'Arial Narrow', sans-serif"; ctx.textBaseline = 'top';
+    ctx.fillText($('sheetTitle').textContent.toLocaleUpperCase('tr'), pad, 30);
+    ctx.fillStyle = '#f0a04b'; ctx.font = "600 20px 'IBM Plex Mono', monospace";
+    ctx.fillText(`${items[0].code} · CineBG Studio · ${new Date().toLocaleDateString('tr-TR')}`, pad, 82);
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      busy(`Kontakt sayfası ${i + 1} / ${items.length}`);
+      await new Promise((r) => setTimeout(r, 0));
+      const X = exportRenderer(); X.render(rstate(it.visual, it.seed, 0), cw, ch, it.t);
+      const x = pad + (i % cols) * (cw + pad), y = head + Math.floor(i / cols) * (ch + lab + pad);
+      ctx.drawImage(X.canvas, x, y, cw, ch);
+      ctx.fillStyle = '#ece6dc'; ctx.font = "600 22px 'IBM Plex Sans', Arial, sans-serif";
+      ctx.fillText(`${i + 1}. ${it.label}`, x, y + ch + 10);
+      ctx.fillStyle = '#a0968a'; ctx.font = "500 15px 'IBM Plex Mono', monospace";
+      ctx.fillText(`${it.row.kamera} · ${it.row.saat} · ${it.row.hava}`, x, y + ch + 36);
+    }
+    exportRenderer().releaseTargets();
+    busy('');
+    c.toBlob((b) => b && saveFile(b, `cinebg_kontakt_${slug(S.cat.tr)}_${stamp()}.png`), 'image/png');
+  }
+
+  /* ---------------- referans görselden palet ---------------- */
+  const NAMED = [['#0b0b0b', 'ink black'], ['#2b2b2b', 'charcoal'], ['#5a5a5a', 'slate grey'], ['#9a9a9a', 'silver grey'], ['#e8e4dc', 'bone white'], ['#ffffff', 'pure white'],
+    ['#f2e6d0', 'cream'], ['#d9c3a5', 'sand beige'], ['#a67b5b', 'tan brown'], ['#6b4226', 'chocolate brown'], ['#3d2314', 'dark umber'], ['#c2572f', 'burnt orange'],
+    ['#e8873a', 'tangerine'], ['#f4c15d', 'golden yellow'], ['#ffe9a8', 'pale butter'], ['#b5452a', 'rust red'], ['#8b1e2e', 'oxblood'], ['#d7263d', 'crimson'],
+    ['#f4a6b8', 'blush pink'], ['#e05b8b', 'rose'], ['#8e3b8f', 'plum'], ['#5a2d82', 'deep violet'], ['#b8a1e6', 'lavender'], ['#1d2a6b', 'navy'],
+    ['#2f5bd3', 'cobalt blue'], ['#6fa8dc', 'sky blue'], ['#a8d8f0', 'ice blue'], ['#0f4c5c', 'petrol teal'], ['#22a39f', 'teal'], ['#7fd1c2', 'mint'],
+    ['#1e4d2b', 'forest green'], ['#4f7942', 'fern green'], ['#9bbf6b', 'sage'], ['#c9d86a', 'lime'], ['#55603a', 'olive'], ['#d4af37', 'antique gold'], ['#b87333', 'copper']];
+  const hexRgb = (h) => [1, 3, 5].map((i) => parseInt(h.substr(i, 2), 16));
+  const rgbHex = (c) => '#' + c.map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+  const nameOf = (rgb) => NAMED.reduce((b, n) => { const q = hexRgb(n[0]); const d = (q[0] - rgb[0]) ** 2 * 0.3 + (q[1] - rgb[1]) ** 2 * 0.59 + (q[2] - rgb[2]) ** 2 * 0.11; return d < b[0] ? [d, n[1]] : b; }, [Infinity, ''])[1];
+  function paletteFromImage(img) {
+    const c = document.createElement('canvas'); c.width = 96; c.height = 96;
+    const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 96, 96);
+    const d = ctx.getImageData(0, 0, 96, 96).data; const px = [];
+    for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) px.push([d[i], d[i + 1], d[i + 2]]);
+    const lum = (p) => 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2];
+    px.sort((a, b) => lum(a) - lum(b));
+    let cent = [0.08, 0.35, 0.65, 0.92].map((q) => px[Math.floor(q * (px.length - 1))].slice());
+    for (let it = 0; it < 10; it++) {
+      const acc = cent.map(() => [0, 0, 0, 0]);
+      px.forEach((p) => { let bi = 0, bd = Infinity; cent.forEach((c2, j) => { const dd = (c2[0] - p[0]) ** 2 + (c2[1] - p[1]) ** 2 + (c2[2] - p[2]) ** 2; if (dd < bd) { bd = dd; bi = j; } }); const a2 = acc[bi]; a2[0] += p[0]; a2[1] += p[1]; a2[2] += p[2]; a2[3]++; });
+      cent = cent.map((c2, j) => (acc[j][3] ? acc[j].slice(0, 3).map((x) => x / acc[j][3]) : c2));
+    }
+    const sat = (p) => Math.max(...p) - Math.min(...p);
+    cent.sort((a, b) => lum(a) - lum(b));
+    const deep = cent[0], light = cent[3];
+    const mid2 = [cent[1], cent[2]].sort((a, b) => sat(b) - sat(a));
+    const cols = [deep, mid2[1], light, mid2[0]];
+    return { id: 'ref', tr: 'Referans görsel', c: cols.map(rgbHex), w: cols.map(nameOf), tags: [] };
+  }
+  function applyRefPalette(pal) {
+    const i = CB.PALETTES.findIndex((p) => p.id === 'ref');
+    if (i >= 0) CB.PALETTES[i] = pal; else CB.PALETTES.push(pal);
+    store.set('refPal', pal);
+    S.ov.palette = 'ref'; store.set('ov', S.ov);
+    rebuildSpec(); syncOverrides();
+    $('refInfo').textContent = `Uygulandı: ${pal.w.join(', ')}. "Palet" kilidi "Referans görsel" olarak ayarlandı.`;
+    toast('Referans paleti uygulandı');
+  }
+  function loadRefImage(file) {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { try { applyRefPalette(paletteFromImage(img)); } catch (e) { toast('Görsel okunamadı'); } URL.revokeObjectURL(url); };
+    img.onerror = () => { toast('Görsel açılamadı'); URL.revokeObjectURL(url); };
+    img.src = url;
+  }
 
   /* ---------------- proje ---------------- */
   function saveProject() { store.set('project', S.project); $('projCount').textContent = String(S.project.shots.length); }
@@ -703,6 +879,11 @@
     $('btnFav').onclick = toggleFav;
     $('btnProj').onclick = addToProject;
     $('btnVar').onclick = () => runBatch(12, 'cat');
+    $('btnSet').onclick = () => runSet('angles');
+    $('btnSet2').onclick = () => runSet($('setMode').value);
+    $('bContact').onclick = contactSheet;
+    $('refImg').addEventListener('change', () => { const f = $('refImg').files[0]; if (f) loadRefImage(f); $('refImg').value = ''; });
+    $('vMirror').onchange = () => { S.visual.frame.mirror = $('vMirror').value === '1'; requestDraw(); };
     $('btnAnim').onclick = () => setAnim(!S.animating);
     $('btnFlow').onclick = () => setFlow(!S.flow);
     $('btnDl').onclick = exportImage;
@@ -772,6 +953,7 @@
       else if (k === 'f') toggleFav();
       else if (k === 'p') addToProject();
       else if (k === 'v') runBatch(12, 'cat');
+      else if (k === 's') runSet('angles');
       else if (k === 'a') setAnim(!S.animating);
       else if (k === 'd') exportImage();
       else if (k === 'c') copy(S.prompts.soul, 'Soul Cinema promptu');
@@ -786,7 +968,10 @@
     const combos = CB.combinationCount();
     $('counter').replaceChildren(el('b', { text: CB.CATS.length.toLocaleString('tr-TR') }), ' kategori · ', el('b', { text: Object.keys(CB.ENGINES).length + ' motor' }), ' · ',
       el('b', { text: Math.floor(combos / 1e9).toLocaleString('tr-TR') + ' milyar+' }), ' sahne kurgusu');
+    const rp = store.get('refPal', null);
+    if (rp && rp.id === 'ref') CB.PALETTES.push(rp);
     wire();
+    $('encInfo').textContent = fastMp4() ? 'Hızlı MP4 açık: video gerçek zamanı beklemeden kare kare kodlanır. 4K ve 60 fps desteklenir.' : 'Bu tarayıcıda WebCodecs yok. Video gerçek zamanlı kaydedilir (en fazla 1440p).';
     renderGenres();
     syncTitleInputs();
     saveProject(); renderProject();

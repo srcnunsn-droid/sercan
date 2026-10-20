@@ -116,6 +116,7 @@
       gl.uniform4f(prog.u.u_wx2, wx.ash || 0, wx.dust || 0, wx.lightning || 0, wx.leak || 0);
       const cam = s.cam || [1, 0, 0];
       gl.uniform3f(prog.u.u_cam, cam[0], cam[1], cam[2]);
+      gl.uniform1f(prog.u.u_roll, cam[3] || 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.bindTexture(gl.TEXTURE_2D, target.tex);
       gl.generateMipmap(gl.TEXTURE_2D);

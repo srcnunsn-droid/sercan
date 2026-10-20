@@ -1310,7 +1310,7 @@ Uçurum Patikası|cliff path cut into a rock face
   CB.GENRES = [
     { id: 'war', tr: 'Savaş' }, { id: 'scifi', tr: 'Bilimkurgu' }, { id: 'fantasy', tr: 'Fantastik' }, { id: 'horror', tr: 'Korku & Gerilim' },
     { id: 'history', tr: 'Tarihi & Dönem' }, { id: 'nature', tr: 'Doğa' }, { id: 'urban', tr: 'Şehir' }, { id: 'interior', tr: 'İç mekan' },
-    { id: 'space', tr: 'Uzay' }, { id: 'abstract', tr: 'Soyut & Grafik' },
+    { id: 'space', tr: 'Uzay' }, { id: 'abstract', tr: 'Soyut & Grafik' }, { id: 'modern', tr: 'Günümüz' }, { id: 'ads', tr: 'Reklam' },
   ];
   const GENRE_OF = {
     'battle-ancient': ['war', 'history'], 'battle-modern': ['war', 'history'], 'battle-future': ['war', 'scifi'], siege: ['war', 'history', 'fantasy'],

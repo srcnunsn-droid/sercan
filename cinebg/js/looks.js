@@ -124,6 +124,14 @@
     ],
   };
   CB.TIMES.sky = CB.TIMES.ext;
+  CB.TIMES.studio = [
+    { id: 'softbox', tr: 'Softbox anahtar + kontur', en: 'large softbox key from the left with a thin rim light behind, smooth gradient falloff', sun: 0.5, pal: ['day', 'pastel', 'palace'] },
+    { id: 'gobo', tr: 'Güneş + pencere gölgesi', en: 'hard sunlight through a window casting crisp pane shadows across the set', sun: 0.3, pal: ['golden', 'day'] },
+    { id: 'highkey', tr: 'Yüksek anahtar beyaz', en: 'bright high-key light, near-shadowless and airy', sun: 0.8, pal: ['day', 'dawn'] },
+    { id: 'lowkey', tr: 'Düşük anahtar spot', en: 'single narrow top spot on the centre, everything else falling into deep shadow', sun: 0.0, pal: ['night', 'palace', 'fire'] },
+    { id: 'gel', tr: 'Renkli jel ışıkları', en: 'two coloured gel lights, one warm and one cool, crossing on the set', sun: 0.2, pal: ['neon'] },
+    { id: 'golden', tr: 'Altın saat pencere', en: 'warm golden-hour light raking low through a tall window', sun: 0.15, pal: ['golden'] },
+  ];
   CB.TIMES.abstract = [
     { id: 'studio', tr: 'Yumuşak stüdyo ışığı', en: 'soft diffused studio glow from above', sun: 0.5, pal: ['day', 'dawn', 'palace'] },
     { id: 'backlit', tr: 'Arkadan aydınlatma', en: 'strong backlight creating luminous rims and halos', sun: 0.2, pal: ['golden', 'space'] },
@@ -171,6 +179,14 @@
     ],
   };
   CB.WEATHER.sky = CB.WEATHER.ext;
+  CB.WEATHER.studio = [
+    { id: 'clean', tr: 'Temiz set', en: 'clean still set, crisp edges' },
+    { id: 'petals', tr: 'Uçuşan yapraklar', en: 'petals or leaves suspended mid-air around the set' },
+    { id: 'splash', tr: 'Donmuş sıçrama', en: 'liquid splash frozen mid-air beside the podium' },
+    { id: 'hazest', tr: 'Hafif pus', en: 'thin atmospheric haze catching the light' },
+    { id: 'floatgeo', tr: 'Yüzen geometri', en: 'small geometric shapes floating weightlessly' },
+    { id: 'fabric', tr: 'Uçuşan kumaş', en: 'a silk fabric drape caught in motion' },
+  ];
   CB.WEATHER.abstract = [
     { id: 'particles', tr: 'Süzülen parçacıklar', en: 'fine particles drifting slowly through the frame' },
     { id: 'liquid', tr: 'Sıvı pus', en: 'soft liquid haze between layers' },
@@ -250,18 +266,36 @@
     decaying2: { tr: 'Çürüyen', en: 'decaying' },
   };
 
+  /* cam: önizleme kadrajı [yakınlaştırma (eksi = ayna), kaydırma x, kaydırma y, yatırma] — only: yalnızca o bağlamda */
   CB.CAMERAS = [
-    { id: 'est', tr: 'Ultra geniş kuruluş planı', en: 'extreme wide establishing shot from a high vantage point, the whole location visible in one frame', lens: '18mm' },
-    { id: 'low', tr: 'Alçak açı geniş', en: 'low wide shot at knee height looking along the ground toward the far landmark', lens: '24mm' },
-    { id: 'high34', tr: 'Yüksek açı 3/4', en: 'high angle three-quarter wide shot, camera high above looking diagonally down at 45 degrees', lens: '24mm' },
-    { id: 'drone', tr: 'Drone tepeden', en: 'overhead drone view looking straight down onto the location', lens: '24mm' },
-    { id: 'sym', tr: 'Simetrik tek nokta', en: 'eye-level symmetrical one-point perspective with a centred vanishing point', lens: '35mm' },
-    { id: 'tele', tr: 'Teleobjektif sıkıştırma', en: 'long telephoto view from far away, compressing the layers of depth', lens: '135mm' },
-    { id: 'frame', tr: 'Ön plan çerçeveli', en: 'framed through a dark foreground opening toward the brighter space beyond', lens: '35mm' },
-    { id: 'silhouette', tr: 'Siluet ufuk', en: 'wide silhouette shot against the sky, horizon placed in the lower third', lens: '50mm' },
-    { id: 'eye', tr: 'Göz hizası orta-geniş', en: 'eye-level medium-wide shot, natural human viewpoint at 1.7 metres', lens: '35mm' },
-    { id: 'crane', tr: 'Vinç yükselişi', en: 'elevated crane-height view rising above the foreground', lens: '24mm' },
+    { id: 'est', tr: 'Ultra geniş kuruluş planı', en: 'extreme wide establishing shot from a high vantage point, the whole location visible in one frame', lens: '18mm', cam: [1, 0, 0, 0] },
+    { id: 'low', tr: 'Alçak açı geniş', en: 'low wide shot at knee height looking along the ground toward the far landmark', lens: '24mm', cam: [1.05, 0, 0.09, 0] },
+    { id: 'high34', tr: 'Yüksek açı 3/4', en: 'high angle three-quarter wide shot, camera high above looking diagonally down at 45 degrees', lens: '24mm', cam: [1.1, 0.04, -0.12, 0] },
+    { id: 'drone', tr: 'Drone tepeden', en: 'overhead drone view looking straight down onto the location', lens: '24mm', cam: [1.35, 0, -0.2, 0] },
+    { id: 'sym', tr: 'Simetrik tek nokta', en: 'eye-level symmetrical one-point perspective with a centred vanishing point', lens: '35mm', cam: [1, 0, 0, 0] },
+    { id: 'tele', tr: 'Teleobjektif sıkıştırma', en: 'long telephoto view from far away, compressing the layers of depth', lens: '135mm', cam: [1.6, 0, 0.02, 0] },
+    { id: 'frame', tr: 'Ön plan çerçeveli', en: 'framed through a dark foreground opening toward the brighter space beyond', lens: '35mm', cam: [1.12, 0, 0, 0] },
+    { id: 'silhouette', tr: 'Siluet ufuk', en: 'wide silhouette shot against the sky, horizon placed in the lower third', lens: '50mm', cam: [1, 0, 0.12, 0] },
+    { id: 'eye', tr: 'Göz hizası orta-geniş', en: 'eye-level medium-wide shot, natural human viewpoint at 1.7 metres', lens: '35mm', cam: [1.05, 0, 0, 0] },
+    { id: 'crane', tr: 'Vinç yükselişi', en: 'elevated crane-height view rising above the foreground', lens: '24mm', cam: [1.1, 0, -0.06, 0] },
+    { id: 'worm', tr: 'Solucan gözü', en: "worm's-eye view from ground level looking steeply up, ground texture filling the bottom of the frame", lens: '14mm', cam: [0.95, 0, 0.2, 0] },
+    { id: 'bird', tr: 'Kuş bakışı', en: "bird's-eye view from very high above, the whole location laid out like a map at a steep downward angle", lens: '24mm', cam: [1.3, 0, -0.25, 0] },
+    { id: 'dutch', tr: 'Hollanda açısı (eğik)', en: 'dutch angle with the camera rolled fifteen degrees for unease', lens: '35mm', cam: [1.12, 0, 0, 0.26] },
+    { id: 'pov', tr: 'Birinci şahıs POV', en: 'first-person point of view at eye height entering the space, a dark out-of-focus foreground edge on the left', lens: '28mm', cam: [1.08, -0.06, 0.02, 0.02] },
+    { id: 'track', tr: 'Yan takip', en: 'lateral tracking view travelling parallel to the main structure, long horizontal composition', lens: '50mm', cam: [1.15, 0.1, 0, 0] },
+    { id: 'xls', tr: 'Aşırı uzak plan', en: 'extreme long shot from several kilometres away, the location small within a vast landscape', lens: '200mm', cam: [0.82, 0, 0.04, 0] },
+    { id: 'detail', tr: 'Detay yakın plan', en: 'close detail shot of textures in the foreground, the location soft and out of focus behind', lens: '100mm', cam: [2.2, 0.05, -0.08, 0] },
+    { id: 'orbit', tr: 'Havadan 3/4 yörünge', en: 'aerial three-quarter orbit view from about 120 metres up and to the side', lens: '24mm', cam: [1.2, 0.1, -0.15, 0.04] },
+    { id: 'window', tr: 'İçeriden dışarı', en: 'view from inside looking out through a window or doorway, dark interior frame around the bright location', lens: '35mm', cam: [1.15, 0, 0.02, 0] },
+    { id: 'reverse', tr: 'Ters açı', en: 'reverse angle from the far end looking back toward the original camera position, left and right landmarks swapped', lens: '24mm', cam: [-1.05, 0, 0.03, 0], rev: true },
+    { id: 'puddle', tr: 'Yansıma seviyesi', en: 'ground-level shot skimming a wet surface that mirrors the whole scene', lens: '24mm', cam: [1, 0, 0.18, 0] },
+    { id: 'prodfront', tr: 'Ürün önden', en: 'straight-on product shot at podium height, centred and symmetrical', lens: '50mm', cam: [1, 0, 0, 0], only: 'studio' },
+    { id: 'prod34', tr: 'Ürün 3/4 yüksek', en: 'three-quarter high angle product shot looking down at 30 degrees onto the set', lens: '85mm', cam: [1.1, 0.06, -0.08, 0], only: 'studio' },
+    { id: 'prodhero', tr: 'Kahraman alçak açı', en: 'low hero angle from just above the floor looking up at the podium, monumental feel', lens: '35mm', cam: [1.05, 0, 0.14, 0], only: 'studio' },
+    { id: 'flatlay', tr: 'Tepeden flat lay', en: 'top-down flat lay view straight onto the surface, graphic arrangement', lens: '50mm', cam: [1.3, 0, -0.22, 0], only: 'studio' },
+    { id: 'macro', tr: 'Makro doku', en: 'macro close-up on surface textures with shallow depth of field', lens: '100mm macro', cam: [2.2, 0, -0.05, 0], only: 'studio' },
   ];
+
 
   CB.LIGHTS = {
     day: [
@@ -294,6 +328,7 @@
   ];
 
   CB.TECH = {
+    studio: 'Shot on a medium-format digital camera with an 80mm lens at f/8, crisp high-end commercial product photography, clean controlled highlights, true colour',
     film: 'Photorealistic ARRI Alexa LF with anamorphic lenses, organic 35mm Kodak Vision3 250D film grain, soft cinematic falloff, cinematic film still',
     digital: 'Shot on ARRI Alexa Mini LF with Signature Primes, clean modern digital capture, crisp natural detail, minimal fine grain, modern cinematic film still',
   };
