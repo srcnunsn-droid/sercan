@@ -201,7 +201,7 @@
   function pool() { const p = CB.CATS.filter((c) => genreOk(c.group)); return p.length ? p : CB.CATS; }
   function chooseCat() {
     if (S.mode === 'cat' && S.cat) return S.cat;
-    if (S.mode === 'group' && S.cat) { const cs = S.cat.group.cats; return cs[Math.floor(Math.random() * cs.length)]; }
+    if (S.mode === 'group' && S.cat) { const cs = S.cat.group.cats.flatMap((c) => [c, ...(c.vars || [])]); return cs[Math.floor(Math.random() * cs.length)]; }
     const p = pool(); return p[Math.floor(Math.random() * p.length)];
   }
   function generate() { load(chooseCat(), newSeed(), true); }
@@ -225,7 +225,8 @@
     const i = S.hIndex + d; if (i < 0 || i >= S.history.length) return;
     S.hIndex = i; openEntry(S.history[i], false);
   }
-  const catById = (id) => CB.CATS.find((c) => c.id === id);
+  const CAT_MAP = new Map(CB.CATS.map((c) => [c.id, c]));
+  const catById = (id) => CAT_MAP.get(id);
   function openEntry(e, push) {
     const cat = catById(e.cat); if (!cat) return toast('Bu kategori bulunamadı');
     S.ov = clone(e.ov || S.ov); syncOverrides();
@@ -243,29 +244,46 @@
   function renderCatalog() {
     const q = $('search').value.trim().toLocaleLowerCase('tr');
     const box = $('groups'); box.replaceChildren();
-    let shown = 0;
+    const hit = (c, g) => (c.tr + ' ' + c.en + ' ' + g.tr).toLocaleLowerCase('tr').includes(q);
+    const curBase = S.cat ? S.cat.base || S.cat : null;
+    const CAP = 700; // çok genel aramalarda DOM'u şişirmemek için
+    let shown = 0, drawn = 0;
+    const item = (c, cls) => el('li', { class: cls || null }, el('button', { type: 'button', class: S.cat === c ? 'cur' : '', title: c.en, text: cls ? '↳ ' + c.q.tr : c.tr, onclick: () => { load(c, newSeed(), true); } }));
     CB.GROUPS.forEach((g) => {
       if (!genreOk(g)) return;
-      const cats = q ? g.cats.filter((c) => (c.tr + ' ' + c.en + ' ' + g.tr).toLocaleLowerCase('tr').includes(q)) : g.cats;
-      if (!cats.length) return;
-      shown += cats.length;
+      const rows = [];
+      g.cats.forEach((c) => {
+        const vars = c.vars || [];
+        const baseHit = !q || hit(c, g);
+        const vHits = q ? (baseHit ? vars.filter((v) => hit(v, g) || c === curBase) : vars.filter((v) => hit(v, g))) : c === curBase ? vars : [];
+        if (!baseHit && !vHits.length) return;
+        rows.push([c, vHits, baseHit]);
+        shown += (baseHit ? 1 : 0) + (q ? vHits.length : 0);
+      });
+      if (!rows.length) return;
+      const n = q ? rows.reduce((a, [, v, b]) => a + v.length + (b ? 1 : 0), 0) : g.cats.length * 5;
       const open = q || openGroups.has(g.id);
       const head = el('button', { type: 'button', 'aria-expanded': open ? 'true' : 'false', onclick: () => { openGroups.has(g.id) ? openGroups.delete(g.id) : openGroups.add(g.id); renderCatalog(); } },
-        el('span', { class: 'chev', text: '▸' }), el('span', { text: g.tr }), el('span', { class: 'n', text: String(cats.length) }));
+        el('span', { class: 'chev', text: '▸' }), el('span', { text: g.tr }), el('span', { class: 'n', text: String(n) }));
       const wrap = el('div', { class: 'group' + (open ? ' open' : '') }, head);
-      if (open) {
+      if (open && drawn < CAP) {
         const ul = el('ul');
-        cats.forEach((c) => ul.append(el('li', null, el('button', { type: 'button', class: S.cat === c ? 'cur' : '', title: c.en, text: c.tr, onclick: () => { load(c, newSeed(), true); } }))));
+        rows.forEach(([c, vHits]) => {
+          if (drawn >= CAP) return;
+          ul.append(item(c)); drawn++;
+          vHits.forEach((v) => { ul.append(item(v, 'var')); drawn++; });
+        });
         wrap.append(ul);
       }
       box.append(wrap);
     });
     if (!shown) box.append(el('p', { class: 'hint', style: 'padding:14px', text: 'Eşleşen mekan yok. Başka bir kelime dene ya da tür filtresini temizle.' }));
+    else if (drawn >= CAP) box.append(el('p', { class: 'hint', style: 'padding:14px', text: `İlk ${CAP} sonuç gösteriliyor. Aramayı daralt.` }));
     const total = q || S.genres.size ? `${shown.toLocaleString('tr-TR')} sonuç` : `${CB.CATS.length.toLocaleString('tr-TR')} kategori · ${CB.GROUPS.length} grup`;
     $('catCount').textContent = total;
   }
   function markCurrent() {
-    if (S.cat && !openGroups.has(S.cat.group.id) && !$('search').value) openGroups.add(S.cat.group.id);
+    if (S.cat) openGroups.add(S.cat.group.id);
     renderCatalog();
   }
 
@@ -643,14 +661,17 @@
   const batchItems = () => S.batch.map((b) => ({ visual: b.visual, seed: b.seed, t: b.spec.time0, name: b.label ? `${b.cat.tr} ${b.label}` : b.cat.tr, label: b.label || b.cat.tr, code: CB.specCode(b.spec), row: rowOf(b.cat, b.seed, b.ov || S.ov, b.label ? { varyant: b.label } : undefined) }));
 
   /* ---------------- set üretimi: aynı sahne, farklı açı / saat / hava ---------------- */
-  const SET_TR = { angles: 'Açı seti', times: 'Saat seti', weathers: 'Hava seti' };
+  const SET_TR = { angles: 'Açı seti', times: 'Saat seti', weathers: 'Hava seti', variants: 'Varyant seti', grades: 'Film stoğu seti' };
   async function runSet(mode) {
     const run = ++batchRun;
     S.batch = [];
     const ctx = tctxOf(S.spec);
+    const bc = S.cat.base || S.cat;
     const variants = mode === 'angles' ? CB.camerasFor(S.spec.ctx).map((c) => ({ key: 'camera', id: c.id, label: c.tr }))
       : mode === 'times' ? CB.TIMES[ctx].map((t) => ({ key: 'time', id: t.id, label: t.tr }))
-        : CB.WEATHER[ctx].map((w) => ({ key: 'weather', id: w.id, label: w.tr }));
+        : mode === 'variants' ? [bc, ...(bc.vars || [])].map((c) => ({ cat: c, label: c.q ? c.q.tr : 'Temel mekân' }))
+          : mode === 'grades' ? Object.entries(CB.GRADES).map(([id, g]) => ({ key: 'grade', id, label: g.tr }))
+            : CB.WEATHER[ctx].map((w) => ({ key: 'weather', id: w.id, label: w.tr }));
     $('sheet').hidden = false; $('sheetGrid').replaceChildren();
     $('sheetTitle').textContent = `${SET_TR[mode]} · ${S.cat.tr}`;
     const a = aspect(); const tw = 320, th = Math.round(320 / Math.max(a.r, 0.6));
@@ -658,12 +679,14 @@
     for (let i = 0; i < variants.length; i++) {
       if (run !== batchRun || $('sheet').hidden) return;
       const vr = variants[i];
-      const ov = Object.assign({}, S.ov, { [vr.key]: vr.id });
-      const spec = CB.makeSpec(S.cat, S.seed, ov);
+      const ov = vr.key ? Object.assign({}, S.ov, { [vr.key]: vr.id }) : clone(S.ov);
+      const vcat = vr.cat || S.cat;
+      const spec = CB.makeSpec(vcat, S.seed, ov);
       let visual;
       if (mode === 'angles') { visual = clone(base); visual.frame = frameFromCamera(spec.camera); }
       else { visual = visualFromSpec(spec); visual.frame = clone(base.frame); visual.move = base.move; }
-      const item = { cat: S.cat, seed: S.seed, spec, ov, visual, label: vr.label, thumb: '' };
+      if (mode === 'grades') { visual = clone(base); const g = CB.GRADES[vr.id]; visual.look = lookFrom(g); visual.gradeId = vr.id; }
+      const item = { cat: vcat, seed: S.seed, spec, ov, visual, label: vr.label, thumb: '' };
       if (R) {
         try { const X = exportRenderer(); X.render(rstate(visual, S.seed, 0), tw, th, spec.time0); item.thumb = X.canvas.toDataURL('image/jpeg', 0.8); } catch (e) { item.thumb = ''; }
       }
@@ -832,11 +855,12 @@
 
   /* ---------------- kod ile aç ---------------- */
   function openCode(code) {
-    const m = /^CB-(\d{2})(\d{2})-([0-9A-Z]+)$/i.exec(code.trim());
-    if (!m) return toast('Kod biçimi: CB-0103-1A2B3C');
-    const g = CB.GROUPS[+m[1] - 1]; const c = g && g.cats[+m[2] - 1];
+    const m = /^CB-(\d{2})(\d{2})([a-d])?-([0-9A-Z]+)$/i.exec(code.trim());
+    if (!m) return toast('Kod biçimi: CB-0103-1A2B3C ya da varyant için CB-0103b-1A2B3C');
+    const g = CB.GROUPS[+m[1] - 1]; const b = g && g.cats[+m[2] - 1];
+    const c = b && m[3] ? b.vars['abcd'.indexOf(m[3].toLowerCase())] : b;
     if (!c) return toast('Bu koda ait kategori bulunamadı');
-    load(c, parseInt(m[3], 36), true);
+    load(c, parseInt(m[4], 36), true);
     toast('Açıldı: ' + c.tr);
   }
 
@@ -931,7 +955,8 @@
     };
     $('vMove').onchange = () => { S.visual.move = S.move = $('vMove').value; store.set('move', S.move); S.tStart = S.t; requestDraw(); };
     $('vPalette').onchange = () => { const p = CB.PALETTES.find((x) => x.id === $('vPalette').value); if (p) { S.visual.colors = p.c.slice(); renderVisual(); draw(); } };
-    $('btnPalRnd').onclick = () => { const p = CB.PALETTES[Math.floor(Math.random() * CB.PALETTES.length)]; S.visual.colors = p.c.slice(); renderVisual(); draw(); toast('Palet: ' + p.tr); };
+    // yarı yarıya: kütüphaneden bir palet ya da renk teorisiyle sıfırdan üretilmiş yeni bir palet
+    $('btnPalRnd').onclick = () => { const p = Math.random() < 0.5 && CB.randomPalette ? CB.randomPalette((Math.random() * 4294967296) >>> 0) : CB.PALETTES[Math.floor(Math.random() * CB.PALETTES.length)]; S.visual.colors = p.c.slice(); renderVisual(); draw(); toast('Palet: ' + p.tr + (p.id === 'rnd' ? ' · ' + p.w.join(', ') : '')); };
     $('vGrade').onchange = () => { S.visual.gradeId = $('vGrade').value; S.visual.look = lookFrom(CB.GRADES[S.visual.gradeId]); renderVisual(); draw(); };
     $('vBars').onchange = () => { S.bars = +$('vBars').value; draw(); };
     $('vGuides').onchange = () => { $('guides').hidden = $('vGuides').value !== '1'; };
@@ -989,7 +1014,7 @@
   function init() {
     const combos = CB.combinationCount();
     $('counter').replaceChildren(el('b', { text: CB.CATS.length.toLocaleString('tr-TR') }), ' kategori · ', el('b', { text: Object.keys(CB.ENGINES).length + ' motor' }), ' · ',
-      el('b', { text: Math.floor(combos / 1e9).toLocaleString('tr-TR') + ' milyar+' }), ' sahne kurgusu');
+      el('b', { text: combos >= 1e12 ? Math.floor(combos / 1e12).toLocaleString('tr-TR') + ' trilyon+' : Math.floor(combos / 1e9).toLocaleString('tr-TR') + ' milyar+' }), ' sahne kurgusu');
     const rp = store.get('refPal', null);
     if (rp && rp.id === 'ref') CB.PALETTES.push(rp);
     wire();

@@ -97,6 +97,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .group li button:hover { color: var(--text); background: var(--panel-2); }
 .group li button.cur { color: var(--accent); background: var(--accent-soft); }
+.group li.var button { padding-left: 38px; font-size: 12.5px; color: var(--dim); }
+.group li.var button.cur { color: var(--accent); }
 
 /* ---------- sahne monitörü ---------- */
 .stage-wrap { grid-area: stage; display: flex; flex-direction: column; min-height: 0; min-width: 0; }
@@ -274,7 +276,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .views button + button { border-left: 1px solid var(--line-2); }
 .views button.on { background: var(--accent); color: var(--accent-ink); }
 .app[data-view='char'] .catalog, .app[data-view='char'] .stage-wrap, .app[data-view='char'] .insp, .app[data-view='char'] .mtabs,
-.app[data-view='contest'] .catalog, .app[data-view='contest'] .stage-wrap, .app[data-view='contest'] .insp, .app[data-view='contest'] .mtabs { display: none; }
+.app[data-view='contest'] .catalog, .app[data-view='contest'] .stage-wrap, .app[data-view='contest'] .insp, .app[data-view='contest'] .mtabs,
+.app[data-view='dir'] .catalog, .app[data-view='dir'] .stage-wrap, .app[data-view='dir'] .insp, .app[data-view='dir'] .mtabs { display: none; }
+.studio-grid.dir { grid-template-columns: 280px minmax(0, 1fr); }
 .studio { grid-row: 2; grid-column: 1 / -1; min-height: 0; display: flex; }
 .studio-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(0, 1fr) 440px; }
 .scol { overflow: auto; padding: 16px; display: grid; gap: 18px; align-content: start; border-right: 1px solid var(--line); background: var(--panel); min-width: 0; }
@@ -307,7 +311,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .studio { grid-area: studio; display: block; }
   .studio-grid { display: block; }
   .scol { overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-  .app[data-view='char'], .app[data-view='contest'] { grid-template-areas: 'top' 'studio'; }
+  .app[data-view='char'], .app[data-view='contest'], .app[data-view='dir'] { grid-template-areas: 'top' 'studio'; }
 }
 @media (max-width: 520px) {
   .top { flex-wrap: wrap; }

@@ -492,7 +492,9 @@
     $('studio').hidden = v === 'bg';
     $('chView').hidden = v !== 'char';
     $('ctView').hidden = v !== 'contest';
+    $('dirView').hidden = v !== 'dir';
     if (v === 'char') renderChar();
+    if (v === 'dir' && CB.DIR) CB.DIR.render();
     if (v === 'contest') renderContest();
     if (v === 'bg') requestAnimationFrame(() => CB.app.redraw());
     store.set('view', v);
@@ -502,7 +504,7 @@
     document.querySelectorAll('#views button').forEach((b) => { b.onclick = () => setView(b.dataset.view); });
     if (!ST.chars.length) { const c = randomChar(20261020, 'ceo'); c.name = 'Arda'; ST.chars.push(c); ST.cur = c.id; save(); }
     const v = store.get('view', 'bg');
-    setView(['bg', 'char', 'contest'].includes(v) ? v : 'bg');
+    setView(['bg', 'char', 'contest', 'dir'].includes(v) ? v : 'bg');
   }
   CB.studio = { setView, sheets, randomChar };
   init();

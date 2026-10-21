@@ -66,9 +66,12 @@
   };
   CB.locText = function (cat) {
     const h = HINT[cat.group.id];
-    return h && cat.en.split(' ').length <= 5 ? `${cat.en} ${h}` : cat.en;
+    const b = cat.base || cat;
+    const t = h && b.en.split(' ').length <= 5 ? `${b.en} ${h}` : b.en;
+    return cat.q ? `${t}, ${cat.q.en}` : t;
   };
-  const HOOKS = {
+  const HOOKS = (CB.ENGINE_HOOKS = CB.ENGINE_HOOKS || {});
+  Object.assign(HOOKS, {
     podium: (p, s) => { p[4] = /gobo|golden/.test(s.time.id) ? rr(s.r, 0.45, 0.85) : 0; p[6] = s.time.id === 'lowkey' ? 0.15 : p[6]; },
     clouds: (p, s) => { p[2] = s.time.sun * 0.9; },
     rainglass: (p, s) => { p[1] = /rain|drizzle/.test(s.weather.id) ? rr(s.r, 0.6, 1) : p[1] * 0.6; },
@@ -86,7 +89,7 @@
     aurora: (p, s) => { p[6] = rr(s.r, 0.3, 1); },
     underwater: (p, s) => { p[2] = s.time.sun; p[0] = 1 - s.time.sun * 0.8; },
     planet: (p, s) => { p[3] = rr(s.r, 0.2, 0.8); },
-  };
+  });
 
   /* Bağlama uygun kamera havuzu */
   CB.camerasFor = function (ctx) {
@@ -101,11 +104,12 @@
   function contextOf(cat) {
     const g = cat.group;
     if (g.ctx !== 'mixed') return g.ctx;
-    return INT_RE.test(cat.en) ? 'int' : 'ext';
+    return INT_RE.test((cat.base || cat).en) ? 'int' : 'ext';
   }
 
   /* Kategori metnindeki anahtar kelimeler motor seçimini yönlendirir */
-  const KEYS = [
+  const KEYS = (CB.ENGINE_KEYS = CB.ENGINE_KEYS || []);
+  KEYS.push(
     [/podium|pedestal|plinth|product stage|display stand|turntable|cyclorama|studio set|product/i, ['podium']],
     [/forest|wood|tree|grove|jungle|bamboo|redwood|sequoia|birch|pine|cedar|maple|rainforest/i, ['forest', 'godrays']],
     [/fire|burning|blaze|wildfire|inferno|forge|furnace|flame|pyre/i, ['fire']],
@@ -131,12 +135,17 @@
     [/snow|\bice\b|frozen|winter|glacier|arctic|polar|blizzard/i, ['mountains', 'aurora']],
     [/light leak|gradient|orb|glow|particle|lens flare|spotlight/i, ['orbs', 'anamorphic']],
     [/smoke|ink|fog layer/i, ['smoke']],
-  ];
-  const INT_OK = ['hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk', 'tunnel', 'rainglass', 'orbs', 'fire', 'cells', 'podium'];
+  );
+  const INT_OK = (CB.INT_OK = CB.INT_OK || []);
+  INT_OK.push('hall', 'godrays', 'smoke', 'anamorphic', 'city', 'underwater', 'silk', 'tunnel', 'rainglass', 'orbs', 'fire', 'cells', 'podium');
+  const INT_ONLY = (CB.INT_ONLY = CB.INT_ONLY || []);
+  INT_ONLY.push('hall', 'tunnel', 'podium');
   function enginesFor(cat, ctx) {
-    const allowed = (e) => (ctx === 'int' || ctx === 'studio' ? INT_OK.includes(e) : ctx === 'abstract' ? true : e !== 'hall' && e !== 'tunnel' && e !== 'podium');
+    const allowed = (e) => (ctx === 'int' || ctx === 'studio' ? INT_OK.includes(e) : ctx === 'abstract' ? true : !INT_ONLY.includes(e));
+    // INT_ONLY: yalnızca iç mekân / stüdyo motorları
     // metinde ilk geçen kavram kazanır (ör. "WWI trench … sandbag" → savaş alanı, kum tepesi değil)
-    const hits = KEYS.map(([re, list]) => ({ i: cat.en.search(re), list: list.filter(allowed) }))
+    const text = (cat.base || cat).en; // varyant eki motor seçimini ele geçirmesin
+    const hits = KEYS.map(([re, list]) => ({ i: text.search(re), list: list.filter(allowed) }))
       .filter((h) => h.i >= 0 && h.list.length).sort((a, b) => a.i - b.i);
     if (hits.length) return [...new Set(hits.filter((h) => h.i === hits[0].i).flatMap((h) => h.list))];
     const ok = cat.group.engines.filter(allowed);
@@ -152,11 +161,13 @@
     const s = { cat, group: g, seed, ctx, r };
 
     const times = CB.TIMES[tctx];
-    s.time = pick(r, times);
+    let tpool = times;
+    if (cat.q && cat.q.tn) { const f = times.filter((t) => (cat.q.tn === 'n' ? t.night : !t.night)); if (f.length) tpool = f; }
+    s.time = pick(r, tpool);
     if (opts.time) s.time = times.find((t) => t.id === opts.time) || s.time;
     let weathers = CB.WEATHER[tctx];
     if (tctx === 'ext') {
-      weathers = weathers.filter((w) => !((w.id === 'snow' || w.id === 'blizzard') && NO_SNOW.test(g.id)) && !((w.id === 'dust' || w.id === 'heat') && NO_DUST.test(g.id)));
+      weathers = weathers.filter((w) => !((w.id === 'snow' || w.id === 'blizzard' || w.id === 'frost') && NO_SNOW.test(g.id)) && !((w.id === 'dust' || w.id === 'heat' || w.id === 'sandstorm') && NO_DUST.test(g.id)));
     }
     s.weather = pick(r, weathers);
     if (opts.weather) s.weather = weathers.find((w) => w.id === opts.weather) || s.weather;
@@ -194,12 +205,14 @@
     if (ctx === 'space') want.add('space');
     if (g.id === 'cyber' || g.id === 'nightlife') want.add('neon');
     if (g.arch === 'palace') want.add('palace');
+    if (cat.q && cat.q.pal) { want.clear(); cat.q.pal.forEach((t) => want.add(t)); }
     const cands = CB.PALETTES.filter((p) => p.tags.some((t) => want.has(t)));
     s.palette = pick(r, cands.length ? cands : CB.PALETTES);
     if (opts.palette) s.palette = CB.PALETTES.find((p) => p.id === opts.palette) || s.palette;
     let grades = GRADE_BY_ARCH[g.arch] || ['natural'];
     if (s.time.night && r() < 0.3) grades = ['moonlight', 'neonoir'];
     s.gradeId = pick(r, grades);
+    if (cat.q && cat.q.grade && CB.GRADES[cat.q.grade]) s.gradeId = cat.q.grade;
     if (opts.grade && CB.GRADES[opts.grade]) s.gradeId = opts.grade;
 
     // görsel motor + parametreler
@@ -211,8 +224,9 @@
     s.params = s.params.map((v) => Math.min(1, Math.max(0, v)));
     s.time0 = rr(r, 0, 120);
     // atmosfer katmanı: havadan ve durumdan türetilir (seed dizisini değiştirmez)
-    s.atmos = Object.assign({}, ATMOS[s.weather.id] || {});
+    s.atmos = Object.assign({}, ATMOS[s.weather.id] || s.weather.atmos || {});
     if (/burning|smoldering|erupting|active/.test(condId)) s.atmos.embers = Math.max(s.atmos.embers || 0, 0.5);
+    if (cat.q && cat.q.atmos) for (const k in cat.q.atmos) s.atmos[k] = Math.max(s.atmos[k] || 0, cat.q.atmos[k]);
     return s;
   };
 
@@ -321,6 +335,7 @@
   };
 
   CB.specCode = function (s) {
-    return 'CB-' + String(s.cat.group.index + 1).padStart(2, '0') + String(s.group.cats.indexOf(s.cat) + 1).padStart(2, '0') + '-' + (s.seed >>> 0).toString(36).toUpperCase();
+    const b = s.cat.base || s.cat;
+    return 'CB-' + String(b.group.index + 1).padStart(2, '0') + String(s.group.cats.indexOf(b) + 1).padStart(2, '0') + (s.cat.letter || '') + '-' + (s.seed >>> 0).toString(36).toUpperCase();
   };
 })();
