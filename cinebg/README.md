@@ -1,6 +1,6 @@
 # CineBG Studio
 
-Sinematik film sahneleri için sınırsız arka plan üreticisi. 79 grupta **3430 kategori**: savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 1 trilyonu aşar, seed sayısı ise sınırsızdır.
+Sinematik film sahneleri için sınırsız arka plan üreticisi. 79 grupta **17.150 kategori** (3430 temel mekân ve her birinin 4 varyantı): savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 190 trilyonu aşar, seed sayısı ise sınırsızdır.
 
 Her sahne iki çıktı verir:
 
@@ -17,6 +17,34 @@ Her sahne iki çıktı verir:
 
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
+
+## v5: 5 kat büyüme ve Yönetmen Masası
+
+**Kategoriler: 3430 → 17.150.** Her temel mekâna dört eksenden birer varyant eklenir: durum / dönem (terk edilmiş, sel basmış, festival günü…), tür aktarımı (siberpunk, Osmanlı 1600'ler, kara film…), bakış / ölçek (kapı eşiğinden, uzak sırttan…) ve ışık imzası (ateş ışığı, tutulma, neon…). Reklam setlerinde bu eksenler malzeme, stil, kompozisyon ve ışık olur. Varyant kendi palet, grade, saat ve atmosfer ayarını getirir; motor seçimi temel mekâna göre yapılır. Mekâna uymayan ekler (bozkırda sodyum lambası gibi) elenir. Katalogda varyantlar temelin altında listelenir, sahne kodu `CB-0106c-…` gibi a–d harfi alır, eski kodlar aynen açılır.
+
+**Görsel kütüphane**
+
+| | v4 | v5 |
+| --- | --- | --- |
+| Kategori | 3430 | 17.150 |
+| Sahne motoru | 29 | 36 (3B arazi, 3B şehir, 3B salon, kristal mağara, kâğıt kolaj, antik harabe, arşiv editoryal) |
+| Palet | 32 | 160 (128'i türetilmiş) + renk teorisiyle sınırsız rastgele palet |
+| Grade / film stoğu | 16 | 40 (Portra, CineStill 800T, Technicolor, day-for-night, Tri-X, Super 8, VHS…) |
+| Kamera / kadraj açısı | 26 | 60 |
+| Işık tarifi | 10 | 50 |
+| Görüntü yönetmeni stili | 8 | 40 |
+| İmkânsız öğe | 15 | 75 |
+| Saat / hava (dış) | 11 / 14 | 18 / 26 |
+
+Set üret menüsüne **mekân varyantları** (5 kare) ve **film stokları** (40 kare) eklendi.
+
+**Karakter ve yarışma:** arketip 36 → 60, 9 dünya (arketipin kendi dünyası + günümüz, siberpunk 2088, steampunk, ortaçağ fantastik, 1940'lar noir, kıyamet sonrası, uzay operası, Osmanlı 1600'ler), format 6 → 16, konsept 12 → 60. Görünüm havuzları büyüdü (vurgu rengi 16 → 40, ifade 6 → 24, durum 6 → 18, ayırt edici iz 12 → 30…). Eski kayıtlı karakterler aynı promptları üretir.
+
+**Yönetmen Masası** (üst bardaki dördüncü sekme), 12 araç:
+- *Aksiyon & Sahne:* GODSTOUCH dövüş / aksiyon promptu ve CS4 paneli, GOTRV sahne motoru (denetim + Fountain çıktısı), ACTING TASK blokları, sürüklenebilir blocking haritası (PNG + @staging_ / @loc_ bağlayıcı).
+- *Video & Reklam:* faceless senaryo (145 kelime/dk zaman kodu, başlık, thumbnail, fact-check), faceless 10 sn blok, prompt kurucu (8 format), zaman kodlu çok çekim (doğrulamalı), Seedance shotlist HTML, CINEDANCE blokları (41 blok), Soul Cinema reklam (görsel içi başlık/slogan), animasyon sorun çözücü ve Genjutsu şablonları.
+
+Hiçbir araç ücretli üretim başlatmaz; hepsi kopyalanabilir prompt ve indirilebilir dosya verir.
 
 ## v4: Karakter & Yarışma Stüdyosu
 
@@ -87,7 +115,7 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 
 | Dosya | İçerik |
 | --- | --- |
-| `js/glsl.js` | Ortak shader kütüphanesi, 29 sahne motoru, atmosfer katmanı, kamera dönüşümü, film son işlem geçişi (bloom, flare, ACES, grade, gren) |
+| `js/glsl.js` | Ortak shader kütüphanesi, ilk 29 sahne motoru, atmosfer katmanı, kamera dönüşümü, film son işlem geçişi (bloom, flare, ACES, grade, gren) |
 | `js/renderer.js` | WebGL2 render hattı: HDR doku, mipmap bloom, kusursuz döngü için çapraz geçiş |
 | `js/categories.js` | İlk 45 grup, tür etiketleri, arketip yer işareti ve malzeme havuzları, grup kayıt sistemi |
 | `js/cat-extra-a.js`, `js/cat-extra-b.js` | Mevcut gruplara eklenen mekanlar |
@@ -99,3 +127,10 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 | `js/app.js` | Arayüz, dışa aktarma, video, toplu üretim |
 | `js/chars.js` | Karakter arketipleri, görünüm havuzları, yarışma konseptleri |
 | `js/studio.js` | Karakter stüdyosu ve yarışma kiti |
+| `js/glsl-v5.js`, `js/engines-v5.js` | v5'in 7 motoru ve anahtar kelime / grup bağlantıları |
+| `js/cat-variants.js` | Her mekâna 4 varyant (17.150 kategori) |
+| `js/looks-v5.js` | Türetilmiş paletler, film stokları, ek kamera, ışık, saat ve hava listeleri |
+| `js/chars-v5.js` | Dünyalar, ek arketipler, formatlar ve konseptler |
+| `js/director.js` | Yönetmen Masası iskeleti ve ortak arayüz yardımcıları |
+| `js/dir-action.js`, `js/dir-scene.js` | Dövüş / aksiyon, sahne motoru, oyunculuk görevi, blocking haritası |
+| `js/dir-video.js` | Faceless, prompt kurucu, zaman kodlu çekim, shotlist, CINEDANCE, Soul Cinema reklam, animasyon |
