@@ -33,7 +33,7 @@
     view: 'bg',
     chars: store.get('chars', []),
     cur: store.get('charCur', null),
-    expr: 0, state: 'battle',
+    expr: 0, state: 'battle', newWorld: store.get('newWorld', 'modern'),
     contest: Object.assign({ format: 'ad', concept: '', seed: 1, lead: '', aspect: '9:16', person: '' }, store.get('contest', {})),
     plan: null,
   };
@@ -41,7 +41,7 @@
   const curChar = () => ST.chars.find((c) => c.id === ST.cur) || null;
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-  function randomChar(seed, archId) {
+  function randomChar(seed, archId, worldId) {
     const r = CB.rng(seed >>> 0);
     const a = archId ? CB.ARCHETYPES.find((x) => x.id === archId) : pick(r, CB.ARCHETYPES);
     const gender = pick(r, ['man', 'woman', 'man', 'woman', 'person']);
@@ -53,13 +53,13 @@
       hair: gender === 'woman' ? pick(r, L.hairW) : pick(r, L.hairM), hairColor: pick(r, L.hairColor),
       beard: gender === 'man' ? pick(r, L.beard) : 'clean-shaven', mark: pick(r, L.marks),
       wardrobe: Math.floor(r() * a.wardrobe.length), prop: Math.floor(r() * a.props.length), hook: Math.floor(r() * a.hooks.length),
-      accent: pick(r, freeAcc.length ? freeAcc : L.accents), notes: '',
+      accent: pick(r, freeAcc.length ? freeAcc : L.accents), notes: '', world: worldId || ST.newWorld || 'modern',
     };
   }
   function referenceChar() {
     return {
       id: uid(), kind: 'reference', name: 'Yarışma Yüzü', arch: 'ceo', gender: 'man', age: '30s', build: 'athletic', origin: '', face: '', hair: '', hairColor: '', beard: '', mark: '',
-      wardrobe: 0, prop: 0, hook: 0, accent: ['brass', '#B08D57'], notes: 'Kimlik yalnızca resmî referans paketinden ve Soul ID’den gelir.',
+      wardrobe: 0, prop: 0, hook: 0, accent: ['brass', '#B08D57'], notes: 'Kimlik yalnızca resmî referans paketinden ve Soul ID’den gelir.', world: ST.newWorld || 'modern',
     };
   }
 
@@ -71,9 +71,15 @@
     const beard = c.gender === 'man' && c.beard && c.beard !== 'clean-shaven' ? `, ${c.beard}` : c.gender === 'man' ? ', clean-shaven' : '';
     return `a ${c.origin ? c.origin + ' ' : ''}${genderNoun(c)} ${ageWord(c)} with a ${c.build} build, ${c.face}, ${c.hair} ${c.hairColor} hair${beard}, ${c.mark}`;
   }
-  const who = (c) => (c.kind === 'reference' ? 'the person from the reference images' : `the ${arch(c).en}`);
-  const wardrobe = (c) => arch(c).wardrobe[c.wardrobe % arch(c).wardrobe.length];
-  const prop = (c) => arch(c).props[c.prop % arch(c).props.length];
+  /* dünya aktarımı (v5): kostüm ve aksesuar seçilen dünyanın malzemeleriyle yeniden yapılır, siluet imzası korunur */
+  const role = (c) => CB.worldRole(c, arch(c));
+  const world = (c) => CB.worldOf(c);
+  const who = (c) => (c.kind === 'reference' ? 'the person from the reference images' : `the ${role(c)}`);
+  const baseWardrobe = (c) => arch(c).wardrobe[c.wardrobe % arch(c).wardrobe.length];
+  const wardrobe = (c) => CB.worldWardrobe(c, arch(c), baseWardrobe(c));
+  const prop = (c) => CB.worldProp(c, arch(c), arch(c).props[c.prop % arch(c).props.length]);
+  const worldLine = (c) => (CB.isTransposed(c, arch(c)) ? ` World: ${world(c).en}; the costume keeps its silhouette but every material and fitting belongs to that world.` : '');
+  const six = (i) => Array.from({ length: 6 }, (_, k) => L.expressions[(i + k) % L.expressions.length]);
   const hook = (c) => arch(c).hooks[c.hook % arch(c).hooks.length];
   const accTxt = (c) => `${c.accent[0]} ${c.accent[1]}`;
   const filename = (c, type) => `${upperName(c)}_${type}_v1`;
@@ -88,24 +94,24 @@
   const AVOID = 'AVOID: text, logos, watermark, extra characters, extra fingers, fused fingers, deformed hands, floating prop, duplicate prop, 3D render look, video game screenshot, plastic or airbrushed skin';
 
   function sheets(c) {
-    const a = arch(c), name = upperName(c);
+    const a = arch(c), name = upperName(c), ro = role(c);
     const expr = L.expressions[ST.expr % L.expressions.length];
     const state = L.states.find((s) => s[0] === ST.state) || L.states[0];
     const out = [];
     out.push(['Soul 2.0 · üç panel film sheet', 'Lira şablonu · kimlik sabitleme',
       [`Three studio photographs of the same ${genderNoun(c)} arranged side by side on a flat neutral mid-grey studio backdrop, a film character sheet: full-body front photo on the left, full-body back photo in the middle, close-up portrait photo on the right, the same real person in all three, consistent across panels. Soft directional cinematic studio lighting from one side, gentle natural shadow falloff, clean neutral cinematic look.`,
-        `The ${a.en}: ${subject(c)}.`,
+        `The ${ro}: ${subject(c)}.${worldLine(c)}`,
         `Wardrobe, consistent in all panels: ${wardrobe(c)}; ${prop(c)}. Signature shape: ${hook(c)}.`,
-        `On the left panel the ${a.en} stands straight facing the camera in a neutral pose, arms relaxed at the sides, full figure head to feet. In the middle panel the same standing pose is seen from behind. On the right panel a close-up head-and-shoulders portrait, ${expr}.`,
+        `On the left panel the ${ro} stands straight facing the camera in a neutral pose, arms relaxed at the sides, full figure head to feet. In the middle panel the same standing pose is seen from behind. On the right panel a close-up head-and-shoulders portrait, ${expr}.`,
         `Muted neutral palette with ${c.accent[0]} as the single accent. Shot on ARRI Alexa Mini LF with ARRI Signature Prime lens, clean modern digital cinematic capture, crisp natural detail, minimal fine grain, natural living skin tones.`].join('\n'),
       `Soul 2.0 · 16:9 · 2k. ${soulNote(c)} Hızlı yol: Cinema Studio AI Cast sheet’i otomatik kurar.`]);
     out.push(['Kimlik kilit sayfası (T4)', 'ONE SHOT · video ve Soul ID için besleme dosyası',
-      [`Character sheet of one ${a.en}, three panels side by side, plain mid-grey studio backdrop, thin dark dividers.`,
+      [`Character sheet of one ${ro}, three panels side by side, plain mid-grey studio backdrop, thin dark dividers.`,
         'LEFT: full-body front, framed from the collarbones down, no head in this panel, shoes in frame, standing straight, arms relaxed.',
         'CENTRE: full-body back, head to toe, same pose, facing away.',
         `RIGHT: close-up of face and shoulders, calm gaze.`,
         `SUBJECT: ${subject(c)}.`,
-        `OUTFIT: ${wardrobe(c)}; ${prop(c)}.`,
+        `OUTFIT: ${wardrobe(c)}; ${prop(c)}.${worldLine(c)}`,
         ID_LIGHT,
         'LOCKS: one identical person in all three views — same identity, outfit, hair, proportions; frontal panel headless, cropped at the collarbones; feet visible in both full-body panels; identical backdrop and light; sharp realistic photo.',
         AVOID].join('\n'),
@@ -116,7 +122,7 @@
         HEADLESS,
         'PANEL RIGHT: full body from behind, head to feet, same pose, showing the back of the costume.',
         `SUBJECT: ${subject(c)}.`,
-        `COSTUME: ${wardrobe(c)}; ${prop(c)}. ${cap(c.accent[0])} ${c.accent[1]} appears only on one costume detail.`,
+        `COSTUME: ${wardrobe(c)}; ${prop(c)}.${worldLine(c)} ${cap(c.accent[0])} ${c.accent[1]} appears only on one costume detail.`,
         `SILHOUETTE: ${hook(c)}.`,
         HERO_LIGHT, GRADE(c), CAMERA, REALISM,
         'LOCKS: the same identical person, costume, proportions and lighting in all three panels; the frontal full-body panel has no head — cropped at the collarbones; the close-up panel is the only panel showing the face; feet visible in both full-body panels; no text, no logos, no watermark, no extra characters; not a 3D render, not a video game screenshot, not a plastic or airbrushed look.',
@@ -131,13 +137,13 @@
       `4:5 veya 2:3 portre · 1024×1536. Run 6. Screen for: gözler okunur, catchlight var, plastik cilt yok. Dosya: ${filename(c, 'close-up')}`]);
     out.push(['İfade sayfası', 'Altı ifade · aynı kişi',
       [`Six close-up studio photographs of the same ${genderNoun(c)} arranged in a three by two grid on a flat neutral mid-grey backdrop, a film expression sheet, the same real person in all six panels.`,
-        `The ${a.en}: ${subject(c)}. Wardrobe collar visible: ${wardrobe(c).split(',')[0]}.`,
-        `Expressions, left to right, top to bottom: ${L.expressions.join('; ')}.`,
+        `The ${ro}: ${subject(c)}. Wardrobe collar visible: ${wardrobe(c).split(',')[0]}.`,
+        `Expressions, left to right, top to bottom: ${six(ST.expr).join('; ')}.`,
         'Identical soft directional key light from camera-left in every panel, identical framing head to collarbones, natural skin texture, clean modern digital cinematic capture.',
         'LOCKS: same identity, hair and lighting in all six panels; thin dark dividers; no text.'].join('\n'),
       `Soul 2.0 (Soul ID ile) veya NBP · 3:2 · 2k. Dosya: ${filename(c, 'expressions')}`]);
     out.push(['Poz / aksiyon sayfası', 'Dört an · durumlar, geçişler değil',
-      [`Four photographs of the same ${a.en} side by side on a plain mid-grey studio backdrop, an action reference sheet, the same real person in all four panels.`,
+      [`Four photographs of the same ${ro} side by side on a plain mid-grey studio backdrop, an action reference sheet, the same real person in all four panels.`,
         `SUBJECT: ${subject(c)}. OUTFIT: ${wardrobe(c)}.`,
         ...a.actions.slice(0, 4).map((x, i) => `PANEL ${i + 1}: ${x}; both hands clearly visible or deliberately out of frame.`),
         ID_LIGHT,
@@ -179,8 +185,8 @@
       `${CB.GRADES[s.gradeId].en}; palette of 60% ${s.palette.w[0]}, 30% ${s.palette.w[1]}, 10% ${s.palette.w[2]}. ${CB.TECH[s.tech] || CB.TECH.film}.`,
     ].join(' ');
     const comp = [
-      `Edit the image: place the ${c.kind === 'reference' ? 'person' : arch(c).en} from Image 1 into the location in Image 2.`,
-      `CHANGE: add the ${c.kind === 'reference' ? 'person' : arch(c).en} standing near ${lm.center}, ${act}, scaled to a real human height of about 1.75 metres, feet planted on ${s.floor}, lit by ${s.time.en} from the same direction as the location, with a matching contact shadow.`,
+      `Edit the image: place the ${c.kind === 'reference' ? 'person' : role(c)} from Image 1 into the location in Image 2.`,
+      `CHANGE: add the ${c.kind === 'reference' ? 'person' : role(c)} standing near ${lm.center}, ${act}, scaled to a real human height of about 1.75 metres, feet planted on ${s.floor}, lit by ${s.time.en} from the same direction as the location, with a matching contact shadow.`,
       'PRESERVE EXACTLY:',
       `- the entire location from Image 2: architecture, ${lm.left}, ${lm.right}, ${lm.far}, camera angle, light direction, weather and grade`,
       '- the identity, face, hair and wardrobe from Image 1',
@@ -246,8 +252,8 @@
     ctx.fillStyle = '#f0a04b'; ctx.font = "600 22px 'IBM Plex Mono', monospace";
     ctx.fillText(`${arch(c).tr.toLocaleUpperCase('tr')}${c.kind === 'reference' ? ' · REFERANS KİŞİ' : ''}`, tx + 26, py + 66);
     const lines = c.kind === 'reference'
-      ? [['Kimlik', 'Resmî referans paketi + Soul ID'], ['Kostüm', wardrobe(c)], ['Aksesuar', prop(c)], ['Siluet', hook(c)], ['Vurgu', accTxt(c)]]
-      : [['Yaş', c.age], ['Yapı', c.build], ['Köken tipi', c.origin], ['Yüz', c.face], ['Saç', `${c.hair}, ${c.hairColor}`], ['Sakal', c.gender === 'man' ? c.beard : '—'], ['İz', c.mark], ['Kostüm', wardrobe(c)], ['Aksesuar', prop(c)], ['Siluet', hook(c)], ['Vurgu', accTxt(c)]];
+      ? [['Kimlik', 'Resmî referans paketi + Soul ID'], ['Dünya', world(c).tr], ['Kostüm', wardrobe(c)], ['Aksesuar', prop(c)], ['Siluet', hook(c)], ['Vurgu', accTxt(c)]]
+      : [['Yaş', c.age], ['Yapı', c.build], ['Köken tipi', c.origin], ['Yüz', c.face], ['Saç', `${c.hair}, ${c.hairColor}`], ['Sakal', c.gender === 'man' ? c.beard : '—'], ['İz', c.mark], ['Dünya', world(c).tr], ['Kostüm', wardrobe(c)], ['Aksesuar', prop(c)], ['Siluet', hook(c)], ['Vurgu', accTxt(c)]];
     let y = py + 130;
     const wrap = (text, maxW) => { const words = text.split(' '); const out = []; let line = ''; words.forEach((w) => { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }); if (line) out.push(line); return out; };
     lines.forEach(([k, v]) => {
@@ -266,7 +272,8 @@
   /* ---------------- yarışma planı ---------------- */
   function buildPlan() {
     const C = ST.contest;
-    const pool = CB.CONCEPTS.filter((k) => k.f === C.format);
+    let pool = CB.CONCEPTS.filter((k) => k.f === C.format);
+    if (!pool.length) pool = CB.CONCEPTS;
     const r = CB.rng((C.seed * 2654435761) >>> 0);
     const concept = pool.find((k) => k.tr === C.concept) || pick(r, pool);
     const lead = ST.chars.find((c) => c.id === C.lead) || curChar() || ST.chars[0] || null;
@@ -275,11 +282,13 @@
     // konsept boyunca tek ışık ve hava: çekimler aynı filmin parçası gibi dursun
     const tId = concept.t || pick(r, ['golden', 'sunset', 'bluehour', 'afternoon', 'overcast', 'moonnight']);
     const wId = concept.w || pick(r, ['clear', 'clear', 'mist', 'afterrain']);
-    const gId = concept.g || pick(r, ['blockbuster', 'kodak', 'neonoir', 'epic', 'natural', 'eterna']);
+    const lw = lead && CB.isTransposed(lead, arch(lead)) ? world(lead) : null;
+    const gId = concept.g || (lw && lw.grade) || pick(r, ['blockbuster', 'kodak', 'neonoir', 'epic', 'natural', 'eterna']);
     const INT_T = { golden: 'goldenwin', sunset: 'goldenwin', bluehour: 'moonwin', afternoon: 'morningwin', overcast: 'fluor', moonnight: 'moonwin', darknight: 'lamp', morning: 'morningwin' };
     const INT_W = { clear: 'still', mist: 'motes', afterrain: 'rainwin', rain: 'rainwin', storm: 'rainwin', fog: 'smokeint' };
     const shots = concept.shots.map((sh, i) => {
-      const groups = sh.bg.length ? sh.bg : extGroups;
+      // boş arka plan listesi: baş karakterin dünyası varsa onun mekânları, yoksa tüm dış mekânlar
+      const groups = sh.bg.length ? sh.bg : lw && lw.bg.length ? lw.bg : extGroups;
       let cats = CB.CATS.filter((c) => groups.includes(c.group.id) && !usedCats.has(c.id));
       if (!cats.length) cats = CB.CATS.filter((c) => groups.includes(c.group.id));
       const cat = pick(r, cats); usedCats.add(cat.id);
@@ -292,7 +301,7 @@
     ST.plan = { concept, lead, shots };
     return ST.plan;
   }
-  const P = (c) => (c ? (c.kind === 'reference' ? 'the person from the reference images' : `the ${arch(c).en}`) : 'the lead character');
+  const P = (c) => (c ? (c.kind === 'reference' ? 'the person from the reference images' : `the ${role(c)}`) : 'the lead character');
   const fill = (t, c) => t.replace(/\{P\}/g, P(c));
   const fillTr = (t, c) => t.replace(/\{P\}/g, c ? c.name : 'baş karakter');
   function shotStill(sh, c, aspectId) {
@@ -309,7 +318,7 @@
     const chunks = [];
     for (let i = 0; i < plan.shots.length; i += 3) chunks.push(plan.shots.slice(i, i + 3));
     return chunks.map((ch, k) => {
-      const head = `Generation ${k + 1} of ${chunks.length}. ${c ? (c.kind === 'reference' ? '@Image1 is the identity reference for the person; preserve face, hair and proportions exactly.' : `@Image1 is the identity reference for the ${arch(c).en}.`) : ''} ${aspectId === '9:16' ? 'Vertical frame.' : ''}`.trim();
+      const head = `Generation ${k + 1} of ${chunks.length}. ${c ? (c.kind === 'reference' ? '@Image1 is the identity reference for the person; preserve face, hair and proportions exactly.' : `@Image1 is the identity reference for the ${role(c)}.`) : ''} ${aspectId === '9:16' ? 'Vertical frame.' : ''}`.trim();
       const blocks = ch.map((sh, j) => {
         const s = sh.spec;
         const lock = `Same light: ${s.time.en.split(',')[0]}. The person: ${c ? wardrobe(c).split(',').slice(0, 2).join(',') : 'same wardrobe'}, positioned near ${s.landmarks.center}. Camera ${s.camera.lens}.`;
@@ -347,9 +356,11 @@
         el('div', { class: 'row' },
           el('button', { class: 'btn small primary', type: 'button', text: '＋ Rastgele karakter', onclick: () => { const c = randomChar((Math.random() * 4294967296) >>> 0); ST.chars.push(c); ST.cur = c.id; save(); renderChar(); } }),
           el('button', { class: 'btn small', type: 'button', text: '＋ Referans kişi', title: 'Yarışmanın resmî referans paketi için', onclick: () => { const c = referenceChar(); ST.chars.push(c); ST.cur = c.id; save(); renderChar(); } })),
+        field('Yeni karakterin dünyası', select('chNewWorld', CB.WORLDS.map((w) => [w.id, `${w.tr} · ${w.short}`]), ST.newWorld, (v) => { ST.newWorld = v; store.set('newWorld', v); })),
+        el('p', { class: 'hint', text: `${CB.ARCHETYPES.length} arketip × ${CB.WORLDS.length} dünya = ${(CB.ARCHETYPES.length * CB.WORLDS.length).toLocaleString('tr-TR')} karakter tabanı. Dünya, kostümü ve aksesuarı o dünyanın malzemeleriyle yeniden kurar; siluet imzası aynı kalır.` }),
         el('p', { class: 'hint', text: 'Referans kişi: kimlik yalnızca resmî referans görsellerinden ve Soul ID’den gelir. Prompt’lar kişiyi isimle anmaz, yüzünü tarif etmez.' })),
       el('div', { class: 'chlist' }, ...(ST.chars.length ? ST.chars.map((c) => el('button', { type: 'button', class: 'chitem' + (c.id === ST.cur ? ' cur' : ''), onclick: () => { ST.cur = c.id; save(); renderChar(); } },
-        el('i', { style: `background:${c.accent[1]}` }), el('b', { text: c.name }), el('span', { text: `${arch(c).tr}${c.kind === 'reference' ? ' · referans' : ''}` }))) : [el('p', { class: 'note', text: 'Henüz karakter yok. "Rastgele karakter" ile başla.' })])));
+        el('i', { style: `background:${c.accent[1]}` }), el('b', { text: c.name }), el('span', { text: `${arch(c).tr}${CB.isTransposed(c, arch(c)) ? ' · ' + world(c).tr : ''}${c.kind === 'reference' ? ' · referans' : ''}` }))) : [el('p', { class: 'note', text: 'Henüz karakter yok. "Rastgele karakter" ile başla.' })])));
     const c = curChar();
     if (!c) { mid.replaceChildren(el('p', { class: 'note', text: 'Soldan bir karakter oluştur ya da seç.' })); right.replaceChildren(); return; }
     const upd = (k, v) => { c[k] = v; save(); renderChar(); };
@@ -360,8 +371,9 @@
       field('Ad', (() => { const i = el('input', { id: 'chName', type: 'text', value: c.name }); i.addEventListener('change', () => upd('name', i.value || 'Karakter')); return i; })()),
       field('Tür', select('chKind', [['original', 'Özgün karakter'], ['reference', 'Referans kişi (yarışma)']], c.kind, (v) => upd('kind', v))),
       field('Arketip / rol', select('chArch', archOpts, c.arch, (v) => { c.arch = v; c.wardrobe = 0; c.prop = 0; c.hook = 0; save(); renderChar(); })),
+      field('Dünya', select('chWorld', CB.WORLDS.map((w) => [w.id, w.id === CB.nativeWorld(a) ? `${w.tr} (kendi dünyası)` : w.tr]), world(c).id, (v) => upd('world', v))),
       field('Kostüm', select('chWard', a.wardrobe.map((w, i) => [String(i), w.slice(0, 60) + (w.length > 60 ? '…' : '')]), String(c.wardrobe % a.wardrobe.length), (v) => upd('wardrobe', +v))),
-      field('Aksesuar', select('chProp', a.props.map((w, i) => [String(i), w]), String(c.prop % a.props.length), (v) => upd('prop', +v))),
+      field('Aksesuar', select('chProp', a.props.map((w, i) => [String(i), CB.worldProp(c, a, w)]), String(c.prop % a.props.length), (v) => upd('prop', +v))),
       field('Siluet imzası', select('chHook', a.hooks.map((w, i) => [String(i), w]), String(c.hook % a.hooks.length), (v) => upd('hook', +v))),
       field('Vurgu rengi', select('chAcc', L.accents.map((x) => [x[1], `${x[0]} ${x[1]}`]), c.accent[1], (v) => upd('accent', L.accents.find((x) => x[1] === v)))));
     const look = c.kind === 'reference' ? el('p', { class: 'note', text: 'Görünüm alanları referans kişide kapalı. Yüz, saç ve beden ölçüleri referans görsellerden alınır. Kostüm, rol, aksesuar ve renk serbest.' }) : el('div', { class: 'chips' },
@@ -382,7 +394,8 @@
           el('button', { class: 'btn small', type: 'button', text: 'Kartı PNG indir', onclick: () => cardCanvas(c).toBlob((b) => b && CB.app.saveFile(b, `${upperName(c)}_karakter-karti.png`), 'image/png') }),
           el('button', { class: 'btn small', type: 'button', text: 'Kopya oluştur', onclick: () => { const d = JSON.parse(JSON.stringify(c)); d.id = uid(); d.name = c.name + ' 2'; ST.chars.push(d); ST.cur = d.id; save(); renderChar(); } }),
           el('button', { class: 'btn small', type: 'button', text: 'Sil', onclick: () => { ST.chars = ST.chars.filter((x) => x.id !== c.id); ST.cur = ST.chars[0] ? ST.chars[0].id : null; save(); renderChar(); } }))),
-      el('div', { class: 'section' }, el('h3', { text: 'Rol & kostüm' }), form),
+      el('div', { class: 'section' }, el('h3', { text: 'Rol & kostüm' }), form,
+        CB.isTransposed(c, a) ? el('p', { class: 'hint', text: `Dünya aktarımı: ${world(c).tr}. Kostüm: ${wardrobe(c)}` }) : null),
       el('div', { class: 'section' }, el('h3', { text: 'Görünüm' }), look),
       el('div', { class: 'section' }, el('h3', { text: 'Notlar' }), (() => { const t = el('textarea', { id: 'chNotes', rows: '3', class: 'notes', placeholder: 'Karakterin hikâyedeki yeri, ses, tavır…' }); t.value = c.notes || ''; t.addEventListener('change', () => { c.notes = t.value; save(); }); return t; })()));
     const cur = CB.app.current();
@@ -394,13 +407,26 @@
       el('div', { class: 'section' }, el('h3', { text: 'Karakter sheet’leri' }), ...sheets(c).map((x) => pcard(...x))),
       el('div', { class: 'section' }, el('h3', { text: 'Sahneye yerleştir' }),
         el('p', { class: 'hint', text: cur.spec ? `Şu anki arka plan: ${cur.spec.cat.tr} (${CB.specCode(cur.spec)}). Değiştirmek için Arka Plan sekmesinde başka bir sahne üret.` : 'Önce Arka Plan sekmesinde bir sahne üret.' }),
+        el('div', { class: 'row' }, el('button', { class: 'btn small', type: 'button', text: `Bu dünyadan arka plan aç`, title: 'Karakterin dünyasına (ya da arketipine) uygun bir mekân üretir', onclick: () => openWorldBg(c) })),
         ...placement(c, cur).map((x) => pcard(...x))));
+  }
+
+  /* karakterin dünyasına (aktarım yoksa arketipine) uygun rastgele bir arka plan aç */
+  function openWorldBg(c) {
+    const w = world(c), tr = CB.isTransposed(c, arch(c));
+    const groups = tr && w.bg.length ? w.bg : arch(c).bg;
+    const cats = CB.CATS.filter((x) => groups.includes(x.group.id));
+    if (!cats.length) return CB.app.toast('Uygun arka plan bulunamadı');
+    const cat = cats[Math.floor(Math.random() * cats.length)];
+    setView('bg');
+    CB.app.openBg(cat, (Math.random() * 4294967296) >>> 0, tr && w.grade ? { grade: w.grade } : {});
+    CB.app.toast(`${tr ? w.tr : arch(c).tr}: ${cat.tr}`);
   }
 
   function renderContest() {
     const C = ST.contest;
     const saveC = () => store.set('contest', C);
-    const leadOpts = ST.chars.map((c) => [c.id, `${c.name} · ${arch(c).tr}`]);
+    const leadOpts = ST.chars.map((c) => [c.id, `${c.name} · ${arch(c).tr}${CB.isTransposed(c, arch(c)) ? ' · ' + world(c).tr : ''}`]);
     if (!C.lead && ST.chars[0]) C.lead = ST.chars[0].id;
     const plan = buildPlan();
     const lead = plan.lead;
@@ -450,6 +476,7 @@
         el('h3', null, plan.concept.tr, el('span', { class: 'eyebrow', text: CB.FORMATS.find((f) => f[0] === C.format)[1] })),
         el('p', { class: 'logline', text: fillTr(plan.concept.log, lead) }),
         el('p', { class: 'note', text: `Kanca: ${fillTr(plan.concept.hook, lead)}` }),
+        lead && CB.isTransposed(lead, arch(lead)) ? el('p', { class: 'hint', text: `Baş karakter ${world(lead).tr} dünyasında: kostüm o dünyaya göre yazılır, serbest çekimler o dünyanın mekânlarından seçilir.` }) : null,
         el('p', { class: 'hint', text: `${plan.shots.length} çekim · önerilen süre ${Math.max(6, plan.shots.length * 3)}–${plan.shots.length * 4 + 4} sn · ${C.aspect}` })),
       el('div', { class: 'section shots' }, ...rows));
 
