@@ -555,7 +555,7 @@ vec3 scene(vec2 uv, vec2 st){
     } else {
       float dcr=cr_crys(p);
       vec3 rk=mix(mix(u_c[0], u_c[1], .6), vec3(lum(u_c[1])), .35);
-      vec3 rock=rk/max(lum(rk),.01)*.16*(.6+.8*vnoise3(p*4.));
+      vec3 rock=rk/max(lum(rk),.01)*.12*(.6+.8*vnoise3(p*4.));
       float wet=smoothstep(.5,.9,vnoise3(p*1.5));
       float cav=.5+.5*vnoise3(p*2.7);
       col=rock*(cc*exp(-dcr*.7)*1.6*mix(.4,1.4,u_p[2])+mix(mix(u_c[1],u_c[2],.3),cc,.4)*.3*cav+cc*.12*max(dot(n,-rd),0.)+mouth*.35*max(-n.z,0.));
