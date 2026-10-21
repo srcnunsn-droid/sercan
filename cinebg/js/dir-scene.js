@@ -5,6 +5,7 @@
   if (!CB || !CB.DIR) return;
   const U = CB.UI;
   const { el } = U;
+  const put = (n, ...kids) => n.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
   const cap = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1) : '');
   const up = (t) => (t || '').toLocaleUpperCase('en');
   const slug = (t) => (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').map((w, i) => (i ? cap(w.toLowerCase()) : w.toLowerCase())).join('');
@@ -152,7 +153,7 @@
     const reOut = () => { saveSE(); renderOut(); };
     const re = () => { saveSE(); renderForm(); renderOut(); };
     function renderForm() {
-      form.replaceChildren(
+      put(form, 
         U.section('Zincir',
           el('div', { class: 'row' },
             U.select('ds_pre', [['', 'Örnek yükle…'], ...Object.entries(PRESETS).map(([k, v]) => [k, v.tr])], '', (v) => { if (!v) return; SE = Object.assign({}, JSON.parse(JSON.stringify(PRESETS[v]))); delete SE.tr; re(); }),
@@ -211,7 +212,7 @@
       const fd = screenplay();
       const rev = SE.beats.filter((b) => b.form !== 'none' && b.before && b.after);
       const engine = rev.length ? `Motor notu: ${rev.map((b) => `dönüş (${FORM_EN[b.form]}) → seyirci ${SE.hero} hakkındaki hükmünü "${b.before}" → "${b.after}" olarak değiştirir`).join('; ')}.` : '';
-      out.replaceChildren(
+      put(out, 
         el('article', { class: 'pcard dlint ' + (a.issues.some((x) => x.w >= 4) ? 'bad' : 'ok') },
           el('header', null, el('strong', { text: 'Zincir durumu' }), el('span', { text: a.issues.length ? `${a.issues.length} bulgu` : 'zincir sağlam' })),
           el('ul', null, ...(a.issues.length ? a.issues.map((x) => el('li', { class: x.w >= 4 ? 'e' : 'w', text: x.t })) : [el('li', { class: 'okl', text: 'Beş elemanın hepsi adlandırıldı.' })]))),
@@ -243,6 +244,7 @@
     'tests whether the partner noticed the slip',
   ];
   const VERBS = ['reassures', 'teases', 'pins down', 'begs', 'humiliates', 'disarms', 'tests', 'flatters', 'warns', 'distracts', 'comforts', 'dares', 'deflects', 'wins back', 'probes', 'shields'];
+  const defTask = (i) => ({ v: VERBS[(i * 5) % VERBS.length], e: EYE[i % 6] });
   const PRON = { he: ['he', 'his'], she: ['she', 'her'], they: ['they', 'their'] };
   const emp = (o) => Object.assign({ name: '', pron: 'he', channel: '', motive: '', goal: '', obstacle: '', tactic: '', plus: '', minus: '', listen: '' }, o);
   const AT_PRE = {
@@ -254,7 +256,14 @@
         emp({ name: 'MOTHER', pron: 'she', channel: 'packing "ordinarily" — folding, counting, smoothing every item', motive: 'superstition — tears before a journey are a bad omen', goal: 'send him off strong, don\'t make him carry her fear', obstacle: 'the real feeling pressing every second; one wet look and the scene\'s line collapses', tactic: 'packs as if it were any trip, eyes stealing to him, measuring, memorizing, snapping back to the socks the moment he looks up' }),
         emp({ name: 'SON', pron: 'he', channel: 'eating "casually" at the table', motive: 'for mom', goal: 'leave her calm, show he is ready', obstacle: 'her hands slowing down — the moment she stops packing, the feeling wins', tactic: 'eats casually, watching her hands, not her face — because her face is where the danger is' }),
       ],
-      lineTasks: {},
+      lineTasks: {
+        'MOTHER|0': { v: 'reassures', e: 'steals a look and snaps back before being caught' },
+        'SON|0': { v: '', e: 'watches the partner\'s hands, not the face — the face is where the danger is' },
+        'SON|1': { v: 'teases', e: 'waits for the punchline, ready to protect the mood' },
+        'MOTHER|2': { v: 'disarms', e: 'measures the partner, memorizing the face' },
+        'SON|3': { v: 'comforts', e: 'holds the partner\'s eyes to make the point impossible to dodge' },
+        'MOTHER|3': { v: '', e: 'steals a look and snaps back before being caught' },
+      },
     },
     lab: {
       tr: 'Örnek: laboratuvar vizitesi (doktor / sağlıkçı)',
@@ -264,7 +273,16 @@
         emp({ name: 'MEDIC', pron: 'he', channel: 'CARING — patient-care gestures beyond the checklist, checking the man, not the chart', motive: 'routine professionalism is his way of not betraying his oath — his penance, his path to self-forgiveness', goal: 'get through the round without the doctor seeing that it gets to him', obstacle: 'the case is too horrifying to stay routine; one crack and the line collapses', tactic: 'reports the numbers flat while his eyes keep going back to the patient\'s face, then checking whether the doctor noticed', plus: 'CARING', minus: 'Compromised' }),
         emp({ name: 'DOCTOR', pron: 'he', channel: 'OBLIGATED ACTIONS DONE RIGHT — correct metrics, on time, double-checking an entry', motive: 'the quiet experiment — feeding the test and observing whether the young one survives conscience', goal: 'keep the round on schedule and see what the young medic does', obstacle: 'the medic\'s care, which could pull him back into a hope he lost long ago', tactic: 'answers flat and watches the medic sideways, curious, registering every hesitation', plus: 'Corporate Loyal', minus: 'CARELESS' }),
       ],
-      lineTasks: {},
+      lineTasks: {
+        'MEDIC|0': { v: 'tests', e: 'tests whether the partner noticed the slip' },
+        'DOCTOR|0': { v: '', e: 'decides if the partner is serious' },
+        'DOCTOR|1': { v: 'deflects', e: 'registers after each point whether it landed — interested, or about to smirk' },
+        'MEDIC|2': { v: 'probes', e: 'searches the partner\'s eyes for permission to stop pretending' },
+        'DOCTOR|2': { v: '', e: 'measures the partner, memorizing the face' },
+        'DOCTOR|3': { v: 'tests', e: 'hunts the partner\'s face for the lie' },
+        'MEDIC|4': { v: 'shields', e: 'compares what is felt with what the partner shows' },
+        'DOCTOR|4': { v: '', e: 'decides if the partner is serious' },
+      },
     },
   };
   let AT = Object.assign({ event: '', terrain: '', direction: '', ending: '', axis: '', dialogue: '', chars: [emp({ name: 'A' }), emp({ name: 'B', pron: 'she' })], lineTasks: {}, breakAt: '' }, U.store.get('dirActing', {}));
@@ -296,7 +314,7 @@
       lines.forEach((l) => {
         const task = AT.lineTasks[`${N}|${l.i}`];
         if (l.who === N) {
-          const t = task || { v: VERBS[0], e: EYE[1] };
+          const t = Object.assign(defTask(l.i), task || {});
           m2m.push(`— "${l.text}" — ${t.v} the partner; ${t.e}`);
         } else if (task && task.e) {
           m2m.push(`— (listening) "${l.text}" — ${task.e}`);
@@ -337,7 +355,7 @@ ${m2m.join('\n')}
     function renderForm() {
       const lines = parseDialogue();
       const chars = ctx.chars();
-      form.replaceChildren(
+      put(form, 
         U.section('Sahne',
           el('div', { class: 'row' },
             U.select('at_pre', [['', 'Örnek yükle…'], ...Object.entries(AT_PRE).map(([k, v]) => [k, v.tr])], '', (v) => { if (!v) return; AT = JSON.parse(JSON.stringify(AT_PRE[v])); delete AT.tr; AT.breakAt = v === 'lab' ? 'MEDIC|4' : ''; re(); }),
@@ -358,12 +376,12 @@ ${m2m.join('\n')}
       const f = (k, label, ph) => U.field(label, U.textarea(`at_c${ci}_${k}`, c[k], (v) => { c[k] = v; reOut(); }, 2, ph));
       const lineRows = lines.map((l) => {
         const key = `${N}|${l.i}`;
-        const t = AT.lineTasks[key] || (l.who === N ? { v: VERBS[0], e: EYE[1] } : { v: '', e: '' });
+        const t = AT.lineTasks[key] || (l.who === N ? defTask(l.i) : { v: '', e: '' });
         const setT = (k, v) => { AT.lineTasks[key] = Object.assign({}, t, { [k]: v }); reOut(); };
         return el('div', { class: 'dline' + (l.who === N ? ' mine' : '') },
           el('span', { class: 'dline-t', text: `${l.who ? l.who + ': ' : ''}${l.text}` }),
           l.who === N ? U.select(`at_v${ci}_${l.i}`, VERBS.map((v) => [v, v]), t.v, (v) => setT('v', v)) : null,
-          U.select(`at_e${ci}_${l.i}`, [['', l.who === N ? EYE[1] : '— dinlerken görev yok —'], ...EYE.map((e) => [e, e])], t.e, (v) => setT('e', v)),
+          U.select(`at_e${ci}_${l.i}`, [...(l.who === N ? [] : [['', '— dinlerken görev yok —']]), ...EYE.map((e) => [e, e])], t.e, (v) => setT('e', v)),
           l.who === N ? el('label', { class: 'dcheck' }, checkbox(AT.breakAt === key, (v) => { AT.breakAt = v ? key : ''; reOut(); }), ' kırılma') : null);
       });
       return U.section(`Karakter ${ci + 1}`,
@@ -382,7 +400,7 @@ ${m2m.join('\n')}
     function renderOut() {
       const r = actingBlocks();
       const all = [r.head, '', ...r.blocks].join('\n\n');
-      out.replaceChildren(
+      put(out, 
         el('article', { class: 'pcard dlint ' + (r.warns.length ? 'bad' : 'ok') },
           el('header', null, el('strong', { text: 'Yaygın hatalar' }), el('span', { text: r.warns.length ? `${r.warns.length} uyarı` : 'temiz' })),
           el('ul', null, ...(r.warns.length ? r.warns.map((w) => el('li', { class: 'w', text: w })) : [el('li', { class: 'okl', text: 'Kimse duyguyu oynamıyor; herkes yönü oynuyor.' })]))),
@@ -620,7 +638,7 @@ VİDEO (bağlayıcıyı kullandıktan sonra)
     const re = () => { saveBM(); size(); paint(); renderForm(); renderOut(); };
     function renderForm() {
       const chars = ctx.chars();
-      form.replaceChildren(
+      put(form, 
         U.section('Harita',
           el('div', { class: 'bmap-wrap' }, cv),
           el('p', { class: 'hint', text: 'Figürü sürükle: konum. Kesikli yolun ucunu sürükle: hareket yönü. Harf etiketleri yalnızca düzenleyicide görünür; indirilen PNG\'de yok.' }),
@@ -668,7 +686,7 @@ VİDEO (bağlayıcıyı kullandıktan sonra)
     }
     function renderOut() {
       const t = blockingTexts(ctx);
-      out.replaceChildren(
+      put(out, 
         el('p', { class: 'note', text: `Bu PNG doğrudan ${t.T.staging} olarak kullanılabilir. Kendi karenden ürettireceksen önce 1. adım promptunu kullan; sonuç gelince bu etiketi ver.` }),
         U.pcard('Etiketler', 'üretilen haritaya / kaynak kareye', `${t.T.staging}   ← harita\n${t.T.loc}   ← kaynak kare (mekân)\nRenk anahtarı: ${t.key}`),
         U.pcard('1. adım · Diyagram promptu', 'kaynak kare image_1 olarak eklenir', t.diag, 'Grafik kelimeleri YALNIZCA bu promptta geçer; video bağlamına hiç girmez.'),

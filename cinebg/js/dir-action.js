@@ -7,6 +7,7 @@
   if (!CB || !CB.DIR) return;
   const U = CB.UI;
   const { el } = U;
+  const put = (n, ...kids) => n.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
 
   const BAN = 'Do not generate music, score, songs, instruments, drones, swelling or rising tones, sub-bass builds, dialogue, voices, narration or subtitles of any kind.';
 
@@ -150,15 +151,15 @@
       gap: '{A} hidden in the dark three metres behind {B}', hands: ['hands empty', 'a flashlight'],
     },
     mech: {
-      tr: 'Mecha / kaiju çarpışması', en: 'a clash between two giant mechs', lead: ['groundScale', 'orbitMech'], alt: ['mechShoulder', 'godsEye', 'craneRise'], react: ['slowmoTransform', 'whipThrown'],
+      tr: 'Mecha / kaiju çarpışması', en: 'a clash between two giant mechs', lead: ['groundScale', 'orbitMech'], alt: ['mechShoulder', 'godsEye', 'craneRise'], react: ['whipThrown', 'slowmoTransform'],
       p: P('Epic', '35mm Film', 'Anamorphic', '14mm', 'f/11', 'Single Shot'), emo: [['Anger', 2], ['Fear', 3]], cast: 2, mech: 1,
       ev: [
-        { t: 'in the foreground a car brakes hard and people run past at street level; far above, {A} charges {B} across the avenue' },
+        { t: 'in the foreground a car brakes hard and people run past at ground level; far above, {A} charges {B} across the open ground' },
         { t: '{A} slams its shoulder into the chest plate of {B}', money: 1 },
-        { t: '{B} is flung across the street into the glass tower', whip: 1, after: 'glass and concrete dust burst out of the tower a beat after impact' },
-        { t: '{A} pivots toward the tower, the foreground people still running', end: 'the shot ends mid-motion' },
+        { t: '{B} is flung across the ground into the nearest building', whip: 1, after: 'glass and concrete dust burst out of the building a beat after impact' },
+        { t: '{A} pivots toward the building, the foreground people still running', end: 'the shot ends mid-motion' },
       ],
-      damage: 'the broken tower facade stays broken', sfx: 'metal groaning, a colossal impact, glass raining, car alarms, running footsteps',
+      damage: 'the broken building facade stays broken', sfx: 'metal groaning, a colossal impact, glass raining, car alarms, running footsteps',
       gap: 'a city block between them', hands: ['heavy fists clenched', 'long arms spread'],
     },
     finisher: {
@@ -321,7 +322,7 @@
     const who = sc.mech ? `${AT} and ${BT}` : sc.crowd ? `${AT} against ${S.crowd} attackers` : `${AT} and ${BT}`;
     const lines = [];
     lines.push('SHOT');
-    lines.push(`${D}-second ${single ? 'single continuous take' : 'clip'}, ${S.ratio}. ${cap(sc.en)} in ${loc.text}: ${who}; the camera ${lead.prompt.replace(/^camera /, '')}.` + (S.mode === 'raw' ? ` Look: ${S.look}, ${S.p.lens.toLowerCase()} lens character, ${S.p.mm} focal length.` : ''));
+    lines.push(`${D}-second ${single ? 'single continuous take' : 'clip'}, ${S.ratio}. ${cap(sc.en)}; location: ${loc.text}. ${cap(who)}; the camera ${lead.prompt.replace(/^camera /, '')}.` + (S.mode === 'raw' ? ` Look: ${S.look}, ${S.p.lens.toLowerCase()} lens character, ${S.p.mm} focal length.` : ''));
     lines.push('');
 
     /* CAST AND FIRST FRAME */
@@ -332,7 +333,7 @@
     const wearB = B.wear ? `, wearing ${B.wear}` : '';
     let inventory;
     if (sc.crowd) inventory = `${AT} stands at the centre of the frame${wearA}, ${handsA}; ${S.crowd} attackers in plain dark work clothes spread around ${AT}, ${fill(sc.gap, AT, BT)}`;
-    else if (sc.mech) inventory = `${AT} stands far down the avenue at the left of the frame, ${handsA}; ${BT} stands at the right of the frame, ${handsB}; ${sc.gap}; a car and a few small people at street level in the foreground`;
+    else if (sc.mech) inventory = `${AT} stands far back at the left of the frame, ${handsA}; ${BT} stands at the right of the frame, ${handsB}; ${sc.gap}; a car and a few small people at ground level in the foreground`;
     else inventory = `${AT} stands at the left of the frame${wearA}, ${handsA}; ${BT} stands at the right of the frame${wearB}, ${handsB}; ${fill(sc.gap, AT, BT)}; both full-body`;
     const lightSrc = sc.dark ? 'near-black, the only light comes from flashes and one weak practical far behind' : loc.light ? `${loc.light}` : 'one cold practical light';
     const count = sc.mech ? 'Exactly two mechs exist in this video, plus a few small human figures in the foreground.' : sc.crowd ? `Exactly ${S.crowd + 1} people exist in this video.` : 'Exactly two people exist in this video.';
@@ -379,7 +380,7 @@
     /* PHYSICS */
     lines.push('PHYSICS');
     const mass = sc.mech ? 'Both mechs are colossal and heavy; every footfall cracks the asphalt and shakes the parked cars.' : `${sc.crowd ? 'Everyone is' : 'Both are'} heavy and grounded; feet bear the full weight on every step.`;
-    lines.push(`${mass} Contact first: nothing cracks, sprays or sounds before contact. Consequence late: dust and debris arrive a beat after. Loose elements — coats, hair, straps — lag every movement and settle late. ${cap(fill(sc.damage, AT, BT))}. Nothing floats or teleports.`);
+    lines.push(`${mass} Contact first: nothing cracks, sprays or sounds before contact. Consequence late: dust and debris arrive a beat after. ${sc.mech ? 'Loose cables and armour plates' : 'Loose elements — coats, hair, straps —'} lag every movement and settle late. ${cap(fill(sc.damage, AT, BT))}. Nothing floats or teleports.`);
     lines.push('');
 
     /* LIGHT */
@@ -412,7 +413,7 @@
     const prompt = lines.join('\n');
 
     /* CS4 paneli */
-    const tokA = sc.mech ? AT : AT, tokB = BT;
+    const tagName = (x, L) => (x.c && x.c.name ? x.c.name : `${L} (${x.tok.replace(/^the /, '')})`);
     const panel = [
       `☐ 1 · Genre: ${S.p.genre}`,
       `☐ 2 · Camera: ${S.p.cam}`,
@@ -423,8 +424,8 @@
       `☐ 3 · Tempo: ${S.p.tempo}${single ? ' — prompt tek plan (cut_count=0) ile uyumlu' : ' — prompt kesmeye izin veriyor'}`,
       `☐ Lighting: ${S.p.light}`,
       S.era !== '—' ? `☐ Era: ${S.era}` : null,
-      `☐ 4 · Emotion: @${tokA.replace(/^the /, '')} → ${S.emoA[0]} (${S.emoA[1]})`,
-      sc.crowd ? `☐ 4 · Emotion: saldırganlar → ${S.emoB[0]} (${S.emoB[1]})` : `☐ 4 · Emotion: @${tokB.replace(/^the /, '')} → ${S.emoB[0]} (${S.emoB[1]})`,
+      `☐ 4 · Emotion: @${tagName(A, 'A')} → ${S.emoA[0]} (${S.emoA[1]})`,
+      sc.crowd ? `☐ 4 · Emotion: saldırganlar → ${S.emoB[0]} (${S.emoB[1]})` : `☐ 4 · Emotion: @${tagName(B, 'B')} → ${S.emoB[0]} (${S.emoB[1]})`,
       `☐ 5 · Prompt: aşağıdaki blok — yalnızca olan biteni anlatır, görünüm panelde.`,
       `Parametreler: ratio ${S.ratio} · duration ${D}s · 24 fps (Seedance sabit)`,
     ].filter(Boolean).join('\n');
@@ -547,7 +548,7 @@
         U.select('da_' + key + 'e', PANEL.emo.map((x) => [x, x]), S[key][0], (v) => { S[key][0] = v; reOut(); }),
         U.select('da_' + key + 'i', [['1', '1'], ['2', '2'], ['3', '3']], String(S[key][1]), (v) => { S[key][1] = +v; reOut(); }));
       const lead = MOVES[S.lead];
-      form.replaceChildren(
+      put(form, 
         U.section('Sahne',
           el('div', { class: 'chips' },
             U.field('Sahne tipi', U.select('da_scen', Object.entries(SCEN).map(([k, v]) => [k, v.tr]), S.scen, (v) => { applyScenario(v); re(); })),
@@ -599,7 +600,7 @@
       const L = lint(b.prompt, b.D, S.mode === 'cs4' ? S.p.tempo : null);
       const warn = combos(b);
       const ok = !L.E.length;
-      out.replaceChildren(
+      put(out, 
         b.assumptions.length ? el('p', { class: 'note', text: 'Varsayım: ' + b.assumptions.join('; ') + '.' }) : null,
         warn.length ? el('div', { class: 'dwarn' }, ...warn.map((w) => el('p', { text: '⚠ ' + w }))) : null,
         S.mode === 'cs4' ? U.pcard('CS4 paneli', 'kontrol listesi · sırayla', b.panel) : U.pcard('Parametre satırı', 'ham Seedance', b.raw),

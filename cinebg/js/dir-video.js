@@ -304,7 +304,7 @@
       return `${fx(a)}–${fx(b2)} s — SHOT ${i + 1}, ${s.size}, ${s.fov}° FOV: ${s.move}.${tiltT}${look}`;
     });
     const p = [
-      `SCENE CONTEXT: ${o.dur}-second faceless documentary block for the line "${o.beat || '[script beat]'}". ${cap(subj)} in ${loc}, built as ${cutLine}.`,
+      `SCENE CONTEXT: ${o.dur}-second faceless documentary block for the line "${o.beat || '[script beat]'}". Subject: ${subj}. Location: ${loc}. Built as ${cutLine}.`,
       `LOCATION MAP: ${cap(sc.lm.center)} at the centre; ${sc.lm.left} on the left; ${sc.lm.right} on the right; ${sc.lm.far} in the far distance; ${sc.floor} underfoot. Every shot stays inside this geography.`,
       `FIRST FRAME: already mid-motion — ${vids[0] ? vids[0].move : 'the camera drifting'}, ${o.haze}% haze hanging in the air, dust lifting off ${sc.floor}.`,
       `FORMAT MODE: timed multishot — ${cutLine}. Within each shot the camera is physically carried and holds one continuous move.`,
@@ -392,7 +392,7 @@
     const refs = lines(o.refs);
     const S = [];
     S.push(`STYLE: ${st.style} ${sc.grade}.`);
-    S.push(`SCENE CONTEXT: ${D}-second ${st.tr === 'Live-action sinematik' ? 'live-action cinematic' : o.fmt} piece — ${hero} in ${sc.loc}. ${oner ? 'One continuous take.' : `${n} shots.`} Aspect ${asp}.`);
+    S.push(`SCENE CONTEXT: ${D}-second ${st.tr === 'Live-action sinematik' ? 'live-action cinematic' : o.fmt} piece. Subject: ${hero}. Location: ${sc.loc}. ${oner ? 'One continuous take.' : `${n} shots.`} Aspect ${asp}.`);
     if (refs.length || st.input) {
       S.push('ACTIVE REFERENCES / INPUT LOCK:');
       if (st.input) S.push(`INPUT LOCK — <<<video_1>>> matches input 100%. The entire source clip is preserved UNCHANGED: every figure, the props, the lighting, the grade and the exact camera move with its framing, focal length, shake and timing. Do NOT re-grade, re-time, smooth, or re-frame anything. The ONLY additions are ${hero}, the light it casts, its contact shadows and the host surface's slight physical reaction.`);
@@ -508,7 +508,7 @@
     ];
     const spoken = sh.filter((s) => s.line);
     const P = [];
-    P.push(o.logline || `${o.dur}-second ${o.aspect} clip, ${sh.length} shots, hard cuts on action.`);
+    P.push(o.logline || `${o.dur}-second ${o.aspect} clip, ${sh.length === 1 ? 'one continuous shot' : sh.length + ' shots, hard cuts on action'}.`);
     if (o.mid) P.push(o.mid);
     P.push('', 'REFERENCES', ...(assets.length ? assets : ['@loc_scene — location plate; take geometry and light; ignore people in the plate.']));
     P.push('', 'LOOK', o.look || 'Wide 24–28 mm lenses for energy, clean modern digital cinema look, deep clean blacks, punchy contrast, saturated like the location references.');
@@ -545,7 +545,7 @@
     const sh = o.shots;
     return [
       `GENERATIVE REFRAME 16:9 → ${target} … Outpainting only.`,
-      `INPUT @final_${slug(o.name || 'edit')} — ${o.dur} s, 1920×1080, 24 fps, ${sh.length} shots, finished sound.`,
+      `INPUT @final_${slug(o.name || 'edit')} — ${o.dur} s, 1920×1080, 24 fps, ${sh.length} shot${sh.length === 1 ? '' : 's'}, finished sound.`,
       `OUTPUT ${W}×${H}, 24 fps, exactly ${o.dur} s, same cut points (${sh.slice(0, -1).map((s) => fx(s.end) + ' s').join(', ') || 'none'}). Audio: source track passed through — no generated sound.`,
       `HOW THE FRAME IS BUILT — TOP AND BOTTOM ONLY: fit the entire source uniformly to the output width (${W}×${Math.round(W * 9 / 16)}), left and right edges aligned to the output; zero pixels generated on the sides; keep that fixed scale and exact vertical centre in every frame, with no crop, animated zoom or repositioning; the middle band contains the complete source picture; two equal bands of ${band} px above and below. The composition of the original shot IS the composition of the output. Seams invisible. No zoom, crop, pan-and-scan.`,
       'RULES FOR THE GENERATED BANDS — environment only; no new people, hands, faces, animals, food, phones, screens, text or logos; no duplicates of existing objects; bodies cut by the edge continue as clothing only; wide-lens perspective; camera moves carried with parallax; hard cuts hard on the same frame; colour stays saturated.',
@@ -619,6 +619,16 @@ Composition: Rule of thirds + golden ratio. Every person moving from frame one.
 Continuity: Characters, props, environment identical across every cut. No identity drift.
 Technical: 24fps smooth motion. 8K detail. No jitter.
 Audio: Environmental SFX only. No music. No subtitles.`;
+  function ambience(sp) {
+    const w = sp.weather.id + ' ' + sp.time.id;
+    if (/rain|storm|drizzle|monsoon/.test(w)) return 'rain on hard surfaces, a far roll of thunder';
+    if (/snow|blizzard|frost/.test(w)) return 'muffled wind, snow creaking underfoot';
+    if (/fog|mist|smoke/.test(w)) return 'dripping water, one distant bird';
+    if (/dust|heat|sand/.test(w)) return 'dry wind and grit against stone';
+    if (sp.ctx === 'water') return 'deep water pressure hum, slow bubbles';
+    if (sp.ctx === 'int' || sp.ctx === 'studio') return 'room tone with a soft reverb, footsteps on the floor';
+    return 'soft wind and the distant room tone of the location';
+  }
   function shotlistScenes(o, ctx) {
     let src = [];
     if (o.src === 'project') src = projectShots(ctx);
@@ -627,20 +637,21 @@ Audio: Environmental SFX only. No music. No subtitles.`;
     const chars = ctx.chars();
     const lead = chars[0];
     const who = lead ? (lead.name || 'the lead').toUpperCase() : 'THE LEAD';
+    const nm = lead ? cap(lead.name || 'the lead') : 'The lead';
     const anchors = o.anchors.trim() || (chars.length ? chars.slice(0, 3).map((c) => `${(c.name || 'LEAD').toUpperCase()} — ${charEn(c)}, the same wardrobe and hair in every frame, carrying forward the state of the previous scene.`).join('\n') : `${who} — an original character, same wardrobe and hair in every frame.`);
     const per = Math.max(1, o.per | 0);
     return src.map((s, i) => {
       const sp = s.spec, lm = sp.landmarks;
-      const act = P(s.note || (s.sh && s.sh.act) || `${who.toLowerCase()} crosses the space toward ${lm.center}`, lead ? lead.name : 'the lead');
+      const act = P(s.note || (s.sh && s.sh.act) || `${nm} crosses the space toward ${lm.center}`, lead ? lead.name : 'the lead');
       const prompts = Array.from({ length: per }, (_, k) => {
         const tag = per > 1 ? `${i + 1}${'abc'[k]}` : `${i + 1}`;
         const body = [
           'Characters:', anchors, '',
-          'Scene:', `${cap(CB.locText(sp.cat))}, ${sp.time.en.split(',')[0]}, ${sp.weather.en}. ${who} stands near ${lm.center}, ${lm.left} on camera-left, ${lm.right} on camera-right, ${lm.far} far behind. ${k ? 'Continuing directly from the previous prompt: same positions, same light, same emotional state.' : ''}`.trim(), '',
+          'Scene:', `${cap(CB.locText(sp.cat))}, ${sp.time.en.split(',')[0]}, ${sp.weather.en}. ${nm} stands near ${lm.center}, ${lm.left} on camera-left, ${lm.right} on camera-right, ${lm.far} far behind. ${k ? 'Continuing directly from the previous prompt: same positions, same light, same emotional state.' : ''}`.trim(), '',
           `CUT 1 — Wide, ${sp.camera.lens}, ${sp.camera.en.split(',')[0]}, slow motivated move:`,
-          `${k ? 'The beat continues.' : cap(act) + '.'} ${who} is already in motion from the first frame; breath visible, weight shifting. Contre-jour key from ${sp.time.sun > 0.3 ? 'the low sun' : 'the brightest window or sky'} behind, haze catching it. Diegetic sound: ${sp.weather.en.split(',')[0]}.`, '',
+          `${k ? 'The beat continues.' : cap(act) + '.'} ${nm} is already in motion from the first frame; breath visible, weight shifting. Contre-jour key from ${sp.time.sun > 0.3 ? 'the low sun' : 'the brightest window or sky'} behind, haze catching it. Diegetic sound: ${ambience(sp)}.`, '',
           'CUT 2 — Medium, 50mm, eye-level, slow push-in:',
-          `${who}'s eyes find something off-screen — a micro-pause before the reaction, jaw tightens once, chest rise from breathing. The camera pushes from waist to chest as the realisation lands.`, '',
+          `${nm}'s eyes find something off-screen — a micro-pause before the reaction, jaw tightens once, chest rise from breathing. The camera pushes from waist to chest as the realisation lands.`, '',
           'CUT 3 — Close, 85mm, static, contre-jour:',
           `A single slow blink, the eye-line holds on ${lm.far}. The hands stay busy with the small task they carried into the scene. The light flares softly at the edge of frame. Hold the silence to the end of the 15 seconds.`,
         ].join('\n');
@@ -804,7 +815,7 @@ ${body}
         ...CD.filter((x) => x.cat === c).map((x) => {
           const cb = el('input', { type: 'checkbox', id: 'dv-cd-' + x.code }); cb.checked = o.blocks.includes(x.code);
           cb.addEventListener('change', () => { o.blocks = CD_ORDER.filter((k) => (k === x.code ? cb.checked : o.blocks.includes(k))); keep('cinedance', o); run(); });
-          return el('label', { class: 'dv-chk', for: 'dv-cd-' + x.code, title: x.text.slice(0, 300) }, cb, el('span', null, el('b', { text: x.code }), ' ' + x.title));
+          return el('label', { class: 'dv-chk', for: 'dv-cd-' + x.code, title: x.text.slice(0, 300) }, cb, el('span', null, el('b', { text: x.code }), x.title !== x.code ? ' ' + x.title : ''));
         }))));
       head(main, 'CINEDANCE Blokları', 'Kısa brief + blok kodları → tam video promptu. Bir video, bir numara; kural ve sonuçları; sayılar sıfat yerine; başarısızlık önceden tarif edilir; yasakların yarısı numaranın tersidir.');
       main.append(el('div', { class: 'section' }, grid(
