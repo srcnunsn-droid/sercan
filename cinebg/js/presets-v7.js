@@ -36,16 +36,16 @@ Sağdan yumuşak pus|.9 .7 .35 .2 .65 .5 .75 .5
 Hafif sabah pusu|.25 .9 .4 .3 .4 .6 .55 .45
 `);
   def('mountains', `
-Alçak ufuk, dev zirveler|.25 .5 .4 .5 .5 .8 .4 .3
+Alçak ufuk, dev zirveler|.05 .5 .4 .5 .5 .8 .4 .3
 Sisli katmanlar|.45 .4 .3 .4 .9 .4 .85 .2
 Gün batımı silüeti|.35 .7 .1 .8 .6 .6 .3 .4
-Yüksek ufuk vadi|.65 .3 .5 .3 .7 .5 .7 .3
+Yüksek ufuk vadi|.95 .3 .5 .3 .7 .5 .7 .3
 Keskin sıra dağlar|.4 .2 .6 .4 .4 .95 .2 .25
 Bulutlu yüksek irtifa|.5 .55 .55 .5 .5 .7 .5 .85
 Tek katman çıplak sırt|.35 .8 .35 .6 .15 .75 .15 .15
 Yumuşak tepeler|.45 .45 .45 .35 .8 .2 .5 .4
 Kontr ışıklı zirve|.3 .5 .2 .95 .55 .65 .35 .2
-Uzak pastel ufuk|.55 .15 .3 .45 .65 .35 .6 .6
+Uzak pastel ufuk|.75 .15 .3 .45 .65 .35 .6 .6
 `);
   def('city', `
 Büyük yumuşak bokeh|.9 .5 .4 .1 .2 .4 .5 .3
@@ -60,12 +60,12 @@ Renk karışık neon|.5 .75 .3 .3 .4 .5 .95 .3
 Seyrek uzak ışıklar|.35 .2 .5 .15 .6 .35 .4 .6
 `);
   def('ocean', `
-Alçak ufuk gün batımı|.3 .5 .1 .4 .3 .8 .8 .3
+Alçak ufuk gün batımı|.08 .5 .1 .4 .3 .8 .8 .3
 Sakin cam deniz|.5 .4 .4 .1 .2 .6 .5 .1
 Fırtınalı dev dalgalar|.45 .6 .4 .95 .85 .3 .3 .8
 Bulutlu açık deniz|.55 .3 .5 .5 .9 .4 .3 .4
 Parlayan yol|.4 .5 .2 .3 .3 .95 .7 .3
-Yüksek ufuk geniş deniz|.75 .7 .45 .45 .4 .5 .4 .5
+Yüksek ufuk geniş deniz|.97 .7 .45 .45 .4 .5 .4 .5
 Kenarda batan güneş|.35 .15 .08 .35 .5 .7 .9 .3
 Gri sabah denizi|.5 .6 .55 .4 .7 .2 .2 .3
 Sert öğle pırıltısı|.45 .5 .9 .5 .2 .9 .6 .5
@@ -96,7 +96,7 @@ Hızlı dalgalanma|.65 .9 .6 .6 .6 .5 .5 .9
 Dikey drapeler|.4 .5 .5 .7 .4 .55 .5 .3
 `);
   def('dunes', `
-Alçak ufuk dev kumullar|.25 .5 .3 .4 .7 .3 .5 .2
+Alçak ufuk dev kumullar|.05 .5 .3 .4 .7 .3 .5 .2
 Keskin sırtlar yan ışık|.4 .15 .2 .6 .95 .2 .6 .2
 Sıcak pus öğle|.5 .5 .9 .5 .4 .9 .3 .5
 Dalgacıklı yakın plan|.6 .7 .35 .7 .6 .3 .95 .2
@@ -104,7 +104,7 @@ Tozlu fırtına önü|.45 .4 .4 .5 .5 .6 .4 .9
 Sonsuz kum denizi|.55 .5 .45 .9 .5 .4 .5 .3
 Gün batımı uzun gölge|.35 .85 .08 .55 .8 .4 .7 .2
 Yumuşak pastel tepeler|.45 .3 .5 .3 .2 .5 .3 .3
-Yüksek ufuk vadi|.75 .6 .5 .6 .6 .5 .6 .4
+Yüksek ufuk vadi|.95 .6 .5 .6 .6 .5 .6 .4
 Tek dev kumul|.3 .35 .3 .15 .75 .3 .4 .2
 `);
   def('anamorphic', `
@@ -197,10 +197,10 @@ Yangın kızıllığı|.6 .95 .6 .7 .4 .4 .3 .4
 Yıkıntı siluetleri|.5 .5 .95 .4 .3 .4 .5 .3
 Kıvılcım yağmuru|.5 .6 .5 .95 .3 .4 .4 .6
 Uzak patlamalar|.6 .5 .5 .4 .95 .4 .4 .4
-Alçak ufuk gökyüzü|.5 .5 .6 .4 .4 .2 .7 .5
+Alçak ufuk gökyüzü|.5 .5 .6 .4 .4 .02 .7 .5
 Ay altında sessiz|.4 .2 .6 .2 .1 .45 .9 .2
 Rüzgarlı toz|.6 .4 .5 .5 .3 .45 .5 .95
-Yüksek ufuk çamur|.55 .5 .6 .3 .4 .8 .4 .4
+Yüksek ufuk çamur|.55 .5 .6 .3 .4 .98 .4 .4
 Sabah sonrası duman|.75 .2 .7 .2 .1 .45 .6 .3
 `);
   def('skyline', `
@@ -312,11 +312,11 @@ Hareketli akış|.5 .5 .5 .5 .95 .5 .4 .5
 Sakin koyu doku|.6 .3 .3 .7 .2 .2 .5 .2
 `);
   def('clouds', `
-Alçak ufuk kabarık|.25 .5 .4 .9 .5 .5 .5 .3
+Alçak ufuk kabarık|.05 .5 .4 .9 .5 .5 .5 .3
 Dev bulut kuleleri|.4 .5 .5 .6 .6 .95 .5 .3
 İnce yaygın bulut|.45 .5 .5 .3 .3 .2 .5 .4
 Gün batımı parıltı|.35 .7 .1 .6 .5 .5 .95 .3
-Yüksek ufuk deniz|.75 .4 .5 .7 .6 .4 .5 .4
+Yüksek ufuk deniz|.95 .4 .5 .7 .6 .4 .5 .4
 Büyük ölçekli|.5 .5 .5 .6 .95 .6 .5 .3
 Hızlı akan|.45 .5 .5 .6 .5 .5 .5 .95
 Sağdan güneş|.45 .9 .4 .6 .5 .5 .7 .3
@@ -460,7 +460,7 @@ Dalgalı tepeler|.7 .9 .5 .5 .4 .4 .5 .4
 Düz ova|.15 .2 .5 .5 .5 .3 .5 .4
 Yeşil tarlalar|.5 .5 .05 .6 .4 .4 .5 .4
 Altın buğday|.5 .5 .95 .5 .4 .4 .5 .4
-Ağaç sıralı|.5 .5 .5 .95 .4 .3 .5 .4
+Ağaç sıralı|.5 .5 .5 .8 .4 .3 .5 .4
 Yollu patikalı|.5 .5 .5 .5 .95 .4 .5 .4
 Çiftlik evleri|.5 .5 .5 .5 .4 .95 .5 .4
 Alçak güneş|.5 .5 .6 .5 .4 .4 .1 .4
