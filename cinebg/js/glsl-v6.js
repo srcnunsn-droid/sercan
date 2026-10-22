@@ -102,6 +102,7 @@ vec3 s3_signc(vec2 k){
   float h=hash12(k);
   return h<.33 ? u_c[3] : h<.6 ? mix(u_c[2],vec3(1.,.8,.5),.4) : h<.8 ? mix(u_c[3],vec3(.2,.9,1.),.5) : mix(u_c[3],vec3(1.,.25,.5),.5);
 }
+float s3_tb=0.; // yansımada ışının önceki yolu: desen bant sınırlaması toplam mesafeyi kullanır
 // e: yayılan ışık (yansımada da görünsün diye ayrı tutulur)
 vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
   vec3 p=ro+rd*t;
@@ -118,7 +119,7 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
   vec3 alb=vec3(.3); vec3 e=vec3(0.);
   float rough=1.;
   // piksel ayak izi (metre): desenler bir pikselden küçülünce ortalamasına söner (moiré önleme)
-  float pix=t*PX*1.6/max(abs(u_cam.x),.01)/max(abs(dot(n,-rd)),.18);
+  float pix=(t+s3_tb)*PX*1.6/max(abs(u_cam.x),.01)/max(abs(dot(n,-rd)),.18);
   float bl=pix*1.5;
   if(m<.5){
     alb=vec3(.07)+u_c[0]*.15; alb*=.8+.4*vnoise(p.xz*3.);
@@ -138,7 +139,7 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
     float hc=hash12(cid+11.);
     vec3 wall=mix(mix(u_c[1],vec3(lum(u_c[1])),.45), mix(u_c[2],vec3(.9,.85,.78),.5), hc*.8);
     wall=mix(wall, vec3(.55,.3,.22), step(.72,hash12(cid+2.9))*.6);
-    alb=wall*(.75+.25*vnoise(p.yz*vec2(4.,2.)+hc*9.));
+    alb=wall*(.75+.25*mix(.5,vnoise(p.yz*vec2(4.,2.)+hc*9.),sat(.25/bl-.5)));
     bool facade=abs(n.x)>.5;
     if(facade){
       float fl=floor(p.y/3.2);
@@ -188,7 +189,7 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
   float dif=max(dot(n,L),0.);
   vec3 col=alb*(sun*dif*sh+amb*(.45+.55*max(n.y,0.)));
   // gece: sokak lambası havuzları ve vitrin taşması
-  if(p.y<.2){
+  if(m<1.5 && n.y>.5){ // y eşiği yerine malzeme: yüzey toleransı kontur bantları yapmasın
     float lz=fract((p.z+1.2)/S3_L+.5)-.5;
     float pool=exp(-(lz*lz*S3_L*S3_L*.07+pow(ax-(W+.35),2.)*.18));
     col+=alb*mix(vec3(1.,.72,.42),u_c[3],.25)*pool*n6*4.;
@@ -227,11 +228,16 @@ vec3 scene(vec2 uv, vec2 st){
     vec3 p=ro+rd*t;
     float wet=u_p[4]*(m<1.5 ? (m<.5?1.:.6) : 0.);
     if(wet>.05){
-      vec3 nn=normalize(vec3(gnoise(p.xz*9.)*.04,1.,gnoise(p.xz*9.+3.)*.04));
+      // dalgacık normali piksel ayak izinden küçükse sönümlenir (kontur moiré'si önlenir)
+      float pw=t*PX*1.6/max(abs(u_cam.x),.01)/max(-rd.y,.18);
+      float ra=.04*sat(1.-pw*9./2.);
+      vec3 nn=normalize(vec3(gnoise(p.xz*9.)*ra,1.,gnoise(p.xz*9.+3.)*ra));
+      s3_tb=t;
       vec3 rr=reflect(rd,nn);
       float m2; vec2 c2;
       float t2=s3_march(p+vec3(0,.02,0),rr,120.,60,m2,c2);
       vec3 rc=t2<0. ? s3_sky(rr) : s3_fog(s3_shade(p,rr,t2,m2,c2,true),rr,t2);
+      s3_tb=0.;
       float fr=.25+.75*pow(1.-max(-rd.y,0.),5.);
       col=mix(col, rc, fr*wet*.85);
     }

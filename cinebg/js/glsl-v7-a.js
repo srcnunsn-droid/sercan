@@ -58,7 +58,8 @@ vec3 wf_upper(vec2 uv){
   for(int i=0;i<2;i++){
     float fi=float(i);
     float r=wf_T()+.1-fi*.05+fbm4(vec2(uv.x*(1.4+fi)+SEED2.x*3.+fi*7.,fi))*.14;
-    col=mix(col, mix(wf_leaf()*.7, haze, .7-fi*.25), smoothstep(r+PX,r-PX,uv.y));
+    vec3 rc=mix(wf_leaf()*.55*(.7+.6*(gnoise(uv*vec2(30.,60.)+fi)*.5+.5)), haze, .62-fi*.25);
+    col=mix(col, rc*mix(1.,.8,smoothstep(r,r-.15,uv.y)), smoothstep(r+PX,r-PX,uv.y));
   }
   // uçurum yüzü
   float lit=mix(.45,1.15,u_p[6]);
@@ -69,13 +70,13 @@ vec3 wf_upper(vec2 uv){
   float dxf=abs(uv.x-cx);
   rock*=1.-.45*exp(-dxf*7.);                       // şelalenin arkası nemli ve koyu
   float moss=smoothstep(.5,.8, fbm4(uv*vec2(7.,5.)+SEED2)+.5)*u_p[5];
-  rock=mix(rock, wf_leaf()*lit*(.6+.5*vnoise(uv*60.)), moss*.85);
+  rock=mix(rock, wf_leaf()*lit*(.6+.5*(gnoise(uv*60.)*.5+.5)), moss*.85);
   float face=smoothstep(top+PX*1.5, top-PX*1.5, uv.y);
   col=mix(col, rock, face);
   // üst kenar bitki örtüsü
   float veg=top+mix(.0,.07,u_p[5])*(.5+.8*fbm4(vec2(uv.x*14.,2.))+.3);
   float vm=smoothstep(veg+PX,veg-PX,uv.y)*step(top-.03,uv.y)*step(.05,u_p[5]);
-  col=mix(col, wf_leaf()*lit*(.55+.6*vnoise(uv*90.)), vm);
+  col=mix(col, wf_leaf()*lit*(.5+.7*(fbm4(uv*vec2(60.,90.))+.5)), vm);
   // şelale
   float w=wf_w(uv.y);
   float dx=abs(uv.x-cx-sin(uv.y*7.+SEED2.x)*.008);
@@ -83,8 +84,10 @@ vec3 wf_upper(vec2 uv){
   float sp2=mix(.5,2.6,u_p[2]);
   float streak=fbm(vec2((uv.x-cx)*34., uv.y*3.+t*sp2))*.5+.5;
   float fine=gnoise(vec2((uv.x-cx)*140., uv.y*10.+t*sp2*3.))*.5+.5;
-  vec3 wcol=mix(vec3(.55,.65,.7)*lit, vec3(1.08,1.1,1.12)*lit, smoothstep(.3,.8,streak*.75+fine*.25));
-  col=mix(col, wcol, body*(.8+.2*streak));
+  float cover=smoothstep(.22,.62,streak*.7+fine*.3)*(.55+.45*smoothstep(w,w*.3,dx));
+  vec3 wcol=mix(vec3(.62,.7,.74), vec3(1.1,1.12,1.14), smoothstep(.45,.9,streak))*lit;
+  wcol+=vec3(.25)*smoothstep(.012,.0,abs(uv.y-top+.006))*lit;   // kenar dudağı parıltısı
+  col=mix(col, wcol, body*cover);
   // kenar serpintisi
   col=mix(col, vec3(.92,.95,1.)*lit, smoothstep(w*1.8, w, dx)*(1.-body)*.35*u_p[3]*step(uv.y,top)*(.5+.5*fbm4(uv*20.-t*.4)));
   return col;
@@ -110,10 +113,10 @@ vec3 scene(vec2 uv, vec2 st){
   float side=max(smoothstep(edgeL+PX*2.,edgeL-PX*2.,uv.x), smoothstep(edgeR-PX*2.,edgeR+PX*2.,uv.x));
   vec3 sc=mix(wf_rockc()*.22, wf_leaf()*.35, smoothstep(.45,.7,fbm4(uv*9.)+.5)*u_p[5]);
   sc+=v7a_sunc()*.12*u_p[6]*smoothstep(.03,.0,abs(uv.x-edgeL))*step(0.,uv.y+.2);
-  col=mix(col, sc*(.7+.4*vnoise(uv*50.)), side*step(.03,u_p[4]));
+  col=mix(col, sc*(.75+.35*(gnoise(uv*40.)*.5+.5)), side*step(.03,u_p[4]));
   // ön plan kayaları
   float rk=-.42+fbm4(vec2(uv.x*5.+SEED2.x,0.))*.12+.05*sin(uv.x*3.);
-  col=mix(col, wf_rockc()*.2*(.6+.7*vnoise(uv*35.)), smoothstep(rk+PX,rk-PX,uv.y)*step(.05,u_p[4]));
+  col=mix(col, wf_rockc()*.22*(.6+.7*(fbm4(uv*25.)+.5)), smoothstep(rk+PX,rk-PX,uv.y)*step(.05,u_p[4]));
   // sis
   float mist=exp(-abs(uv.y-py-.04)*mix(12.,3.5,u_p[3]))*(.55+.45*fbm4(uv*vec2(3.,8.)+vec2(t*.04,-t*.08)));
   mist+=exp(-abs(uv.x-cx)*6.)*smoothstep(py+.25,py,uv.y)*.4;
@@ -145,17 +148,19 @@ vec3 gc_upper(vec2 uv){
     col=mix(col, mc, m);
   }
   // buzul duvarı
-  float cx=(hash11(SEED2.y)-.5)*.4;
-  float span=A*.5+.1;
-  float wall=hz+mix(.06,.26,u_p[0])*(1.-smoothstep(span*.6,span*1.2,abs(uv.x-cx)))+fbm4(vec2(uv.x*9.,SEED2.x))*.035;
+  float cx=(hash11(SEED2.y)-.5)*.6;
+  float span=A*mix(.22,.5,hash11(SEED2.x*.7));
+  float prof=1.-smoothstep(span*.5,span,abs(uv.x-cx));
+  float wall=hz+mix(.06,.28,u_p[0])*prof*(.8+.3*sin((uv.x-cx)*3.))+fbm4(vec2(uv.x*9.,SEED2.x))*.03*prof;
   float wm=smoothstep(wall+PX,wall-PX,uv.y)*step(hz,uv.y);
   float str=ridged(vec2(uv.x*26.+SEED2.x, uv.y*1.8), 4);
   float crev=smoothstep(.75,.95, ridged(vec2(uv.x*14.+3., uv.y*.6), 3))*u_p[6];
-  float k=mix(.15,.85,u_p[1])*(.6+.6*(1.-str))+crev*.5+smoothstep(wall,hz,uv.y)*.25;
+  float k=mix(.25,.95,u_p[1])*(.55+.6*(1.-str))+crev*.6+smoothstep(wall,hz,uv.y)*.35;
   vec3 ice=gc_ice(sat(k));
-  float lit=.65+.45*smoothstep(-.3,.3,uv.x-sp.x+.2)*mix(.6,1.,u_p[5]);
-  ice*=lit*(.75+.25*str);
-  ice=mix(ice, vec3(1.), smoothstep(wall-.02,wall,uv.y)*.5);
+  float lit=.6+.5*smoothstep(-.4,.4,uv.x-sp.x+.2)*mix(.6,1.,u_p[5]);
+  ice*=lit*(.7+.3*str)*(1.-.35*smoothstep(hz+.04,hz,uv.y));
+  ice*=1.-crev*.45;
+  ice=mix(ice, vec3(1.05), smoothstep(wall-.015,wall,uv.y)*.6);
   col=mix(col, ice, wm);
   return col;
 }
@@ -181,10 +186,13 @@ vec3 scene(vec2 uv, vec2 st){
     vec3 refl=gc_upper(rp);
     vec3 deep=mix(u_c[0], vec3(.03,.12,.18), .5);
     col=mix(deep, refl*.8, mix(.25,.85,u_p[4])*exp(-dy*2.));
-    // kırık buz parçacıkları
-    vec2 g=vec2(uv.x*18., (dy)*80./(dy*6.+.15)); vec2 id=floor(g);
-    float bit=step(.82, hash12(id+SEED2))*smoothstep(.4,.1,length(fract(g)-.5));
-    col=mix(col, gc_ice(.3)*.8, bit*u_p[2]*.6*sat(dy*6.));
+    // kırık buz parçacıkları: su düzlemine perspektifle oturur
+    vec2 gp=vec2(uv.x/dy, 1./dy)*vec2(.9,.35);
+    vec2 g=gp*2.; vec2 id=floor(g);
+    float bit=step(.8, hash12(id+SEED2))*smoothstep(.35,.15,length((fract(g)-.5)*vec2(1.,2.5)));
+    float nearH=sat(dy*8.)*sat((.22-dy)*6.);
+    col=mix(col, gc_ice(.25)*.85, bit*u_p[2]*.7*nearH);
+    col=mix(col, gc_ice(.2)*.9, smoothstep(.74,.8,vnoise(gp*5.))*u_p[2]*.25*nearH);
   }
   // yüzen buzdağları (uzaktan yakına)
   for(int i=0;i<6;i++){
@@ -216,72 +224,91 @@ vec3 scene(vec2 uv, vec2 st){
       name: 'Mercan Resifi & Lagün',
       params: ['Su yüzeyi (bölünmüş görüş)', 'Mercan yoğunluğu', 'Işık huzmeleri', 'Kostik desen', 'Balık sürüleri', 'Bulanıklık / derinlik', 'Mercan renk canlılığı', 'Akıntı'],
       glsl: TONES + `
-float cr7_wl(){ return u_p[0]>.08 ? mix(-.1,.36,u_p[0]) : 2.; }
-vec3 cr7_water(){ return mix(vec3(.02,.28,.36), v7a_norm(u_c[1])*.2, .3); }
+float cr7_wl(){ return u_p[0]>.08 ? mix(-.05,.38,u_p[0]) : 2.; }
+vec3 cr7_shallow(){ return mix(vec3(.08,.55,.62), v7a_norm(u_c[1])*.3, .25); }
+vec3 cr7_deep(){ return mix(vec3(.01,.06,.16), u_c[0]*.6, .35); }
 float cr7_caust(vec2 p){
-  float t=u_time*.4;
-  vec2 q=p*8.;
+  float t=u_time*.5;
+  vec2 q=p*7.;
   float c=0.;
   for(int i=0;i<3;i++){ q=rot(1.1)*q+vec2(t,-t*.7); c+=abs(sin(q.x+sin(q.y))*sin(q.y*.9+sin(q.x*1.3))); }
-  return pow(sat(1.-c/3.),4.)*3.;
+  return pow(sat(1.-c/3.),5.)*4.;
+}
+vec3 cr7_coralc(float k){
+  vec3 a=vec3(1.,.42,.3), b=vec3(1.,.32,.55), c=vec3(.62,.36,.95), d=vec3(1.,.78,.3);
+  vec3 r=k<.25?mix(a,b,k*4.):k<.5?mix(b,c,(k-.25)*4.):k<.75?mix(c,d,(k-.5)*4.):mix(d,a,(k-.75)*4.);
+  r=mix(r, v7a_norm(u_c[3])*.6, .3);
+  return mix(vec3(lum(r)), r, mix(.25,1.4,u_p[6]));
 }
 vec3 scene(vec2 uv, vec2 st){
   float t=u_time;
-  float wl=cr7_wl()+sin(uv.x*14.+t*1.5)*.004;
-  vec3 wc=cr7_water();
-  vec3 col;
+  float wl=cr7_wl()+sin(uv.x*12.+t*1.4)*.004;
+  vec3 sh=cr7_shallow(), dp=cr7_deep();
   if(uv.y>wl){
-    // su üstü: gökyüzü, ufukta ada
-    float hz=wl+.05;
-    vec2 sp=vec2(.3*A*.5, hz+.25);
-    col=skyGrad(uv, hz, sp, .028, .6);
-    float isl=hz+max(0., .08-abs(uv.x-.35)*.35+fbm4(vec2(uv.x*6.,3.))*.03);
-    col=mix(col, v7a_green()*.5, smoothstep(isl+PX,isl-PX,uv.y)*step(hz,uv.y+.002));
-    if(uv.y<hz){ col=mix(mix(wc,vec3(.4,.85,.9),.5), skyGrad(vec2(uv.x,2.*hz-uv.y),hz,sp,.03,.6), .35); }
+    float hz=wl+.04;
+    vec2 sp=vec2(.25*A, hz+.28);
+    vec3 col=skyGrad(uv, hz, sp, .026, .6);
+    float isl=hz+max(0., .07-abs(uv.x-.3)*.3+fbm4(vec2(uv.x*6.,3.))*.03);
+    col=mix(col, mix(vec3(.15,.32,.14),u_c[0],.3), smoothstep(isl+PX,isl-PX,uv.y)*step(hz,uv.y+.002));
+    if(uv.y<hz) col=mix(mix(sh,vec3(.5,.9,.95),.5), skyGrad(vec2(uv.x,2.*hz-uv.y),hz,sp,.03,.6), .4);
     return col;
   }
-  float depth=min(wl,.5)-uv.y;
-  // derinlik gradyanı
-  col=mix(wc*1.6, u_c[0]*.4+wc*.25, sat(depth*mix(.9,2.2,u_p[5])));
-  // ışık huzmeleri
-  vec2 lp=vec2(uv.x*1.2+uv.y*.35, 0.);
-  float rays=pow(sat(fbm4(vec2(lp.x*7.+t*.05,1.))+.4),3.)*smoothstep(-.5,min(wl,.5),uv.y);
-  col+=mix(wc,vec3(.8,1.,1.),.6)*rays*u_p[2]*.6;
-  // dip kum ve mercanlar: üç derinlik katmanı
+  float top=min(wl,.5);
+  vec3 col=mix(dp, sh*.85, smoothstep(-.6, top+.25, uv.y)*.85);
+  col=mix(col, dp, sat(u_p[5]*.6*smoothstep(.2,-.5,uv.y)));
+  // ışık huzmeleri: yüzeyden yelpaze
+  vec2 o=vec2(.15*A, top+.6);
+  vec2 rdv=uv-o;
+  float ang=atan(rdv.x, -rdv.y);
+  float rays=pow(sat(fbm4(vec2(ang*9.+t*.04, 1.))+.45),3.)*smoothstep(-.55,top,uv.y);
+  col+=mix(sh,vec3(.85,1.,1.),.6)*rays*u_p[2]*.38;
+  // resif katmanları (uzak → yakın)
   for(int i=0;i<3;i++){
     float fi=float(i);
-    float base=-.18-fi*.12+fbm4(vec2(uv.x*(1.5+fi)+fi*5.+SEED2.x,fi))*.08;
-    float spikes=pow(abs(gnoise(vec2(uv.x*(18.+fi*14.)+SEED2.y, fi))),.6)*mix(.04,.22,u_p[1])*(1.-fi*.2);
-    float blob=smoothstep(.0,.25,fbm4(vec2(uv.x*(5.+fi*3.)+fi*11., fi*3.)))*.12*u_p[1];
-    float h=base+spikes*smoothstep(.2,.6,vnoise(vec2(uv.x*4.+fi*7.,fi)))+blob;
+    float dk=1.-fi/2.;
+    float base=-.12-fi*.13+fbm4(vec2(uv.x*(1.2+fi)+fi*5.+SEED2.x,fi))*.06;
+    float sc=mix(.5,1.,fi/2.);
+    // dallı mercan parmakları
+    float F=mix(34.,14.,fi/2.);
+    float fing=max(pow(abs(sin(uv.x*F+gnoise(vec2(uv.x*F*.3,fi))*3.)),12.), pow(abs(sin(uv.x*F*1.7+1.3+gnoise(vec2(uv.x*F*.5,fi+4.))*4.)),16.)*.7)*smoothstep(.3,.7,vnoise(vec2(uv.x*F*.1+fi*7.,fi)));
+    fing*=.6+.4*gnoise(vec2(uv.x*F*2.,uv.y*20.));
+    // yuvarlak beyin mercanları
+    float mound=0.;
+    vec2 cell=vec2(uv.x*mix(5.,2.5,fi/2.)+fi*3.3+SEED2.y, 0.);
+    float cid=floor(cell.x); float cf=fract(cell.x)-.5;
+    float rad=mix(.18,.42,hash11(cid*3.7+fi))*step(.3,hash11(cid*1.3+fi*2.));
+    mound=sqrt(max(rad*rad-cf*cf,0.))*.55/mix(5.,2.5,fi/2.)*2.;
+    float h=base+max(fing*mix(.05,.26,u_p[1])*sc, mound*mix(.4,1.2,u_p[1]));
     float m=smoothstep(h+PX*1.5,h-PX*1.5,uv.y);
-    float dk=fi/2.;
-    vec3 cc=mix(v7a_norm(u_c[3])*.5, v7a_norm(u_c[2])*.45, vnoise(uv*vec2(9.,5.)+fi*3.));
-    cc=mix(vec3(lum(cc)), cc, mix(.3,1.5,u_p[6]));
-    cc*=.55+.6*vnoise(uv*vec2(60.,40.)+fi);
-    vec3 sand=mix(vec3(.75,.7,.55), v7a_norm(u_c[2])*.6, .3);
-    vec3 ground=mix(sand*(.6+.3*vnoise(uv*90.)), cc, smoothstep(base+.005, base+.02, uv.y));
-    ground*=mix(1., .45, dk);
-    ground=mix(ground, col, dk*.55+sat(depth*.25)*.2);
-    col=mix(col, ground, m);
+    float k=fract(vnoise(vec2(uv.x*mix(3.,1.5,fi/2.)+fi*9.,fi))*1.7+fi*.31);
+    vec3 cc=cr7_coralc(k);
+    float up=sat((uv.y-base)/max(h-base,.01));
+    cc*=.45+.75*up;
+    cc*=.8+.3*(gnoise(uv*vec2(160.,120.)+fi)*.5+.5);              // polip dokusu
+    cc*=.78+.22*sin(fbm4(uv*35.+fi)*22.);                          // beyin mercanı kıvrımları
+    vec3 sand=mix(vec3(.44,.43,.36), v7a_norm(u_c[2])*.35, .2)*(.7+.3*(gnoise(uv*80.)*.5+.5))*mix(.6,1.,smoothstep(-.55,-.2,uv.y));
+    vec3 g=mix(sand, cc, smoothstep(base+.004, base+.02, uv.y));
+    g+=mix(sh,vec3(1.),.6)*cr7_caust(uv*vec2(1.,1.4)+fi)*u_p[3]*.14*(1.-dk*.6);
+    g*=mix(vec3(.45,.75,1.), vec3(.9,.97,1.), fi/2.);              // suyun kırmızıyı yutması
+    g=mix(g, mix(dp,sh,.55), dk*.65+u_p[5]*.25);
+    col=mix(col, g, m);
   }
-  // kostik
-  col+=mix(wc,vec3(1.),.7)*cr7_caust(uv*vec2(1.,1.6)+vec2(0.,t*.02))*u_p[3]*.18*smoothstep(-.5,.2,uv.y);
   // balık sürüleri
   for(int k=0;k<2;k++){
     float fk=float(k);
-    vec2 c=vec2(sin(t*.08*(1.+fk)+fk*3.+SEED2.x)*A*.3, -.02+fk*.12+sin(t*.13+fk)*.03);
+    vec2 c=vec2(sin(t*.07*(1.+fk)+fk*3.+SEED2.x)*A*.28, .02+fk*.14+sin(t*.13+fk)*.03);
     vec2 d=uv-c;
-    vec2 g=d*vec2(70.,110.)+vec2(t*(1.5+fk),0.);
+    vec2 g=(d+vec2(t*.01*(1.+fk),0.))*vec2(70.,110.);
     vec2 id=floor(g); vec2 f=fract(g)-.5;
-    float on=step(1.-u_p[4]*.6, hash12(id+fk*9.))*exp(-dot(d,d)*mix(40.,12.,u_p[4]));
-    float fish=smoothstep(.25,.1,length(f*vec2(1.,2.2)));
-    col=mix(col, mix(vec3(.85,.9,.95), v7a_norm(u_c[2])*.6, .3), fish*on*.85);
+    float on=step(1.-u_p[4]*.65, hash12(id+fk*9.))*exp(-dot(d*vec2(1.,1.8),d*vec2(1.,1.8))*mix(30.,9.,u_p[4]));
+    float fish=smoothstep(.22,.1,length(f*vec2(1.,2.4)));
+    col=mix(col, mix(vec3(.8,.88,.95), v7a_norm(u_c[2])*.7, .3)*mix(.6,1.,smoothstep(-.3,.3,uv.y)), fish*on*.9);
   }
-  // asılı partiküller
-  col+=vec3(.8,.95,1.)*sparkles(uv+vec2(t*.01*u_p[7],0.), 70., .4+u_p[7]*.5, -.05)*.35;
-  // su yüzeyi alttan (pencere)
-  if(wl<1.){ float near=smoothstep(.06,.0,wl-uv.y); col=mix(col, mix(wc,vec3(.9,1.,1.),.7), near*.5); col+=vec3(1.)*smoothstep(.004,.0,abs(uv.y-wl))*.6; }
+  col+=vec3(.8,.95,1.)*sparkles(uv+vec2(t*.01*u_p[7],0.), 60., .25+u_p[7]*.4, -.03)*.3;
+  if(wl<1.){
+    col=mix(col, mix(sh,vec3(.9,1.,1.),.6), smoothstep(.05,.0,wl-uv.y)*.4);
+    col+=vec3(1.)*smoothstep(.003,.0,abs(uv.y-wl))*.7;
+  }
   return col;
 }`,
     },
@@ -365,63 +392,70 @@ vec3 scene(vec2 uv, vec2 st){
       name: 'Sisli Bambu Ormanı',
       params: ['Sap yoğunluğu', 'Sap kalınlığı', 'Yapraklar', 'Sis', 'Işık huzmeleri', 'Rüzgar salınımı', 'Taş patika', 'Arka dağlar'],
       glsl: TONES + `
-vec3 bb_green(){ return mix(vec3(.3,.45,.16), v7a_norm(u_c[1])*.3, .3); }
+vec3 bb_green(){ return mix(vec3(.32,.46,.18), v7a_norm(u_c[1])*.32, .25); }
 vec3 scene(vec2 uv, vec2 st){
   float t=u_time;
-  vec3 haze=mix(v7a_haze(), vec3(.85,.9,.85), .3);
-  float hz=.05;
-  vec2 sp=vec2((hash11(SEED2.x)-.5)*A*.5, .32);
-  vec3 col=skyGrad(uv, hz, sp, .03, .9);
-  col=mix(col, haze, .4);
-  // arka dağlar
+  vec3 haze=mix(v7a_haze(), vec3(.8,.86,.8), .25);
+  float hz=.08;
+  vec2 sp=vec2((hash11(SEED2.x)-.5)*A*.5, .36);
+  vec3 col=mix(skyGrad(uv, hz, sp, .03, .9), haze, .35);
   for(int i=0;i<3;i++){
     float fi=float(i);
-    float r=hz+.06+fi*-.05+fbm4(vec2(uv.x*(1.2+fi*.6)+fi*4.+SEED2.x,0.))*.22*u_p[7];
-    col=mix(col, mix(bb_green()*.3, haze, .82-fi*.2), smoothstep(r+PX,r-PX,uv.y)*u_p[7]);
+    float r=hz+.05-fi*.04+fbm4(vec2(uv.x*(1.2+fi*.6)+fi*4.+SEED2.x,0.))*.24*u_p[7];
+    col=mix(col, mix(bb_green()*.25, haze, .78-fi*.18), smoothstep(r+PX,r-PX,uv.y)*step(.04,u_p[7]));
+  }
+  float fogk=mix(.2,.75,u_p[3]);
+  // orman zemini
+  float gl=-.06;
+  float gm=smoothstep(gl+PX,gl-PX,uv.y);
+  vec3 floorc=mix(vec3(.2,.17,.1), bb_green()*.4, .4)*(.6+.5*(fbm4(uv*vec2(20.,60.))+.5));
+  floorc=mix(floorc, haze, fogk*.5*smoothstep(-.5,gl,uv.y));
+  col=mix(col, floorc, gm);
+  // taş patika
+  if(u_p[6]>.06){
+    float d=gl-uv.y;
+    float pw=.01+d*mix(.6,1.1,u_p[6]);
+    float px=sin(1./(d+.08)*.25+SEED2.x)*.06*d*4.;
+    float path=smoothstep(pw,pw*.8,abs(uv.x-px))*step(uv.y,gl);
+    vec2 g=vec2((uv.x-px)/(pw+.001)*2., 1./(d+.03)*1.4);
+    vec2 cid; float e=v7a_vor(g, cid);
+    vec3 pc=mix(vec3(.42,.42,.4), v7a_rock(), .4)*(.55+.4*hash12(cid))*smoothstep(.0,.12,e);
+    col=mix(col, mix(pc, haze, fogk*.4*smoothstep(-.3,gl,uv.y)), path*.95);
   }
   // bambu katmanları (uzak → yakın)
   for(int L=0;L<5;L++){
     float fl=float(L);
     float dk=1.-fl/4.;
-    float freq=mix(26.,4.,fl/4.)*mix(.6,1.5,u_p[0]);
-    float sway=sin(t*.6+fl+uv.y*1.5)*.006*u_p[5]*(1.+fl)*(uv.y+.5);
+    float base=gl-.01-fl*fl*.03;
+    float freq=mix(30.,3.2,pow(fl/4.,.7))*mix(.6,1.4,u_p[0]);
+    float sway=sin(t*.6+fl*1.7)*.004*u_p[5]*(1.+fl*1.5)*(uv.y-base);
     float gx=(uv.x+sway)*freq+fl*13.7+SEED2.x;
     float id=floor(gx);
     float fx=fract(gx);
     float pos=.25+.5*hash11(id*1.7+fl);
-    float wdt=mix(.07,.18,u_p[1])*(.6+.6*hash11(id*3.1));
-    float present=step(.25, hash11(id*5.3+fl*2.));
-    float d=abs(fx-pos);
-    float stalk=smoothstep(wdt, wdt*.7, d)*present;
-    // boğumlar
-    float seg=mix(.12,.3,hash11(id*2.3))/mix(.5,1.6,fl/4.);
-    float node=smoothstep(.04,.0,abs(fract((uv.y+hash11(id))/seg)-.5)-.47);
-    vec3 sc=bb_green()*(.6+.6*(1.-d/wdt));
-    sc=mix(sc, sc*.45, node);
-    sc+=v7a_sunc()*.25*smoothstep(.3,.0,(fx-pos)/wdt+.6)*u_p[4];
-    sc=mix(sc, haze, dk*mix(.35,.85,u_p[3]));
+    float wdt=mix(.05,.16,u_p[1])*(.6+.6*hash11(id*3.1));
+    float present=step(mix(.55,.1,u_p[0]), hash11(id*5.3+fl*2.));
+    float d=(fx-pos)/wdt;
+    float stalk=smoothstep(1.,.75,abs(d))*present*step(base,uv.y);
+    float seg=mix(.14,.32,hash11(id*2.3))*mix(.35,1.6,fl/4.);
+    float node=smoothstep(.035,.0,abs(fract((uv.y+hash11(id))/seg)-.5)-.465);
+    float cyl=sqrt(max(1.-d*d,0.));
+    vec3 sc=bb_green()*mix(.75,1.25,hash11(id*7.))*(.35+.75*cyl);
+    sc*=mix(1.,.5,node);
+    sc+=v7a_sunc()*.35*smoothstep(-.2,-.9,d)*u_p[4];
+    sc=mix(sc*mix(.55,1.,dk), haze, dk*dk*fogk+dk*.08);
     col=mix(col, sc, stalk);
-    // yaprak kümeleri
-    float leaf=smoothstep(.55,.75, fbm4(vec2(uv.x*freq*.35, uv.y*freq*.6)+fl*7.+vec2(t*.05*u_p[5],0.)))*u_p[2]*smoothstep(-.1,.3,uv.y+fl*.04);
-    col=mix(col, mix(bb_green()*.55, haze, dk*mix(.35,.85,u_p[3])), leaf*.85);
-    // katman sisi
-    col=mix(col, haze, u_p[3]*.12*smoothstep(-.1,-.5,uv.y));
-  }
-  // taş patika
-  if(u_p[6]>.08){
-    float pw=mix(.02,.35,smoothstep(-.05,-.5,uv.y));
-    float px=sin(uv.y*3.+SEED2.x)*.08;
-    float path=smoothstep(pw,pw-.02,abs(uv.x-px))*smoothstep(-.02,-.06,uv.y);
-    vec2 sg=vec2(uv.x*6./(pw+.05), uv.y*28./(pw*2.+.1));
-    float stone=smoothstep(.0,.15,v7a_vor(sg,sg));
-    vec3 pc=mix(v7a_rock()*.5, v7a_rock()*.9, vnoise(sg*3.))*(.4+.6*stone);
-    col=mix(col, pc, path*u_p[6]);
+    // yaprak bulutları: sapların üst kısmında
+    float lf=fbm4(vec2(uv.x*freq*.25+fl*7., uv.y*freq*.5)+vec2(t*.04*u_p[5],0.));
+    float leaf=smoothstep(.5,.7, lf+.35)*u_p[2]*smoothstep(base+.25,base+.6,uv.y);
+    vec3 lc=bb_green()*(.5+.5*(gnoise(uv*freq*6.)*.5+.5));
+    col=mix(col, mix(lc*mix(.6,1.,dk), haze, dk*dk*fogk+dk*.08), leaf*.9);
   }
   // ışık huzmeleri
   vec2 rd=uv-sp;
-  float beams=pow(sat(fbm4(vec2(atan(rd.x,rd.y)*6.,1.))+.35),4.)*exp(-length(rd)*.8);
-  col+=v7a_sunc()*beams*u_p[4]*u_p[3]*1.4;
-  col+=v7a_sunc()*sparkles(uv, 60., u_p[4]*.6, -.02)*.4;
+  float beams=pow(sat(fbm4(vec2(atan(rd.x,-rd.y)*7.,1.))+.4),4.)*smoothstep(.0,.9,length(rd));
+  col+=v7a_sunc()*beams*u_p[4]*(.25+u_p[3]*.6)*.9;
+  col+=v7a_sunc()*sparkles(uv, 60., u_p[4]*.3, -.02)*.35;
   return col;
 }`,
     },
