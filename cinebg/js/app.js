@@ -50,7 +50,7 @@
     v.atmos = Object.assign({ rain: 0, snow: 0, fog: 0, embers: 0, ash: 0, dust: 0, lightning: 0, leak: 0 }, v.atmos || {});
     v.frame = Object.assign({ zoom: 1, px: 0, py: 0, roll: 0, mirror: false }, v.frame || {});
     v.move = v.move || S.move;
-    v.vfx = v.vfx || {}; v.vstyle = v.vstyle || '';
+    v.vfx = v.vfx || {}; v.vstyle = v.vstyle || ''; v.fg = v.fg || null;
     return v;
   }
   /* u: 0..1 hareket ilerlemesi */
@@ -92,7 +92,7 @@
   function rstate(v, seed, u) {
     return {
       engine: v.engine, seedF: (seed % 20000) / 100, params: v.params, linColors: v.colors.flatMap(hexLin),
-      look: Object.assign({}, v.look, { bars: S.bars || vsOf(v).bars || 0 }), atmos: v.atmos, cam: shaken(camFor(v, u || 0), v, u || 0), vfx: v.vfx,
+      look: Object.assign({}, v.look, { bars: S.bars || vsOf(v).bars || 0 }), atmos: v.atmos, cam: shaken(camFor(v, u || 0), v, u || 0), vfx: v.vfx, fg: v.fg,
     };
   }
 
@@ -209,6 +209,7 @@
   }
   function visualFromSpec(s) {
     const v = normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move, frame: frameFromCamera(s.camera) });
+    v.fg = s.fg ? clone(s.fg) : null;
     return applyVS(v, s.vstyle);
   }
   function load(cat, seed, push, visual) {
@@ -522,6 +523,7 @@
     fillSelect($('qStyle'), vsItems, S.ov.vstyle || '', 'Standart');
     const PR = (CB.ENGINE_PRESETS && S.spec && CB.ENGINE_PRESETS[S.spec.engine]) || [];
     fillSelect($('oPreset'), PR.map((p, i) => [String(i), p.tr]), S.ov.preset || '', PR.length ? 'Rastgele' : 'Bu motorda yok');
+    if (CB.FOREGROUNDS) fillSelect($('oFg'), [['off', 'Yok']].concat(CB.FOREGROUNDS.map((f) => [f.id, f.tr])), S.ov.fg || '', 'Otomatik');
   }
   function soulAspect(a) {
     const opts = [['1:1', 1], ['4:3', 4 / 3], ['3:4', 3 / 4], ['16:9', 16 / 9], ['9:16', 9 / 16], ['3:2', 3 / 2], ['2:3', 2 / 3], ['21:9', 21 / 9]];
@@ -542,7 +544,7 @@
     const facts = [
       ['Kategori', s.cat.tr], ['Grup', s.group.tr], ['Bağlam', CTX_TR[s.ctx]], ['Saat', s.time.tr], ['Hava', s.weather.tr],
       ['Mevsim', s.season ? s.season.tr : '—'], ['Durum', s.cond.tr], ['Kamera', `${s.camera.tr} · ${s.camera.lens}`], ['Işık', s.light.tr],
-      ['Palet', s.palette.tr], ['Grade', CB.GRADES[s.gradeId].tr], ['Motor görünümü', `${(CB.ENGINES[s.engine] || {}).name || s.engine}${s.preset ? ' · ' + s.preset.tr : ''}`], ['Video stili', (CB.VSTYLE[s.vstyle] || CB.VSTYLE.none).tr], ['Yer işaretleri', `Sol: ${s.landmarks.left} · Merkez: ${s.landmarks.center} · Sağ: ${s.landmarks.right} · Uzak: ${s.landmarks.far}`],
+      ['Palet', s.palette.tr], ['Grade', CB.GRADES[s.gradeId].tr], ['Motor görünümü', `${(CB.ENGINES[s.engine] || {}).name || s.engine}${s.preset ? ' · ' + s.preset.tr : ''}`], ['Video stili', (CB.VSTYLE[s.vstyle] || CB.VSTYLE.none).tr], ['Ön plan', s.fg && CB.FOREGROUNDS ? ((CB.FOREGROUNDS.find((f) => f.id === s.fg.id || f.id === s.fg.type) || {}).tr || '—') : '—'], ['Yer işaretleri', `Sol: ${s.landmarks.left} · Merkez: ${s.landmarks.center} · Sağ: ${s.landmarks.right} · Uzak: ${s.landmarks.far}`],
       ['Ölçek', s.size ? `~${s.size} m` : s.ctx === 'abstract' ? 'Tam kadraj' : 'Kozmik'], ['İmkansız', s.impossible || '—'],
     ];
     $('facts').replaceChildren(...facts.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })]));
@@ -1178,7 +1180,7 @@
     document.querySelectorAll('#mtabs button').forEach((b) => {
       b.onclick = () => { $('app').dataset.m = b.dataset.m; document.querySelectorAll('#mtabs button').forEach((x) => x.classList.toggle('on', x === b)); };
     });
-    const ovMap = { oTime: 'time', oWeather: 'weather', oCamera: 'camera', oPalette: 'palette', oGrade: 'grade', oImp: 'impossible', oPreset: 'preset' };
+    const ovMap = { oTime: 'time', oWeather: 'weather', oCamera: 'camera', oPalette: 'palette', oGrade: 'grade', oImp: 'impossible', oPreset: 'preset', oFg: 'fg' };
     const setVstyle = (id) => {
       S.ov.vstyle = id; store.set('ov', S.ov);
       const vs = CB.VSTYLE[id];
