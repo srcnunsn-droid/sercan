@@ -1,14 +1,16 @@
-/* CineBG Studio v5 — kategori varyantları.
-   Her temel mekâna dört eksenden birer deterministik varyant eklenir: durum/dönem, tür aktarımı, bakış/ölçek, ışık imzası.
-   3430 temel × 5 (temel + 4 varyant) = 17.150 kategori. Varyant kimliği: temel kimlik + '~' + 1..4 — sahne kodunda a–d harfi. */
+/* CineBG Studio — kategori varyantları.
+   Her temel mekâna dokuz eksenden birer deterministik varyant eklenir:
+   a durum, b tür aktarımı, c bakış/ölçek, d ışık imzası (v5) · e dönem, f mevsim, g hava ruhu, h günün anı, i kadraj (v6).
+   Varyant kimliği: temel kimlik + '~' + 1..9 — sahne kodunda a–i harfi. */
 (function () {
   const CB = window.CB;
   const T = (s) => s.trim().split('\n').map((l) => {
-    const [tr, en, pal, grade, atm, tn] = l.split('|').map((x) => (x || '').trim());
+    const [tr, en, pal, grade, atm, tn, cam] = l.split('|').map((x) => (x || '').trim());
     const q = { tr, en };
     if (pal) q.pal = pal.split(',');
     if (grade) q.grade = grade;
     if (tn) q.tn = tn;
+    if (cam) q.cam = cam;
     if (atm) q.atmos = Object.fromEntries(atm.split(',').map((kv) => { const [k, v] = kv.split(':'); return [k, +v]; }));
     return q;
   });
@@ -182,6 +184,97 @@ Gün batımı gobo|lit by low sunset light through a window gobo|golden|kodak
 Siyah zemin dramatik spot|lit by a single dramatic spotlight on black|night|noir
 `);
 
+  /* ---- v6 eksenleri ---- */
+  const ERA_BUILT = T(`
+1890'lar|as it looked in the 1890s, gas lamps, horse-drawn carts parked and period storefronts|golden|kodak
+1920'ler|as it looked in the 1920s, early motorcars parked and art-nouveau details|golden|kodak
+1950'ler|as it looked in the 1950s, rounded cars, enamel signs without text and fresh paint|pastel,day|kodachrome
+1970'ler|as it looked in the 1970s, boxy cars, brown and orange tones and concrete newness|golden,dust|super8
+1980'ler|as it looked in the 1980s, neon tubes, chrome and cassette-era details|neon,night|vhs
+1990'lar|as it looked in the 1990s, satellite dishes, plastic signage frames and payphones|day|doc16
+2000'ler|as it looked in the 2000s, early flat screens and glossy shopfronts|day|natural
+2050 yakın gelecek|in the near future of 2050, clean solar panels, drones docks and greenery on every ledge|day,nature|scifi
+`);
+  const ERA_WILD = T(`
+Buzul çağı sonrası|as it was just after the last ice age, raw boulders and young valleys|cold|nordic
+On bin yıl önce|as it was ten thousand years ago, untouched and primeval|day,nature|natural
+Kuraklık yılı|in a drought year, cracked ground and thin dry vegetation|dust,golden|dunegold|dust:0.4
+Orman yangını sonrası|after a wildfire, black trunks and the first green shoots|dust,overcast|bleach|ash:0.3
+Sel çekildikten sonra|just after a flood receded, silt lines and pools everywhere|overcast,water|eterna
+Uzak gelecek, yeniden vahşi|in the far future, completely rewilded and silent|nature,day|natural
+`);
+  const ERA_INT = T(`
+1890'lar|as it looked in the 1890s, gas lamps, dark wood and heavy drapes|golden|kodak
+1920'ler|as it looked in the 1920s, art-nouveau fittings and early electric bulbs|golden|kodak
+1950'ler|as it looked in the 1950s, pastel enamel, formica and chrome|pastel,day|kodachrome
+1970'ler|as it looked in the 1970s, orange and brown tones, wood panelling|golden,dust|super8
+1980'ler|as it looked in the 1980s, neon accents, chrome and plastic|neon,night|vhs
+1990'lar|as it looked in the 1990s, beige plastic, CRT screens and floral prints|day|doc16
+2000'ler|as it looked in the 2000s, glossy surfaces and early flat screens|day|natural
+2050 yakın gelecek|in the near future of 2050, smart glass, soft LEDs and indoor greenery|day,nature|scifi
+`);
+  const SEASON_EXT = T(`
+İlkbahar|in early spring, fresh green and blossom on the trees|day,pastel|pastel
+Yaz ortası|in high summer, saturated green and hard sunlight|day|velvia
+Sonbahar|in deep autumn, copper and gold leaves everywhere|golden|kodak
+Kış|in midwinter, bare branches and frost|cold,blue|nordic
+Kar yağışı|during the first snowfall of the year, flakes drifting down|cold,blue|moonlight|snow:0.5
+Muson mevsimi|in monsoon season, everything dripping and dark green|storm,overcast|eterna|rain:0.5
+`);
+  const SEASON_INT = T(`
+İlkbahar sabahı|on a spring morning, blossom visible through the windows|day,pastel|pastel
+Yaz öğleden sonrası|on a hot summer afternoon, blinds half drawn and light striping the floor|golden|portra
+Sonbahar akşamı|on an autumn evening, rain on the glass and lamps on|golden,overcast|kodak
+Kış günü|on a winter day, snow visible outside and radiators ticking|cold,blue|nordic
+Bayram/tatil sezonu|during the holiday season, small seasonal decorations|golden,palace|kodak
+Bahar temizliği|during spring cleaning, windows open and curtains moving|day|highkey
+`);
+  const MOOD_EXT = T(`
+Sağanak altında|in a heavy downpour, water sheeting off every surface|storm|neonoir|rain:0.8
+Yoğun sis|swallowed in dense fog, only the nearest forms visible|overcast|eterna|fog:0.7
+Sıcak hava dalgası|in a heatwave, shimmering air and bleached colours|dust,golden|dunegold|dust:0.3
+Rüzgar ve toz|in strong wind, dust and leaves blowing across|dust|bleach|dust:0.6
+Fırtına sonrası|right after a storm, broken clouds and wet glinting light|storm,golden|blockbuster|fog:0.2
+Durgun ve berrak|on a perfectly still, crystal-clear day|day|ektachrome
+`);
+  const MOOD_INT = T(`
+Pencerede yağmur|with heavy rain streaming down the windows|storm|neonoir|rain:0.2
+İçeride hafif pus|with a faint haze hanging in the air catching the light|golden|portra|fog:0.3
+Elektrik kesintisi|during a power cut, lit only by daylight and a few candles|night,fire|chiaroscuro
+Sıcak ve bunaltıcı|on a stifling day, fans running and light glaring|golden,dust|dunegold
+Sessiz ve serin|cool and silent, everything perfectly still|cold|nordic
+Fırtınalı gece|on a stormy night, lightning flashing at the windows|storm,night|bleach|lightning:0.5
+`);
+  const MOMENT = T(`
+Şafak vakti|at the first light of dawn|dawn,blue|eterna||d
+Öğle güneşi|under the harsh noon sun|day|natural||d
+Altın saat|at golden hour|golden|kodak||d
+Mavi saat|at blue hour just after sunset|blue,dusk|moonlight||n
+Gece yarısı|at midnight|night|cinestill||n
+Sabaha karşı|in the dead hours before dawn|night,blue|dayfornight||n
+`);
+  const FRAME_EXT = T(`
+Geniş kuruluş planı|as a wide establishing shot|||||est
+Alçak açı|from a low angle near the ground|||||low
+Tele sıkıştırma|compressed through a long telephoto lens|||||tele
+Tepeden drone|seen from a drone overhead|||||drone
+Simetrik merkez|in a symmetrical one-point composition|||||sym
+Hollanda açısı|framed at a tilted dutch angle|||||dutch
+`);
+  const FRAME_INT = T(`
+Geniş köşe planı|as a wide view from one corner|||||corner
+Simetrik merkez|in a symmetrical one-point composition|||||sym
+Göz hizası|at natural eye level|||||eye
+Kapı eşiğinden|framed from the doorway threshold|||||threshold
+Alçak açı|from a low angle near the floor|||||low
+Detay öne|with a detail sharp in the foreground|||||detail
+`);
+  const EXTRA = {
+    ext: [ERA_BUILT, SEASON_EXT, MOOD_EXT, MOMENT, FRAME_EXT],
+    int: [ERA_INT, SEASON_INT, MOOD_INT, MOMENT, FRAME_INT],
+    mixed: [ERA_BUILT, SEASON_EXT, MOOD_EXT, MOMENT, FRAME_EXT],
+  };
+
   const POOLS = {
     ext: [STATE, GENRE, VIEW_EXT, LIGHT],
     int: [STATE, GENRE, VIEW_INT, LIGHT],
@@ -193,20 +286,38 @@ Siyah zemin dramatik spot|lit by a single dramatic spotlight on black|night|noir
     studio: [AD_MAT, AD_STYLE, AD_COMP, AD_LIGHT],
   };
 
+  // iç mekâna gökyüzü/zemin/uzak manzara isteyen ekler gelmesin
+  const OUTDOOR = /ground|sky|moon|aurora|eclipse|autumn leaves|fresh snow|rooftop|distant ridge|like a map|road|megastructure|searchlight|curfew/;
+  // FNV'nin düşük bitleri ortak son ekte ilişkili kalıyor; karıştırıcıyla dağıt
+  const mix32 = (h) => { h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return (h ^ (h >>> 16)) >>> 0; };
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-  const LETTERS = 'abcd';
+  const LETTERS = 'abcdefghi';
   let n = 0;
   // şehir altyapısı isteyen ekler yalnızca yapılı dünyalarda; tarihî yapı ekleri doğada değil
   const NEEDS_CITY = /sodium|neon signage|emergency light|curfew|evacuated|under construction|rooftop/;
   const NEEDS_BUILT = /museum|weathered ruin|doorway|upper gallery|back corridor|ceiling|entrance threshold/;
-  const CITY_ARCH = ['scifi', 'urban', 'industrial', 'interior', 'modern', 'dystopia', 'ruins', 'arena', 'horror'];
-  const WILD_ARCH = ['nature', 'water', 'space', 'sky', 'micro', 'abstract', 'underground', 'battle'];
-  const fits = (q, g) => !(NEEDS_CITY.test(q.en) && !CITY_ARCH.includes(g.arch)) && !(NEEDS_BUILT.test(q.en) && WILD_ARCH.includes(g.arch) && g.ctx !== 'int');
+  const CITY_ARCH = ['scifi', 'urban', 'industrial', 'interior', 'modern', 'dystopia', 'ruins', 'arena', 'horror', 'street', 'home', 'daily'];
+  const WILD_ARCH = ['nature', 'water', 'space', 'sky', 'micro', 'abstract', 'underground', 'battle', 'landscape'];
+  const COLD = /snow|frost|midwinter|ice age|aurora|ice/;
+  const fits = (q, g) => !(NEEDS_CITY.test(q.en) && !CITY_ARCH.includes(g.arch)) && !(NEEDS_BUILT.test(q.en) && WILD_ARCH.includes(g.arch) && g.ctx !== 'int') && !(g.nosnow && COLD.test(q.en));
   CB.GROUPS.forEach((g) => {
     const pools = (POOLS[g.ctx] || POOLS.mixed).map((P) => { const f = P.filter((q) => fits(q, g)); return f.length ? f : P; });
+    // e–i: dönem/mevsim/hava/an/kadraj; uzay, su, gökyüzü, soyut ve stüdyoda ilk dört eksenin ikinci seçimi
+    const wild = WILD_ARCH.includes(g.arch);
+    const extra = EXTRA[g.ctx] ? EXTRA[g.ctx].map((P, k) => (k === 0 && wild ? ERA_WILD : P)) : null;
+    const isInt = (c) => g.ctx === 'int' || (g.ctx === 'mixed' && /\binterior\b|\broom\b|\bkitchen\b|\bbedroom\b|\bbathroom\b|\bcorridor\b|\bhall\b/i.test(c.en));
     g.cats.forEach((c) => {
-      c.vars = pools.map((P, a) => {
-        const q = P[hash(c.id + '#' + a) % P.length];
+      const intC = isInt(c);
+      const ext = extra ? extra.map((P, k) => (g.ctx === 'mixed' && intC ? EXTRA.int[k] : P)) : null;
+      const base4 = intC ? pools.map((P) => { const f = P.filter((q) => !OUTDOOR.test(q.en)); return f.length ? f : P; }) : pools;
+      const ok = (P) => { const f = P.filter((q) => fits(q, g)); return f.length ? f : P; };
+      const all = base4.concat((ext || pools.concat([g.ctx === 'studio' ? AD_COMP : FRAME_EXT])).map(ok));
+      const used = new Set();
+      c.vars = all.map((P, a) => {
+        // a–d değişmesin diye ilk dördü doğrudan; sonrakiler daha önce seçilen eklerden kaçınır
+        let q = P[mix32(hash(c.id + '#' + a)) % P.length];
+        if (a >= 4 && used.has(q)) { const rest = P.filter((x) => !used.has(x)); if (rest.length) q = rest[mix32(hash(c.id + '##' + a)) % rest.length]; }
+        used.add(q);
         const v = { id: c.id + '~' + (a + 1), tr: c.tr + ' · ' + q.tr, en: c.en + ', ' + q.en, group: g, base: c, q, vk: a, letter: LETTERS[a] };
         n++;
         return v;
@@ -217,5 +328,5 @@ Siyah zemin dramatik spot|lit by a single dramatic spotlight on black|night|noir
   CB.GROUPS.forEach((g) => g.cats.forEach((c) => c.vars.forEach((v) => CB.CATS.push(v))));
   CB.VARIANT_COUNT = n;
   CB.BASE_COUNT = CB.CATS.length - n;
-  CB.VARIANT_AXES = [['durum', 'Durum / dönem'], ['tur', 'Tür aktarımı'], ['bakis', 'Bakış / ölçek'], ['isik', 'Işık imzası']];
+  CB.VARIANT_AXES = [['durum', 'Durum'], ['tur', 'Tür aktarımı'], ['bakis', 'Bakış / ölçek'], ['isik', 'Işık imzası'], ['donem', 'Dönem'], ['mevsim', 'Mevsim'], ['hava', 'Hava ruhu'], ['an', 'Günün anı'], ['kadraj', 'Kadraj']];
 })();

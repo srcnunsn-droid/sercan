@@ -855,10 +855,10 @@
 
   /* ---------------- kod ile aç ---------------- */
   function openCode(code) {
-    const m = /^CB-(\d{2})(\d{2})([a-d])?-([0-9A-Z]+)$/i.exec(code.trim());
+    const m = /^CB-(\d{2,3})(\d{2})([a-i])?-([0-9A-Z]+)$/i.exec(code.trim());
     if (!m) return toast('Kod biçimi: CB-0103-1A2B3C ya da varyant için CB-0103b-1A2B3C');
     const g = CB.GROUPS[+m[1] - 1]; const b = g && g.cats[+m[2] - 1];
-    const c = b && m[3] ? b.vars['abcd'.indexOf(m[3].toLowerCase())] : b;
+    const c = b && m[3] ? b.vars['abcdefghi'.indexOf(m[3].toLowerCase())] : b;
     if (!c) return toast('Bu koda ait kategori bulunamadı');
     load(c, parseInt(m[4], 36), true);
     toast('Açıldı: ' + c.tr);
@@ -989,7 +989,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutFrame());
   }
 
-  /* Karakter & Yarışma stüdyosu için dış API */
+  /* dış API (render, proje) */
   CB.app = {
     current: () => ({ cat: S.cat, seed: S.seed, spec: S.spec, prompts: S.prompts, visual: S.visual, ov: clone(S.ov) }),
     aspect, toast, saveFile, thumb: thumbOf, redraw: () => draw(), stamp,

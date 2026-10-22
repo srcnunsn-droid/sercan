@@ -1,6 +1,6 @@
 # CineBG Studio
 
-Sinematik film sahneleri için sınırsız arka plan üreticisi. 79 grupta **17.150 kategori** (3430 temel mekân ve her birinin 4 varyantı): savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 190 trilyonu aşar, seed sayısı ise sınırsızdır.
+Sinematik film sahneleri için sınırsız arka plan üreticisi. 209 grupta **87.060 kategori** (8706 temel mekân ve her birinin 9 varyantı): savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik, 50 şehir ve kasabadan sokaklar, 40 bölgeden manzaralar, ev içleri ve gündelik hayat mekânları ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 1 katrilyonu aşar, seed sayısı ise sınırsızdır.
 
 Her sahne iki çıktı verir:
 
@@ -18,7 +18,20 @@ Her sahne iki çıktı verir:
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
 
-## v5: 5 kat büyüme ve Yönetmen Masası
+## v6: Sadece arka plan, 5 kat daha fazla kategori
+
+Karakter, Yarışma ve Yönetmen bölümleri kaldırıldı; program yalnızca arka plan stüdyosudur.
+
+**Kategoriler: 17.150 → 87.060.**
+- **Sokak (2.482 temel):** 60 sokak tipi × 50 yer (İstanbul'un semtleri, Mardin, Safranbolu, Ege ve Anadolu köyleri, Tokyo, Paris, New York, Havana, Lagos…). Köy yoluna tramvay, büyükşehre köy meydanı düşmez.
+- **Manzara (927 temel):** 61 manzara tipi × 40 bölge, biyom uyumuna göre (Kapadokya'da peri bacaları, Norveç'te fiyort, Sahra'da kum tepeleri).
+- **Ev içi (720 temel):** 30 oda × 24 ev tarzı (İstanbul apartmanı, Anadolu köy evi, Japon dairesi, Sovyet dairesi, 1970'ler evi…).
+- **Gündelik mekânlar (1.147 temel):** 82 mekân × 16 ülke ve yerleşim türü (bakkal, fırın, kahvehane, berber, okul, hastane koridoru, otobüs içi, çocuk parkı…).
+- **Varyantlar 4 → 9:** önceki dört eksene dönem (1890'lar → 2050), mevsim, hava ruhu, günün anı ve kadraj eklendi. İç mekânlar kendi dönem, mevsim ve hava eklerini alır; tropik yerlere kar eki gelmez. Sahne kodu harfi a–i olur.
+
+**Kategori içi çeşitlilik:** her mekân ailesinin yer işareti, zemin ve malzeme havuzları 5 katına çıktı (slot başına 5 → 25). Sokak, kırsal manzara ve ev içi için üç yeni motor eklendi.
+
+## v5: 5 kat büyüme
 
 **Kategoriler: 3430 → 17.150.** Her temel mekâna dört eksenden birer varyant eklenir: durum / dönem (terk edilmiş, sel basmış, festival günü…), tür aktarımı (siberpunk, Osmanlı 1600'ler, kara film…), bakış / ölçek (kapı eşiğinden, uzak sırttan…) ve ışık imzası (ateş ışığı, tutulma, neon…). Reklam setlerinde bu eksenler malzeme, stil, kompozisyon ve ışık olur. Varyant kendi palet, grade, saat ve atmosfer ayarını getirir; motor seçimi temel mekâna göre yapılır. Mekâna uymayan ekler (bozkırda sodyum lambası gibi) elenir. Katalogda varyantlar temelin altında listelenir, sahne kodu `CB-0106c-…` gibi a–d harfi alır, eski kodlar aynen açılır.
 
@@ -26,7 +39,7 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 
 | | v4 | v5 |
 | --- | --- | --- |
-| Kategori | 3430 | 17.150 |
+| Kategori | 3430 | 17.150 (v6: 87.060) |
 | Sahne motoru | 29 | 36 (3B arazi, 3B şehir, 3B salon, kristal mağara, kâğıt kolaj, antik harabe, arşiv editoryal) |
 | Palet | 32 | 160 (128'i türetilmiş) + renk teorisiyle sınırsız rastgele palet |
 | Grade / film stoğu | 16 | 40 (Portra, CineStill 800T, Technicolor, day-for-night, Tri-X, Super 8, VHS…) |
@@ -38,30 +51,7 @@ GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. A
 
 Set üret menüsüne **mekân varyantları** (5 kare) ve **film stokları** (40 kare) eklendi.
 
-**Karakter ve yarışma:** arketip 36 → 60, 9 dünya (arketipin kendi dünyası + günümüz, siberpunk 2088, steampunk, ortaçağ fantastik, 1940'lar noir, kıyamet sonrası, uzay operası, Osmanlı 1600'ler), format 6 → 16, konsept 12 → 60. Görünüm havuzları büyüdü (vurgu rengi 16 → 40, ifade 6 → 24, durum 6 → 18, ayırt edici iz 12 → 30…). Eski kayıtlı karakterler aynı promptları üretir.
 
-**Yönetmen Masası** (üst bardaki dördüncü sekme), 12 araç:
-- *Aksiyon & Sahne:* GODSTOUCH dövüş / aksiyon promptu ve CS4 paneli, GOTRV sahne motoru (denetim + Fountain çıktısı), ACTING TASK blokları, sürüklenebilir blocking haritası (PNG + @staging_ / @loc_ bağlayıcı).
-- *Video & Reklam:* faceless senaryo (145 kelime/dk zaman kodu, başlık, thumbnail, fact-check), faceless 10 sn blok, prompt kurucu (8 format), zaman kodlu çok çekim (doğrulamalı), Seedance shotlist HTML, CINEDANCE blokları (41 blok), Soul Cinema reklam (görsel içi başlık/slogan), animasyon sorun çözücü ve Genjutsu şablonları.
-
-Hiçbir araç ücretli üretim başlatmaz; hepsi kopyalanabilir prompt ve indirilebilir dosya verir.
-
-## v4: Karakter & Yarışma Stüdyosu
-
-Üst bardaki **Arka Plan / Karakter / Yarışma** düğmeleriyle üç stüdyo arasında geçilir.
-
-**Karakter stüdyosu**
-- 37 arketip (girişimci, içerik üreticisi, şef, boksör, dedektif, ajan, astronot, uzay piyadesi, android, şövalye, samuray, yeniçeri, Viking, büyücü, kovboy, korsan, steampunk mucit, Osmanlı paşası, moda modeli…). Her arketipin kostüm, aksesuar, siluet imzası ve aksiyon havuzu var.
-- Görünüm oluşturucu: yaş, yapı, köken tipi, yüz, saç, sakal, ayırt edici iz, vurgu rengi. Tek tıkla görünümü ya da kostümü karıştır.
-- **Referans kişi** modu: gerçek bir kişinin kimliği yalnızca resmî referans görsellerden ve Soul ID'den gelir. Promptlar kişiyi isimle anmaz, yüzünü tarif etmez. Yalnızca kostüm, rol, poz ve sahne değişir.
-- Sheet promptları (skill kurallarıyla): Soul 2.0 üç panel film sheet'i (Lira), kimlik kilit sayfası T4, kahraman plakası T1 (başsız ön panel), yakın plan T3, ifade sayfası, poz sayfası, referans görselden sheet T5a, durum varyantı (savaş hasarlı, ıslak, kar, yaşlanmış, gençleşmiş, gala). Her birinde ayar satırı, QC ve dosya adı var.
-- **Sahneye yerleştir:** mevcut arka planla Soul Cinema sahne karesi, NBP kompozit düzenlemesi ve Seedance I2V klip promptu.
-- Karakter kartı PNG: yapım dosyası için ön/arka/yakın plan şablonu ve tüm özellikler.
-
-**Yarışma kiti**
-- 6 format (sinematik reklam, kısa film, fragman, komedi, çılgın konsept, meme) ve 12 konsept: Tek Kişilik Prodüksiyon, Kapıdan Kapıya, Zaman Yolcusu Yatırımcı, Son Toplantı, Yatırımcı: Destan, Ağ, Ekip Nerede?, Beklenti / Gerçek, Her Saniye Yeni Evren, Minyatür Dünya, POV: Bütçe Sıfır, Kimse / Ben.
-- Her konsept için logline, kanca, çekim listesi (arka plan küçük resmi, kamera, aksiyon, ses, ekran yazısı). Her çekimde Soul Cinema görsel promptu ve Seedance klip promptu var. Ayrıca en fazla 3 çekimlik Seedance storyboard'ları, TR/EN paylaşım metni ve kontrol listesi hazırlanır.
-- Konsept boyunca saat, hava ve renk grade'i sabit tutulur. "Yeni varyasyon" arka planları değiştirir. Arka planlar tek tıkla projeye aktarılır, oradan ZIP olarak indirilir.
 
 ## v3'te neler yeni
 
@@ -125,12 +115,9 @@ Hiçbir araç ücretli üretim başlatmaz; hepsi kopyalanabilir prompt ve indiri
 | `js/looks.js` | Paletler, grade'ler, en-boy oranları, saat, hava, kamera ve ışık sözlükleri |
 | `js/spec.js` | Seed'li sahne spesifikasyonu ve prompt motoru |
 | `js/app.js` | Arayüz, dışa aktarma, video, toplu üretim |
-| `js/chars.js` | Karakter arketipleri, görünüm havuzları, yarışma konseptleri |
-| `js/studio.js` | Karakter stüdyosu ve yarışma kiti |
 | `js/glsl-v5.js`, `js/engines-v5.js` | v5'in 7 motoru ve anahtar kelime / grup bağlantıları |
-| `js/cat-variants.js` | Her mekâna 4 varyant (17.150 kategori) |
+| `js/cat-variants.js` | Her mekâna 9 varyant (87.060 kategori) |
+| `js/cat-v6.js` | Sokak, manzara, ev içi ve gündelik mekân aileleri |
+| `js/arch-v6.js` | 5 kat büyütülmüş yer işareti, zemin ve malzeme havuzları |
+| `js/glsl-v6.js`, `js/engines-v6.js` | Sokak, kırsal ve ev içi motorları ve bağlantıları |
 | `js/looks-v5.js` | Türetilmiş paletler, film stokları, ek kamera, ışık, saat ve hava listeleri |
-| `js/chars-v5.js` | Dünyalar, ek arketipler, formatlar ve konseptler |
-| `js/director.js` | Yönetmen Masası iskeleti ve ortak arayüz yardımcıları |
-| `js/dir-action.js`, `js/dir-scene.js` | Dövüş / aksiyon, sahne motoru, oyunculuk görevi, blocking haritası |
-| `js/dir-video.js` | Faceless, prompt kurucu, zaman kodlu çekim, shotlist, CINEDANCE, Soul Cinema reklam, animasyon |

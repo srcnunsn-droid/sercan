@@ -32,6 +32,8 @@
     palace: ['kodak', 'epic', 'pastel', 'neonoir'], interior: ['kodak', 'eterna', 'natural', 'pastel'], western: ['spice', 'kodak', 'bleach', 'war'],
     eastasia: ['eterna', 'kodak', 'natural', 'neon'], anatolia: ['kodak', 'spice', 'epic', 'eterna'], sky: ['natural', 'blockbuster', 'epic', 'moonlight'],
     arena: ['blockbuster', 'neonoir', 'war', 'epic'], dystopia: ['bleach', 'digital', 'scifi', 'noir'],
+    street: ['natural', 'kodak', 'neonoir', 'portra', 'doc16', 'eterna'], landscape: ['natural', 'velvia', 'kodak', 'eterna', 'portra'],
+    home: ['portra', 'kodak', 'eterna', 'natural', 'highkey'], daily: ['natural', 'portra', 'doc16', 'eterna', 'digital'],
     micro: ['scifi', 'neon', 'natural', 'pastel'], abstract: ['neon', 'pastel', 'blockbuster', 'natural', 'scifi', 'kodak'],
     modern: ['natural', 'kodak', 'blockbuster', 'eterna', 'neonoir'], product: ['natural', 'pastel', 'kodak', 'eterna', 'blockbuster'],
   };
@@ -167,7 +169,7 @@
     if (opts.time) s.time = times.find((t) => t.id === opts.time) || s.time;
     let weathers = CB.WEATHER[tctx];
     if (tctx === 'ext') {
-      weathers = weathers.filter((w) => !((w.id === 'snow' || w.id === 'blizzard' || w.id === 'frost') && NO_SNOW.test(g.id)) && !((w.id === 'dust' || w.id === 'heat' || w.id === 'sandstorm') && NO_DUST.test(g.id)));
+      weathers = weathers.filter((w) => !((w.id === 'snow' || w.id === 'blizzard' || w.id === 'frost') && (NO_SNOW.test(g.id) || g.nosnow)) && !((w.id === 'dust' || w.id === 'heat' || w.id === 'sandstorm') && NO_DUST.test(g.id)));
     }
     s.weather = pick(r, weathers);
     if (opts.weather) s.weather = weathers.find((w) => w.id === opts.weather) || s.weather;
@@ -178,12 +180,13 @@
 
     const cams = CB.camerasFor(ctx);
     s.camera = pick(r, cams);
+    if (cat.q && cat.q.cam && !opts.camera) s.camera = cams.find((c) => c.id === cat.q.cam) || s.camera;
     if (opts.camera) s.camera = CB.CAMERAS.find((c) => c.id === opts.camera) || s.camera;
     s.light = pick(r, s.time.night ? CB.LIGHTS.night : CB.LIGHTS.day);
     if (ctx === 'abstract') s.light = { tr: s.time.tr, en: 'soft volumetric light shaping the forms' };
     if (ctx === 'studio') s.light = { tr: s.time.tr, en: 'controlled studio lighting with soft contact shadows under every object' };
 
-    const A = CB.ARCH[g.arch];
+    const A = CB.ARCH[g.arch] || CB.ARCH.modern; // havuz yüklenemezse güvenli geri dönüş
     s.landmarks = { center: pick(r, A.center), left: pick(r, A.left), right: pick(r, A.right), far: pick(r, A.far) };
     s.floor = pick(r, A.floor);
     const m1 = pick(r, A.materials); let m2 = pick(r, A.materials); if (m2 === m1) m2 = A.materials[(A.materials.indexOf(m1) + 1) % A.materials.length];
@@ -216,7 +219,8 @@
     if (opts.grade && CB.GRADES[opts.grade]) s.gradeId = opts.grade;
 
     // görsel motor + parametreler
-    const engs = enginesFor(cat, ctx);
+    let engs = enginesFor(cat, ctx).filter((e) => CB.ENGINES[e]);
+    if (!engs.length) engs = ctx === 'int' || ctx === 'studio' ? ['godrays'] : ['mountains'];
     s.engine = pick(r, engs);
     if (opts.engine && CB.ENGINES[opts.engine]) s.engine = opts.engine;
     s.params = Array.from({ length: 8 }, () => rr(r, 0.2, 0.85));
