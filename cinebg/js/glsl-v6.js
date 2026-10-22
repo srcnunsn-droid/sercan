@@ -119,7 +119,7 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
   vec3 alb=vec3(.3); vec3 e=vec3(0.);
   float rough=1.;
   // piksel ayak izi (metre): desenler bir pikselden küçülünce ortalamasına söner (moiré önleme)
-  float pix=(t+s3_tb)*PX*1.6/max(abs(u_cam.x),.01)/max(abs(dot(n,-rd)),.18);
+  float pix=(t+s3_tb)*PX*1.6/max(abs(u_cam.x),.01)/max(sqrt(abs(dot(n,-rd))),.4);
   float bl=pix*1.5;
   if(m<.5){
     alb=vec3(.07)+u_c[0]*.15; alb*=.8+.4*vnoise(p.xz*3.);
@@ -159,7 +159,7 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
       } else {
         float win=step(.25,wy)*step(wy,.82)*step(.18,wz)*step(wz,.82);
         float lit=step(1.-mix(.05,.55,n6), hash12(vec2(floor((qz+S3_L*.5)/2.2), fl)+cid*3.7));
-        float wf=sat((2./bl-3.)/3.); // pencere hücresi ~3 pikselden küçükse ortalama
+        float wf=sat((2./bl-2.)/2.); // pencere hücresi ~3 pikselden küçükse ortalama
         win=mix(.37, win, wf); lit=mix(mix(.05,.55,n6), lit, wf);
         alb=mix(alb, vec3(.03), win*.85);
         rough=mix(1.,.2,win);
