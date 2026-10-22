@@ -117,16 +117,22 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
   vec3 amb=mix(mix(u_c[1],u_c[2],.5)*.55, u_c[0]*.4+u_c[3]*.05, n6);
   vec3 alb=vec3(.3); vec3 e=vec3(0.);
   float rough=1.;
+  // piksel ayak izi (metre): desenler bir pikselden küçülünce ortalamasına söner (moiré önleme)
+  float pix=t*PX*1.6/max(abs(u_cam.x),.01)/max(abs(dot(n,-rd)),.18);
+  float bl=pix*1.5;
   if(m<.5){
     alb=vec3(.07)+u_c[0]*.15; alb*=.8+.4*vnoise(p.xz*3.);
-    float dash=step(abs(p.x),.07)*step(.45,fract(p.z/6.));
-    float edge=step(abs(ax-(W-.35)),.06);
-    float xw=step(mod(floor(p.z/S3_L),6.),.5)*step(abs(qz+2.),2.)*step(ax,W-.5)*step(.5,fract(p.x*.9));
+    float fl=sat(.14/bl-.3);
+    float dash=smoothstep(.07+bl,.07-bl*.2,abs(p.x))*mix(.55,step(.45,fract(p.z/6.)),sat(6./bl/4.))*fl;
+    float edge=smoothstep(.06+bl,.06-bl*.2,abs(ax-(W-.35)))*fl;
+    float xs=sat(1.1/bl/3.-.5);
+    float xw=step(mod(floor(p.z/S3_L),6.),.5)*step(abs(qz+2.),2.)*step(ax,W-.5)*mix(.5,step(.5,fract(p.x*.9)),xs);
     alb=mix(alb, vec3(.75,.72,.65), max(max(dash,edge),xw)*.8);
   } else if(m<1.5){
     alb=mix(vec3(.42,.4,.38), mix(u_c[1],u_c[2],.5), .25);
-    vec2 tl=fract(p.xz*vec2(1.,1.)*1.6);
-    alb*=.8+.2*step(.06,tl.x)*step(.06,tl.y);
+    vec2 tl=fract(p.xz*1.6);
+    float tf=sat(.6/bl/3.-.5);
+    alb*=mix(.97,.8+.2*step(.06,tl.x)*step(.06,tl.y),tf);
     if(n.y<.5) alb*=.75;
   } else if(m<2.5){
     float hc=hash12(cid+11.);
@@ -152,10 +158,12 @@ vec3 s3_shade(vec3 ro, vec3 rd, float t, float m, vec2 cid, bool cheap){
       } else {
         float win=step(.25,wy)*step(wy,.82)*step(.18,wz)*step(wz,.82);
         float lit=step(1.-mix(.05,.55,n6), hash12(vec2(floor((qz+S3_L*.5)/2.2), fl)+cid*3.7));
+        float wf=sat((2./bl-3.)/3.); // pencere hücresi ~3 pikselden küçükse ortalama
+        win=mix(.37, win, wf); lit=mix(mix(.05,.55,n6), lit, wf);
         alb=mix(alb, vec3(.03), win*.85);
         rough=mix(1.,.2,win);
         e+=mix(vec3(1.,.72,.45),u_c[2],.3)*win*lit*mix(0.,1.4,n6)*(.5+.5*hash12(vec2(fl,wz)+cid));
-        float ledge=step(.95,wy)*.25; alb*=1.-ledge;
+        float ledge=mix(.0125,step(.95,wy)*.25,wf); alb*=1.-ledge;
       }
     }
   } else if(m<3.5){

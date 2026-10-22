@@ -309,7 +309,7 @@ vec3 scene(vec2 uv, vec2 st){
   // katmanlı şehir
   for(int L=0;L<4;L++){
     float fl=float(L);
-    float fog=mix(.85,.05,fl/3.)*mix(.6,1.2,u_p[5]);
+    float fog=sat(mix(.9,.12,fl/3.)*mix(.7,1.15,u_p[5]));
     float base=floorY+.06-fl*.035;
     float cell=mix(.18,.09,u_p[0])*(1.+fl*.35);
     vec2 q=vec2(uv.x+fl*1.7+SEED2.x, uv.y-base);
@@ -317,7 +317,7 @@ vec3 scene(vec2 uv, vec2 st){
     float d=1e3; vec2 lp=vec2(0.);
     for(int j=-1;j<=1;j++){
       float cid=id+float(j);
-      if(hash11(cid*1.31+fl*7.)>mix(.45,.95,u_p[0])) continue;
+      if(hash11(cid*1.31+fl*7.)>mix(.3,.75,u_p[0])) continue;
       vec2 p=vec2(q.x-(cid+.5)*cell, q.y);
       float w=cell*mix(.45,.85,hash11(cid+fl*3.));
       float bd=at_building(p, w, cid*3.7+fl);
@@ -335,9 +335,10 @@ vec3 scene(vec2 uv, vec2 st){
     }
     float m=smoothstep(PX*1.5,0.,d);
     if(m>0.){
-      vec3 stone=mix(u_c[1]*.45, u_c[2]*.5, sat(lp.y*.3+.3));
-      stone*=.7+.3*vnoise(uv*80.+fl);
-      float alg=smoothstep(.55,.8,fbm4(uv*25.+fl))*.5;
+      vec3 stone=mix(u_c[0]*.35+u_c[1]*.15, u_c[1]*.55+u_c[2]*.15, sat(lp.y*.35+.25));
+      stone*=.85+.15*gnoise(uv*vec2(30.,60.)+fl);
+      stone+=u_c[2]*.18*smoothstep(.0,.6,lp.y-1.2)*(1.-fog);
+      float alg=smoothstep(.6,.85,fbm4(uv*12.+fl))*.45;
       stone=mix(stone, mix(u_c[3],vec3(.1,.35,.2),.5)*.4, alg);
       // pencereler
       vec2 wg=fract(lp*vec2(3.,3.))-.5; float win=step(abs(wg.x),.12)*step(abs(wg.y),.2)*step(hash12(floor(lp*vec2(3.,3.))+fl*7.+SEED2), u_p[6]*.3)*step(1.5,float(L));
@@ -362,7 +363,7 @@ vec3 scene(vec2 uv, vec2 st){
     float sx=uv.x+uv.y*.35;
     float rays=0.;
     for(int i=0;i<3;i++){ float fi=float(i); rays+=pow(sat(gnoise(vec2(sx*(6.+fi*5.)+fi*3.,t*.5+fi))),2.)*(1.-fi*.25); }
-    col+=u_c[2]*rays*u_p[3]*.55*smoothstep(-.4,.6,uv.y);
+    col+=mix(u_c[2],vec3(1.),.3)*rays*u_p[3]*.75*smoothstep(-.45,.6,uv.y);
   }
   // kabarcıklar ve askıda parçacık
   if(u_p[4]>.05){
