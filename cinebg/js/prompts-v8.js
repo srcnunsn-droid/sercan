@@ -73,7 +73,7 @@
       const empty = s.ctx === 'space' ? 'An empty, silent vista.' : s.ctx === 'abstract' ? 'Clean uncluttered background with generous negative space for titles.' : s.ctx === 'studio' ? 'Empty set with a clear, unoccupied product placement area in the centre and generous negative space for copy.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
       const sizeTxt = s.ctx === 'studio' ? `a studio set about ${s.size} metres wide` : s.size ? `roughly ${s.size} metres across` : s.ctx === 'abstract' ? 'filling the whole frame' : 'vast beyond scale';
       const loc = CB.locText(s.cat);
-      const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space', 'landscape'].includes(s.group.arch);
+      const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space', 'landscape'].includes(s.group.arch) || !!s.group.pool;
       const build = natural ? `with textures of ${s.materials[0]} and ${s.materials[1]}` : `built from ${s.materials[0]} and ${s.materials[1]}`;
       const tech = s.ctx === 'studio' ? CB.TECH.studio : CB.TECH[s.tech];
       const look = s.ctx === 'studio' ? 'Polished advertising campaign look' : cap(s.cine);
