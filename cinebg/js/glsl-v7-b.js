@@ -1065,7 +1065,7 @@ vec3 scene(vec2 uv, vec2 st){
   else if(u_cam.z>-.15) hgt=min(hgt, 5.2);
   float side=hash11(u_seed*.33)<.5?-1.:1.;
   float yaw=u_cam.y*1.6+side*mix(.08,.35,hash11(u_seed*.73));
-  vec3 ro=vec3(side*(T+mix(.8,S7_PW-1.,hash11(u_seed*.91)))+u_cam.y*T, hgt, floor(hash11(u_seed*.19)*40.)*9.+mix(-2.5,2.5,hash11(u_seed*.47)));
+  vec3 ro=vec3(side*(T+(hash11(u_seed*.91)<.5?1.3:S7_PW-1.3))+u_cam.y*T, hgt, floor(hash11(u_seed*.19)*40.)*9.+mix(-2.5,2.5,hash11(u_seed*.47)));
   S7_RZ=ro.z;
   if(abs(ro.x)<T) ro.y=max(ro.y,1.5);
   float pitch=-.04-sat((hgt-3.)/30.)*.7+u_cam.z*1.3;
