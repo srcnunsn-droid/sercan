@@ -176,6 +176,11 @@
       gl.uniform1f(u.u_grain, L.grain);
       gl.uniform1f(u.u_gsize, L.grainSize);
       gl.uniform1f(u.u_bars, L.bars || 0);
+      const V = s.vfx || {};
+      gl.uniform4f(u.u_vx1, V.fish || 0, V.pix || 0, V.post || 0, V.scan || 0);
+      gl.uniform4f(u.u_vx2, V.nv || 0, V.thermal || 0, V.tilt || 0, V.sharp || 0);
+      gl.uniform4f(u.u_vx3, V.bleed || 0, V.wobble || 0, V.halftone || 0, V.mono || 0);
+      gl.uniform3fv(u.u_mono, V.monoCol || [0.85, 1, 0.9]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       return { w, h };
     }

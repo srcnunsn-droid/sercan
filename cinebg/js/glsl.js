@@ -184,6 +184,8 @@ uniform float u_exposure, u_contrast, u_sat, u_temp, u_tint, u_fade;
 uniform vec3 u_shadow, u_high;
 uniform float u_bloom, u_thr, u_flare, u_halation, u_ca, u_vig, u_grain, u_gsize, u_bars;
 uniform vec3 u_flareCol;
+// video stili: vx1 balıkgözü, piksel, posterize, tarama · vx2 gece görüşü, termal, tilt-shift, keskinlik · vx3 renk kayması, VHS dalgalanma, yarım ton, tek renk
+uniform vec4 u_vx1, u_vx2, u_vx3; uniform vec3 u_mono;
 out vec4 fragColor;
 float hash12(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
 float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
@@ -192,14 +194,26 @@ vec3 dec(vec3 e){ if(u_enc>.5){ vec3 y=e*e; return y/max(1.-y, 1e-3); } return e
 vec3 S(vec2 uv, float lod){ return dec(mix(textureLod(u_a,uv,lod).rgb, textureLod(u_b,uv,lod).rgb, u_mixw)); }
 vec3 thr(vec3 c, float t){ float l=dot(c,vec3(.2126,.7152,.0722)); return c*max(l-t,0.)/max(l,1e-4); }
 vec3 aces(vec3 x){ return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.); }
+vec3 thermal(float t){ t=clamp(t,0.,1.); return clamp(vec3(smoothstep(.25,.6,t)+smoothstep(.85,1.,t), smoothstep(.5,.85,t)+smoothstep(.9,1.,t)*.5, smoothstep(0.,.25,t)-smoothstep(.3,.55,t)+smoothstep(.85,1.,t)),0.,1.); }
 void main(){
   vec2 uv=gl_FragCoord.xy/u_res;
+  // video stili: VHS satır dalgalanması, balıkgözü bükülmesi, pikselleştirme
+  if(u_vx3.y>.001){ float ln=floor(uv.y*u_res.y/2.); uv.x+=(vnoise(vec2(ln*.05, u_time*3.))-.5)*.006*u_vx3.y + step(.985, vnoise(vec2(u_time*.7, uv.y*3.)))*.01*u_vx3.y; }
+  if(u_vx1.x>.001){ vec2 q=(uv-.5)*vec2(u_res.x/u_res.y,1.); float r2=dot(q,q); q*=1.+u_vx1.x*(r2*.55)/(1.+u_vx1.x*.35); uv=q/vec2(u_res.x/u_res.y,1.)+.5; }
+  if(u_vx1.y>.001){ float n=mix(u_res.y, 90., u_vx1.y); vec2 cell=vec2(n*u_res.x/u_res.y, n); uv=(floor(uv*cell)+.5)/cell; }
+  bool outside=uv.x<0.||uv.x>1.||uv.y<0.||uv.y>1.;
+  uv=clamp(uv,0.,1.);
   vec2 c=uv-.5;
   vec3 col;
-  if(u_ca>.001){
+  // tilt-shift: odak bandının dışı mip seviyesinden bulanık okunur
+  float tlod=u_vx2.z>.001 ? u_vx2.z*smoothstep(.08,.42,abs(uv.y-.48))*4.5 : 0.;
+  if(tlod>.01) col=S(uv,u_lod0+tlod);
+  else if(u_ca>.001){
     vec2 d=c*u_ca*.010;
     col=vec3(S(uv-d,0.).r, S(uv,0.).g, S(uv+d,0.).b);
   } else col=S(uv,0.);
+  if(u_vx3.x>.001){ vec2 d=vec2(u_vx3.x*.006,0.); col.r=mix(col.r, S(uv+d*1.5,u_lod0+1.).r, .7); col.b=mix(col.b, S(uv-d,u_lod0+1.).b, .6); }
+  if(u_vx2.w>.001){ vec3 bl1=S(uv,u_lod0+.8); col+=(col-bl1)*u_vx2.w*1.4; col=max(col,0.); }
   vec3 bl=vec3(0); float ws=0.;
   for(int i=0;i<6;i++){ float w=1./(1.+float(i)*.5); bl+=thr(S(uv,u_lod0+1.+float(i)),u_thr)*w; ws+=w; }
   col+=bl/ws*u_bloom*2.2;
@@ -222,6 +236,13 @@ void main(){
   L=dot(col,vec3(.2126,.7152,.0722));
   col=mix(vec3(L), col, u_sat);
   col=mix(vec3(u_fade*.13), vec3(1.-u_fade*.05), clamp(col,0.,1.));
+  // video stili renk dönüşümleri
+  if(u_vx2.x>.001){ float l=dot(col,vec3(.3,.59,.11)); l=pow(clamp(l*1.6,0.,1.),.8); col=mix(col, vec3(.12,1.,.25)*l+vec3(0.,.04,0.), u_vx2.x); }
+  if(u_vx2.y>.001){ float l=dot(col,vec3(.3,.59,.11)); col=mix(col, thermal(pow(l,.9)), u_vx2.y); }
+  if(u_vx3.w>.001){ float l=dot(col,vec3(.3,.59,.11)); col=mix(col, l*u_mono*1.15, u_vx3.w); }
+  if(u_vx1.z>.001){ float lv=mix(24.,4.,u_vx1.z); col=floor(col*lv+.5)/lv; }
+  if(u_vx3.z>.001){ float sc=u_res.y/150.; vec2 g=gl_FragCoord.xy/sc; vec2 f=fract(g*mat2(.707,-.707,.707,.707))-.5; float l=dot(col,vec3(.3,.59,.11)); float dotm=smoothstep(.05,0.,length(f)-sqrt(1.-l)*.55); col=mix(col, col*dotm+ (1.-dotm)*col*.35, u_vx3.z); }
+  if(u_vx1.w>.001){ float sl=.5+.5*sin(gl_FragCoord.y*6.2832*270./max(u_res.y,1.)); col*=1.-u_vx1.w*.35*sl; }
   float r=length(c*vec2(1.,1.))*1.41;
   col*=1.-u_vig*smoothstep(.35,1.05,r)*.92;
   float px=u_res.y/1080.;
@@ -230,6 +251,7 @@ void main(){
   float g=(vnoise(gp+vec2(t*37.1,t*11.7))+vnoise(gp*1.9+vec2(t*5.3,-t*23.))-1.);
   col+=g*u_grain*.16*(1.-L*.6);
   col+=(hash12(gl_FragCoord.xy+fract(u_time)*91.)-.5)/255.;
+  if(outside) col=vec3(0.);
   if(u_bars>0.){ float ar=u_res.x/u_res.y; if(ar<u_bars){ float m=(1.-ar/u_bars)*.5; if(uv.y<m||uv.y>1.-m) col=vec3(0.); } }
   fragColor=vec4(clamp(col,0.,1.),1.);
 }`.replace('uniform vec3 u_flareCol;', 'uniform vec3 u_flareCol;\nfloat lum3(vec3 c){ return dot(c, vec3(.2126,.7152,.0722)); }');

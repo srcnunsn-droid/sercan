@@ -96,11 +96,13 @@
   /* Bağlama uygun kamera havuzu */
   CB.camerasFor = function (ctx) {
     const C = CB.CAMERAS;
-    if (ctx === 'studio') return C.filter((c) => c.only === 'studio').concat(C.filter((c) => ['sym', 'detail', 'dutch', 'tele'].includes(c.id)));
+    const rig = (f) => C.filter((c) => c.rig && f(c.id.split('-')));
+    if (ctx === 'studio') return C.filter((c) => c.only === 'studio').concat(C.filter((c) => ['sym', 'detail', 'dutch', 'tele'].includes(c.id)), rig(([, h, , mm]) => ['kn', 'ey', 'hi', 'cr'].includes(h) && mm !== '14mm'));
     const base = C.filter((c) => !c.only);
-    if (ctx === 'space') return base.filter((c) => ['est', 'tele', 'silhouette', 'sym', 'xls', 'orbit', 'dutch'].includes(c.id));
-    if (ctx === 'abstract') return base.filter((c) => ['sym', 'tele', 'eye', 'frame', 'dutch', 'detail'].includes(c.id));
-    if (ctx === 'int') return base.filter((c) => !['drone', 'silhouette', 'bird', 'orbit', 'xls'].includes(c.id));
+    const hand = base.filter((c) => !c.rig);
+    if (ctx === 'space') return hand.filter((c) => ['est', 'tele', 'silhouette', 'sym', 'xls', 'orbit', 'dutch'].includes(c.id)).concat(rig(([, h]) => !['gr', 'kn'].includes(h)));
+    if (ctx === 'abstract') return hand.filter((c) => ['sym', 'tele', 'eye', 'frame', 'dutch', 'detail'].includes(c.id)).concat(rig(([, h]) => h === 'ey'));
+    if (ctx === 'int') return base.filter((c) => !c.noint && !['drone', 'silhouette', 'bird', 'orbit', 'xls', 'satellite', 'helicopter', 'tiltshift', 'skydom'].includes(c.id));
     return base;
   };
   function contextOf(cat) {
@@ -179,7 +181,12 @@
     s.cond = Object.assign({ id: condId }, CB.CONDITIONS[condId] || { tr: condId, en: condId });
 
     const cams = CB.camerasFor(ctx);
-    s.camera = pick(r, cams);
+    // elle yazılmış açılar ile kamera sistemi yarı yarıya; video stili kendi açılarını tercih eder
+    const handCams = cams.filter((c) => !c.rig);
+    s.camera = handCams.length && r() < 0.5 ? pick(r, handCams) : pick(r, cams);
+    s.vstyle = opts.vstyle || '';
+    const vs = CB.VSTYLE && CB.VSTYLE[s.vstyle];
+    if (vs && vs.cams && !opts.camera) { const pc = cams.filter((c) => vs.cams.includes(c.id)); if (pc.length) s.camera = pick(r, pc); }
     if (cat.q && cat.q.cam && !opts.camera) s.camera = cams.find((c) => c.id === cat.q.cam) || s.camera;
     if (opts.camera) s.camera = CB.CAMERAS.find((c) => c.id === opts.camera) || s.camera;
     s.light = pick(r, s.time.night ? CB.LIGHTS.night : CB.LIGHTS.day);
@@ -224,6 +231,15 @@
     s.engine = pick(r, engs);
     if (opts.engine && CB.ENGINES[opts.engine]) s.engine = opts.engine;
     s.params = Array.from({ length: 8 }, () => rr(r, 0.2, 0.85));
+    // motor görünümü: 10 ön ayardan biri, hafif titreşimle (aynı motor her seferinde başka bir sahne kurar)
+    const PR = CB.ENGINE_PRESETS && CB.ENGINE_PRESETS[s.engine];
+    s.preset = null;
+    const wantPreset = opts.preset !== undefined && opts.preset !== '' && opts.preset !== null;
+    if (PR && PR.length && (r() < 0.8 || wantPreset)) {
+      s.preset = PR[Math.floor(r() * PR.length) % PR.length];
+      if (wantPreset) s.preset = PR[(+opts.preset) % PR.length];
+      s.params = s.preset.p.map((v) => v + (r() - 0.5) * 0.12);
+    }
     if (HOOKS[s.engine]) HOOKS[s.engine](s.params, s);
     s.params = s.params.map((v) => Math.min(1, Math.max(0, v)));
     s.time0 = rr(r, 0, 120);
@@ -235,7 +251,7 @@
   };
 
   CB.combinationCount = function () {
-    const per = CB.TIMES.ext.length * CB.WEATHER.ext.length * CB.CAMERAS.length * CB.PALETTES.length * 4 * 5 * 5 * 5 * 5;
+    const per = CB.TIMES.ext.length * CB.WEATHER.ext.length * CB.CAMERAS.length * CB.PALETTES.length * (CB.VIDEO_STYLES ? CB.VIDEO_STYLES.length : 1) * 4 * 5 * 5 * 5 * 5;
     return CB.CATS.length * per;
   };
 
@@ -335,7 +351,8 @@
       `Same light: ${s.time.en}; ${s.light.en}. Same weather, same grade (${grade.en}), same palette.`,
       s.ctx === 'studio' || s.ctx === 'abstract' ? empty : 'EMPTY of people.',
     ].join('\n');
-    return { soul, oneshot: oneshot.join('\n'), mj, video, negative, reverse, refsheet, fromRef };
+    const out = { soul, oneshot: oneshot.join('\n'), mj, video, negative, reverse, refsheet, fromRef };
+    return CB.applyVideoStyle ? CB.applyVideoStyle(out, s) : out;
   };
 
   CB.specCode = function (s) {

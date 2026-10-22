@@ -41,6 +41,7 @@
     <div class="stage" id="stage">
       <div class="frame" id="frame">
         <canvas id="view" aria-label="Üretilen arka plan önizlemesi"></canvas>
+        <canvas class="hud" id="hud" aria-hidden="true"></canvas>
         <div class="titlecard" id="titleCard" hidden><div class="tc-title" id="tcTitle"></div><div class="tc-sub" id="tcSub"></div></div>
         <div class="guides" id="guides" hidden><i class="v1"></i><i class="v2"></i><i class="h1"></i><i class="h2"></i><i class="safe"></i></div>
         <div class="slate" id="slate"></div>
@@ -55,6 +56,8 @@
       <button class="btn" id="btnProj" type="button" title="Projeye ekle (P)">＋ <span class="label-opt">Projeye ekle</span></button>
       <button class="btn" id="btnVar" type="button" title="Bu kategoriden 12 varyasyon (V)">▦ <span class="label-opt">Varyasyonlar</span></button>
       <button class="btn" id="btnSet" type="button" title="Aynı sahne, tüm kamera açıları (S)">◫ <span class="label-opt">Açı seti</span></button>
+      <label class="qstyle" title="Video stili: görüntü efektleri, kadraj ve prompt">🎬 <select id="qStyle" aria-label="Video stili"></select></label>
+      <button class="btn" id="btnStyles" type="button" title="Aynı sahne, tüm video stilleri">◩ <span class="label-opt">Stil seti</span></button>
       <button class="btn" id="btnAnim" type="button" title="Canlı önizleme (A)">▶ <span class="label-opt">Canlı</span></button>
       <button class="btn" id="btnFlow" type="button" title="Her 4 saniyede yeni sahne">∞ <span class="label-opt">Sonsuz akış</span></button>
       <span class="grow"></span>
@@ -85,6 +88,8 @@
         <h3>Kilitler</h3>
         <p class="hint">"Rastgele" bırakılan her şey her üretimde değişir. Seçtiklerin sabit kalır.</p>
         <div class="chips">
+          <div class="field"><label for="oVstyle">Video stili</label><select id="oVstyle"></select></div>
+          <div class="field"><label for="oPreset">Motor görünümü</label><select id="oPreset"></select></div>
           <div class="field"><label for="oTime">Saat / ışık</label><select id="oTime"></select></div>
           <div class="field"><label for="oWeather">Hava</label><select id="oWeather"></select></div>
           <div class="field"><label for="oCamera">Kamera</label><select id="oCamera"></select></div>
@@ -176,7 +181,7 @@
         <h3>Set üret</h3>
         <p class="hint">Aynı sahneyi (aynı mekan, yer işaretleri, palet) farklı kamera açılarında, günün farklı saatlerinde ya da farklı havalarda üret. Her kare için "referanstan yeni açı" promptu da hazırlanır.</p>
         <div class="row">
-          <div class="field"><label for="setMode">Set türü</label><select id="setMode"><option value="angles">Kamera açıları</option><option value="times">Günün saatleri</option><option value="weathers">Hava durumları</option><option value="variants">Mekân varyantları (5)</option><option value="grades">Film stokları / grade (40)</option></select></div>
+          <div class="field"><label for="setMode">Set türü</label><select id="setMode"><option value="angles">Kamera açıları</option><option value="times">Günün saatleri</option><option value="weathers">Hava durumları</option><option value="variants">Mekân varyantları (10)</option><option value="vstyles">Video stilleri</option><option value="presets">Motor görünümleri (10)</option><option value="rigs">Kamera sistemi (yükseklik × yön)</option><option value="grades">Film stokları / grade (40)</option></select></div>
           <button class="btn primary" id="btnSet2" type="button" style="align-self:end">Set üret</button>
         </div>
       </section>
@@ -281,6 +286,9 @@
 <script src="js/glsl.js"></script>
 <script src="js/glsl-v5.js"></script>
 <script src="js/glsl-v6.js"></script>
+<script src="js/glsl-v7-a.js"></script>
+<script src="js/glsl-v7-b.js"></script>
+<script src="js/glsl-v7-c.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/categories.js"></script>
 <script src="js/cat-extra-a.js"></script>
@@ -290,11 +298,22 @@
 <script src="js/cat-v3.js"></script>
 <script src="js/arch-v6.js"></script>
 <script src="js/cat-v6.js"></script>
+<script src="js/v7-core.js"></script>
+<script src="js/cat-v7-a.js"></script>
+<script src="js/cat-v7-b.js"></script>
+<script src="js/cat-v7-c.js"></script>
+<script src="js/cat-v7-d.js"></script>
 <script src="js/engines-v5.js"></script>
 <script src="js/engines-v6.js"></script>
+<script src="js/engines-v7-a.js"></script>
+<script src="js/engines-v7-b.js"></script>
+<script src="js/engines-v7-c.js"></script>
+<script src="js/presets-v7.js"></script>
 <script src="js/cat-variants.js"></script>
 <script src="js/looks.js"></script>
 <script src="js/looks-v5.js"></script>
+<script src="js/cameras-v7.js"></script>
+<script src="js/video-styles.js"></script>
 <script src="js/spec.js"></script>
 <script src="js/app.js"></script>
 </body>

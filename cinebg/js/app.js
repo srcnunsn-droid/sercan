@@ -50,6 +50,7 @@
     v.atmos = Object.assign({ rain: 0, snow: 0, fog: 0, embers: 0, ash: 0, dust: 0, lightning: 0, leak: 0 }, v.atmos || {});
     v.frame = Object.assign({ zoom: 1, px: 0, py: 0, roll: 0, mirror: false }, v.frame || {});
     v.move = v.move || S.move;
+    v.vfx = v.vfx || {}; v.vstyle = v.vstyle || '';
     return v;
   }
   /* u: 0..1 hareket ilerlemesi */
@@ -73,10 +74,25 @@
     if (loop) return 0.5 - 0.5 * Math.cos(f * TAU);
     return Math.min(1, t / period);
   }
+  const vsOf = (v) => (CB.VSTYLE && CB.VSTYLE[v.vstyle]) || {};
+  /* elde çekim titremesi: video stili 'shake' değeri kadar (hareket ilerlemesine bağlı, kare kare değişir) */
+  function shaken(c, v, u) {
+    const k = vsOf(v).shake || 0; if (!k) return c;
+    const a = u * 240;
+    return [c[0], c[1] + k * 0.006 * (Math.sin(a * 1.3) + 0.5 * Math.sin(a * 3.1 + 1)), c[2] + k * 0.005 * (Math.sin(a * 1.7 + 2) + 0.5 * Math.sin(a * 2.9)), c[3] + k * 0.006 * Math.sin(a * 0.9 + 4)];
+  }
+  /* video stilini görsele uygula: grade üzerine yazılan değerler + efektler */
+  function applyVS(v, id) {
+    const vs = (CB.VSTYLE && CB.VSTYLE[id]) || null;
+    v.vstyle = vs && id !== 'none' ? id : '';
+    v.vfx = vs ? clone(vs.vfx) : {};
+    if (vs) for (const k in vs.look) v.look[k] = Array.isArray(vs.look[k]) ? vs.look[k].slice() : vs.look[k];
+    return v;
+  }
   function rstate(v, seed, u) {
     return {
       engine: v.engine, seedF: (seed % 20000) / 100, params: v.params, linColors: v.colors.flatMap(hexLin),
-      look: Object.assign({}, v.look, { bars: S.bars }), atmos: v.atmos, cam: camFor(v, u || 0),
+      look: Object.assign({}, v.look, { bars: S.bars || vsOf(v).bars || 0 }), atmos: v.atmos, cam: shaken(camFor(v, u || 0), v, u || 0), vfx: v.vfx,
     };
   }
 
@@ -104,12 +120,24 @@
     let k = dpr; if (w * h * k * k > budget) k = Math.sqrt(budget / (w * h));
     const u = S.animating ? progress(S.visual, S.t - S.tStart, 24, true) : 0;
     try { R.render(rstate(S.visual, S.seed, u), w * k, h * k, S.t); } catch (e) { showFatal(e.message); }
+    drawHudPreview(w, h);
   }
+  function drawHudPreview(w, h) {
+    const c = $('hud'); if (!c) return;
+    const on = hudOn();
+    c.hidden = !on; if (!on) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (c.width !== W) c.width = W; if (c.height !== H) c.height = H;
+    const g = c.getContext('2d'); g.clearRect(0, 0, W, H);
+    CB.drawHud(g, W, H, S.visual.vstyle, S.t - S.tStart, S.seed);
+  }
+  const hudOn = () => !!(S.visual && vsOf(S.visual).hud);
   function requestDraw() { if (!raf) raf = requestAnimationFrame((ts) => { raf = 0; draw(); if (S.animating) tick(ts); }); }
   function tick(ts) {
     if (!S.animating) return;
     const dt = lastT ? Math.min(0.1, (ts - lastT) / 1000) : 0; lastT = ts;
-    S.t += dt;
+    S.t += dt * (vsOf(S.visual).speed || 1);
     requestDraw();
   }
   function showFatal(msg) {
@@ -124,6 +152,7 @@
   };
   const subFont = (h) => `500 ${h * 0.03}px 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif`;
   const titleOn = () => S.title.on && (S.title.title.trim() || S.title.sub.trim());
+  const overlayOn = () => titleOn() || hudOn();
   function layoutTitle(h) {
     const tc = $('titleCard');
     tc.hidden = !titleOn();
@@ -169,7 +198,7 @@
   }
   function composite(src, w, h) {
     const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const ctx = c.getContext('2d'); ctx.drawImage(src, 0, 0, w, h); drawTitle(ctx, w, h);
+    const ctx = c.getContext('2d'); ctx.drawImage(src, 0, 0, w, h); if (hudOn()) CB.drawHud(ctx, w, h, S.visual.vstyle, S.t - S.tStart, S.seed); drawTitle(ctx, w, h);
     return c;
   }
 
@@ -179,7 +208,8 @@
     return { zoom: Math.abs(c[0]), px: c[1], py: c[2], roll: c[3] || 0, mirror: c[0] < 0 };
   }
   function visualFromSpec(s) {
-    return normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move, frame: frameFromCamera(s.camera) });
+    const v = normVisual({ engine: s.engine, params: s.params.slice(), colors: s.palette.c.slice(), gradeId: s.gradeId, look: lookFrom(CB.GRADES[s.gradeId]), atmos: Object.assign({}, s.atmos), move: S.move, frame: frameFromCamera(s.camera) });
+    return applyVS(v, s.vstyle);
   }
   function load(cat, seed, push, visual) {
     S.cat = cat; S.seed = seed >>> 0;
@@ -303,6 +333,11 @@
     fillSelect($('oPalette'), CB.PALETTES.map((t) => [t.id, t.tr]), S.ov.palette, 'Sahneye göre');
     fillSelect($('oGrade'), Object.entries(CB.GRADES).map(([k, g]) => [k, g.tr]), S.ov.grade, 'Sahneye göre');
     $('oImp').value = S.ov.impossible || 'auto';
+    const vsItems = CB.VIDEO_STYLES.filter((v) => v.id !== 'none').map((v) => [v.id, v.tr]);
+    fillSelect($('oVstyle'), vsItems, S.ov.vstyle || '', 'Standart');
+    fillSelect($('qStyle'), vsItems, S.ov.vstyle || '', 'Standart');
+    const PR = (CB.ENGINE_PRESETS && S.spec && CB.ENGINE_PRESETS[S.spec.engine]) || [];
+    fillSelect($('oPreset'), PR.map((p, i) => [String(i), p.tr]), S.ov.preset || '', PR.length ? 'Rastgele' : 'Bu motorda yok');
   }
   function soulAspect(a) {
     const opts = [['1:1', 1], ['4:3', 4 / 3], ['3:4', 3 / 4], ['16:9', 16 / 9], ['9:16', 9 / 16], ['3:2', 3 / 2], ['2:3', 2 / 3], ['21:9', 21 / 9]];
@@ -323,7 +358,7 @@
     const facts = [
       ['Kategori', s.cat.tr], ['Grup', s.group.tr], ['Bağlam', CTX_TR[s.ctx]], ['Saat', s.time.tr], ['Hava', s.weather.tr],
       ['Mevsim', s.season ? s.season.tr : '—'], ['Durum', s.cond.tr], ['Kamera', `${s.camera.tr} · ${s.camera.lens}`], ['Işık', s.light.tr],
-      ['Palet', s.palette.tr], ['Grade', CB.GRADES[s.gradeId].tr], ['Yer işaretleri', `Sol: ${s.landmarks.left} · Merkez: ${s.landmarks.center} · Sağ: ${s.landmarks.right} · Uzak: ${s.landmarks.far}`],
+      ['Palet', s.palette.tr], ['Grade', CB.GRADES[s.gradeId].tr], ['Motor görünümü', `${(CB.ENGINES[s.engine] || {}).name || s.engine}${s.preset ? ' · ' + s.preset.tr : ''}`], ['Video stili', (CB.VSTYLE[s.vstyle] || CB.VSTYLE.none).tr], ['Yer işaretleri', `Sol: ${s.landmarks.left} · Merkez: ${s.landmarks.center} · Sağ: ${s.landmarks.right} · Uzak: ${s.landmarks.far}`],
       ['Ölçek', s.size ? `~${s.size} m` : s.ctx === 'abstract' ? 'Tam kadraj' : 'Kozmik'], ['İmkansız', s.impossible || '—'],
     ];
     $('facts').replaceChildren(...facts.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })]));
@@ -471,7 +506,7 @@
   function renderToBlob(v, seed, t, w, h) {
     const X = exportRenderer();
     X.render(rstate(v, seed, 0), w, h, t);
-    const src = titleOn() ? composite(X.canvas, w, h) : X.canvas;
+    const src = overlayOn() ? composite(X.canvas, w, h) : X.canvas;
     return new Promise((res) => src.toBlob((b) => res(b), 'image/' + S.fmt, +S.q));
   }
   const ext = () => (S.fmt === 'jpeg' ? 'jpg' : S.fmt);
@@ -508,14 +543,14 @@
     const enc = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { err = e; } });
     enc.configure({ codec, width: w, height: h, bitrate, framerate: fps });
     const X = exportRenderer();
-    const comp = titleOn() ? composite(X.canvas, w, h) : null;
+    const comp = overlayOn() ? composite(X.canvas, w, h) : null;
     const N = Math.round(dur * fps), t0 = loop ? 0 : S.t;
     for (let i = 0; i < N; i++) {
       if (err) throw err;
       const tt = i / fps;
-      X.render(rstate(v, S.seed, progress(v, tt, dur, loop)), w, h, t0 + tt, loop ? { length: dur } : null);
+      X.render(rstate(v, S.seed, progress(v, tt, dur, loop)), w, h, t0 + tt * (vsOf(v).speed || 1), loop ? { length: dur } : null);
       let src = X.canvas;
-      if (comp) { const c2 = comp.getContext('2d'); c2.drawImage(X.canvas, 0, 0); drawTitle(c2, w, h); src = comp; }
+      if (comp) { const c2 = comp.getContext('2d'); c2.drawImage(X.canvas, 0, 0); if (hudOn()) CB.drawHud(c2, w, h, v.vstyle, tt, S.seed); drawTitle(c2, w, h); src = comp; }
       const frame = new VideoFrame(src, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) });
       enc.encode(frame, { keyFrame: i % (fps * 2) === 0 });
       frame.close();
@@ -554,7 +589,7 @@
     const X = exportRenderer();
     const v = S.visual;
     X.render(rstate(v, S.seed, 0), w, h, 0, loop ? { length: dur } : null);
-    const comp = titleOn() ? composite(X.canvas, w, h) : null;
+    const comp = overlayOn() ? composite(X.canvas, w, h) : null;
     const types = ['video/mp4;codecs=avc1.640028', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     const mime = types.find((t) => MediaRecorder.isTypeSupported(t));
     if (!mime) return toast('Video biçimi desteklenmiyor');
@@ -661,13 +696,18 @@
   const batchItems = () => S.batch.map((b) => ({ visual: b.visual, seed: b.seed, t: b.spec.time0, name: b.label ? `${b.cat.tr} ${b.label}` : b.cat.tr, label: b.label || b.cat.tr, code: CB.specCode(b.spec), row: rowOf(b.cat, b.seed, b.ov || S.ov, b.label ? { varyant: b.label } : undefined) }));
 
   /* ---------------- set üretimi: aynı sahne, farklı açı / saat / hava ---------------- */
-  const SET_TR = { angles: 'Açı seti', times: 'Saat seti', weathers: 'Hava seti', variants: 'Varyant seti', grades: 'Film stoğu seti' };
+  const SET_TR = { angles: 'Açı seti', times: 'Saat seti', weathers: 'Hava seti', variants: 'Varyant seti', grades: 'Film stoğu seti', vstyles: 'Video stili seti', presets: 'Motor görünümü seti', rigs: 'Kamera sistemi seti' };
   async function runSet(mode) {
     const run = ++batchRun;
     S.batch = [];
     const ctx = tctxOf(S.spec);
     const bc = S.cat.base || S.cat;
-    const variants = mode === 'angles' ? CB.camerasFor(S.spec.ctx).map((c) => ({ key: 'camera', id: c.id, label: c.tr }))
+    const PR = (CB.ENGINE_PRESETS && CB.ENGINE_PRESETS[S.visual.engine]) || [];
+    const RIG = CB.CAMERA_RIG;
+    const variants = mode === 'angles' ? CB.camerasFor(S.spec.ctx).filter((c) => !c.rig).map((c) => ({ key: 'camera', id: c.id, label: c.tr }))
+      : mode === 'vstyles' ? CB.VIDEO_STYLES.map((v) => ({ key: 'vstyle', id: v.id === 'none' ? '' : v.id, label: v.tr }))
+      : mode === 'presets' ? PR.map((p, i) => ({ preset: i, label: p.tr }))
+      : mode === 'rigs' ? RIG.heights.flatMap((h) => RIG.dirs.map((d) => ({ key: 'camera', id: `rig-${h.id}-${d.id}-35mm-lv`, label: `${h.tr} · ${d.tr}` }))).filter((x) => CB.camerasFor(S.spec.ctx).some((c) => c.id === x.id))
       : mode === 'times' ? CB.TIMES[ctx].map((t) => ({ key: 'time', id: t.id, label: t.tr }))
         : mode === 'variants' ? [bc, ...(bc.vars || [])].map((c) => ({ cat: c, label: c.q ? c.q.tr : 'Temel mekân' }))
           : mode === 'grades' ? Object.entries(CB.GRADES).map(([id, g]) => ({ key: 'grade', id, label: g.tr }))
@@ -680,15 +720,23 @@
       if (run !== batchRun || $('sheet').hidden) return;
       const vr = variants[i];
       const ov = vr.key ? Object.assign({}, S.ov, { [vr.key]: vr.id }) : clone(S.ov);
+      if (vr.preset != null) ov.preset = String(vr.preset);
       const vcat = vr.cat || S.cat;
       const spec = CB.makeSpec(vcat, S.seed, ov);
       let visual;
-      if (mode === 'angles') { visual = clone(base); visual.frame = frameFromCamera(spec.camera); }
+      if (mode === 'angles' || mode === 'rigs') { visual = clone(base); visual.frame = frameFromCamera(spec.camera); }
+      else if (mode === 'presets') { visual = clone(base); visual.params = PR[vr.preset].p.slice(); }
+      else if (mode === 'vstyles') { visual = clone(base); visual.look = lookFrom(CB.GRADES[base.gradeId] || CB.GRADES.natural); applyVS(visual, vr.id || 'none'); }
       else { visual = visualFromSpec(spec); visual.frame = clone(base.frame); visual.move = base.move; }
       if (mode === 'grades') { visual = clone(base); const g = CB.GRADES[vr.id]; visual.look = lookFrom(g); visual.gradeId = vr.id; }
       const item = { cat: vcat, seed: S.seed, spec, ov, visual, label: vr.label, thumb: '' };
       if (R) {
-        try { const X = exportRenderer(); X.render(rstate(visual, S.seed, 0), tw, th, spec.time0); item.thumb = X.canvas.toDataURL('image/jpeg', 0.8); } catch (e) { item.thumb = ''; }
+        try {
+          const X = exportRenderer(); X.render(rstate(visual, S.seed, 0), tw, th, spec.time0);
+          let src = X.canvas;
+          if (vsOf(visual).hud) { const c = document.createElement('canvas'); c.width = tw; c.height = th; const g = c.getContext('2d'); g.drawImage(X.canvas, 0, 0); CB.drawHud(g, tw, th, visual.vstyle, 0, S.seed); src = c; }
+          item.thumb = src.toDataURL('image/jpeg', 0.8);
+        } catch (e) { item.thumb = ''; }
       }
       S.batch.push(item);
       $('sheetGrid').append(el('button', { type: 'button', class: 'tile', onclick: () => { $('sheet').hidden = true; S.ov = clone(ov); store.set('ov', S.ov); load(item.cat, item.seed, true, item.visual); syncOverrides(); } },
@@ -946,7 +994,16 @@
     document.querySelectorAll('#mtabs button').forEach((b) => {
       b.onclick = () => { $('app').dataset.m = b.dataset.m; document.querySelectorAll('#mtabs button').forEach((x) => x.classList.toggle('on', x === b)); };
     });
-    const ovMap = { oTime: 'time', oWeather: 'weather', oCamera: 'camera', oPalette: 'palette', oGrade: 'grade', oImp: 'impossible' };
+    const ovMap = { oTime: 'time', oWeather: 'weather', oCamera: 'camera', oPalette: 'palette', oGrade: 'grade', oImp: 'impossible', oPreset: 'preset' };
+    const setVstyle = (id) => {
+      S.ov.vstyle = id; store.set('ov', S.ov);
+      const vs = CB.VSTYLE[id];
+      if (vs && vs.ar && vs.ar !== S.aspectId && CB.ASPECTS.find((a) => a.id === vs.ar)) { S.aspectId = vs.ar; store.set('aspect', S.aspectId); $('eAspect').value = vs.ar; updateSizeHint(); toast(`${vs.tr} · oran ${vs.ar}`); }
+      rebuildSpec(); syncOverrides();
+    };
+    $('oVstyle').onchange = () => setVstyle($('oVstyle').value);
+    $('qStyle').onchange = () => setVstyle($('qStyle').value);
+    $('btnStyles').onclick = () => runSet('vstyles');
     Object.entries(ovMap).forEach(([id, key]) => { $(id).onchange = () => { S.ov[key] = $(id).value; store.set('ov', S.ov); rebuildSpec(); }; });
     $('vEngine').onchange = () => {
       const v = S.visual; v.engine = $('vEngine').value;
