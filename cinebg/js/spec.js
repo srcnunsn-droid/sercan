@@ -107,6 +107,8 @@
   };
   function contextOf(cat) {
     const g = cat.group;
+    // dış mekân grubundaki "… interior" mekânları iç mekân sayılır (salon içi, çiftlik evi içi)
+    if (g.ctx === 'ext' && /\binterior\b/i.test((cat.base || cat).en)) return 'int';
     if (g.ctx !== 'mixed') return g.ctx;
     return INT_RE.test((cat.base || cat).en) ? 'int' : 'ext';
   }
@@ -157,6 +159,7 @@
   }
 
   /* opts: { engine?, time?, weather?, camera?, palette?, grade?, impossible?: 'auto'|'on'|'off' } — 'auto'/undefined = seed'den */
+  const ENGINES_3D = (CB.ENGINES_3D = ['podium', 'terrain3d', 'metro3d', 'room3d', 'crystal', 'street3d', 'countryside', 'homeint', 'canyonarch', 'saltflat', 'aerial', 'library3d', 'corridor', 'pool', 'market', 'rooftop', 'harbor', 'station', 'stadium']);
   CB.makeSpec = function (cat, seed, opts = {}) {
     const r = mulberry32((seed ^ strHash(cat.id)) >>> 0);
     const g = cat.group;
@@ -230,6 +233,11 @@
     if (!engs.length) engs = ctx === 'int' || ctx === 'studio' ? ['godrays'] : ['mountains'];
     s.engine = pick(r, engs);
     if (opts.engine && CB.ENGINES[opts.engine]) s.engine = opts.engine;
+    // 2B motorlar yukarıdan bakamaz: vinç/drone/uydu yüksekliğindeki sistem açıları yalnızca 3B motorlarda kalır
+    if (s.camera.rig && /^rig-(cr|dr|sk)-/.test(s.camera.id) && !ENGINES_3D.includes(s.engine) && !opts.camera) {
+      const low = cams.filter((c) => !(c.rig && /^rig-(cr|dr|sk)-/.test(c.id)));
+      if (low.length) s.camera = pick(r, low);
+    }
     s.params = Array.from({ length: 8 }, () => rr(r, 0.2, 0.85));
     // motor görünümü: 10 ön ayardan biri, hafif titreşimle (aynı motor her seferinde başka bir sahne kurar)
     const PR = CB.ENGINE_PRESETS && CB.ENGINE_PRESETS[s.engine];

@@ -279,7 +279,8 @@ float cs_h0(vec2 x){ // yumuşak tepeler + uzak dağlar
   float amp=mix(8.,45.,u_p[0]);
   float f=mix(.0018,.0045,u_p[1]);
   float h=fbm4(x*f+SEED2)*amp*1.6+fbm4(x*f*2.3+SEED2.yx)*amp*.18;
-  float far=smoothstep(900.,2600.,x.y);
+  // uzak dağlar kameranın başladığı noktaya göre ileride (mutlak z'ye göre değil: yoksa kamera dağın içinde doğuyor)
+  float far=smoothstep(450.,1800.,x.y-hash11(u_seed*.83)*4000.);
   h+=far*(ridged(x*.0012+SEED2,4)*mix(140.,320.,hash11(u_seed*.5)));
   return h;
 }
@@ -348,13 +349,15 @@ vec3 scene(vec2 uv, vec2 st){
   vec2 rp=cs_road(z0);
   vec3 ro=vec3(rp.x+u_cam.y*40.+6., 0., z0);
   float gh=cs_h0(ro.xz);
-  float hgt=mix(2.,30.,u_p[0]*.3)+max(-u_cam.z,0.)*900.;
+  float hgt=mix(5.,30.,u_p[0]*.3)+max(-u_cam.z,0.)*900.;
   hgt=max(hgt-max(u_cam.z,0.)*20.,1.6);
   float yaw=u_cam.y*2.+(hash11(u_seed*.4)-.5)*.6;
   // önündeki tepeye gömülmesin: ileriye bakan noktaları örnekleyip bakış noktasını yükselt
   vec2 fw=vec2(sin(yaw),cos(yaw));
   float ah=gh;
-  for(int i=1;i<5;i++) ah=max(ah, cs_h0(ro.xz+fw*float(i)*45.)-float(i)*6.);
+  // yelpaze örnekleme: yakın ve yandaki yamaçlar da kadrajı doldurmasın (eğim payı ~3.5°)
+  for(int i=0;i<8;i++){ float d=12.*pow(1.75,float(i));
+    for(int j=-1;j<=1;j++){ float a=yaw+float(j)*.5; ah=max(ah, cs_h0(ro.xz+vec2(sin(a),cos(a))*d)-d*.06); } }
   ro.y=max(gh,ah)+hgt;
   float pitch=mix(-.05,-.6,sat(hgt/250.))+u_cam.z*1.2;
   mat3 cam=v6_look(ro, ro+vec3(sin(yaw),pitch,cos(yaw)));

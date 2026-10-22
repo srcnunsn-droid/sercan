@@ -1196,9 +1196,12 @@ vec3 scene(vec2 uv, vec2 st){
   float Hm=d7_Hm();
   float ang=hash11(u_seed*.27)*6.283+u_cam.y*1.2;
   float er=mix(1.04,1.25,u_p[7]);
+  // alçak kameralar tribünün içine gömülmesin: saha kenarına (pist) iner
+  float low=sat(u_cam.z*6.);
+  er=mix(er,.97,low);
   vec2 xz=vec2(sin(ang),cos(ang))*D7_A*er;
   float hgt=d7_h(xz)+1.3+max(-u_cam.z,0.)*300.;
-  hgt=max(hgt-max(u_cam.z,0.)*8.,1.4);
+  hgt=max(hgt-low*.5, d7_h(xz)+.6);
   vec3 ro=vec3(xz.x, hgt, xz.y);
   vec3 ta=vec3(-xz.x*.25, 1.-sat((hgt-20.)/150.)*0.+mix(4.,-10.,sat(hgt/80.)), -xz.y*.25);
   ta.y+=u_cam.z*60.;

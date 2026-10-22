@@ -10,7 +10,11 @@
   // spec.js kurallarını bu dosyadan sonra eklediği için temizlik push anında yapılır.
   const clean = (rule) => {
     const src = rule[0].source;
-    const c = src.replace(/\|bamboo(?=\||$)/, '').replace(/\|salt flat(?=\||$)/, '').replace(/\|sand(?=\|)/, '|sand(?!stone)').replace(/\|glacier(?=\||$)/, '');
+    let c = src.replace(/\|bamboo(?=\||$)/, '').replace(/\|salt flat(?=\||$)/, '').replace(/\|sand(?=\|)/, '|sand(?!stone)').replace(/\|glacier(?=\||$)/, '');
+    // QA: "moonlit sea" gibi metinler uzay motoruna düşmesin
+    c = c.replace(/(^|\|)moon(?=\||$)/, '$1moon(?!lit|light|rise|beam)');
+    // QA: kar/buz kuralı yerleşim, savaş ya da iç mekân metnini dağ/aurora'ya çekmesin (sonrasında bu kelimeler varsa eşleşmez)
+    if (/snow\|/.test(c) && /frozen/.test(c)) c = '(?:' + c + ')(?![^]*\\b(?:city|street|avenue|town|village|battle|battlefield|front|trench|campaign|watchtower|border|siege|market|station|harbou?r|port|base|bunker|fortress|castle|house|cabin|lodge|hotel|interior|room|cafe|shop|forest|woods?|grove|spruce|pine|birch|taiga|road|research|lake)\\b)';
     return c === src ? rule : [new RegExp(c, rule[0].flags), rule[1]];
   };
   for (let i = 0; i < K.length; i++) K[i] = clean(K[i]);

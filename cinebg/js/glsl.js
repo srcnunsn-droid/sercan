@@ -774,7 +774,11 @@ vec3 scene(vec2 uv, vec2 st){
     glsl: `
 vec3 scene(vec2 uv, vec2 st){
   float t=u_time*(.004+.03*u_p[7]);
-  vec2 p=uv*vec2(1.,1.6)*mix(1.,2.6,u_p[1])+SEED2+vec2(t,0.);
+  // bulut tavanı perspektifle ufka yakınsar (düz doku duvar gibi okunmasın)
+  float hy=-.38+mix(-.1,.1,u_p[6]);
+  float py=max(uv.y-hy,.035);
+  vec2 pp=vec2(uv.x/py, 1./py)*.32;
+  vec2 p=(uv*vec2(1.,1.6)*.55+pp*.45*vec2(1.,.6))*mix(1.,2.6,u_p[1])+SEED2+vec2(t,0.);
   float c=fbm(p)+.5;
   float cl=fbm(p+vec2(.03,.05))+.5;
   float cov=mix(.75,.2,u_p[0]);
@@ -786,6 +790,7 @@ vec3 scene(vec2 uv, vec2 st){
   vec3 cloud=mix(u_c[0]*.06, u_c[1]*.4, light*light);
   cloud+=u_c[2]*exp(-gd*3.5)*u_p[2]*light*.6;
   vec3 col=mix(sky, cloud, dens);
+  col=mix(col, mix(u_c[1]*.45, u_c[2]*.55, .35+.4*u_p[2]), exp(-py*7.)*.65); // ufuk pusu
   float tb=floor(u_time*.7+SEED2.x);
   float fl=step(.6,hash11(tb))*exp(-fract(u_time*.7)*6.);
   vec2 lp=vec2((hash11(tb+1.)-.5)*A*.8, hash11(tb+2.)*.3);

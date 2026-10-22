@@ -83,12 +83,12 @@
   const add = (eng, ids) => ids.forEach((id) => { const g = CB.GROUPS.find((x) => x.id === id); if (g && g.engines && !g.engines.includes(eng)) g.engines.push(eng); });
   add('library3d', ['academy', 'public', 'palace', 'darkfantasy', 'steampunk']);
   add('corridor', ['horror', 'prison', 'public', 'residential', 'modern-work', 'lab', 'dystopia', 'crime']);
-  add('pool', ['modern-leisure', 'modernarch', 'residential', 'horror', 'nightlife']);
+  add('pool', []); // QA: havuz yalnızca anahtar kelimeyle (gruplarda rastgele seçilince alakasız mekânlara düşüyordu)
   add('market', ['southasia', 'eastasia', 'anatolia', 'latam', 'nightlife', 'urban', 'cyber', 'africa', 'modern-city']);
   add('rooftop', ['urban', 'noir', 'crime', 'modern-city', 'cyber', 'dystopia', 'nightlife']);
-  add('harbor', ['coast', 'transport', 'industrial', 'crime', 'noir']);
-  add('station', ['transport', 'noir', 'steampunk', 'dieselpunk', 'urban', 'modern-city']);
-  add('stadium', ['arena', 'modern-leisure', 'dystopia']);
+  add('harbor', ['coast', 'transport']);
+  add('station', ['transport']);
+  add('stadium', ['arena', 'modern-leisure']);
 
   const P = (tr, p) => ({ tr, p });
   Object.assign(PRESETS, {
