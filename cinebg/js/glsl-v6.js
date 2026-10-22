@@ -402,13 +402,15 @@ vec3 h6_lamp(){ float W=h6_W(); return vec3((hash11(u_seed*.77)<.5?-1.:1.)*(W-.6
 float h6_map(vec3 p, out float m){
   float W=h6_W();
   vec4 w=h6_win();
-  float d=p.y; m=0.;
-  float wl=min(W-abs(p.x), H6_D-p.z);
+  float beyond=p.z-(H6_D+.25); // arka duvarın ötesinde oda yüzeyi yok, ışın dışarı kaçar
+  float d=max(p.y, beyond); m=0.;
+  float bw=abs(p.z-(H6_D+.125))-.125;
   // pencere boşluğu arka duvarı deler
-  float hole=max(max(abs(p.x-w.x)-w.y, max(w.z-p.y, p.y-w.w)), -(p.z-H6_D+.2));
-  wl=max(wl, -hole);
+  float hole=max(abs(p.x-w.x)-w.y, max(w.z-p.y, p.y-w.w));
+  bw=max(bw, -hole);
+  float wl=min(max(W-abs(p.x), beyond), bw);
   if(wl<d){ d=wl; m=1.; }
-  float ce=H6_H-p.y; if(ce<d){ d=ce; m=2.; }
+  float ce=max(H6_H-p.y, beyond); if(ce<d){ d=ce; m=2.; }
   float fd=u_p[2];
   // perdeler
   if(u_p[6]>.1){
