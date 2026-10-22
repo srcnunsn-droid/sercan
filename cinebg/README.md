@@ -18,6 +18,23 @@ Her sahne iki çıktı verir:
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
 
+## v8: Yeni katalog, ön plan katmanları, bölgeye uygun öğeler ve ajan rolleri
+
+**Katalog** artık tek uzun liste değil:
+- *Ara:* MiniSearch (MIT, `vendor/minisearch.js`) ile 309 grup, 11.706 mekân ve varyant ekleri içinde sıralı arama. Türkçe karakterden bağımsızdır (`kadıköy` = `kadikoy`), yazım hatasını tolere eder (`sibrpunk` → siberpunk), önek eşler. Sorgular birkaç milisaniye sürer; dizin ilk odaklanmada kurulur.
+- *Gez:* tür kutucukları → grubun küçük resimli kartları → mekân listesi → 9 varyant çipi. Üstte "Tümü › Sokak › Sokak · Tokyo" konum çubuğu.
+- *Hızlı erişim:* şu anki grup, yıldızlı favori gruplar, son kullanılan 8 grup ve bulunduğun seviyeden rastgele mekân açan "Sürpriz".
+
+**Ön plan katmanı (12 tür):** dallar, pencere çerçevesi, taş kemer, kayalar, çit, perde, çimen, kablolar, mağara ağzı, yakın bokeh, lens tozu, tente. Her motorda çalışır, kamera aynası ve eğimiyle döner, sahnelerin yaklaşık yarısına bağlama uygun biçimde seçilir. Kilitlerden sabitlenebilir; prompt'lara ön plan cümlesi olarak girer.
+
+**Bölgeye uygun öğeler:** manzara grupları 11 iklim havuzundan (ılıman, Akdeniz, kurak, tropik, alpin, tayga, kutup, bozkır, volkanik, savan, sulak alan), su altı grupları deniz tabanı havuzundan öğe alır. 600 mekânlık denetimde uyumsuzluk 87'den 4'e indi.
+
+**Prompt çeşitliliği:** kamera, konum, yer işareti, zemin, ışık, palet ve kapanış cümleleri seed'e göre farklı kalıplarla yazılır; komşu mekânların prompt'ları aynı başlamaz. Soul Cinema prompt'una oran yazılmaz, video prompt'unda silah kelimesi geçmez.
+
+**Kalite kontrol:** 117.060 kategorinin hepsi hatasız üretiliyor; 440 rastgele karede siyah, patlamış ya da bozuk kare yok. Kırsal motorda dağın içinde başlayan kamera, stadyumda tribün içine giren alçak kamera, düz duvar gibi görünen fırtına ve yanlış motor eşleşmeleri düzeltildi. 2B motorlara vinç/drone/uydu yüksekliği verilmez; dış mekân gruplarındaki iç mekânlar iç mekân sayılır.
+
+**Ajan rolleri** (`.claude/agents/`): shader mühendisi, mekân yazarı, katalog tasarımcısı, render kalite kontrolü ve prompt yönetmeni. Bu sürüm bu rollerle paralel çalışan ajanlarla geliştirildi.
+
 ## v7: Motorlar, kamera sistemi, video stilleri ve 100 yeni kategori başlığı
 
 | | v6 | v7 |
@@ -159,3 +176,7 @@ Set üret menüsüne **mekân varyantları** (5 kare) ve **film stokları** (40 
 | `js/presets-v7.js` | Önceki 39 motorun 10'ar görünümü |
 | `js/cameras-v7.js` | 630 açılık kamera sistemi |
 | `js/video-styles.js` | 30 video stili, ekran arayüzü katmanları ve prompt satırları |
+| `vendor/minisearch.js` | Katalog araması (MIT lisansı `vendor/minisearch.LICENSE`) |
+| `js/arch-v8.js` | İklim ve deniz tabanı öğe havuzları |
+| `js/foreground.js` | 12 ön plan katmanı ve seçim kuralları |
+| `js/prompts-v8.js` | Seed'e göre çeşitlenen prompt kalıpları |
