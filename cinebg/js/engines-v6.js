@@ -12,7 +12,7 @@
 
   KEYS.push(
     [/\bstreets?\b|\balley|\blane\b|crosswalk|sidewalk|bus stop|\broads?\b|avenue|boulevard|high street|main street|shopping street|market street|intersection|tram stop|taxi rank/i, ['street3d']],
-    [/\bfields?\b|\bfarm|meadow|countryside|vineyard|pasture|\bhills?\b|hillside|orchard|prairie|rice terrace|wheat|barley|hayfield|cornfield|lavender|tea plantation|\brural\b|\branch\b|sunflower|olive grove|rolling/i, ['countryside']],
+    [/\bfields?\b(?! hospital)|\bfarm|countryside|vineyard|pasture|\bhills?\b|orchard|prairie|rice terrace|wheat|barley|hayfield|cornfield|lavender|tea plantation|\brural\b|\branch\b|sunflower|olive grove|rolling/i, ['countryside']],
     [/kitchen|living room|bedroom|bathroom|\bapartment|\bflat\b|\bdorm|classroom|\boffice\b|waiting room|laundromat|\bcaf[eé]\b|shop interior|\bsalon\b|clinic|hotel room|\bdiner\b|bakery|pharmacy|corner shop|break room|nursery|reading room|teahouse|barber|\bstudio flat|dining room|home office/i, ['homeint']],
   );
   INT_OK.push('homeint');

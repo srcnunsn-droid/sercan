@@ -261,7 +261,7 @@
         shown += (baseHit ? 1 : 0) + (q ? vHits.length : 0);
       });
       if (!rows.length) return;
-      const n = q ? rows.reduce((a, [, v, b]) => a + v.length + (b ? 1 : 0), 0) : g.cats.length * 5;
+      const n = q ? rows.reduce((a, [, v, b]) => a + v.length + (b ? 1 : 0), 0) : g.cats.reduce((a, c) => a + 1 + (c.vars ? c.vars.length : 0), 0);
       const open = q || openGroups.has(g.id);
       const head = el('button', { type: 'button', 'aria-expanded': open ? 'true' : 'false', onclick: () => { openGroups.has(g.id) ? openGroups.delete(g.id) : openGroups.add(g.id); renderCatalog(); } },
         el('span', { class: 'chev', text: '▸' }), el('span', { text: g.tr }), el('span', { class: 'n', text: String(n) }));

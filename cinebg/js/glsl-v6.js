@@ -282,10 +282,10 @@ vec3 cs_field(vec2 x){
 float cs_tree(vec2 x){ // çit ağaçları: sınır boyunca tümsekler
   if(u_p[3]<.05) return 0.;
   vec3 fd=cs_field(x);
-  float near=sqrt(sat(1.-fd.y/3.5));
+  float near=sqrt(sat(1.-fd.y/2.4));
   float on=step(.35,hash11(fd.x*.37+3.));
-  float clump=smoothstep(.25,.75,vnoise(x*.22));
-  return near*on*clump*mix(5.,10.,hash11(fd.x))*u_p[3];
+  float crown=smoothstep(.3,.65,vnoise(x*.42))*(.75+.25*vnoise(x*1.6));
+  return near*on*crown*mix(6.,12.,hash11(fd.x))*u_p[3];
 }
 float cs_h(vec2 x){
   float h=cs_h0(x);
@@ -294,12 +294,19 @@ float cs_h(vec2 x){
   return h+cs_tree(x);
 }
 float cs_march(vec3 ro, vec3 rd, float tmax){
-  float t=1.;
-  for(int i=0;i<100;i++){
+  float t=1., tp=1.;
+  for(int i=0;i<110;i++){
     vec3 p=ro+rd*t;
     float d=p.y-cs_h(p.xz);
-    if(d<.004*t) return t;
-    t+=max(d*.5, .02*t);
+    if(d<0.){
+      // ikili arama ile yüzeyi incelt: basamak / şerit izlerini önler
+      float a=tp, b=t;
+      for(int k=0;k<7;k++){ float m=.5*(a+b); vec3 q=ro+rd*m; if(q.y-cs_h(q.xz)<0.) b=m; else a=m; }
+      return .5*(a+b);
+    }
+    if(d<.0015*t) return t;
+    tp=t;
+    t+=max(d*.4, .006*t);
     if(t>tmax) break;
   }
   return -1.;
@@ -346,8 +353,9 @@ vec3 scene(vec2 uv, vec2 st){
   if(t<0.) col=cs_sky(rd);
   else {
     vec3 p=ro+rd*t;
-    float e=max(.08,t*.002);
+    float e=max(.6,t*.006);
     vec3 n=normalize(vec3(cs_h(p.xz-vec2(e,0.))-cs_h(p.xz+vec2(e,0.)), 2.*e, cs_h(p.xz-vec2(0.,e))-cs_h(p.xz+vec2(0.,e))));
+    float pix=t*PX*2./max(abs(u_cam.x),.01); // piksel ayak izi (metre)
     vec3 fd=cs_field(p.xz);
     float h=fd.z;
     float gold=u_p[2];
@@ -355,11 +363,14 @@ vec3 scene(vec2 uv, vec2 st){
     vec3 wheat=mix(mix(u_c[2],vec3(.8,.62,.28),.55), vec3(.62,.45,.22), h);
     vec3 alb=mix(green, wheat, step(1.-gold*.85, hash11(fd.x*.13+1.)));
     alb=mix(alb, vec3(.33,.24,.15), step(.92,hash11(fd.x*.29))*.8);
-    float rows=step(.5,fract(dot(p.xz, rot(h*3.)*vec2(.8,.6))*.9));
-    alb*=1.-.1*rows*smoothstep(400.,60.,t);
+    float rows=.5+.5*sin(dot(p.xz, rot(h*3.)*vec2(.8,.6))*5.6);
+    alb*=1.-.1*rows*sat(1.-pix/.6);
     alb*=.85+.3*vnoise(p.xz*.08);
     float tr=cs_tree(p.xz);
-    alb=mix(alb, mix(u_c[0],vec3(.06,.13,.05),.6), smoothstep(.3,1.5,tr));
+    float tw=smoothstep(.3,1.5,tr);
+    float above=sat((ro.y-p.y)/120.); // tepeden bakışta çit çizgileri daha yumuşak
+    vec3 leaf=mix(u_c[0],vec3(.08,.16,.06),.6)*(.6+.8*vnoise(p.xz*1.3+p.y*.7));
+    alb=mix(alb, mix(leaf, alb*.55, above*.5), tw);
     // yol
     float rdd=abs(p.x-cs_road(p.z).x);
     alb=mix(alb, mix(vec3(.6,.55,.45),u_c[2],.25), smoothstep(3.5,2.5,rdd)*u_p[4]);
@@ -373,7 +384,8 @@ vec3 scene(vec2 uv, vec2 st){
     float sh=1.;
     if(t<1500.){
       float ts=2.; vec3 sp=p+n*.5;
-      for(int i=0;i<24;i++){ vec3 pp=sp+L*ts; float dd=pp.y-cs_h0(pp.xz); sh=min(sh, sat(dd/(ts*.12)+.55)); if(sh<.56) break; ts+=max(dd*.6,2.+ts*.08); if(ts>900.) break; }
+      for(int i=0;i<20;i++){ vec3 pp=sp+L*ts; float dd=pp.y-cs_h0(pp.xz); sh=min(sh, sat(dd/(ts*.25)+.6)); ts+=max(dd*.5,4.+ts*.1); if(ts>1200.) break; }
+      sh=mix(sh, 1., sat((ro.y-p.y)/300.)*.5);
     }
     vec3 amb=mix(u_c[1],u_c[2],.5)*.35*(.6+.4*n.y);
     col=alb*(sunc*dif*sh+amb);
