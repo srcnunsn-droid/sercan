@@ -263,58 +263,242 @@
     load(cat, e.seed, push, e.visual);
   }
 
-  /* ---------------- katalog ---------------- */
-  const openGroups = new Set();
-  function renderGenres() {
-    $('genres').replaceChildren(...CB.GENRES.map((g) => el('button', {
-      type: 'button', class: S.genres.has(g.id) ? 'on' : '', 'aria-pressed': S.genres.has(g.id) ? 'true' : 'false', text: g.tr,
-      onclick: () => { S.genres.has(g.id) ? S.genres.delete(g.id) : S.genres.add(g.id); store.set('genres', [...S.genres]); renderGenres(); renderCatalog(); },
-    })));
+  /* ---------------- katalog: tür → grup → mekân gezinme + MiniSearch arama ---------------- */
+  const GENRE_ICON = { war: '⚔️', scifi: '🚀', fantasy: '🐉', horror: '🕯️', history: '🏛️', nature: '🌲', urban: '🏙️', interior: '🛋️', space: '🪐', abstract: '🌀', modern: '🏢', ads: '🛍️', street: '🚦', landscape: '🏞️', daily: '☕', world: '🌍', cine: '🎬', season: '🍂', work: '🛠️' };
+  const NAV = Object.assign({ genre: null, group: null }, store.get('catNav', {}));
+  const favGroups = new Set(store.get('favGroups', []));
+  let recentGroups = store.get('recentGroups', []);
+  const groupById = (id) => CB.GROUPS.find((g) => g.id === id);
+  const placesOf = (g) => g.cats.length * 10;
+  const fold = (s) => String(s).toLocaleLowerCase('tr').replace(/[çğıöşüâîû]/g, (c) => ({ ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u', â: 'a', î: 'i', û: 'u' })[c]).replace(/i̇/g, 'i');
+  const fmt = (n) => n.toLocaleString('tr-TR');
+  function setNav(genre, group) {
+    NAV.genre = genre; NAV.group = group; store.set('catNav', { genre, group });
+    $('groups').scrollTop = 0; renderCatalog();
   }
-  function renderCatalog() {
-    const q = $('search').value.trim().toLocaleLowerCase('tr');
-    const box = $('groups'); box.replaceChildren();
-    const hit = (c, g) => (c.tr + ' ' + c.en + ' ' + g.tr).toLocaleLowerCase('tr').includes(q);
-    const curBase = S.cat ? S.cat.base || S.cat : null;
-    const CAP = 700; // çok genel aramalarda DOM'u şişirmemek için
-    let shown = 0, drawn = 0;
-    const item = (c, cls) => el('li', { class: cls || null }, el('button', { type: 'button', class: S.cat === c ? 'cur' : '', title: c.en, text: cls ? '↳ ' + c.q.tr : c.tr, onclick: () => { load(c, newSeed(), true); } }));
-    CB.GROUPS.forEach((g) => {
-      if (!genreOk(g)) return;
-      const rows = [];
-      g.cats.forEach((c) => {
-        const vars = c.vars || [];
-        const baseHit = !q || hit(c, g);
-        const vHits = q ? (baseHit ? vars.filter((v) => hit(v, g) || c === curBase) : vars.filter((v) => hit(v, g))) : c === curBase ? vars : [];
-        if (!baseHit && !vHits.length) return;
-        rows.push([c, vHits, baseHit]);
-        shown += (baseHit ? 1 : 0) + (q ? vHits.length : 0);
-      });
-      if (!rows.length) return;
-      const n = q ? rows.reduce((a, [, v, b]) => a + v.length + (b ? 1 : 0), 0) : g.cats.reduce((a, c) => a + 1 + (c.vars ? c.vars.length : 0), 0);
-      const open = q || openGroups.has(g.id);
-      const head = el('button', { type: 'button', 'aria-expanded': open ? 'true' : 'false', onclick: () => { openGroups.has(g.id) ? openGroups.delete(g.id) : openGroups.add(g.id); renderCatalog(); } },
-        el('span', { class: 'chev', text: '▸' }), el('span', { text: g.tr }), el('span', { class: 'n', text: String(n) }));
-      const wrap = el('div', { class: 'group' + (open ? ' open' : '') }, head);
-      if (open && drawn < CAP) {
-        const ul = el('ul');
-        rows.forEach(([c, vHits]) => {
-          if (drawn >= CAP) return;
-          ul.append(item(c)); drawn++;
-          vHits.forEach((v) => { ul.append(item(v, 'var')); drawn++; });
-        });
-        wrap.append(ul);
-      }
-      box.append(wrap);
+
+  /* arama dizini: temel mekânlar + gruplar + varyant ekleri (ilk odakta ya da boşta kurulur) */
+  let IDX = null, idxMs = 0;
+  const QUALS = [];
+  function buildIndex() {
+    if (IDX || typeof MiniSearch === 'undefined') return IDX;
+    const t0 = performance.now();
+    const gname = Object.fromEntries(CB.GENRES.map((g) => [g.id, g.tr]));
+    IDX = new MiniSearch({
+      fields: ['tr', 'grp', 'gen', 'en'], idField: 'id',
+      processTerm: (t) => { const f = fold(t); return f.length > 1 ? f : null; },
+      searchOptions: { boost: { tr: 3, grp: 2, gen: 1.5, en: 1 }, prefix: true, fuzzy: (term) => (term.length > 4 ? 0.2 : term.length > 3 ? 0.1 : false) },
     });
-    if (!shown) box.append(el('p', { class: 'hint', style: 'padding:14px', text: 'Eşleşen mekan yok. Başka bir kelime dene ya da tür filtresini temizle.' }));
-    else if (drawn >= CAP) box.append(el('p', { class: 'hint', style: 'padding:14px', text: `İlk ${CAP} sonuç gösteriliyor. Aramayı daralt.` }));
-    const total = q || S.genres.size ? `${shown.toLocaleString('tr-TR')} sonuç` : `${CB.CATS.length.toLocaleString('tr-TR')} kategori · ${CB.GROUPS.length} grup`;
-    $('catCount').textContent = total;
+    const docs = [];
+    CB.GROUPS.forEach((g, gi) => {
+      const gen = g.genres.map((x) => gname[x] || '').join(' ');
+      docs.push({ id: 'g' + gi, tr: g.tr, grp: g.tr, gen, en: '' });
+      g.cats.forEach((c, ci) => docs.push({ id: 'c' + gi + '.' + ci, tr: c.tr, grp: g.tr, gen, en: c.en }));
+    });
+    const seen = new Map();
+    CB.CATS.forEach((c) => { if (c.q && !seen.has(c.q)) { seen.set(c.q, QUALS.length); QUALS.push({ q: c.q, vars: [] }); } if (c.q) QUALS[seen.get(c.q)].vars.push(c); });
+    QUALS.forEach((x, i) => docs.push({ id: 'q' + i, tr: x.q.tr, grp: '', gen: '', en: x.q.en }));
+    IDX.addAll(docs);
+    idxMs = Math.round(performance.now() - t0);
+    return IDX;
+  }
+  const scheduleIndex = () => { if (!IDX) (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(() => { buildIndex(); }, { timeout: 4000 }); };
+  function docOf(id) {
+    if (id[0] === 'g') return { kind: 'g', g: CB.GROUPS[+id.slice(1)] };
+    if (id[0] === 'q') return { kind: 'q', q: QUALS[+id.slice(1)] };
+    const [gi, ci] = id.slice(1).split('.').map(Number);
+    return { kind: 'c', c: CB.GROUPS[gi].cats[ci] };
+  }
+  function runSearch(q) {
+    buildIndex();
+    if (!IDX) return { groups: [], cats: [], quals: [] };
+    let res = IDX.search(q, { combineWith: 'AND' });
+    if (!res.length) res = IDX.search(q, { combineWith: 'OR' });
+    const groups = [], cats = [], quals = [];
+    for (const r of res) {
+      const d = docOf(r.id);
+      if (d.kind === 'g') { if (groups.length < 10 && genreOk(d.g)) groups.push(d.g); }
+      else if (d.kind === 'q') { if (quals.length < 4 && !quals.some((x) => x.q.tr === d.q.q.tr)) quals.push({ q: d.q.q, vars: d.q.vars }); else if (quals.length < 6) { const twin = quals.find((x) => x.q.tr === d.q.q.tr); if (twin) twin.vars = twin.vars.concat(d.q.vars); } }
+      else if (cats.length < 80 && genreOk(d.c.group)) cats.push(d.c);
+    }
+    // varyant eki eşleştiyse: ekin kalan terimlerle eşleşen mekânlardaki karşılıkları (yoksa gruplara yayılmış örnekler)
+    let qvars = [];
+    if (quals.length) {
+      const qs = new Set(quals.map((x) => x.q));
+      const baseSet = new Set(cats);
+      quals.forEach((x) => {
+        const hits = x.vars.filter((v) => baseSet.has(v.base));
+        const pool2 = hits.length ? hits : x.vars.filter((v, i, a) => a.findIndex((w) => w.group === v.group) === i);
+        qvars.push(...pool2.filter((v) => genreOk(v.group)).slice(0, 40));
+      });
+      qvars = qvars.filter((v) => qs.has(v.q)).slice(0, 60);
+    }
+    return { groups, cats, quals, qvars };
+  }
+
+  /* grup küçük resimleri: görünür olunca sırayla, sabit seed ile, bellekte önbellek */
+  const THUMBS = new Map();
+  const thumbQueue = [];
+  let thumbBusy = false;
+  function thumbFor(g, img) {
+    if (THUMBS.has(g.id)) { img.src = THUMBS.get(g.id); img.classList.add('in'); return; }
+    thumbQueue.push([g, img]); pumpThumbs();
+  }
+  function pumpThumbs() {
+    if (thumbBusy || !thumbQueue.length || !R) return;
+    thumbBusy = true;
+    setTimeout(() => {
+      const [g, img] = thumbQueue.shift();
+      if (!THUMBS.has(g.id)) {
+        try {
+          const cat = g.cats[0];
+          const spec = CB.makeSpec(cat, 20261022, {});
+          const v = visualFromSpec(spec);
+          const X = exportRenderer(); X.render(rstate(v, 20261022, 0), 192, 108, spec.time0);
+          THUMBS.set(g.id, X.canvas.toDataURL('image/jpeg', 0.75));
+        } catch (e) { THUMBS.set(g.id, ''); }
+      }
+      if (img.isConnected && THUMBS.get(g.id)) { img.src = THUMBS.get(g.id); img.classList.add('in'); }
+      thumbBusy = false; pumpThumbs();
+    }, 16);
+  }
+  const thumbIO = 'IntersectionObserver' in window ? new IntersectionObserver((ents) => ents.forEach((e) => { if (e.isIntersecting) { thumbIO.unobserve(e.target); thumbFor(e.target._g, e.target); } }), { root: null, rootMargin: '120px' }) : null;
+
+  /* yapı taşları */
+  const star = (g) => el('button', {
+    type: 'button', class: 'star' + (favGroups.has(g.id) ? ' on' : ''), title: favGroups.has(g.id) ? 'Favorilerden çıkar' : 'Favori gruplara ekle', 'aria-pressed': favGroups.has(g.id) ? 'true' : 'false', text: favGroups.has(g.id) ? '★' : '☆',
+    onclick: (e) => { e.stopPropagation(); favGroups.has(g.id) ? favGroups.delete(g.id) : favGroups.add(g.id); store.set('favGroups', [...favGroups]); renderCatalog(); },
+  });
+  function groupCard(g) {
+    const img = el('img', { alt: '', loading: 'lazy' }); img._g = g;
+    if (THUMBS.get(g.id)) { img.src = THUMBS.get(g.id); img.classList.add('in'); } else if (thumbIO) thumbIO.observe(img); else thumbFor(g, img);
+    const cur = S.cat && S.cat.group === g;
+    return el('div', { class: 'gcard' + (cur ? ' cur' : ''), role: 'button', tabindex: '0', title: g.tr, onclick: () => setNav(NAV.genre, g.id), onkeydown: (e) => { if (e.key === 'Enter') setNav(NAV.genre, g.id); } },
+      el('div', { class: 'thumb' }, img),
+      el('div', { class: 'meta' }, el('b', { text: g.tr.replace(/^(Sokak|Manzara|Ev|Gündelik) · /, '') }), el('span', { text: `${g.cats.length} mekân · ${fmt(placesOf(g))} kategori` })),
+      star(g));
+  }
+  const chip = (text, onclick, cls, title) => el('button', { type: 'button', class: 'cchip' + (cls ? ' ' + cls : ''), text, title: title || text, onclick });
+  function placeRow(c, opts) {
+    const curBase = S.cat ? S.cat.base || S.cat : null;
+    const open = c === curBase || (opts && opts.open);
+    const row = el('li', { class: 'place' + (open ? ' open' : '') },
+      el('button', { type: 'button', class: 'pbtn' + (S.cat === c ? ' cur' : ''), title: c.en, onclick: () => load(c, newSeed(), true) },
+        el('span', { class: 'pn', text: c.tr }),
+        opts && opts.group ? el('span', { class: 'pg', text: c.group.tr }) : null,
+        c.vars ? el('span', { class: 'pv', text: '+' + c.vars.length }) : null));
+    if (open && c.vars) row.append(el('div', { class: 'vchips' }, ...c.vars.map((v) => chip(v.q.tr, () => load(v, newSeed(), true), S.cat === v ? 'on' : '', v.en))));
+    return row;
+  }
+
+  function renderCrumbs(q) {
+    const cr = $('crumbs'); if (!cr) return;
+    const g = NAV.group && groupById(NAV.group);
+    const gen = NAV.genre && CB.GENRES.find((x) => x.id === NAV.genre);
+    const parts = [el('button', { type: 'button', text: 'Tümü', onclick: () => { $('search').value = ''; setNav(null, null); } })];
+    if (q) parts.push(el('span', { class: 'sep', text: '›' }), el('b', { text: 'Arama' }));
+    else {
+      if (gen) parts.push(el('span', { class: 'sep', text: '›' }), g ? el('button', { type: 'button', text: gen.tr, onclick: () => setNav(gen.id, null) }) : el('b', { text: gen.tr }));
+      if (g) parts.push(el('span', { class: 'sep', text: '›' }), el('b', { text: g.tr }));
+    }
+    cr.replaceChildren(...parts);
+    const flt = $('genreFilter');
+    if (flt) {
+      flt.hidden = !S.genres.size;
+      flt.replaceChildren(el('span', { text: 'Üretim filtresi:' }), ...[...S.genres].map((id) => { const x = CB.GENRES.find((y) => y.id === id); return chip((x ? x.tr : id) + ' ×', () => { S.genres.delete(id); store.set('genres', [...S.genres]); renderCatalog(); }, 'on'); }),
+        chip('Temizle', () => { S.genres.clear(); store.set('genres', []); renderCatalog(); }));
+    }
+  }
+  function quickRow() {
+    const recent = recentGroups.map(groupById).filter(Boolean);
+    const favs = [...favGroups].map(groupById).filter(Boolean);
+    const cur = S.cat ? S.cat.group : null;
+    const kids = [];
+    if (cur) kids.push(el('div', { class: 'qrow' }, el('span', { class: 'ql', text: '📍 Şu an' }), chip(cur.tr, () => setNav(NAV.genre && cur.genres.includes(NAV.genre) ? NAV.genre : cur.genres[0] || null, cur.id), 'cur')));
+    if (favs.length) kids.push(el('div', { class: 'qrow' }, el('span', { class: 'ql', text: '★ Favori gruplar' }), ...favs.map((g) => chip(g.tr, () => setNav(g.genres[0] || null, g.id)))));
+    const rec = recent.filter((g) => g !== cur).slice(0, 8);
+    if (rec.length) kids.push(el('div', { class: 'qrow' }, el('span', { class: 'ql', text: '🕘 Son kullanılanlar' }), ...rec.map((g) => chip(g.tr, () => setNav(g.genres[0] || null, g.id)))));
+    return kids.length ? el('div', { class: 'quick' }, ...kids) : null;
+  }
+
+  function renderGenres() { renderCatalog(); }
+  function renderCatalog() {
+    const raw = $('search').value.trim();
+    const box = $('groups'); const keep = box.scrollTop; box.replaceChildren();
+    renderCrumbs(raw);
+    requestAnimationFrame(() => { box.scrollTop = keep; });
+    $('searchClear').hidden = !raw;
+    if (raw) return renderSearch(raw, box);
+    const g = NAV.group && groupById(NAV.group);
+    const gen = NAV.genre && CB.GENRES.find((x) => x.id === NAV.genre);
+    if (g) {
+      // 3. seviye: grubun mekânları; seçili mekân varyant çipleriyle açılır
+      box.append(el('div', { class: 'ghead' }, el('b', { text: g.tr }), star(g), chip('🎲 Bu gruptan', () => surprise(), '', 'Bu gruptan rastgele bir mekân')));
+      box.append(el('ul', { class: 'places' }, ...g.cats.map((c) => placeRow(c))));
+      $('catCount').textContent = `${g.cats.length} mekân · ${fmt(placesOf(g))} kategori`;
+    } else if (gen) {
+      // 2. seviye: türün grupları kartlarla
+      const gs = CB.GROUPS.filter((x) => x.genres.includes(gen.id));
+      box.append(el('div', { class: 'gcards' }, ...gs.map(groupCard)));
+      $('catCount').textContent = `${gen.tr} · ${gs.length} grup · ${fmt(gs.reduce((a, x) => a + placesOf(x), 0))} kategori`;
+    } else {
+      // 1. seviye: tür aileleri
+      const q = quickRow(); if (q) box.append(q);
+      box.append(el('div', { class: 'gtiles' }, ...CB.GENRES.map((x) => {
+        const gs = CB.GROUPS.filter((y) => y.genres.includes(x.id));
+        if (!gs.length) return null;
+        const on = S.genres.has(x.id);
+        return el('div', { class: 'gtile', role: 'button', tabindex: '0', onclick: () => setNav(x.id, null), onkeydown: (e) => { if (e.key === 'Enter') setNav(x.id, null); } },
+          el('span', { class: 'gi', text: GENRE_ICON[x.id] || '📁' }),
+          el('b', { text: x.tr }),
+          el('span', { class: 'gn', text: `${gs.length} grup · ${fmt(gs.reduce((a, y) => a + placesOf(y), 0))}` }),
+          el('button', {
+            type: 'button', class: 'gf' + (on ? ' on' : ''), title: on ? 'Rastgele üretimden çıkar' : 'Rastgele üretimi bu türle sınırla', 'aria-pressed': on ? 'true' : 'false', text: on ? '◉' : '○',
+            onclick: (e) => { e.stopPropagation(); on ? S.genres.delete(x.id) : S.genres.add(x.id); store.set('genres', [...S.genres]); renderCatalog(); },
+          }));
+      })));
+      $('catCount').textContent = `${fmt(CB.CATS.length)} kategori · ${CB.GROUPS.length} grup`;
+    }
+  }
+  function renderSearch(raw, box) {
+    if (!IDX) box.append(el('p', { class: 'hint pad', text: 'Arama dizini hazırlanıyor…' }));
+    const t0 = performance.now();
+    const R2 = runSearch(raw);
+    const ms = Math.round(performance.now() - t0);
+    box.replaceChildren();
+    if (R2.groups.length) box.append(el('div', { class: 'srow' }, el('span', { class: 'ql', text: 'Gruplar' }), ...R2.groups.map((g) => chip(g.tr, () => { $('search').value = ''; setNav(g.genres[0] || null, g.id); }))));
+    if (R2.quals.length) box.append(el('div', { class: 'srow' }, el('span', { class: 'ql', text: 'Varyant eki' }), ...R2.quals.map((x) => el('span', { class: 'cchip on static', text: x.q.tr, title: x.q.en }))));
+    if (R2.qvars && R2.qvars.length) box.append(el('ul', { class: 'places' }, ...R2.qvars.map((v) => el('li', { class: 'place' }, el('button', { type: 'button', class: 'pbtn' + (S.cat === v ? ' cur' : ''), title: v.en, onclick: () => load(v, newSeed(), true) }, el('span', { class: 'pn', text: v.tr }), el('span', { class: 'pg', text: v.group.tr }))))));
+    if (R2.cats.length) box.append(el('ul', { class: 'places' }, ...R2.cats.map((c) => placeRow(c, { group: true }))));
+    const n = R2.cats.length + (R2.qvars ? R2.qvars.length : 0);
+    if (!n && !R2.groups.length) box.append(el('p', { class: 'hint pad', text: 'Eşleşen mekân yok. Başka bir kelime dene ya da üretim filtresini temizle.' }));
+    $('catCount').textContent = `${n}${n >= 80 ? '+' : ''} sonuç · ${ms} ms`;
+  }
+  function surprise() {
+    const g = NAV.group && groupById(NAV.group);
+    let list;
+    if (g) list = g.cats.flatMap((c) => [c, ...(c.vars || [])]);
+    else if (NAV.genre) list = CB.GROUPS.filter((x) => x.genres.includes(NAV.genre)).flatMap((x) => x.cats);
+    else list = pool();
+    const c = list[Math.floor(Math.random() * list.length)];
+    if (c) load(c, newSeed(), true);
   }
   function markCurrent() {
-    if (S.cat) openGroups.add(S.cat.group.id);
-    renderCatalog();
+    if (S.cat) {
+      const gid = S.cat.group.id;
+      recentGroups = [gid, ...recentGroups.filter((x) => x !== gid)].slice(0, 9);
+      store.set('recentGroups', recentGroups);
+    }
+    if (!$('search').value.trim() || IDX) renderCatalog();
+  }
+  function wireCatalog() {
+    let deb = 0;
+    $('search').addEventListener('focus', () => buildIndex(), { once: true });
+    $('search').addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(renderCatalog, IDX ? 60 : 0); });
+    $('search').addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('search').value = ''; renderCatalog(); } });
+    $('searchClear').onclick = () => { $('search').value = ''; renderCatalog(); $('search').focus(); };
+    $('btnSurprise').onclick = surprise;
+    scheduleIndex();
   }
 
   /* ---------------- denetçi: prompt ---------------- */
@@ -985,7 +1169,7 @@
     $('btnHelp').onclick = () => { $('help').hidden = false; };
     $('helpClose').onclick = () => { $('help').hidden = true; };
     [$('help'), $('sheet')].forEach((sh) => sh.addEventListener('click', (e) => { if (e.target === sh) { sh.hidden = true; if (sh.id === 'sheet') batchRun++; } }));
-    $('search').addEventListener('input', renderCatalog);
+    wireCatalog();
     document.querySelectorAll('.mode[role=group] button').forEach((b) => {
       b.classList.toggle('on', b.dataset.mode === S.mode);
       b.onclick = () => { S.mode = b.dataset.mode; store.set('mode', S.mode); document.querySelectorAll('.mode[role=group] button').forEach((x) => x.classList.toggle('on', x === b)); };
@@ -1076,7 +1260,6 @@
     if (rp && rp.id === 'ref') CB.PALETTES.push(rp);
     wire();
     $('encInfo').textContent = fastMp4() ? 'Hızlı MP4 açık: video gerçek zamanı beklemeden kare kare kodlanır. 4K ve 60 fps desteklenir.' : 'Bu tarayıcıda WebCodecs yok. Video gerçek zamanlı kaydedilir (en fazla 1440p).';
-    renderGenres();
     syncTitleInputs();
     saveProject(); renderProject();
     if (!R) showFatal('WebGL2 yok');

@@ -25,9 +25,10 @@
 
   <aside class="catalog" aria-label="Kategori kataloğu">
     <div class="catalog-head">
-      <div class="eyebrow" id="catCount">Katalog</div>
-      <input class="search" id="search" type="search" placeholder="Mekan ara: siper, kale, neon, mağara…" autocomplete="off">
-      <div class="genres" id="genres" role="group" aria-label="Tür filtresi"></div>
+      <div class="cat-top"><div class="eyebrow" id="catCount">Katalog</div><button class="btn small" id="btnSurprise" type="button" title="Bulunduğun seviyeden rastgele bir mekân">🎲 Sürpriz</button></div>
+      <div class="searchbox"><input class="search" id="search" type="search" placeholder="Ara: kadıköy, mutfak, şelale, siberpunk…" autocomplete="off" aria-label="Mekân ara"><button class="sclear" id="searchClear" type="button" aria-label="Aramayı temizle" hidden>×</button></div>
+      <nav class="crumbs" id="crumbs" aria-label="Katalog konumu"></nav>
+      <div class="gfilter" id="genreFilter" hidden></div>
       <div class="mode" role="group" aria-label="Üret düğmesi neyi değiştirsin">
         <button type="button" data-mode="cat" title="Aynı kategori, yeni varyasyon">Kategori</button>
         <button type="button" data-mode="group" title="Aynı grupta rastgele kategori">Grup</button>
