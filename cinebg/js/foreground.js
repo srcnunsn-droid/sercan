@@ -31,15 +31,16 @@
     if (want === 'off') return null;
     const text = (s.cat.base || s.cat).en;
     const h = hash(s.cat.id + '|' + s.seed + '|fg');
+    const ctx = s.ctx;
+    const allowed = (x) => x.ctx.includes(ctx)
+      && !(NATURE.test(text) && ['cables', 'awning', 'curtains', 'window'].includes(x.id))
+      && !(URBAN.test(text) && ['cave', 'grass'].includes(x.id))
+      && !(ctx === 'int' && ['foliage', 'grass', 'cables', 'cave', 'awning', 'rocks'].includes(x.id));
     let f = want && CB.FG_BY_ID[want] ? CB.FG_BY_ID[want] : null;
-    if (!f && s.camera && CAM_FG[s.camera.id]) f = CB.FG_BY_ID[CAM_FG[s.camera.id]];
+    if (!f && s.camera && CAM_FG[s.camera.id] && allowed(CB.FG_BY_ID[CAM_FG[s.camera.id]])) f = CB.FG_BY_ID[CAM_FG[s.camera.id]];
     if (!f) {
       if ((h % 100) >= 55) return null; // ~%55 sahnede katman
-      const ctx = s.ctx;
-      let pool = CB.FOREGROUNDS.filter((x) => x.ctx.includes(ctx));
-      if (NATURE.test(text)) pool = pool.filter((x) => !['cables', 'awning', 'curtains', 'window'].includes(x.id));
-      if (URBAN.test(text)) pool = pool.filter((x) => !['cave', 'grass'].includes(x.id));
-      if (ctx === 'int') pool = pool.filter((x) => !['foliage', 'grass', 'cables', 'cave', 'awning', 'rocks'].includes(x.id));
+      const pool = CB.FOREGROUNDS.filter(allowed);
       if (!pool.length) return null;
       f = pool[(h >>> 8) % pool.length];
     }

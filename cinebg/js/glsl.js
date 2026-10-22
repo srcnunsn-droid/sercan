@@ -193,7 +193,7 @@ vec3 foreground(vec3 c, vec2 uv0){
       vec2 cn=vec2(sx*hx, .5);
       vec2 d=(q-cn)*vec2(1.,1.15);
       float r=length(d);
-      float reach=mix(.42,.7,hash11(sd+float(k)*7.))*(side==0.?.85:1.);
+      float reach=mix(.36,.6,hash11(sd+float(k)*7.))*(side==0.?.85:1.);
       // yaprak kümeleri: düşük frekanslı gövde + yüksek frekanslı yaprak kenarı
       float body=fbm4(q*5.+sd*3.+float(k)*5.);
       float leaves=gnoise(q*38.+sd)*.5+gnoise(q*75.+sd*2.)*.3;
