@@ -333,7 +333,7 @@ Kayıkçı Tezgâhı|boatbuilding shed interior with a wooden hull on stocks
 Müzik Aleti Tamirhanesi|instrument repair shop interior with guitars and brass horns
 ` });
 
-  G.push({ id: 'b7-farm', tr: 'Çiftlikler & Tarım', arch: 'landscape', ctx: 'mixed', engines: ['countryside', 'aerial', 'godrays', 'clouds'], cond: ['harvest', 'lived-in', 'calm', 'misty', 'weathered'], genres: ['work', 'landscape', 'daily'], items: `
+  G.push({ id: 'b7-farm', tr: 'Çiftlikler & Tarım', arch: 'landscape', biomes: ['temperate'], ctx: 'mixed', engines: ['countryside', 'aerial', 'godrays', 'clouds'], cond: ['harvest', 'lived-in', 'calm', 'misty', 'weathered'], genres: ['work', 'landscape', 'daily'], items: `
 Ahır İçi Sabah|barn interior at dawn with hay bales, light through gaps and stalls
 Hasat Tarlası|freshly harvested wheat field with a combine harvester parked at sunset
 Traktör Garajı|tractor shed interior with old tractors and tools
@@ -664,7 +664,7 @@ Balıkçı Kulübesi İç|fisherman's hut interior with oilskins and lanterns, w
 Kayalık Koy Tekne|small boat anchored in a turquoise rocky cove
 ` });
 
-  G.push({ id: 'b7-camping', tr: 'Kamp, Karavan & Doğa Tatili', arch: 'landscape', ctx: 'mixed', engines: ['countryside', 'forest', 'terrain3d', 'fire', 'mountains'], cond: ['calm', 'quiet', 'misty', 'lived-in', 'pristine'], genres: ['landscape', 'daily', 'nature', 'season'], items: `
+  G.push({ id: 'b7-camping', tr: 'Kamp, Karavan & Doğa Tatili', arch: 'landscape', biomes: ['temperate', 'boreal', 'alpine'], ctx: 'mixed', engines: ['countryside', 'forest', 'terrain3d', 'fire', 'mountains'], cond: ['calm', 'quiet', 'misty', 'lived-in', 'pristine'], genres: ['landscape', 'daily', 'nature', 'season'], items: `
 Göl Kenarı Çadır|tent pitched by a mountain lake at dawn with mist
 Kamp Ateşi Gece|campfire in a forest clearing at night with logs around
 Karavan Parkı Gün Batımı|camper van parked on a cliff at sunset

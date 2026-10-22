@@ -193,7 +193,7 @@
     if (ctx === 'abstract') s.light = { tr: s.time.tr, en: 'soft volumetric light shaping the forms' };
     if (ctx === 'studio') s.light = { tr: s.time.tr, en: 'controlled studio lighting with soft contact shadows under every object' };
 
-    const A = CB.ARCH[g.arch] || CB.ARCH.modern; // havuz yüklenemezse güvenli geri dönüş
+    const A = CB.ARCH[g.pool || g.arch] || CB.ARCH.modern; // havuz yüklenemezse güvenli geri dönüş
     s.landmarks = { center: pick(r, A.center), left: pick(r, A.left), right: pick(r, A.right), far: pick(r, A.far) };
     s.floor = pick(r, A.floor);
     const m1 = pick(r, A.materials); let m2 = pick(r, A.materials); if (m2 === m1) m2 = A.materials[(A.materials.indexOf(m1) + 1) % A.materials.length];
@@ -271,7 +271,7 @@
     const empty = s.ctx === 'space' ? 'An empty, silent vista.' : s.ctx === 'abstract' ? 'Clean uncluttered background with generous negative space for titles.' : s.ctx === 'studio' ? 'Empty set with a clear, unoccupied product placement area in the centre and generous negative space for copy.' : `Empty deserted ${ctxNoun(s)}, every space unoccupied, still air.`;
     const sizeTxt = s.ctx === 'studio' ? `a studio set about ${s.size} metres wide` : s.size ? `roughly ${s.size} metres across` : s.ctx === 'abstract' ? 'filling the whole frame' : 'vast beyond scale';
     const loc = CB.locText(s.cat);
-    const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space'].includes(s.group.arch);
+    const natural = ['nature', 'water', 'sky', 'micro', 'abstract', 'space', 'landscape'].includes(s.group.arch) || !!s.group.pool;
     const build = natural ? `with textures of ${s.materials[0]} and ${s.materials[1]}` : `built from ${s.materials[0]} and ${s.materials[1]}`;
     const imp = s.impossible ? ` One impossible detail: ${s.impossible}.` : '';
 

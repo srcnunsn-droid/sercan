@@ -367,7 +367,7 @@ Inca Patikası Geçit|stone steps over a misty pass
 Kolonyal Manastır Avlusu|cloister courtyard with orange trees and arches
 Dağ Pazarı Pisac|empty market square with stalls under a mountain`,
     },
-    { id: 'a7-amazon', tr: 'Amazon Nehri Yaşamı', arch: 'nature', ctx: 'mixed', engines: ['forest', 'waterfall', 'godrays', 'mushroom'], cond: ['humid', 'misty', 'rainy', 'pristine', 'lived-in'], genres: W.concat(['landscape', 'nature']),
+    { id: 'a7-amazon', tr: 'Amazon Nehri Yaşamı', arch: 'nature', biomes: ['tropical', 'wetland'], ctx: 'mixed', engines: ['forest', 'waterfall', 'godrays', 'mushroom'], cond: ['humid', 'misty', 'rainy', 'pristine', 'lived-in'], genres: W.concat(['landscape', 'nature']),
       items: `
 Amazon Nehir Kıvrımı|vast brown river bend through endless rainforest from above
 Su Basmış Orman|flooded forest with tree trunks rising from black mirror water
@@ -400,7 +400,7 @@ Ahşap Kasaba Rıhtımı|riverside town quay of wooden warehouses
 Pembe Yunus Lagünü|dark lagoon among flooded trees at dawn
 Yağmur Ormanı Işık Huzmesi|sunbeams falling through a gap in the canopy`,
     },
-    { id: 'a7-northwild', tr: 'Kanada & Alaska Vahşi Doğası', arch: 'nature', ctx: 'ext', engines: ['terrain3d', 'forest', 'aurora', 'glacier', 'mountains'], cond: ['pristine', 'snowbound', 'misty', 'calm', 'autumnal'], genres: W.concat(['landscape', 'season']),
+    { id: 'a7-northwild', tr: 'Kanada & Alaska Vahşi Doğası', arch: 'nature', biomes: ['boreal', 'alpine'], ctx: 'ext', engines: ['terrain3d', 'forest', 'aurora', 'glacier', 'mountains'], cond: ['pristine', 'snowbound', 'misty', 'calm', 'autumnal'], genres: W.concat(['landscape', 'season']),
       items: `
 Moraine Gölü|turquoise lake below a wall of ten peaks
 Banff Dağ Kasabası|small mountain town street under a snowy peak
@@ -433,7 +433,7 @@ Arktik Tundra Yol|gravel Dempster highway into empty tundra
 Kenai Fiyordu|fjord with rugged islands and calm water
 Orman Yangını Sonrası|burned forest with new fireweed blooming`,
     },
-    { id: 'a7-australia', tr: 'Avustralya Taşrası & Kıyıları', arch: 'nature', ctx: 'ext', engines: ['dunes', 'canyon', 'ocean', 'coral', 'countryside'], cond: ['scorching', 'dusty', 'windswept', 'calm', 'pristine'], genres: W.concat(['landscape']),
+    { id: 'a7-australia', tr: 'Avustralya Taşrası & Kıyıları', arch: 'nature', biomes: ['arid', 'savanna'], ctx: 'ext', engines: ['dunes', 'canyon', 'ocean', 'coral', 'countryside'], cond: ['scorching', 'dusty', 'windswept', 'calm', 'pristine'], genres: W.concat(['landscape']),
       items: `
 Uluru Kızıl Kaya|monolith glowing red at sunset over spinifex
 Kata Tjuta Kubbeleri|cluster of domed red rocks in the desert
@@ -466,7 +466,7 @@ Outback Gece Gökyüzü|Milky Way over red desert
 Mangrov Kuzey Kıyı|muddy mangrove coast at low tide
 Kırmızı Toz Fırtınası|wall of red dust approaching a town`,
     },
-    { id: 'a7-siberia', tr: 'Rus Taşrası & Sibirya', arch: 'nature', ctx: 'mixed', engines: ['forest', 'countryside', 'aurora', 'terrain3d'], cond: ['snowbound', 'frozen', 'misty', 'weathered', 'quiet'], genres: W.concat(['landscape', 'season']),
+    { id: 'a7-siberia', tr: 'Rus Taşrası & Sibirya', arch: 'nature', biomes: ['boreal', 'polar'], ctx: 'mixed', engines: ['forest', 'countryside', 'aurora', 'terrain3d'], cond: ['snowbound', 'frozen', 'misty', 'weathered', 'quiet'], genres: W.concat(['landscape', 'season']),
       items: `
 Baykal Gölü Buz|cracked turquoise ice of frozen Lake Baikal
 Baykal Buz Mağarası|ice-covered rock grotto with icicles
@@ -697,7 +697,7 @@ Dyke Kenarı Çiftlik|farmhouse below a grass dyke
 Gece Kanal Fenerleri|canal at night with string lights on bridges
 Sisli Polder Gün Doğumu|foggy flat fields and empty meadows at sunrise`,
     },
-    { id: 'a7-alps', tr: 'Alp Köyleri & Kayak Merkezleri', arch: 'landscape', ctx: 'mixed', engines: ['terrain3d', 'mountains', 'countryside', 'street3d'], cond: ['snowbound', 'pristine', 'calm', 'misty', 'autumnal'], genres: W.concat(['landscape', 'season']),
+    { id: 'a7-alps', tr: 'Alp Köyleri & Kayak Merkezleri', arch: 'landscape', biomes: ['alpine'], ctx: 'mixed', engines: ['terrain3d', 'mountains', 'countryside', 'street3d'], cond: ['snowbound', 'pristine', 'calm', 'misty', 'autumnal'], genres: W.concat(['landscape', 'season']),
       items: `
 Hallstatt Göl Köyü|lakeside village under a steep mountain
 Zermatt Matterhorn|village roofs with the Matterhorn at sunrise
@@ -730,7 +730,7 @@ Kış Ormanı Kar Yükü|pines heavy with snow
 Sonbahar Alp Vadisi|golden larches in a valley
 Bulut Denizi Zirve|peaks above a sea of clouds`,
     },
-    { id: 'a7-celtic', tr: 'İrlanda & İskoç Kırları', arch: 'landscape', ctx: 'mixed', engines: ['countryside', 'terrain3d', 'castle', 'ocean'], cond: ['misty', 'windswept', 'rainy', 'weathered', 'quiet'], genres: W.concat(['landscape', 'history']),
+    { id: 'a7-celtic', tr: 'İrlanda & İskoç Kırları', arch: 'landscape', biomes: ['temperate', 'coast'], ctx: 'mixed', engines: ['countryside', 'terrain3d', 'castle', 'ocean'], cond: ['misty', 'windswept', 'rainy', 'weathered', 'quiet'], genres: W.concat(['landscape', 'history']),
       items: `
 Moher Uçurumları|sheer sea cliffs with crashing Atlantic waves
 Eilean Donan Kalesi|castle on an islet linked by a stone bridge

@@ -39,7 +39,7 @@ Buzul Nehri Vadisi|braided glacial river spreading grey-blue channels across a w
 `,
     },
     {
-      id: 'd7-lakes', tr: 'Dağ Gölleri & Göl Kıyıları', arch: 'landscape', ctx: 'ext',
+      id: 'd7-lakes', tr: 'Dağ Gölleri & Göl Kıyıları', arch: 'landscape', biomes: ['alpine', 'temperate'], ctx: 'ext',
       engines: ['terrain3d', 'mountains', 'countryside', 'clouds'], cond: ['calm', 'pristine', 'misty', 'quiet', 'windswept'], genres: ['landscape', 'nature', 'season'],
       items: `
 Ayna Dağ Gölü|perfectly still alpine lake mirroring jagged snow peaks at dawn
@@ -75,7 +75,7 @@ Kar Kenarlı Göl|half-frozen mountain lake edged with snow and blue meltwater
 `,
     },
     {
-      id: 'd7-blossom', tr: 'Çiçek Tarlaları & İlkbahar', arch: 'landscape', ctx: 'ext',
+      id: 'd7-blossom', tr: 'Çiçek Tarlaları & İlkbahar', arch: 'landscape', biomes: ['temperate', 'mediterranean'], ctx: 'ext',
       engines: ['countryside', 'forest', 'clouds', 'silk'], cond: ['pristine', 'calm', 'humid', 'quiet'], genres: ['landscape', 'season', 'nature'],
       items: `
 Lale Tarlası Şeritleri|endless stripes of red, yellow and pink tulip fields running to the horizon
@@ -111,7 +111,7 @@ Gökkuşaklı Çiçek Vadisi|valley of mixed wildflowers with a rainbow after a 
 `,
     },
     {
-      id: 'd7-autumn', tr: 'Sonbahar Ormanları', arch: 'nature', ctx: 'ext',
+      id: 'd7-autumn', tr: 'Sonbahar Ormanları', arch: 'nature', biomes: ['temperate'], ctx: 'ext',
       engines: ['forest', 'godrays', 'terrain3d', 'countryside'], cond: ['autumnal', 'misty', 'calm', 'quiet', 'rainy'], genres: ['nature', 'season', 'landscape'],
       items: `
 Kızıl Akçaağaç Ormanı|forest of blazing red maples, leaves falling through slanting light
@@ -147,7 +147,7 @@ Sonbahar Nehir Kıvrımı|river bend lined with trees in every shade of orange
 `,
     },
     {
-      id: 'd7-winter', tr: 'Kış Masalı & Karlı Köyler', arch: 'landscape', ctx: 'ext',
+      id: 'd7-winter', tr: 'Kış Masalı & Karlı Köyler', arch: 'landscape', biomes: ['boreal', 'alpine'], ctx: 'ext',
       engines: ['mountains', 'countryside', 'aurora', 'glacier'], cond: ['snowbound', 'frozen', 'quiet', 'calm', 'windswept'], genres: ['landscape', 'season'],
       items: `
 Karlı Dağ Köyü|mountain village of wooden houses buried in snow, warm windows glowing
@@ -291,7 +291,7 @@ Aurora Buz Mağarası Girişi|ice cave entrance glowing blue under the aurora
 `,
     },
     {
-      id: 'd7-reefs', tr: 'Mercan Resifleri & Lagünler', arch: 'water', ctx: 'water',
+      id: 'd7-reefs', tr: 'Mercan Resifleri & Lagünler', arch: 'water', biomes: ['seabed'], ctx: 'water',
       engines: ['coral', 'underwater', 'ocean'], cond: ['pristine', 'calm', 'deep', 'glowing'], genres: ['nature', 'season'],
       items: `
 Renkli Mercan Bahçesi|shallow reef garden of branching corals in pink, orange and purple
@@ -327,7 +327,7 @@ Biyolüminesan Lagün|lagoon at night glowing blue with bioluminescent plankton
 `,
     },
     {
-      id: 'd7-volcanic', tr: 'Volkan Adaları & Siyah Kumsallar', arch: 'nature', ctx: 'ext',
+      id: 'd7-volcanic', tr: 'Volkan Adaları & Siyah Kumsallar', arch: 'nature', biomes: ['volcanic', 'coast'], ctx: 'ext',
       engines: ['lava', 'ocean', 'terrain3d'], cond: ['steaming', 'dormant', 'windswept', 'dramatic', 'glowing'], genres: ['nature', 'landscape', 'season'],
       items: `
 Siyah Kum Kumsalı|black sand beach with white surf and sea stacks offshore
@@ -363,7 +363,7 @@ Volkan Gölü Adası|island inside a lake inside a volcano
 `,
     },
     {
-      id: 'd7-saltflats', tr: 'Tuz Düzlükleri & Ayna Göller', arch: 'landscape', ctx: 'ext',
+      id: 'd7-saltflats', tr: 'Tuz Düzlükleri & Ayna Göller', arch: 'landscape', biomes: ['arid'], ctx: 'ext',
       engines: ['saltflat', 'dunes', 'clouds'], cond: ['calm', 'scorching', 'pristine', 'quiet'], genres: ['landscape', 'nature', 'season'],
       items: `
 Sonsuz Tuz Aynası|thin water film on a salt flat mirroring the whole sky
@@ -399,7 +399,7 @@ Beyaz Sessizlik|nothing but white salt and blue sky, total minimalism
 `,
     },
     {
-      id: 'd7-arches', tr: 'Kumtaşı Kemerler & Doğal Köprüler', arch: 'landscape', ctx: 'ext',
+      id: 'd7-arches', tr: 'Kumtaşı Kemerler & Doğal Köprüler', arch: 'landscape', biomes: ['arid'], ctx: 'ext',
       engines: ['canyonarch', 'canyon', 'dunes'], cond: ['scorching', 'windswept', 'ancient', 'calm'], genres: ['landscape', 'nature', 'season'],
       items: `
 Narin Kemer Gün Batımı|slender freestanding sandstone arch glowing red at sunset
@@ -471,7 +471,7 @@ Bambu Ormanı Şafak|bamboo forest at dawn with drifting mist
 `,
     },
     {
-      id: 'd7-savanna', tr: 'Savan Gün Batımları', arch: 'landscape', ctx: 'ext',
+      id: 'd7-savanna', tr: 'Savan Gün Batımları', arch: 'landscape', biomes: ['savanna'], ctx: 'ext',
       engines: ['countryside', 'dunes', 'clouds'], cond: ['scorching', 'calm', 'windswept', 'quiet'], genres: ['landscape', 'nature', 'season', 'world'],
       items: `
 Akasya Silueti Gün Batımı|flat-topped acacia silhouetted against a huge orange sun
@@ -543,7 +543,7 @@ Yağmur Sonrası Orman Zemini|soaked forest floor glistening with fungi and moss
 `,
     },
     {
-      id: 'd7-glacier', tr: 'Buzul Mağaraları & Buzdağları', arch: 'nature', ctx: 'mixed',
+      id: 'd7-glacier', tr: 'Buzul Mağaraları & Buzdağları', arch: 'nature', biomes: ['polar', 'alpine'], ctx: 'mixed',
       engines: ['glacier', 'crystal', 'ocean', 'mountains'], cond: ['frozen', 'glowing', 'quiet', 'pristine', 'windswept'], genres: ['nature', 'season', 'landscape'],
       items: `
 Mavi Buz Mağarası İçi|blue ice cave interior with rippled translucent walls

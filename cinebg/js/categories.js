@@ -277,7 +277,7 @@ Kar Altında Gözetleme Kulesi|snowbound watchtower on a frozen border
 Denizaltı Kontrol Odası|submarine control room with periscope and red night lighting
 Gizli Laboratuvar Bunkeri|secret bunker lab with sealed doors and hazard stripes
 ` },
-    { id: 'mountains', tr: 'Dağlar & Yüksek İrtifa', arch: 'nature', ctx: 'ext', engines: ['mountains', 'storm', 'castle'], cond: ['pristine', 'snowbound', 'windswept', 'misty'], items: `
+    { id: 'mountains', tr: 'Dağlar & Yüksek İrtifa', arch: 'nature', biomes: ['alpine'], ctx: 'ext', engines: ['mountains', 'storm', 'castle'], cond: ['pristine', 'snowbound', 'windswept', 'misty'], items: `
 Alp Zirve Sırtı|alpine summit ridge with corniced snow and sea of clouds below
 Himalaya Ana Kamp|Himalayan base camp with prayer flags, tents and a giant ice wall
 Dolomit Kuleleri|Dolomite rock towers glowing at sunrise above green meadows
@@ -303,7 +303,7 @@ Sisli Çay Tepeleri|mist-wrapped tea hills with neat rows and distant peaks
 Dağ Rasathanesi|mountain observatory dome on a summit under stars
 Kuzey Yüzü Duvarı|sheer north face wall of ice and rock
 ` },
-    { id: 'desert', tr: 'Çöller, Kanyonlar & Kurak Topraklar', arch: 'nature', ctx: 'ext', engines: ['dunes', 'mountains', 'storm'], cond: ['scorching', 'windswept', 'pristine', 'dusty'], items: `
+    { id: 'desert', tr: 'Çöller, Kanyonlar & Kurak Topraklar', arch: 'nature', biomes: ['arid'], ctx: 'ext', engines: ['dunes', 'mountains', 'storm'], cond: ['scorching', 'windswept', 'pristine', 'dusty'], items: `
 Kum Denizi|endless sand sea with towering dunes and sharp crests
 Kızıl Kanyon|red rock canyon with layered walls and a dry riverbed
 Çöl Vahası|desert oasis with palms, pool and mud-brick houses
@@ -329,7 +329,7 @@ Tabela Mezarlığı Çöl|desert graveyard of forgotten neon signs
 Çöl Demiryolu|lonely railway crossing a desert with a water tower
 Kanyon Nehri Dönemeci|horseshoe bend of a river deep in a canyon
 ` },
-    { id: 'forest', tr: 'Ormanlar & Ağaçlıklar', arch: 'nature', ctx: 'ext', engines: ['forest', 'godrays', 'mountains'], cond: ['misty', 'pristine', 'autumnal', 'dark'], items: `
+    { id: 'forest', tr: 'Ormanlar & Ağaçlıklar', arch: 'nature', biomes: ['temperate', 'boreal'], ctx: 'ext', engines: ['forest', 'godrays', 'mountains'], cond: ['misty', 'pristine', 'autumnal', 'dark'], items: `
 Sisli Çam Ormanı|misty pine forest with tall straight trunks and soft light
 Kadim Meşe Korusu|ancient oak grove with gnarled trunks and moss
 Sekoya Devleri|giant redwood forest with towering trunks and ferns
@@ -356,7 +356,7 @@ Kızıl Akçaağaç Vadisi|valley of red maples in autumn
 Orman İçi Taş Çember|stone circle hidden in a forest
 Kök Labirenti|tangled root labyrinth of mangrove-like trees
 ` },
-    { id: 'jungle', tr: 'Tropikal & Cangıl', arch: 'nature', ctx: 'ext', engines: ['forest', 'godrays', 'ocean'], cond: ['humid', 'rainy', 'pristine', 'overgrown'], items: `
+    { id: 'jungle', tr: 'Tropikal & Cangıl', arch: 'nature', biomes: ['tropical'], ctx: 'ext', engines: ['forest', 'godrays', 'ocean'], cond: ['humid', 'rainy', 'pristine', 'overgrown'], items: `
 Amazon Nehri Kolu|Amazon river tributary with dense jungle walls and mist
 Cangıl Şelalesi|jungle waterfall plunging into a green pool
 Tapınak Harabesi Cangıl|ruined temple swallowed by jungle roots
@@ -380,7 +380,7 @@ Gizli Cangıl Gölü|hidden jungle lake with mist
 Cangıl Demiryolu Harabesi|abandoned railway in jungle with overgrown locomotive
 Kaplan Patikası|tiger trail through tall grass and jungle
 ` },
-    { id: 'polar', tr: 'Kutup, Buzul & Kış Dünyaları', arch: 'nature', ctx: 'ext', engines: ['aurora', 'mountains', 'storm'], cond: ['frozen', 'blizzard', 'pristine', 'windswept'], items: `
+    { id: 'polar', tr: 'Kutup, Buzul & Kış Dünyaları', arch: 'nature', biomes: ['polar'], ctx: 'ext', engines: ['aurora', 'mountains', 'storm'], cond: ['frozen', 'blizzard', 'pristine', 'windswept'], items: `
 Kutup Buz Tabakası|endless polar ice sheet with pressure ridges
 Buzdağı Kıyısı|coast with towering icebergs and dark sea
 Kuzey Işıkları Fiyordu|fjord under aurora with snowy mountains
@@ -456,7 +456,7 @@ Göl Adası Tapınak|small temple on a wooded island in the middle of a calm lak
 Donmuş Nehir Kıyısı|frozen river with ice floes, snowy banks and a black tree line
 Bataklık Geçit Yolu|raised plank causeway crossing a misty peat bog
 ` },
-    { id: 'plains', tr: 'Ovalar, Bozkır & Kırsal', arch: 'nature', ctx: 'ext', engines: ['mountains', 'storm', 'dunes'], cond: ['pristine', 'windswept', 'harvest', 'stormy'], items: `
+    { id: 'plains', tr: 'Ovalar, Bozkır & Kırsal', arch: 'nature', biomes: ['steppe', 'temperate'], ctx: 'ext', engines: ['mountains', 'storm', 'dunes'], cond: ['pristine', 'windswept', 'harvest', 'stormy'], items: `
 Buğday Tarlası Gün Batımı|endless golden wheat field at sunset, a dirt track and a lone farmhouse
 Bozkır Rüzgarı|windswept steppe of silver feather grass rolling in waves to the horizon
 Kır Çiftliği|rural farmstead with red timber barn, grain silo and creaking windmill
@@ -480,7 +480,7 @@ Tornado Ovası|open plain with a rope tornado touching down behind farm building
 Kasaba Ana Caddesi|small-town main street with a water tower, diner and grain elevator
 Kırık Çit Kır|broken wooden fence running across empty winter fields
 ` },
-    { id: 'volcanic', tr: 'Volkanik & Jeotermal', arch: 'nature', ctx: 'ext', engines: ['battlefield', 'smoke', 'mountains'], cond: ['erupting', 'smoldering', 'dormant', 'steaming'], items: `
+    { id: 'volcanic', tr: 'Volkanik & Jeotermal', arch: 'nature', biomes: ['volcanic'], ctx: 'ext', engines: ['battlefield', 'smoke', 'mountains'], cond: ['erupting', 'smoldering', 'dormant', 'steaming'], items: `
 Lav Nehri|river of molten lava snaking through a black crusted lava field
 Patlayan Volkan|erupting volcano with a towering ash column split by volcanic lightning
 Kaldera Kenarı|caldera rim overlooking a vast steaming crater floor
@@ -526,7 +526,7 @@ Terk Edilmiş Metro Tüneli|abandoned subway tunnel with rusted tracks and dripp
 Yeraltı Sığınak Şehri|underground shelter city with stacked dwellings and cables
 Mantar Mağarası|cavern of giant bioluminescent mushrooms
 ` },
-    { id: 'underwater', tr: 'Su Altı Dünyaları', arch: 'water', ctx: 'water', engines: ['underwater'], cond: ['pristine', 'sunken', 'deep', 'glowing'], items: `
+    { id: 'underwater', tr: 'Su Altı Dünyaları', arch: 'water', biomes: ['seabed'], ctx: 'water', engines: ['underwater'], cond: ['pristine', 'sunken', 'deep', 'glowing'], items: `
 Mercan Resifi|vibrant coral reef in clear shallow water with sunbeams
 Batık Kalyon|sunken galleon on the seabed, masts broken, cannons in sand
 Kelp Ormanı|towering kelp forest swaying with light shafts from the surface
@@ -1044,7 +1044,7 @@ Düşen Ay|moon falling close to earth
 Salgın Şehri|empty pandemic city
 Gökyüzü Anomalisi|sky anomaly over city
 ` },
-    { id: 'africa', tr: 'Afrika, Savan & Kadim Kıtalar', arch: 'nature', ctx: 'ext', engines: ['dunes', 'mountains', 'storm'], cond: ['pristine', 'dusty', 'stormy', 'harvest'], items: `
+    { id: 'africa', tr: 'Afrika, Savan & Kadim Kıtalar', arch: 'nature', biomes: ['savanna', 'arid'], ctx: 'ext', engines: ['dunes', 'mountains', 'storm'], cond: ['pristine', 'dusty', 'stormy', 'harvest'], items: `
 Serengeti Ovası|endless golden savanna with scattered acacias and a distant kopje
 Kilimanjaro Eteği|snow-capped mountain rising above a savanna plain at dawn
 Baobab Caddesi|avenue of giant baobab trees on red earth at sunset

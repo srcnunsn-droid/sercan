@@ -415,7 +415,7 @@ Brezilya|in Brazil|m,t
   REGIONS.forEach((r) => {
     const items = LANDS.filter((l) => has(l, r)).map((l) => `${l.tr} · ${r.tr}|${l.en} ${r.en}`);
     const trop = r.tags.every((t) => ['tropical', 'arid', 'savanna', 'wetland', 'coast'].includes(t)) && !r.tags.includes('polar');
-    add({ id: 'ls-' + slug(r.tr), tr: 'Manzara · ' + r.tr, arch: 'landscape', ctx: 'ext', engines: ['countryside', 'terrain3d', 'mountains', 'clouds'],
+    add({ id: 'ls-' + slug(r.tr), tr: 'Manzara · ' + r.tr, arch: 'landscape', biomes: r.tags, ctx: 'ext', engines: ['countryside', 'terrain3d', 'mountains', 'clouds'],
       cond: ['pristine', 'calm', 'misty', 'windswept', 'harvest', 'autumnal', 'quiet'], genres: ['landscape', 'nature'], nosnow: trop }, items);
   });
   HOMES.forEach((h) => {
