@@ -1,6 +1,6 @@
 # CineBG Studio
 
-Sinematik film sahneleri için sınırsız arka plan üreticisi. 209 grupta **87.060 kategori** (8706 temel mekân ve her birinin 9 varyantı): savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik, 50 şehir ve kasabadan sokaklar, 40 bölgeden manzaralar, ev içleri ve gündelik hayat mekânları ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 978 trilyonu aşar, seed sayısı ise sınırsızdır.
+Sinematik film sahneleri için sınırsız arka plan üreticisi. 309 grupta **117.060 kategori** (11.706 temel mekân ve her birinin 9 varyantı), 63 sahne motoru, 690 kamera açısı ve 30 video stili: savaş alanları (antik, dünya savaşları, gelecek, deniz ve hava), kaleler, post-apokaliptik ve zombi dünyaları, Antik Mısır, Roma ve Yunan, Viking, korsanlar, steampunk, dieselpunk, solarpunk, yabancı gezegenler, mağaralar, uzay, iç mekanlar, Anadolu ve Osmanlı, Latin Amerika, Güney Asya, film stüdyoları, günümüz şehir, iş ve ev mekanları, yaratıcı reklam ve ürün arka planları, mikro dünyalar, soyut motion grafik, 50 şehir ve kasabadan sokaklar, 40 bölgeden manzaralar, ev içleri ve gündelik hayat mekânları ve daha fazlası. Her üretim seed'e bağlı olarak saat, hava, mevsim, durum, kamera, ışık tarifi, palet ve renk grade'i seçer. Sabit kombinasyonlar 450 katrilyonu aşar, seed sayısı ise sınırsızdır.
 
 Her sahne iki çıktı verir:
 
@@ -17,6 +17,38 @@ Her sahne iki çıktı verir:
 
 Kurulum gerekmez. `cinebg/index.html` dosyasını Chrome, Edge veya Safari ile aç.
 GitHub Pages ile yayınlamak için: depo ayarları → Pages → `main` dalı. Ardından `https://<kullanıcı>.github.io/sercan/cinebg/` adresini aç.
+
+## v7: Motorlar, kamera sistemi, video stilleri ve 100 yeni kategori başlığı
+
+| | v6 | v7 |
+| --- | --- | --- |
+| Kategori başlığı (grup) | 209 | 309 |
+| Kategori | 87.060 | 117.060 |
+| Sahne motoru | 39 | 63 |
+| Motor görünümü (ön ayar) | — | 630 (her motora 10) |
+| Kamera açısı | 60 | 690 |
+| Video stili | — | 30 |
+
+**100 yeni başlık, her birinde 30 mekân:**
+- *Dünya kültürleri:* Kasbahlar, Pers mimarisi, İpek Yolu, Kafkasya, Balkanlar, Polinezya, Himalaya, And dağları, Körfez şehirleri, Svahili kıyısı, Ege…
+- *Meslek ve mekân:* hastaneler, okul ve kampüs, ofisler, restoran mutfakları, oteller, havalimanları, limanlar, atölyeler, müzeler, kütüphaneler, metro, lunapark, düğün salonları, itfaiye…
+- *Sinema türleri:* casusluk üsleri, soygun mekânları, synthwave, Y2K, vaporwave, liminal mekânlar, samuray, wuxia, neo-noir, mecha hangarları, hava gemileri, Atlantis, rüyalar…
+- *Doğa ve atmosfer:* şelaleler, dağ gölleri, çiçek tarlaları, kış masalı, fırtına kovalama, yıldız gözlemi, mercan resifleri, tuz düzlükleri, mantar ormanları, tutulma ve kuyruklu yıldız, pencereden manzaralar…
+
+**24 yeni motor:** şelale, buzul, mercan resifi, mantar ormanı, bambu, kumtaşı kemer, tuz düzlüğü, havadan desen; kütüphane, liminal koridor, boş havuz, gece pazarı, çatılar, liman, istasyon, stadyum; vaporwave, Y2K, uçan adalar, Atlantis, mecha hangarı, rüya, wuxia mürekkep resmi, tutulma/kuyruklu yıldız.
+
+**Motor görünümleri:** her motorun 10 adlandırılmış görünümü var (kompozisyon, yoğunluk, ölçek, ışık). Üretim seed'e göre birini seçip hafifçe oynatır; aynı motor her seferinde farklı bir sahne kurar. Kilitlerden "Motor görünümü" sabitlenebilir, Set üret → "Motor görünümleri" hepsini yan yana gösterir.
+
+**Kamera sistemi:** elle yazılmış 60 açıya ek olarak 7 yükseklik (yer, diz, göz, yüksek, vinç, drone, uydu) × 5 yön (önden, sol 3/4, sağ 3/4, yan profil, ters açı) × 6 lens (14–200 mm) × 3 eğim = 630 açı. 3B motorlarda yön yörüngeyi, yükseklik kamerayı sürer. Set üret → "Kamera sistemi" yükseklik × yön ızgarasını üretir.
+
+**Video stilleri (30):** sinematik anamorfik, film fragmanı, vlog, belgesel, doğa belgeseli, müzik videosu, reklam filmi, drone, aksiyon kamerası, telefon (dikey), güvenlik kamerası, VHS, Super 8, 16 mm, found footage, gece görüşü, termal kamera, anime, suluboya animasyon, retro piksel oyun, çizgi roman, kara film, tilt-shift minyatür, Polaroid, Y2K dijital kamera, lo-fi, haber B-roll, zaman atlamalı, ağır çekim. Her stil:
+- görüntüye efekt uygular (balıkgözü, pikselleştirme, posterize, tarama çizgisi, gece görüşü, termal renk haritası, tilt-shift bulanıklık, VHS renk kayması ve satır dalgalanması, yarım ton, tek renk, keskinlik),
+- grade'in üzerine kendi renk değerlerini yazar,
+- gerekirse ekran arayüzü çizer (REC ve zaman kodu, güvenlik kamerası saati, VHS tarih damgası, termal ölçek, Polaroid çerçevesi) — önizlemede, PNG'de ve videoda,
+- kendi kamera açılarını tercih eder, oranı önerir (fragman 2.39, telefon 9:16, VHS 4:3, Polaroid 1:1), videoda elde titreme ve hız (zaman atlamalı, ağır çekim) ekler,
+- bütün promptların başına stil satırını yazar.
+
+Üst çubuktaki 🎬 menüsünden seçilir; "Stil seti" aynı sahneyi 30 stilde yan yana çıkarır.
 
 ## v6: Sadece arka plan, 5 kat daha fazla kategori
 
@@ -121,3 +153,9 @@ Set üret menüsüne **mekân varyantları** (5 kare) ve **film stokları** (40 
 | `js/arch-v6.js` | 5 kat büyütülmüş yer işareti, zemin ve malzeme havuzları |
 | `js/glsl-v6.js`, `js/engines-v6.js` | Sokak, kırsal ve ev içi motorları ve bağlantıları |
 | `js/looks-v5.js` | Türetilmiş paletler, film stokları, ek kamera, ışık, saat ve hava listeleri |
+| `js/v7-core.js` | v7 türleri ve motor görünümü kaydı |
+| `js/cat-v7-a.js` … `js/cat-v7-d.js` | 100 yeni kategori başlığı (dünya, meslek, sinema türleri, doğa) |
+| `js/glsl-v7-a.js` … `js/glsl-v7-c.js`, `js/engines-v7-a.js` … `c.js` | 24 yeni motor, bağlantıları ve 10'ar görünümleri |
+| `js/presets-v7.js` | Önceki 39 motorun 10'ar görünümü |
+| `js/cameras-v7.js` | 630 açılık kamera sistemi |
+| `js/video-styles.js` | 30 video stili, ekran arayüzü katmanları ve prompt satırları |

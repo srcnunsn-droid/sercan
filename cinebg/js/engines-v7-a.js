@@ -6,12 +6,16 @@
   const rr = (r, a, b) => a + (b - a) * r();
   const text = (s) => ((s.cat.base || s.cat).en + ' ' + (s.cat.q ? s.cat.q.en : '')).toLowerCase();
 
-  // bambu ve tuz düzlüğü için daha iyi motor var: genel kuralların bu kelimeleri yutmasını engelle
-  K.forEach((rule, i) => {
+  // bambu, tuz düzlüğü, kumtaşı ve buzul için daha iyi motor var: genel kuralların bu kelimeleri yutmasını engelle.
+  // spec.js kurallarını bu dosyadan sonra eklediği için temizlik push anında yapılır.
+  const clean = (rule) => {
     const src = rule[0].source;
-    const cleaned = src.replace(/\|bamboo(?=\||\/|$)/, '').replace(/\|salt flat(?=\||$)/, '');
-    if (cleaned !== src) K[i] = [new RegExp(cleaned, rule[0].flags), rule[1]];
-  });
+    const c = src.replace(/\|bamboo(?=\||$)/, '').replace(/\|salt flat(?=\||$)/, '').replace(/\|sand(?=\|)/, '|sand(?!stone)').replace(/\|glacier(?=\||$)/, '');
+    return c === src ? rule : [new RegExp(c, rule[0].flags), rule[1]];
+  };
+  for (let i = 0; i < K.length; i++) K[i] = clean(K[i]);
+  const basePush = K.push;
+  K.push = function (...rules) { return basePush.apply(this, rules.map(clean)); };
 
   K.push(
     [/waterfall|cascade|\bfalls\b|plunge pool/i, ['waterfall']],

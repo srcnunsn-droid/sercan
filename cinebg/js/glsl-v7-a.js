@@ -320,15 +320,17 @@ vec3 scene(vec2 uv, vec2 st){
       glsl: TONES + `
 vec3 mu_glow(){ return mix(v7a_norm(u_c[3])*.6, vec3(.3,1.,.85), .35); }
 // tek mantar: x merkez, taban y, boy h; dönen d<0 içinde; cap=1 şapka
-float mu_one(vec2 p, vec2 b, float h, float bend, out float cap, out float under){
+float mu_one(vec2 p, vec2 b, float h, float bend, out float cap, out float under, out vec2 shd){
   float sx=p.x-b.x-bend*sin(sat((p.y-b.y)/h)*1.6)*h*.3;
-  float stem=max(abs(sx)-h*.07*(1.+.4*sat(1.-(p.y-b.y)/h)), max(b.y-p.y, p.y-b.y-h));
+  float sw=h*.07*(1.+.4*sat(1.-(p.y-b.y)/h));
+  float stem=max(abs(sx)-sw, max(b.y-p.y, p.y-b.y-h));
   vec2 cq=vec2(p.x-b.x-bend*h*.3, p.y-b.y-h*.95);
   float R=h*mix(.35,.55,hash11(b.x*13.));
   float dome=length(cq*vec2(1.,1.8))-R;
   dome=max(dome, -cq.y-R*.08);
   cap=step(dome,stem);
   under=smoothstep(R*.25,-R*.05,cq.y)*step(dome,0.);
+  shd=vec2(sx/sw, sat(cq.y/(R*.56))*(1.-.5*abs(cq.x)/R));
   return min(stem,dome);
 }
 vec3 scene(vec2 uv, vec2 st){
@@ -346,8 +348,8 @@ vec3 scene(vec2 uv, vec2 st){
     // zemin
     float ground=gy+fbm4(vec2(uv.x*(2.+fl)+fl*9.,fl))*.04;
     vec3 gc=mix(v7a_green()*.35, u_c[0]*.3, .3)*(.6+.4*vnoise(uv*50.+fl));
-    float cap, under;
-    float best=1e3, bc=0., bu=0.;
+    float cap, under; vec2 shd;
+    float best=1e3, bc=0., bu=0.; vec2 bs=vec2(0.);
     for(int i=0;i<8;i++){
       if(i>=N) break;
       float fi=float(i);
@@ -355,14 +357,16 @@ vec3 scene(vec2 uv, vec2 st){
       float x=(hx-.5)*A*1.1+(fl-1.5)*.1;
       float h=sc*mix(.25,.6,hash11(fi*3.7+fl+SEED2.y));
       float bend=(hash11(fi*1.9+fl*5.)-.5);
-      float d=mu_one(uv, vec2(x, ground-.01), h, bend, cap, under);
-      if(d<best){ best=d; bc=cap; bu=under; }
+      float d=mu_one(uv, vec2(x, ground-.01), h, bend, cap, under, shd);
+      if(d<best){ best=d; bc=cap; bu=under; bs=shd; }
     }
     float m=smoothstep(PX*1.5,-PX*1.5,best);
     vec3 capc=mix(v7a_norm(u_c[3])*.35, v7a_norm(u_c[2])*.4, vnoise(uv*12.+fl));
     vec3 stemc=mix(vec3(.75,.7,.6), v7a_norm(u_c[2])*.5, .3)*.6;
-    vec3 mc=mix(stemc, capc, bc);
-    mc*=.55+.45*smoothstep(-.2,.6,uv.y-gy);
+    float stemS=.45+.6*sqrt(max(1.-bs.x*bs.x,0.))+.25*smoothstep(-.2,-1.,bs.x);
+    float capS=.5+.7*bs.y;
+    vec3 mc=mix(stemc*stemS, capc*capS, bc);
+    mc*=mix(.7,1.,dk);
     // şapka benekleri
     mc=mix(mc, vec3(.9,.88,.8)*.7, bc*step(.86,vnoise(uv*vec2(70.,90.)+fl*3.))*.8);
     // alt yüz ışıması
@@ -372,7 +376,8 @@ vec3 scene(vec2 uv, vec2 st){
     // ışıma halesi
     col+=mu_glow()*u_p[2]*.12*exp(-max(best,0.)*mix(60.,20.,dk))*(1.-m)*(1.-dk*.5);
     float gm=smoothstep(ground+PX,ground-PX,uv.y);
-    col=mix(col, mix(gc, haze, dk*.6), gm);
+    vec3 gcl=gc*mix(1.,.55,smoothstep(ground,ground-.12,uv.y));
+    col=mix(col, mix(gcl, haze, dk*mix(.45,.85,u_p[4])), gm);
     // zemin bitkileri
     float fern=step(uv.y, ground+.02*u_p[5]*abs(gnoise(vec2(uv.x*90.+fl*7.,fl))))*(1.-gm);
     col=mix(col, mix(v7a_green()*.5, haze, dk*.6), fern*u_p[5]);
@@ -573,16 +578,18 @@ vec3 sf_sky(vec3 rd, vec3 L){
   float sd=max(dot(rd,L),0.);
   sky+=v7a_sunc()*(pow(sd,900.)*25.+pow(sd,10.)*.35+pow(sd,3.)*.1);
   // bulutlar: yüksek düzleme izdüşüm
-  if(u_p[3]>.03 && rd.y>.01){
-    vec2 cp=rd.xz/rd.y*.6+SEED2*.1+vec2(u_time*.005,0.);
-    float c=smoothstep(.0,.5,fbm(cp*1.3)+.1-.4*(1.-u_p[3]));
-    vec3 cc=mix(mix(u_c[1],u_c[2],.5)*.9, v7a_sunc()*1.2, pow(sd,4.)*.8+.2);
-    sky=mix(sky, cc, c*.9*smoothstep(.0,.08,rd.y));
+  if(u_p[3]>.03 && rd.y>.005){
+    vec2 cp=rd.xz/(rd.y+.16)*.75+SEED2*.1+vec2(u_time*.004,0.);
+    float n=fbm(cp*2.2)+.25*fbm(cp*7.);
+    float c=smoothstep(.05,.3,n+.32*u_p[3]-.22);
+    float shade=sat(fbm(cp*2.2+vec2(.06,.04))-n+.5);
+    vec3 cc=mix(mix(u_c[1],u_c[0],.4)*.8, mix(vec3(1.),v7a_sunc(),.5)*1.15, shade*.7+pow(sd,3.)*.5);
+    sky=mix(sky, cc, c*smoothstep(.0,.05,rd.y));
   }
   // ufuk dağları (yön açısına göre)
   if(u_p[2]>.03){
     float az=atan(rd.x, rd.z);
-    float mh=.015+ (fbm4(vec2(az*4.+SEED2.x,0.))*.5+.5)*.06*u_p[2];
+    float mh=.004+ridged(vec2(az*3.+SEED2.x,0.),5)*.09*u_p[2]*(.4+.6*smoothstep(-.2,.3,fbm4(vec2(az*1.2,4.))));
     float m=smoothstep(mh+.002, mh-.002, rd.y);
     float mt=sat((mh-rd.y)/max(mh,.001));
     sky=mix(sky, mix(mix(u_c[0]*.6+u_c[1]*.4, v7a_haze(), .45+.4*u_p[7]), u_c[0]*.4, mt*.4), m);
@@ -605,9 +612,10 @@ vec3 scene(vec2 uv, vec2 st){
   vec3 p=ro+rd*t;
   // tuz kabuğu poligonları
   vec2 cid;
-  float edge=v7a_vor(p.xz*mix(.3,1.2,u_p[1]), cid);
-  float ridge=smoothstep(.08,.0,edge)*u_p[1];
-  float aa=sat(1.-t*.012);
+  float pscale=mix(.3,1.2,u_p[1])/(1.+ro.y*.06);
+  float edge=v7a_vor(p.xz*pscale, cid);
+  float aa=sat(1.-t*pscale*.012);
+  float ridge=smoothstep(.08+.04*(1.-aa),.0,edge)*u_p[1];
   vec3 salt=mix(vec3(.8,.79,.76), v7a_norm(u_c[2])*.75, .15)*(.72+.18*hash12(cid))*(.85+.15*smoothstep(.0,.35,edge));
   salt=mix(salt, vec3(1.05), ridge*aa*.75);
   salt*=.92+.08*(gnoise(p.xz*4.)*.5+.5);
@@ -664,17 +672,19 @@ vec3 scene(vec2 uv, vec2 st){
   col=mix(col, fc, forest);
   // nehir
   if(u_p[1]>.05){
-    float rx=sin(p.y*.7+SEED2.x)*1.2+fbm4(vec2(p.y*.5,1.))*1.5;
-    float rw=mix(.03,.18,u_p[1]);
-    float rd=abs(p.x-rx);
+    vec2 pc=uv*mix(2.,6.,u_p[0]);
+    float rx=sin(pc.y*.9+SEED2.x)*.5+fbm4(vec2(pc.y*.6,SEED2.y))*1.2+(hash11(SEED2.x)-.5)*A;
+    float rw=mix(.03,.16,u_p[1]);
+    float rd=abs(pc.x-rx);
     vec3 rc=mix(u_c[0]*.5+vec3(.02,.06,.08), mix(u_c[1],u_c[2],.5)*.5, .3);
     col=mix(col, mix(vec3(.75,.68,.5),col,.4), smoothstep(rw*1.8,rw*1.2,rd));
     col=mix(col, rc, smoothstep(rw,rw*.7,rd));
   }
   // yollar
   if(u_p[2]>.05){
-    float r1=abs(dot(p-vec2(0.,SEED2.y*.1), normalize(vec2(1.,.35)))+sin(p.x*.4)*.3);
-    float r2=abs(p.x*.3+p.y-1.3+fbm4(p*.3)*.6);
+    vec2 pc=uv*mix(2.,6.,u_p[0]);
+    float r1=abs(dot(pc, normalize(vec2(.35,1.)))-(hash11(SEED2.y)-.5)*1.5+sin(pc.y*.6)*.2);
+    float r2=abs(dot(pc, normalize(vec2(1.,.2)))-(hash11(SEED2.x*3.)-.5)*1.2+fbm4(pc*.3)*.4);
     float road=min(r1,r2);
     col=mix(col, vec3(.55,.53,.5), smoothstep(.025,.012,road)*u_p[2]);
   }
@@ -689,7 +699,7 @@ vec3 scene(vec2 uv, vec2 st){
   // kıyı ve deniz
   if(u_p[3]>.05){
     float cst=uv.x*.8+uv.y*.4+fbm(p*.4)*.6-mix(.9,-.3,u_p[3]);
-    vec3 shallow=mix(vec3(.3,.75,.75), v7a_norm(u_c[3])*.4, .2), deep=mix(vec3(.02,.12,.22), u_c[0]*.6, .4);
+    vec3 shallow=mix(vec3(.12,.5,.55), v7a_norm(u_c[3])*.35, .2), deep=mix(vec3(.02,.1,.2), u_c[0]*.6, .4);
     vec3 sea=mix(shallow, deep, sat(cst*3.));
     float surf=smoothstep(.012,.0,abs(cst-.006+sin(p.y*20.+t*.5)*.002));
     col=mix(col, mix(vec3(.85,.78,.6),col,.3), smoothstep(-.025,-.0,cst)*(1.-step(0.,cst)));
