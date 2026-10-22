@@ -675,7 +675,8 @@ vec3 scene(vec2 uv, vec2 st){
       float wash=exp(d*mix(9.,4.,fl)*mix(1.5,.7,u_p[5]));
       float dry=smoothstep(.35,.75,vnoise(vec2(x*20.,uv.y*60.)))*.25;
       float edge=smoothstep(.012,0.,-d)*(.6+.4*vnoise(vec2(x*40.,1.)));
-      float a=sat((wash*.75+edge*.5-dry*wash)*mix(.25,1.,fl)*mix(.6,1.2,u_p[5]));
+      float body=.22+.55*wash;
+      float a=sat((max(body,edge*.8)-dry*wash)*mix(.3,1.,fl)*mix(.6,1.3,u_p[5]));
       // kırışık dokusu
       a*=.85+.3*abs(gnoise(vec2(x*6.,uv.y*18.)));
       col=mix(col, ink, a);
