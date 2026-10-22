@@ -164,12 +164,168 @@ vec3 atmos(vec3 c, vec2 uv){
   }
   return c;
 }
+
+/* ---- ön plan / kompozisyon katmanı (v8) ----
+   u_fg: tür (0 = kapalı), yoğunluk, odak dışı bulanıklık, seed. Kadraja bağlıdır: ayna ve yatırma uygulanır, zoom uygulanmaz. */
+uniform vec4 u_fg;
+float fg_box(vec2 p, vec2 b){ vec2 d=abs(p)-b; return length(max(d,0.))+min(max(d.x,d.y),0.); }
+float fg_seg(vec2 p, vec2 a, vec2 b){ vec2 pa=p-a, ba=b-a; float h=sat(dot(pa,ba)/dot(ba,ba)); return length(pa-ba*h); }
+// d < 0 içeride; w: kenar yumuşaklığı
+float fg_fill(float d, float w){ return 1.-smoothstep(-w, w, d); }
+vec3 foreground(vec3 c, vec2 uv0){
+  int T=int(u_fg.x+.5);
+  if(T<=0 || u_fg.y<=.001) return c;
+  float amt=u_fg.y, blur=u_fg.z, sd=u_fg.w;
+  vec2 p=rot(u_roll)*(uv0*vec2(u_cam.x<0.?-1.:1.,1.)) + u_cam.yz*.25; // yakın plan: hafif paralaks
+  float hx=.5*A;                       // yarım genişlik
+  float w=mix(.0025,.03,blur);         // odak dışı kenar
+  vec2 sv=hash22(vec2(sd,sd*1.37));    // seed varyasyonu
+  float t=u_time;
+  float m=0.;                          // siluet örtüsü
+  float tex=1.;                        // siluet içi ton (0..1)
+  vec3 add=vec3(0.);                   // ışık ekleri (bokeh, toz)
+  if(T==1){ // yapraklı dallar, üst köşeler
+    vec2 q=p+vec2(sin(t*.6+p.y*4.)*.004, sin(t*.5+p.x*3.)*.002);
+    float side=sv.x<.25?-1.:(sv.x<.5?1.:0.);
+    for(int k=0;k<2;k++){
+      float sx=k==0?-1.:1.;
+      if(side!=0. && side!=sx) continue;
+      vec2 cn=vec2(sx*hx, .5);
+      vec2 d=(q-cn)*vec2(1.,1.15);
+      float r=length(d);
+      float reach=mix(.42,.7,hash11(sd+float(k)*7.))*(side==0.?.85:1.);
+      // yaprak kümeleri: düşük frekanslı gövde + yüksek frekanslı yaprak kenarı
+      float body=fbm4(q*5.+sd*3.+float(k)*5.);
+      float leaves=gnoise(q*38.+sd)*.5+gnoise(q*75.+sd*2.)*.3;
+      float f=reach-r+body*.2+leaves*.045*smoothstep(reach*.5,reach,r);
+      m=max(m, fg_fill(-f, w+.003));
+      // dal kolları
+      vec2 b0=cn, b1=cn+vec2(-sx*reach*1.05, -reach*.5+sv.y*.12);
+      float along=sat(dot(q-b0,b1-b0)/dot(b1-b0,b1-b0));
+      m=max(m, fg_fill(fg_seg(q,b0,b1)-mix(.022,.004,along), w));
+    }
+    tex=.7+.3*(gnoise(p*40.+sd)*.5+.5);
+  } else if(T==2){ // pencere çerçevesi ve kayıtlar
+    vec2 mg=vec2(mix(.05,.14,sv.x), mix(.05,.11,sv.y));
+    float open=fg_box(p, vec2(hx-mg.x, .5-mg.y));
+    m=fg_fill(-open, w);
+    float bw=.012+.006*sv.x;
+    int nv=sv.y<.5?1:2;
+    for(int i=1;i<=2;i++){ if(i>nv) break; float x=(float(i)/float(nv+1)-.5)*2.*(hx-mg.x); m=max(m, fg_fill(abs(p.x-x)-bw, w)); }
+    m=max(m, fg_fill(abs(p.y-mix(.02,.18,sv.x))-bw, w));
+    tex=.85;
+  } else if(T==3){ // taş kemer / kapı
+    float hw=hx*mix(.55,.78,sv.x), top=mix(.0,.12,sv.y);
+    float inside=max(abs(p.x)-hw, p.y-top);
+    inside=min(inside, length(p-vec2(0.,top))-hw);
+    m=fg_fill(-inside, w);
+    vec2 bq=p*vec2(9.,16.); bq.x+=floor(bq.y)*.5;
+    float joint=min(abs(fract(bq.x)-.5), abs(fract(bq.y)-.5));
+    tex=.7+.3*smoothstep(.02,.08,joint)*(.8+.2*gnoise(p*20.+sd));
+  } else if(T==4){ // ön plan kayaları
+    float r=-1.;
+    for(int i=0;i<5;i++){ float fi=float(i); vec2 rc=vec2((fi/4.-.5)*2.2*hx+(hash11(sd+fi*3.1)-.5)*.35, -.5+hash11(sd+fi*9.)*.06); float rr=mix(.13,.28,hash11(sd*1.7+fi))*step(.25,hash11(sd*2.9+fi*1.3)); vec2 dq=(p-rc)*vec2(mix(.7,1.1,hash11(fi+sd*5.)),1.2); r=max(r, rr-length(dq)+gnoise(p*9.+fi)*.025); }
+    float ground=(-.5+mix(.05,.12,sv.x)+fbm4(vec2(p.x*3.,sd))*.04)-p.y;
+    m=max(fg_fill(-r, w), fg_fill(-ground, w));
+    tex=.7+.3*(fbm4(p*14.+sd)*.5+.5);
+  } else if(T==5){ // çit / korkuluk
+    float y1=-.5+mix(.18,.3,sv.x), y2=y1-.13;
+    float rail=min(abs(p.y-y1)-.016, abs(p.y-y2)-.012);
+    float sp=mix(.12,.22,sv.y);
+    float post=max(abs(fract(p.x/sp+sd)-.5)*sp-.014, p.y-y1-.03);
+    float d=min(rail, post);
+    if(sv.x>.6){ float bal=max(abs(fract(p.x/(sp*.25)+sd)-.5)*sp*.25-.0035, max(p.y-y1, y2-p.y)); d=min(d,bal); }
+    m=fg_fill(d, w)*step(p.y,y1+.03);
+    tex=.8;
+  } else if(T==6){ // yan perdeler
+    float tie=mix(-.15,.1,sv.y);
+    float cw=mix(.1,.2,sv.x)*hx*1.5;
+    float bulge=cw*(1.-.45*exp(-pow((p.y-tie)*6.,2.)));
+    float d=hx-abs(p.x)-bulge;
+    m=fg_fill(d, w);
+    float folds=.5+.5*sin(abs(p.x)*90.+sin(p.y*3.)*2.+t*.3);
+    tex=.55+.45*folds;
+  } else if(T==7){ // uzun otlar: incelen, eğilen yapraklar
+    for(int L=0;L<3;L++){
+      float fl=float(L), sc=mix(34.,15.,fl/2.);
+      float xs=p.x*sc+sd*7.+fl*13.;
+      float id=floor(xs);
+      for(int j=-1;j<=1;j++){
+        float cid=id+float(j);
+        float cx=cid+.5+(hash11(cid*1.3+fl)-.5)*.7;
+        float hgt=mix(.07,.24,hash11(cid+fl*5.))*mix(.8,1.2,sv.x)*(1.+fl*.3);
+        float yb=p.y+.5;
+        float lean=(hash11(cid*3.1)-.5)*2.2+sin(t*1.1+cid)*.25;
+        float cxx=cx+lean*yb*yb/hgt*sc*.08;
+        float hw=mix(.42,.0,pow(sat(yb/hgt),.8));
+        float d=max((abs(xs-cxx)-hw)/sc*A*.5, yb-hgt);
+        m=max(m, fg_fill(d, w*(.2+fl*.15)));
+      }
+    }
+    tex=.75+.25*sat((p.y+.5)*3.);
+  } else if(T==8){ // havai kablolar
+    int n=2+int(sv.x*3.);
+    for(int i=0;i<5;i++){
+      if(i>=n) break; float fi=float(i);
+      float y0=mix(.22,.44,hash11(sd+fi*2.3)), sag=mix(.03,.12,hash11(sd*2.+fi));
+      float x0=(hash11(sd*3.+fi)-.5)*hx;
+      float yy=y0-sag*(1.-pow((p.x-x0)/(hx*1.6),2.));
+      m=max(m, fg_fill(abs(p.y-yy)-mix(.0028,.005,fi/4.), w*.5));
+    }
+    if(sv.y>.4){ float px=hx*(sv.y>.7?.84:-.84); m=max(m, fg_fill(abs(p.x-px)-.016, w)); m=max(m, fg_fill(fg_box(p-vec2(px,.36),vec2(.06,.007)), w)); }
+    tex=.9;
+  } else if(T==9){ // mağara ağzı
+    vec2 q=p/vec2(hx*mix(.78,.95,sv.x), mix(.4,.48,sv.y));
+    float n=fbm4(p*4.+sd)*.2+fbm4(p*13.+sd*2.)*.06;
+    float inside=length(q+vec2(0.,.15))-1.+n;
+    m=fg_fill(-inside*.3, w+.004);
+    tex=.6+.4*(fbm4(p*9.+sd)*.5+.5);
+  } else if(T==10){ // yakın plan bokeh
+    vec3 bc=mix(u_c[2],u_c[3],sv.x)*1.2+.05;
+    for(int i=0;i<12;i++){
+      float fi=float(i);
+      vec2 bp=vec2((hash11(sd+fi*1.7)-.5)*2.*hx, hash11(sd*2.3+fi)-.5);
+      bp.x+=sin(t*.15+fi)*.01;
+      float r=mix(.03,.11,hash11(sd*4.1+fi));
+      float d=length(p-bp)-r;
+      float disk=fg_fill(d, .004+blur*.01);
+      float ring=disk*(.65+.35*smoothstep(-r*.5,0.,d));
+      add+=bc*ring*mix(.08,.22,hash11(fi+sd))*(.5+.5*smoothstep(-.5,.5,bp.y+.2));
+    }
+  } else if(T==11){ // lens tozu ve leke
+    float L0=lum(c);
+    float sm=smoothstep(.55,.9, fbm4(p*vec2(2.,4.)*rot(.6)+sd)*.5+.5);
+    add+=c*sm*.35+mix(u_c[2],vec3(1.),.4)*sm*L0*.08;
+    vec2 g=p*14.+sd*9.; vec2 id=floor(g), f=fract(g)-.5;
+    float dust=step(.86,hash12(id))*fg_fill(length(f-(hash22(id)-.5)*.6)-mix(.04,.12,hash12(id+3.)), .03);
+    add+=mix(u_c[2],vec3(1.),.5)*dust*(.05+L0*.25);
+  } else if(T==12){ // tente / saçak kenarı
+    float base=.5-mix(.1,.2,sv.x);
+    float sc=mix(9.,16.,sv.y);
+    float scal=base-abs(sin(p.x*sc+sd))*.04;
+    m=fg_fill(scal-p.y, w);
+    float stripe=step(.5,fract(p.x*sc/PI+sd));
+    tex=mix(.55,1.,stripe);
+  }
+  // siluet rengi: derin palet tonu, odak dışında sahnenin pusuna karışır, kenarda arka ışık
+  vec3 sil=u_c[0]*.18+u_c[1]*.05;
+  if(T==6) sil=mix(u_c[1],u_c[3],.35)*.22;
+  if(T==12) sil=mix(u_c[3],u_c[1],.3)*.3;
+  sil*=tex;
+  float edge=m*(1.-m)*4.;
+  vec3 rim=mix(u_c[2],vec3(1.),.3)*edge*lum(c)*.6*(1.-blur*.6);
+  sil=mix(sil, c*.35, blur*.25);
+  c=mix(c, sil+rim, m*amt);
+  c+=add*amt;
+  return c;
+}
 void main(){
   vec2 uv0=(gl_FragCoord.xy-.5*u_res)/u_res.y;
   vec2 uv=rot(u_roll)*(uv0*vec2(u_cam.x<0.?-1.:1.,1.))/max(abs(u_cam.x),.01)+u_cam.yz;
   vec2 st=(uv*u_res.y+.5*u_res)/u_res;
   vec3 c=scene(uv, st);
   c=atmos(max(c,0.), uv);
+  c=foreground(max(c,0.), uv0);
   c=max(c, 0.);
   if(c.r!=c.r||c.g!=c.g||c.b!=c.b) c=vec3(0.);
   if(u_enc>.5) c=sqrt(c/(1.+c));
