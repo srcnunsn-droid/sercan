@@ -973,6 +973,7 @@ float s7_T(){ return mix(1.,3.,floor(u_p[2]*2.99))*2.4; }   // ray yatağı yar�
 const float S7_PW=6.;   // peron genişliği
 const float S7_PH=1.05;
 float s7_vault(){ return u_p[0]; }
+float S7_RZ=0.; // kamera z: uzak rayları geometriden düşürmek için (aliasing)
 // m: 0 balast, 1 ray, 2 peron, 3 kolon, 4 çatı, 5 bank, 6 ışık bandı, 7 kemer kaburga, 8 tabela
 float s7_map(vec3 p, out float m){
   float T=s7_T();
@@ -985,6 +986,7 @@ float s7_map(vec3 p, out float m){
   float tr=mod(p.x+1.2,2.4)-1.2;
   float rail=b7_box(vec3(abs(tr)-.72, p.y-.12, 0.), vec3(.035,.08,1e3));
   rail=max(rail, ax-T+.3);
+  rail=max(rail, abs(p.z-S7_RZ)-55.);
   if(rail<d){ d=rail; m=1.; }
   float vt=s7_vault();
   if(vt<.5){
@@ -1055,6 +1057,7 @@ vec3 scene(vec2 uv, vec2 st){
   float side=hash11(u_seed*.33)<.5?-1.:1.;
   float yaw=u_cam.y*1.6+side*mix(.08,.35,hash11(u_seed*.73));
   vec3 ro=vec3(side*(T+mix(.8,S7_PW-1.,hash11(u_seed*.91)))+u_cam.y*T, hgt, hash11(u_seed*.19)*300.);
+  S7_RZ=ro.z;
   if(abs(ro.x)<T) ro.y=max(ro.y,1.5);
   float pitch=-.04-sat((hgt-3.)/30.)*.7+u_cam.z*1.3;
   mat3 cam=b7_look(ro, ro+vec3(sin(yaw)*-side,pitch,cos(yaw)));
@@ -1071,9 +1074,9 @@ vec3 scene(vec2 uv, vec2 st){
     vec3 n=normalize(vec3(s7_d(p+e.xyy)-s7_d(p-e.xyy), s7_d(p+e.yxy)-s7_d(p-e.yxy), s7_d(p+e.yyx)-s7_d(p-e.yyx)));
     vec3 alb; float em=0.; float spec=0.;
     float ax=abs(p.x);
-    float aa=exp(-t*.03);
+    float aa=exp(-t*.05);
     if(m<.5){ alb=vec3(.22,.2,.18)*(.6+.5*mix(.5,vnoise(p.xz*14.),aa)); float sl=step(.55,fract(p.z/.65))*step(abs(mod(p.x+1.2,2.4)-1.2),1.1); alb=mix(alb, vec3(.25,.18,.12), mix(.4,sl,aa)*.8); }
-    else if(m<1.5){ alb=vec3(.35,.33,.32); spec=.8; }
+    else if(m<1.5){ alb=mix(vec3(.22,.2,.18)*.8, vec3(.35,.33,.32), aa); spec=.8*aa; }
     else if(m<2.5){
       alb=mix(vec3(.45,.43,.4),u_c[1],.2)*(.85+.15*step(.03,fract(p.x*1.6))*step(.03,fract(p.z*1.6)));
       alb=mix(alb, vec3(.85,.7,.1), step(abs(ax-T-.4),.08)*step(.5,n.y));
@@ -1081,7 +1084,7 @@ vec3 scene(vec2 uv, vec2 st){
       spec=u_p[5]*step(.5,n.y);
     }
     else if(m<3.5){ alb=mix(vec3(.15,.25,.22),u_c[1],.4)*.7; }
-    else if(m<4.5){ alb=vec3(.35); if(vt>.5 && p.y>6.){ float gl=step(.1,abs(mod(p.z,8.)-4.)-.2); em=gl*(1.-night)*.9; alb=mix(alb,vec3(.6),gl); } }
+    else if(m<4.5){ alb=vec3(.35); if(vt>.5 && p.y>6.){ float gl=step(.1,abs(mod(p.z,8.)-4.)-.2)*step(.15,fract(atan(p.x,p.y-6.)*5.)); em=gl*(1.-night)*.55; alb=mix(alb,vec3(.6),gl); } }
     else if(m<5.5){ alb=mix(vec3(.4,.25,.12),u_c[3],.3); }
     else if(m<6.5){ alb=vec3(.9); em=mix(1.5,3.,night)*u_p[1]*step(n.y,-.5); }
     else if(m<7.5){ alb=vec3(.12,.14,.15); }
@@ -1200,7 +1203,7 @@ vec3 scene(vec2 uv, vec2 st){
   if(t<0.) col=d7_sky(rd);
   else {
     vec3 p=ro+rd*t;
-    vec2 e=vec2(.03,0.);
+    vec2 e=vec2(.03+t*.004,0.);
     vec3 n=normalize(vec3(d7_d(p+e.xyy)-d7_d(p-e.xyy), d7_d(p+e.yxy)-d7_d(p-e.yxy), d7_d(p+e.yyx)-d7_d(p-e.yyx)));
     vec3 alb; float em=0.;
     if(m<.5){
@@ -1226,7 +1229,7 @@ vec3 scene(vec2 uv, vec2 st){
       float aa=exp(-t*.012);
       float row=fract(p.y/.85);
       alb=sc*mix(.78,.55+.45*step(.35,row),aa)*mix(.92,.85+.15*step(.5,fract(az*120.)),aa);
-      if(n.y<.3) alb*=.6;
+      if(n.y<.3) alb*=mix(.85,.6,aa);
     } else if(m<2.5){ alb=vec3(.7,.72,.75); }
     else { alb=vec3(.4); em=step(Hm+37.,p.y)*step(abs(n.y),.5); }
     vec3 L=d7_L();
