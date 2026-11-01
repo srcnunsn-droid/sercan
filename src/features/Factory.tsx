@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp, currentProvider, DEFAULT_PRICE } from '../store/app';
 import { buildPackage, estimateCredits } from '../engine/package';
 import { saveFile, copyText } from '../lib/files';
@@ -7,7 +7,8 @@ import type { Project } from '../model/types';
 import { MODEL_CARDS, TEMPLATES } from '../content';
 import { compileCharacterSheet, compileLocation, compilePart, referenceMap } from '../engine/compiler';
 import { runRules } from '../engine/rules';
-import { runTask, type IdeasOut, type StoryOut } from '../ai/tasks';
+import { runTask, type IdeasOut, type StoryOut, type DiagnoseOut } from '../ai/tasks';
+import { imagesSupported } from '../ai/providers';
 import type { Location } from '../model/types';
 import { PromptBlock } from '../ui/Prompt';
 import { RuleList } from '../ui/Rules';
@@ -83,6 +84,7 @@ function StepStory() {
   const editPart = useApp((s) => s.editPart);
   const cardId = useApp((s) => s.cardId);
   const [busy, setBusy] = useState<string | null>(null);
+  const [doc, setDoc] = useState<{ key: string; lineTr: string; lineEn: string; notesTr: string[] } | null>(null);
   const sec = MODEL_CARDS.find((c) => c.id === cardId)?.partSec ?? 10;
   const max = Math.round((14 * sec) / 10);
   const plan = async () => {
@@ -117,7 +119,15 @@ function StepStory() {
             return (
               <div className="grid two" key={di} style={{ gap: 'var(--sp-2)' }}>
                 <Field id={`d-${i}-${di}`} label={`${d.speaker} · ${d.atSec}. sn`} value={d.textTr} onChange={(v) => editPart(i, (x) => { x.dialogue[di].textTr = v; })} />
-                <div className="field"><span>Kelime</span><span className={`sev ${n > Math.round(16 * sec / 10) ? 'error' : n > max ? 'warn' : 'ok'}`} style={{ alignSelf: 'start', fontSize: 13 }}>{n} / {max}</span></div>
+                <div className="field"><span>Kelime</span><div className="row"><span className={`sev ${n > Math.round(16 * sec / 10) ? 'error' : n > max ? 'warn' : 'ok'}`} style={{ fontSize: 13 }}>{n} / {max}</span>
+                  <button className="btn sm" disabled={!!busy || !d.textTr.trim()} onClick={async () => { setBusy(`doc${i}-${di}`); try { const o = await runTask<{ lineTr: string; lineEn: string; words: number; notesTr: string[] }>(currentProvider(), 'dialogueDoctor', { line: d.textTr, sec }); setDoc({ key: `${i}-${di}`, ...o.value }); } finally { setBusy(null); } }}>{busy === `doc${i}-${di}` ? '…' : 'Replik doktoru'}</button></div></div>
+                {doc?.key === `${i}-${di}` && (
+                  <div className="feedback good" style={{ gridColumn: '1 / -1' }}>
+                    <p><b>{doc.lineTr}</b> <span className="mono muted">· {doc.lineEn}</span></p>
+                    <ul style={{ margin: '4px 0', paddingLeft: 18 }}>{doc.notesTr.map((x) => <li key={x}>{x}</li>)}</ul>
+                    <button className="btn sm primary" onClick={() => { editPart(i, (x) => { x.dialogue[di].textTr = doc.lineTr; x.dialogue[di].textEn = doc.lineEn; }); setDoc(null); }}>Öneriyi kullan</button>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -217,6 +227,7 @@ function StepGate() {
       <p>Önce görseller, sonra video. Kredi boşa gitmesin diye video adımı burada kilitli kalır.</p>
       <ul className="stack" style={{ listStyle: 'none', padding: 0, margin: 0 }}>{checks.map(([l, ok]) => <li key={l} className="row"><span className={`sev ${ok ? 'ok' : 'warn'}`}>{ok ? 'Hazır' : 'Eksik'}</span>{l}</li>)}</ul>
       {errors.length > 0 && <RuleList results={errors} />}
+      {(() => { const ip = runRules({ project: p }, ['safety.ip']); return ip.length ? <div className="feedback" style={{ borderLeftColor: 'var(--warn)' }}><b>Güvenlik ve telif:</b> {ip.map((r) => r.messageTr).join(' ')} Karar senin.</div> : null; })()}
       <label className="row tile" style={{ cursor: 'pointer' }}>
         <input type="checkbox" id="gate" checked={p.factory.visualsApproved} onChange={(e) => edit('gate', (x) => { x.factory.visualsApproved = e.target.checked; if (e.target.checked) x.factory.step = Math.max(x.factory.step, 7); })} style={{ width: 24, height: 24 }} />
         <b>{t('factory.gate')}</b>
@@ -298,6 +309,82 @@ function StepVideo() {
       })}
       <h4>Çelişki bekçisi ve süreklilik</h4>
       <RuleList results={rules} />
+      <ContinuityAudit />
+    </div>
+  );
+}
+
+function ContinuityAudit() {
+  const p = useApp((s) => s.project());
+  const [res, setRes] = useState<{ warnings: { partIndex: number; messageTr: string }[]; note?: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    try {
+      const parts = p.parts.map((x, i) => `Part ${i + 1}: ${x.sceneEn || x.scene} | light: ${x.light.source} from ${x.light.direction}, ${x.light.kelvin}K | characters: ${x.characters.map((c) => { const ch = p.characters.find((y) => y.id === c.characterId); return `${ch?.name} (${ch?.wardrobe}) ${c.action ?? ''}`; }).join('; ')}`).join('\n');
+      const o = await runTask<{ warnings: { partIndex: number; messageTr: string }[] }>(currentProvider(), 'continuityAudit', { parts });
+      setRes({ ...o.value, note: o.source === 'template' ? 'Claude kullanılamadı; yalnızca deterministik kurallar çalıştı (yukarıda).' : undefined });
+    } finally { setBusy(false); }
+  };
+  return (
+    <div className="tile">
+      <div className="row" style={{ justifyContent: 'space-between' }}><b>Claude ile süreklilik denetimi</b><button className="btn sm" disabled={busy} onClick={run}><Icon name="spark" size={14} /> {busy ? 'İnceleniyor…' : 'Denetle'}</button></div>
+      <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Kural motorunun göremediği kıyafet, prop ve hikâye kaymalarını arar.</p>
+      {res?.note && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{res.note}</p>}
+      {res && !res.note && (res.warnings.length ? <ul className="rules">{res.warnings.map((w, i) => <li key={i} className="rule"><span className="sev warn">Uyarı</span><p>{w.partIndex ? `${w.partIndex}. parça: ` : ''}{w.messageTr}</p></li>)}</ul> : <p className="feedback good">Claude çelişki bulmadı.</p>)}
+    </div>
+  );
+}
+
+function StepFix() {
+  const p = useApp((s) => s.project());
+  const cardId = useApp((s) => s.cardId);
+  const providerId = useApp((s) => s.providerId);
+  const [pi, setPi] = useState(0);
+  const [file, setFile] = useState<File | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const [canImg, setCanImg] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [out, setOut] = useState<(DiagnoseOut & { note?: string }) | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { imagesSupported(providerId).then(setCanImg); }, [providerId]);
+  useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);
+  const pick = (f: File | undefined | null) => { if (!f || !f.type.startsWith('image/')) return; if (url) URL.revokeObjectURL(url); setFile(f); setUrl(URL.createObjectURL(f)); setOut(null); };
+  const intended = compilePart(p, p.parts[pi], cardId).en;
+  const diagnose = async () => {
+    setBusy(true);
+    try {
+      const o = await runTask<DiagnoseOut>(currentProvider(), 'diagnoseResult', { prompt: intended }, { images: file && canImg ? [file] : undefined, noCache: true });
+      setOut({ ...o.value, note: !canImg ? 'Bu görünümde Claude’a görsel gönderilemiyor; kontrol listesi ve güçlendirilmiş prompt verildi.' : o.noteTr });
+    } finally { setBusy(false); }
+  };
+  return (
+    <div className="stack">
+      <p className="muted">Üretilen görselden ya da videodan bir kare yükle. Claude sorunu teşhis eder ve düzeltme promptu yazar. Görsel yalnızca bu oturumda kullanılır, hiçbir yere kaydedilmez.</p>
+      <div className="row"><span className="eyebrow">Hangi parça</span>{p.parts.map((_, i) => <button key={i} className="chip" aria-pressed={pi === i} onClick={() => { setPi(i); setOut(null); }}>Parça {i + 1}</button>)}</div>
+      <div className="grid two" style={{ alignItems: 'start' }}>
+        <div className="tile" style={{ minHeight: 220, display: 'grid', placeItems: 'center', alignContent: 'center', gap: 12, borderStyle: 'dashed' }}
+          onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files?.[0]); }}>
+          {url ? <img src={url} alt="Yüklenen kare" style={{ maxHeight: 320, borderRadius: 8 }} /> : <p className="muted" style={{ textAlign: 'center' }}>Kareyi buraya sürükle<br />ya da</p>}
+          <div className="row">
+            <button className="btn" onClick={() => inputRef.current?.click()}><Icon name="upload" size={16} /> {url ? 'Başka kare seç' : 'Kare seç'}</button>
+            {url && <button className="btn ghost" onClick={() => { URL.revokeObjectURL(url); setUrl(null); setFile(null); setOut(null); }}>Kaldır</button>}
+          </div>
+          <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ''; }} />
+        </div>
+        <div className="stack">
+          <PromptBlock en={intended} label="Amaçlanan prompt" />
+          <button className="btn primary" disabled={busy} onClick={diagnose}><Icon name="wand" size={16} /> {busy ? 'Teşhis ediliyor…' : file ? 'Kareyi teşhis et' : 'Kontrol listesi ve güçlendirilmiş prompt'}</button>
+          {!canImg && <p className="muted" style={{ fontSize: 'var(--fs-xs)' }}>Görsel teşhisi için Ayarlar → Yapay zekâ → “Claude (claude.ai üzerinden)” seç ve izin ver.</p>}
+        </div>
+      </div>
+      {out && (
+        <div className="stack">
+          {out.note && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{out.note}</p>}
+          <ul className="rules">{out.problemsTr.map((x) => <li key={x} className="rule"><span className="sev warn">Sorun</span><p>{x}</p></li>)}</ul>
+          <PromptBlock en={out.fixEn} tr={out.fixTr} label="Düzeltme promptu" />
+        </div>
+      )}
     </div>
   );
 }
@@ -305,8 +392,8 @@ function StepVideo() {
 export function Factory() {
   const p = useApp((s) => s.project());
   const edit = useApp((s) => s.edit);
-  const [step, setStep] = useState(Math.min(p.factory.step, 7));
-  const canOpen = (n: number) => n <= 6 || (n === 7 && p.factory.visualsApproved);
+  const [step, setStep] = useState(Math.min(p.factory.step, 8));
+  const canOpen = (n: number) => n <= 6 || ((n === 7 || n === 8) && p.factory.visualsApproved);
   const goStep = (n: number) => { if (!canOpen(n)) return; setStep(n); if (n > p.factory.step) edit('step', (x) => { x.factory.step = n; }); };
   return (
     <>
@@ -317,7 +404,7 @@ export function Factory() {
       <div className="wizard">
         <nav className="wsteps" aria-label="Üretim adımları">
           {STEPS.map((s, i) => {
-            const n = i + 1; const locked = !canOpen(n) || n >= 8;
+            const n = i + 1; const locked = !canOpen(n) || n >= 9;
             return (
               <button key={s} className="wstep" aria-current={step === n ? 'step' : undefined} data-done={n < p.factory.step || (n === 6 && p.factory.visualsApproved)} disabled={locked} onClick={() => goStep(n)} title={n === 7 && !p.factory.visualsApproved ? t('factory.gateLocked') : undefined}>
                 <span className="n">{n}</span>{s}{locked && <Icon name="lock" size={14} />}
@@ -334,11 +421,12 @@ export function Factory() {
           {step === 5 && <><StepNote step={5} /><StepFrames /></>}
           {step === 6 && <><StepNote step={6} /><StepGate /></>}
           {step === 7 && <StepVideo />}
+          {step === 8 && <><StepNote step={8} /><StepFix /></>}
           <div className="row" style={{ justifyContent: 'space-between' }}>
             <button className="btn ghost" disabled={step === 1} onClick={() => setStep(step - 1)}>{t('common.back')}</button>
-            {step < 7 && <button className="btn primary" disabled={!canOpen(step + 1)} onClick={() => goStep(step + 1)}>{step === 6 && !p.factory.visualsApproved ? t('factory.gateLocked') : <>{t('common.next')} <Icon name="arrow" size={16} /></>}</button>}
+            {step < 8 && <button className="btn primary" disabled={!canOpen(step + 1)} onClick={() => goStep(step + 1)}>{step === 6 && !p.factory.visualsApproved ? t('factory.gateLocked') : <>{t('common.next')} <Icon name="arrow" size={16} /></>}</button>}
           </div>
-          {step >= 7 && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>8. Düzeltme laboratuvarı Faz 5’te, 9. Yayın paketi Faz 6’da açılacak.</p>}
+          {step >= 8 && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>9. Yayın paketi Faz 6’da açılacak.</p>}
         </section>
       </div>
     </>

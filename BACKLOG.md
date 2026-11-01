@@ -7,10 +7,9 @@
 ## Faz 4 kalanları
 - Mekân için de sürüm geçmişi (karakterde var).
 
-## Faz 5
-- Düzeltme laboratuvarı (`sample` + `images: true`), `diagnoseResult`.
-- “Yeni sistem ekle” sihirbazı, çalışan promptlardan öğrenme (deneyim defteri).
-- Güvenlik/telif linterinin genişletilmesi.
+## Faz 5 kalanları
+- Deneyim defterinden model başına kalıp çıkarma (puanlı promptlardan otomatik öneri).
+- Her adaptör için 3 standart sahnelik mini deneme seti.
 
 ## Faz 6
 - M3–M10 içerikleri, aralıklı tekrar kartları, yayın paketi, kataloğun 100+ kayda tamamlanması, model kartları test seti.

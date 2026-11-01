@@ -1,14 +1,14 @@
 // One AIProvider interface, three implementations. Claude is optional: the Mock engine always answers.
 export type TaskName =
   | 'generateExercise' | 'evaluatePrompt' | 'suggestIdeas' | 'writeStoryPlan' | 'dialogueDoctor'
-  | 'continuityAudit' | 'diagnoseResult' | 'translateToEnglish' | 'tutor';
+  | 'continuityAudit' | 'diagnoseResult' | 'translateToEnglish' | 'tutor' | 'draftModelCard';
 
 export interface AIProvider {
   id: 'claude-artifact' | 'api-key' | 'mock';
   labelTr: string;
   available(): Promise<boolean>;
   /** Ask for JSON. Implementations must reject on failure; the task runner handles retry/fallback. */
-  json(prompt: string, opts?: { signal?: AbortSignal; quick?: boolean }): Promise<unknown>;
+  json(prompt: string, opts?: { signal?: AbortSignal; quick?: boolean; images?: Blob[] }): Promise<unknown>;
 }
 
 export interface EvalResult { score: number; boxes: Record<string, boolean>; reasonsTr: string[]; suggestionEn: string; suggestionTr: string }

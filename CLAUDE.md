@@ -47,4 +47,5 @@ npm run smoke      # headless Chromium: 6 ekran × (390px, masaüstü koyu, masa
 - Faz 2 (2D lab, derleyici, TR/EN çıktı): tamam.
 - Faz 3 (3D stüdyo): tamam. Manken, lens, ışık, sis, 3 görünüm, 7 mekân seti + 6 prop (`engine/sets.ts`), yağmur/kar, kadraj çerçevesi + güvenli alan, replik/hareket/ses şeritleri, PNG referans kare, derinlik haritası, poz çizimi, `.glb`, Blender `bpy` betiği (`engine/blender.ts`), mobil kalite modu ve fps göstergesi. Eksik: nesne gizmosu (BACKLOG).
 - Faz 4 (Fabrika): tamam. 8 şablon kendi kamera akışı ve adım notlarıyla, 12 model kartı (Ayarlar’dan düzenlenir, doğrulama tarihi), kredi fiyat tablosu + harcama günlüğü, modelleri yan yana karşılaştırma ve sınır uyarıları, karakter sürüm geçmişi, projeler arası varlık kütüphanesi, kayıtlı promptlar (deneyim defteri), tek dosya “sahne paketi” (`engine/package.ts`). Kabul akışı `npm run smoke` içinde.
-- Faz 5–7: başlamadı (bkz. BACKLOG.md).
+- Faz 5 (Claude katmanı): tamam. 10 görev (`draftModelCard` eklendi), görsel gönderebilen sağlayıcılar (`sample` images beyanı), düzeltme laboratuvarı (Fabrika 8), replik doktoru, Claude süreklilik denetimi, “Yeni sistem ekle” sihirbazı ve “Claude ile güncelle”, genişletilmiş telif uyarısı. Görev çalıştırıcı sahte sağlayıcılarla test edilir.
+- Faz 6–7: başlamadı (bkz. BACKLOG.md).

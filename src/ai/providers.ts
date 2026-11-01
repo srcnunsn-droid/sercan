@@ -9,7 +9,7 @@ export const claudeArtifactProvider: AIProvider = {
   async json(prompt, opts) {
     const sample = await capability<any>('sample');
     if (!sample) throw { code: 'not_granted', message: 'sample unavailable' };
-    return sample.json(prompt, { signal: opts?.signal, modelTier: opts?.quick ? 'quick' : 'default' });
+    return sample.json(prompt, { signal: opts?.signal, modelTier: opts?.quick ? 'quick' : 'default', ...(opts?.images?.length ? { images: opts.images, cache: false } : {}) });
   },
 };
 
@@ -36,7 +36,10 @@ export const apiKeyProvider: AIProvider = {
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
       },
-      body: JSON.stringify({ model: sessionModel, max_tokens: 2000, messages: [{ role: 'user', content: prompt + '\n\nReply with only JSON.' }] }),
+      body: JSON.stringify({ model: sessionModel, max_tokens: 2000, messages: [{ role: 'user', content: [
+        ...(await Promise.all((opts?.images ?? []).map(async (b) => ({ type: 'image', source: { type: 'base64', media_type: b.type || 'image/jpeg', data: await blobToBase64(b) } })))),
+        { type: 'text', text: prompt + '\n\nReply with only JSON.' },
+      ] }] }),
     });
     if (!res.ok) throw { code: 'upstream_error', message: `HTTP ${res.status}` };
     const data = await res.json();
@@ -51,6 +54,21 @@ export const mockProvider: AIProvider = {
   async available() { return true; },
   async json() { throw { code: 'use_template', message: 'mock answers come from the task templates' }; },
 };
+
+async function blobToBase64(b: Blob): Promise<string> {
+  const buf = new Uint8Array(await b.arrayBuffer()); let s = '';
+  for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+/** Can this view send images to Claude (needs the `sample` capability declared with images: true)? */
+export async function imagesSupported(providerId: string): Promise<boolean> {
+  if (providerId === 'api-key') return hasSessionKey();
+  if (providerId !== 'claude-artifact') return false;
+  const sample = await capability<any>('sample');
+  const lim = await sample?.limits?.().catch(() => null);
+  return !!lim?.images;
+}
 
 export function parseLooseJson(text: string): unknown {
   try { return JSON.parse(text); } catch { /* fall through */ }

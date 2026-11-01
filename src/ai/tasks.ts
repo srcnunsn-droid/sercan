@@ -9,7 +9,8 @@ import tStory from '../prompts/writeStoryPlan.md?raw';
 import tDialogue from '../prompts/dialogueDoctor.md?raw';
 import tContinuity from '../prompts/continuityAudit.md?raw';
 import tDiagnose from '../prompts/diagnoseResult.md?raw';
-import { GAME_BY_ID, CATALOG, INVISIBLE_WORDS, LIGHT_SOURCES, TEXTURE_LINE, TEXTURE_LINE_TR } from '../content';
+import tCard from '../prompts/draftModelCard.md?raw';
+import { GAME_BY_ID, CATALOG, INVISIBLE_WORDS, LIGHT_SOURCES, TEXTURE_LINE, TEXTURE_LINE_TR, type ModelCard } from '../content';
 import { scorePrompt, type Rubric } from '../engine/rubric';
 import { countWords, lower } from '../lib/text';
 import type { AIProvider, TaskName } from './types';
@@ -137,14 +138,40 @@ const continuityAudit: TaskDef<{ parts: string }, { warnings: { partIndex: numbe
   template: () => ({ warnings: [] }),
 };
 
-const diagnoseResult: TaskDef<{ prompt: string }, { problemsTr: string[]; fixEn: string; fixTr: string }> = {
+export interface DiagnoseOut { problemsTr: string[]; fixEn: string; fixTr: string }
+const diagnoseResult: TaskDef<{ prompt: string }, DiagnoseOut> = {
   build: (i) => fill(tDiagnose, i),
   valid: (x): x is any => x && isArr(x.problemsTr) && isStr(x.fixEn),
-  template: ({ prompt }) => ({ problemsTr: ['Çevrimdışı modda görsel incelenemiyor. Kontrol listesi: yüz kayması, ışık sıçraması, el ve parmaklar, yazı bozulması.'], fixEn: `${prompt}\nKeep the same face as @image-1, same light direction as the previous frame.`, fixTr: 'Aynı yüzü ve önceki karenin ışık yönünü koru.' }),
+  template: ({ prompt }) => {
+    const body = prompt.replace(TEXTURE_LINE, '').trim();
+    return {
+      problemsTr: ['Çevrimdışı modda görsel incelenemiyor. Kareyi şu sırayla kendin kontrol et: yüz önceki karedekiyle aynı mı, ışık aynı yönden mi geliyor, eller ve parmaklar doğru mu, görüntüde yazı ya da bozulma var mı.'],
+      fixEn: `${body}\nKeep exactly the same face and hair as @image-1. Keep the light direction and colour identical to the previous frame. Natural hands with five fingers. No text, no watermark.\n${TEXTURE_LINE}`,
+      fixTr: 'Aynı yüz ve saç (@image-1), önceki karedeki ışık yönü ve rengi, doğal eller, yazı ve filigran yok.',
+    };
+  },
+};
+
+export type CardDraft = Omit<ModelCard, 'id' | 'verified' | 'lastVerified'>;
+const draftModelCard: TaskDef<{ name: string; docs: string; existing?: string }, CardDraft> = {
+  build: ({ name, docs, existing }) => fill(tCard, { name, docs: docs.slice(0, 12000), existing: existing ?? 'yok' }),
+  valid: (x): x is CardDraft => x && isStr(x.name) && ['image', 'video', 'both'].includes(x.kind) && typeof x.maxRefs === 'number' && isStr(x.refSyntax) && isArr(x.weaknessesTr) && isArr(x.extraRulesTr) && isStr(x.notesTr),
+  template: ({ name, docs }) => {
+    const t = lower(docs);
+    const video = /(video|second|saniye|\bsn\b|fps|motion|clip)/u.test(t);
+    const secs = /(\d{1,2})\s?(s|sec|seconds|sn|saniye)\b/u.exec(t);
+    return {
+      name, kind: video ? 'video' : 'image', partSec: video ? (secs ? Number(secs[1]) : 10) : null,
+      refSyntax: /@image-?\d/u.test(docs) ? '@image-N' : /--cref|--sref/u.test(docs) ? '--cref / --sref' : '@image-N',
+      maxRefs: 3, dialogueSyntax: video ? 'Character says: "line"' : null, wordLimit: null,
+      weaknessesTr: [], extraRulesTr: [],
+      notesTr: 'Çevrimdışı taslak: yalnızca yapıştırdığın metinden tahmin edildi; süre ve referans sınırını kendi denemenle doğrula.',
+    };
+  },
 };
 
 export const TASKS: Record<TaskName, TaskDef<any, any>> = {
-  evaluatePrompt, translateToEnglish, tutor, generateExercise, suggestIdeas, writeStoryPlan, dialogueDoctor, continuityAudit, diagnoseResult,
+  evaluatePrompt, translateToEnglish, tutor, generateExercise, suggestIdeas, writeStoryPlan, dialogueDoctor, continuityAudit, diagnoseResult, draftModelCard,
 };
 
 // ---------------- runner ----------------
@@ -153,18 +180,19 @@ export interface RunResult<O> { value: O; source: 'claude' | 'template'; noteTr?
 const cache = new Map<string, unknown>();
 export const callStats = { claude: 0, template: 0, cached: 0 };
 
-export async function runTask<O = any>(provider: AIProvider, name: TaskName, input: any, opts: { signal?: AbortSignal; noCache?: boolean } = {}): Promise<RunResult<O>> {
+export async function runTask<O = any>(provider: AIProvider, name: TaskName, input: any, opts: { signal?: AbortSignal; noCache?: boolean; images?: Blob[] } = {}): Promise<RunResult<O>> {
   const def = TASKS[name];
   const key = name + ':' + JSON.stringify(input);
+  if (opts.images?.length) opts.noCache = true; // uploaded images are never cached or stored
   if (!opts.noCache && cache.has(key)) { callStats.cached++; return { value: cache.get(key) as O, source: 'claude' }; }
   const fallback = (noteTr: string): RunResult<O> => { callStats.template++; return { value: def.template(input), source: 'template', noteTr }; };
   if (provider.id === 'mock' || !(await provider.available())) return fallback('Çevrimdışı şablon motoru kullanıldı.');
   const prompt = def.build(input);
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const out = await provider.json(attempt === 0 ? prompt : prompt + '\n\nYour previous answer did not match the JSON shape. Follow it exactly.', { signal: opts.signal, quick: def.quick });
+      const out = await provider.json(attempt === 0 ? prompt : prompt + '\n\nYour previous answer did not match the JSON shape. Follow it exactly.', { signal: opts.signal, quick: def.quick, images: opts.images });
       callStats.claude++;
-      if (def.valid(out)) { cache.set(key, out); return { value: out as O, source: 'claude' }; }
+      if (def.valid(out)) { if (!opts.noCache) cache.set(key, out); return { value: out as O, source: 'claude' }; }
     } catch (e: any) {
       if (e?.code === 'cancelled') throw e;
       if (['not_granted', 'sampling_disabled', 'rate_limited', 'session_expired', 'not_declared'].includes(e?.code)) {

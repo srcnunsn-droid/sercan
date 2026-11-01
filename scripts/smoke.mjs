@@ -55,6 +55,11 @@ for (const [name, viewport, scheme] of [['phone', { width: 390, height: 844 }, '
     const blocks = await page.locator('.prompt pre').count();
     if (blocks < 3) errors.push(`[${name}] factory step 7 shows ${blocks} prompts, expected 3`);
     await page.screenshot({ path: `${out}/${name}-factory-video.png`, fullPage: true });
+    await page.getByRole('button', { name: /^Devam/ }).last().click();
+    await page.waitForSelector('text=Amaçlanan prompt');
+    await page.getByRole('button', { name: /Kontrol listesi ve güçlendirilmiş prompt/ }).click();
+    await page.waitForSelector('text=Düzeltme promptu');
+    await page.screenshot({ path: `${out}/${name}-factory-fix.png` });
     console.log(`Acceptance: İstasyonda veda reached video prompts in ${Date.now() - t0} ms of UI time (${blocks} prompts).`);
     await page.keyboard.press('Control+k');
     await page.keyboard.type('alt açı');
