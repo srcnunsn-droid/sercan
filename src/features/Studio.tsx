@@ -177,7 +177,7 @@ function Lab() {
           <input type="range" min={0} max={1} step={0.001} value={time} onChange={(e) => { setPlaying(false); setTime(Number(e.target.value)); }} aria-label="Zaman çizelgesi" id="timeline" />
           <span className="mono muted tabnum" style={{ fontSize: 12 }}>{(time * sec).toFixed(1)} / {sec}s</span>
         </div>
-        <div className="stack" style={{ gap: 6 }} aria-label="Zaman çizelgesi şeritleri">
+        <div className="stack" style={{ gap: 6 }} role="group" aria-label="Zaman çizelgesi şeritleri">
           <div className="strip-label"><span>Replik</span><span>{dlgSegs.reduce((a, x) => a + x.words, 0)} kelime</span></div>
           <div className="strip">
             {dlgSegs.map((x, i) => <span key={i} className={x.over ? 'err' : x.words > Math.round(14 * sec / 10) ? 'warn' : ''} style={{ left: `${(x.start / sec) * 100}%`, width: `${Math.min(100 - (x.start / sec) * 100, (x.dur / sec) * 100)}%` }} title={`${x.d.speaker}: ${x.d.textTr}`}>{x.d.speaker}: {x.d.textTr}</span>)}

@@ -348,7 +348,7 @@ export function Academy() {
                     <span className="num">{st === 'done' ? '✓' : i + 1}</span>
                     <div><b>{l.titleTr}</b><p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{l.minutes} dk · {GAME_BY_ID[l.gameId]?.titleTr}</p></div>
                     {st === 'locked'
-                      ? (prevDone ? <button className="btn sm" onClick={() => { unlockLesson(l.id); openLesson(l.id); }}>{t('academy.start')}</button> : <span className="muted" aria-label={t('academy.locked')}><Icon name="lock" size={18} /></span>)
+                      ? (prevDone ? <button className="btn sm" onClick={() => { unlockLesson(l.id); openLesson(l.id); }}>{t('academy.start')}</button> : <span className="muted" role="img" aria-label={t('academy.locked')}><Icon name="lock" size={18} /></span>)
                       : <button className={`btn sm ${st === 'open' ? 'primary' : ''}`} onClick={() => { openLesson(l.id); window.scrollTo({ top: 0 }); }}>{st === 'done' ? t('academy.review') : t('academy.start')}</button>}
                   </div>
                 );

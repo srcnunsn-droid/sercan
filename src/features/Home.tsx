@@ -82,7 +82,7 @@ export function Home() {
         <div className="panel">
           <span className="eyebrow">{t('home.rank')}</span>
           <div className="statline"><b>{rank.tr}</b><span className="muted tabnum">{progress.xp} XP</span></div>
-          <div className="meter" aria-label="Rütbe ilerlemesi"><i style={{ width: `${pct}%` }} /></div>
+          <div className="meter" role="progressbar" aria-label="Rütbe ilerlemesi" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><i style={{ width: `${pct}%` }} /></div>
           <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{nr ? `${nr.min - progress.xp} XP ${t('home.toNext')} (${nr.tr})` : 'En yüksek rütbe!'}</p>
           <div className="statline"><b className="tabnum">{progress.streak}</b><span className="muted">{t('home.days')} · {t('home.streak')}</span></div>
           <button className="btn sm" onClick={() => go('academy')}>{reviews} tekrar kartı bekliyor</button>

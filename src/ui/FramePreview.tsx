@@ -116,7 +116,8 @@ export function FramePreview(props: FrameProps) {
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); if (!ctx) return;
-    let raf = 0; let visible = true; let start = performance.now();
+    // paint only while on screen: the catalog mounts 100+ previews at once
+    let raf = 0; let visible = false; let start = performance.now();
     const size = () => {
       const r = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -129,10 +130,10 @@ export function FramePreview(props: FrameProps) {
       drawFrame(ctx, canvas.width, canvas.height, p, Math.min(1, time));
       if (loop && visible) raf = requestAnimationFrame(paint);
     };
-    size(); paint(performance.now());
-    const ro = new ResizeObserver(() => { size(); paint(performance.now()); });
+    size();
+    const ro = new ResizeObserver(() => { size(); if (visible) paint(performance.now()); });
     ro.observe(canvas);
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; cancelAnimationFrame(raf); if (visible) { start = performance.now(); raf = requestAnimationFrame(paint); } });
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; cancelAnimationFrame(raf); if (visible) { start = performance.now(); raf = requestAnimationFrame(paint); } }, { rootMargin: '200px' });
     io.observe(canvas);
     return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
   }, [props.animate, props.t, JSON.stringify(props.params), JSON.stringify(props.light), props.figures, JSON.stringify(props.poses), props.setId, JSON.stringify(props.props)]);

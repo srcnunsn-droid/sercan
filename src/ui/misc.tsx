@@ -25,7 +25,7 @@ export function Term({ en, children }: { en: string; children?: ReactNode }) {
   const g = GLOSSARY.find((x) => x.en.toLowerCase() === en.toLowerCase());
   if (!g) return <>{children ?? en}</>;
   return (
-    <span className="term" tabIndex={0} aria-label={`${g.en}: ${g.tr}. ${g.descTr}`}>
+    <span className="term" tabIndex={0} role="note" aria-label={`${g.en}: ${g.tr}. ${g.descTr}`}>
       {children ?? en}
       <span className="tip" role="tooltip"><b>{g.tr}</b> · {g.descTr}</span>
     </span>

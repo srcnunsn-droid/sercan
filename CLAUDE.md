@@ -35,7 +35,10 @@ npm install
 npm run dev        # geliştirme sunucusu
 npm test           # Vitest: kurallar (her kurala ≥3 olumlu + ≥3 olumsuz), derleyici, katalog, migrasyon
 npm run build      # tsc + tek HTML: dist/index.html ve Artifact gövdesi dist/seco-film-atolyesi.html
-npm run smoke      # headless Chromium: 6 ekran × (390px, masaüstü koyu, masaüstü açık), konsol hatası ve yatay taşma kontrolü
+npm run smoke      # headless Chromium: 6 ekran × (390px, masaüstü koyu, masaüstü açık), konsol hatası, yatay taşma, Fabrika kabul akışı
+npm run a11y       # axe-core: WCAG 2.1 A/AA, ciddi ve kritik ihlal sıfır olmalı (koyu + açık tema)
+npm run e2e        # 3 kullanıcı senaryosu: öğrenci (telefon) dersi bitirir, yapımcı sıfırdan proje kurar, yedek indir-sil-geri yükle
+npm run check      # hepsi sırayla (test, build + 3 MB bütçe, smoke, a11y, e2e)
 ```
 
 ## Çalışma düzeni
@@ -49,4 +52,4 @@ npm run smoke      # headless Chromium: 6 ekran × (390px, masaüstü koyu, masa
 - Faz 4 (Fabrika): tamam. 8 şablon kendi kamera akışı ve adım notlarıyla, 12 model kartı (Ayarlar’dan düzenlenir, doğrulama tarihi), kredi fiyat tablosu + harcama günlüğü, modelleri yan yana karşılaştırma ve sınır uyarıları, karakter sürüm geçmişi, projeler arası varlık kütüphanesi, kayıtlı promptlar (deneyim defteri), tek dosya “sahne paketi” (`engine/package.ts`). Kabul akışı `npm run smoke` içinde.
 - Faz 5 (Claude katmanı): tamam. 10 görev (`draftModelCard` eklendi), görsel gönderebilen sağlayıcılar (`sample` images beyanı), düzeltme laboratuvarı (Fabrika 8), replik doktoru, Claude süreklilik denetimi, “Yeni sistem ekle” sihirbazı ve “Claude ile güncelle”, genişletilmiş telif uyarısı. Görev çalıştırıcı sahte sağlayıcılarla test edilir.
 - Faz 6 (ileri modüller): tamam. M3–M10 (16 ders, toplam 25), 24 oyun, katalog 104 kayıt / 10 kategori (odak ve kadraj oranı eklendi), aralıklı tekrar kartları (`engine/review.ts`, Leitner), Fabrika 9. adım yayın paketi (`engine/publish.ts`: kanca, açıklama, hashtag, .srt, thumbnail promptu, 9:16 güvenli alan, kurgu listesi).
-- Faz 7 (cilalama): sırada.
+- Faz 7 (cilalama): tamam. axe-core denetimi temiz, 3 uçtan uca senaryo yeşil, 3 MB sayfa bütçesi, katalog önizlemeleri yalnızca ekrandayken çizilir, kontrast ve ARIA düzeltmeleri.

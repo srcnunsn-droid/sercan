@@ -134,7 +134,7 @@ export function App() {
       <main className="main" id="main">
         <div className="stage page-enter" key={route}>
           <ErrorBoundary area={t(`nav.${route}`)}>
-            <Suspense fallback={<div className="skeleton" style={{ height: 320 }} aria-label="Yükleniyor" />}>
+            <Suspense fallback={<div className="skeleton" style={{ height: 320 }} role="status" aria-label="Yükleniyor" />}>
               <Page />
             </Suspense>
           </ErrorBoundary>

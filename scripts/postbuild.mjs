@@ -19,3 +19,7 @@ writeFileSync('dist/seco-film-atolyesi.html', out);
 const kb = (f) => (statSync(f).size / 1024).toFixed(0);
 console.log(`dist/index.html ${kb('dist/index.html')} KB (open locally)`);
 console.log(`dist/seco-film-atolyesi.html ${kb('dist/seco-film-atolyesi.html')} KB (Artifact page, limit 16384 KB)`);
+
+// performance budget: the Artifact limit is 16 MB; we keep the page under 3 MB so phones load it fast
+const BUDGET_KB = 3072;
+if (statSync('dist/seco-film-atolyesi.html').size / 1024 > BUDGET_KB) { console.error(`Over the ${BUDGET_KB} KB budget`); process.exit(1); }

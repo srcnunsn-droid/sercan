@@ -33,7 +33,7 @@ export function PromptBlock({ en, tr, label, legend }: { en: string; tr?: string
   return (
     <div className="prompt">
       {label && <div className="prompt-label"><span className="eyebrow">{label}</span></div>}
-      {legend && legend.length > 0 && <div className="row" aria-label="Yüklenecek referans görseller">{legend.map((l) => <span key={l} className="chip static mono" style={{ fontSize: 12 }}>{l}</span>)}</div>}
+      {legend && legend.length > 0 && <div className="row" role="group" aria-label="Yüklenecek referans görseller">{legend.map((l) => <span key={l} className="chip static mono" style={{ fontSize: 12 }}>{l}</span>)}</div>}
       <div style={{ position: 'relative' }}>
         <pre ref={ref} lang="en">{en}</pre>
         <CopyButton text={en} targetRef={ref} small />
