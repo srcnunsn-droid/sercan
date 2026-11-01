@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { useApp, currentProvider } from '../store/app';
+import { useApp, currentProvider, DEFAULT_PRICE } from '../store/app';
+import { buildPackage, estimateCredits } from '../engine/package';
+import { saveFile, copyText } from '../lib/files';
+import { CATALOG_BY_ID } from '../content';
+import type { Project } from '../model/types';
 import { MODEL_CARDS, TEMPLATES } from '../content';
 import { compileCharacterSheet, compileLocation, compilePart, referenceMap } from '../engine/compiler';
 import { runRules } from '../engine/rules';
@@ -24,6 +28,24 @@ function Field({ id, label, value, onChange, area, placeholder }: { id: string; 
   );
 }
 
+function StepNote({ step }: { step: number }) {
+  const p = useApp((s) => s.project());
+  const note = TEMPLATES.find((x) => x.id === p.template)?.stepNotesTr?.[String(step)];
+  return note ? <p className="feedback"><b>{TEMPLATES.find((x) => x.id === p.template)?.tr}:</b> {note}</p> : null;
+}
+
+export function applyTemplate(x: Project) {
+  const tp = TEMPLATES.find((t) => t.id === x.template);
+  if (!tp?.defaults) return;
+  tp.defaults.forEach((d, i) => {
+    const part = x.parts[i]; if (!part) return;
+    if (d.framing) part.camera.framing = d.framing;
+    if (d.angle) part.camera.angle = d.angle;
+    if (d.motion) part.camera.motion = d.motion;
+    if (d.lensMm) part.camera.lensMm = d.lensMm;
+  });
+}
+
 function StepIdea() {
   const p = useApp((s) => s.project());
   const edit = useApp((s) => s.edit);
@@ -37,6 +59,10 @@ function StepIdea() {
         <select id="f-tpl" className="select" value={p.template} onChange={(e) => edit('template', (x) => { x.template = e.target.value; })}>{TEMPLATES.map((tp) => <option key={tp.id} value={tp.id}>{tp.tr}</option>)}</select>
       </label>
       <p className="muted">{TEMPLATES.find((x) => x.id === p.template)?.hintTr}</p>
+      <div className="row">
+        <button className="btn" onClick={() => { edit('template flow', applyTemplate); const hint = TEMPLATES.find((x) => x.id === p.template)?.cardHint; if (hint) useApp.getState().setCard(hint); useApp.getState().toast('Şablonun kamera akışı 3 parçaya uygulandı.', 'ok'); }}>Şablon akışını uygula</button>
+        <span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{TEMPLATES.find((x) => x.id === p.template)?.defaults?.map((d) => CATALOG_BY_ID[d.motion ?? '']?.tr).filter(Boolean).join(' → ')}</span>
+      </div>
       <label className="field" htmlFor="f-aspect"><span>Kadraj oranı</span>
         <select id="f-aspect" className="select" value={p.aspect} onChange={(e) => edit('aspect', (x) => { x.aspect = e.target.value as any; })}>{['9:16', '16:9', '1:1', '4:5', '2.39:1'].map((a) => <option key={a}>{a}</option>)}</select>
       </label>
@@ -83,7 +109,7 @@ function StepStory() {
       <div className="row"><button className="btn" disabled={!!busy} onClick={plan}><Icon name="spark" size={16} /> {busy === 'plan' ? 'Planlanıyor…' : 'Fikri 3 parçaya böl'}</button><span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Her parça {sec} sn, tek kamera hareketi, en fazla {max} kelime replik.</span></div>
       {p.parts.map((part, i) => (
         <div className="tile" key={part.id}>
-          <div className="row" style={{ justifyContent: 'space-between' }}><Slate items={[['Parça', i + 1], ['Vuruş', BEAT_TR[part.beat]], ['Süre', `${sec}s`]]} /><button className="btn sm" disabled={!!busy} onClick={() => translate(i)}>{busy === 'tr' + i ? 'Çevriliyor…' : 'İngilizceye çevir'}</button></div>
+          <div className="row" style={{ justifyContent: 'space-between' }}><Slate items={[['Parça', i + 1], ['Vuruş', TEMPLATES.find((x) => x.id === p.template)?.beatLabelsTr?.[i] ?? BEAT_TR[part.beat]], ['Süre', `${sec}s`]]} /><button className="btn sm" disabled={!!busy} onClick={() => translate(i)}>{busy === 'tr' + i ? 'Çevriliyor…' : 'İngilizceye çevir'}</button></div>
           <Field id={`s-tr-${i}`} label="Sahne (Türkçe, görünen şeyler)" area value={part.scene} onChange={(v) => editPart(i, (x) => { x.scene = v; })} />
           <Field id={`s-en-${i}`} label="Scene (English)" area value={part.sceneEn ?? ''} onChange={(v) => editPart(i, (x) => { x.sceneEn = v; })} />
           {part.dialogue.map((d, di) => {
@@ -119,6 +145,15 @@ function StepCharacters() {
               <Field id={`c-w-${i}`} label="Kıyafet (İngilizce)" value={c.wardrobe} onChange={(v) => edit('c', (x) => { x.characters[i].wardrobe = v; })} />
               <Field id={`c-dt-${i}`} label="Görünüş (Türkçe)" area value={c.descriptionTr} onChange={(v) => edit('c', (x) => { x.characters[i].descriptionTr = v; })} />
               <Field id={`c-de-${i}`} label="Appearance (English, visible only)" area value={c.descriptionEn} onChange={(v) => edit('c', (x) => { x.characters[i].descriptionEn = v; })} />
+            </div>
+            <Field id={`c-tags-${i}`} label="Etiketler (virgülle)" value={(c.tags ?? []).join(', ')} onChange={(v) => edit('c', (x) => { x.characters[i].tags = v.split(',').map((t) => t.trim()).filter(Boolean); })} placeholder="dram, peron, kadın" />
+            <div className="row">
+              <button className="btn sm" onClick={() => edit('version', (x) => { const { versions, ...data } = x.characters[i]; x.characters[i].versions = [...(versions ?? []), { at: Date.now(), data: structuredClone(data) }].slice(-10); })}>Sürüm kaydet</button>
+              {(c.versions ?? []).slice().reverse().map((v) => (
+                <button key={v.at} className="chip" title="Bu sürüme dön" onClick={() => edit('restore', (x) => { const keep = x.characters[i].versions; x.characters[i] = { ...structuredClone(v.data), versions: keep }; })}>
+                  ↺ {new Date(v.at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+                </button>
+              ))}
             </div>
             <PromptBlock en={sheet.en} tr={sheet.tr} label="Sheet promptu" />
             <RuleList results={runRules({ text: sheet.en + ' ' + c.descriptionEn }, ['char.invisible-word', 'safety.ip'])} empty="Görünmeyen kelime yok." />
@@ -193,20 +228,74 @@ function StepGate() {
 function StepVideo() {
   const p = useApp((s) => s.project());
   const cardId = useApp((s) => s.cardId);
-  const setCard = useApp((s) => s.setCard);
-  const edit = useApp((s) => s.edit);
+  const prefs = useApp((s) => s.prefs);
+  const { setCard, logCredit, edit, toast } = useApp.getState();
   const videoCards = MODEL_CARDS.filter((c) => c.kind !== 'image');
+  const imageCards = MODEL_CARDS.filter((c) => c.kind !== 'video');
   const card = videoCards.find((c) => c.id === cardId) ?? videoCards[0];
+  const [compare, setCompare] = useState<string[]>([]);
+  const [imgCard, setImgCard] = useState(imageCards.find((c) => c.id === 'nano-banana-2')?.id ?? imageCards[0].id);
   const rules = runRules({ project: p, cardId: card.id });
+  const price = (id: string, kind: 'image' | 'video') => prefs.creditPrices[id] ?? DEFAULT_PRICE[kind];
+  const opts = { imageCardId: imgCard, videoCardId: card.id, prices: prefs.creditPrices, defaultPrice: DEFAULT_PRICE };
+  const est = estimateCredits(p, opts);
+  const limitsFor = (id: string, i: number) => {
+    const c = MODEL_CARDS.find((x) => x.id === id)!; const part = p.parts[i]; const out: string[] = [];
+    const sec = c.partSec ?? 10;
+    const refs = part.characters.length + (p.locationId ? 1 : 0);
+    if (refs > c.maxRefs) out.push(`${refs} referans > en fazla ${c.maxRefs}`);
+    const last = Math.max(0, ...part.dialogue.map((d) => d.atSec + countWords(d.textEn || d.textTr) / 2.5));
+    if (last > sec) out.push(`replik ${last.toFixed(1)} sn’de bitiyor > ${sec} sn`);
+    const words = part.dialogue.reduce((a, d) => a + countWords(d.textEn || d.textTr), 0);
+    if (words > Math.round(16 * sec / 10)) out.push(`${words} kelime ${sec} sn’ye sığmaz`);
+    if (!c.dialogueSyntax && part.dialogue.length) out.push('bu model replik sözdizimi bilmiyor');
+    return out;
+  };
+  const exportPackage = async (how: 'file' | 'copy') => {
+    const md = buildPackage(p, opts);
+    if (how === 'copy') { toast((await copyText(md)) ? 'Sahne paketi panoya kopyalandı.' : 'Kopyalanamadı; dosya olarak indir.', 'ok'); return; }
+    const r = await saveFile(`${p.title.replace(/[^\p{L}\p{N}]+/gu, '-')}-sahne-paketi.md`, md, 'text/markdown');
+    toast(r === 'declined' ? 'İndirme onaylanmadı.' : 'Sahne paketi hazır.', r === 'declined' ? 'warn' : 'ok');
+  };
   return (
     <div className="stack">
+      <StepNote step={7} />
       <div className="grid two">
         <label className="field" htmlFor="v-card"><span>Video modeli</span><select id="v-card" className="select" value={card.id} onChange={(e) => setCard(e.target.value)}>{videoCards.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-        <div className="field"><span>Kredi ve deneme</span><div className="row"><Slate items={[['Deneme', p.credits.attempts], ['Kredi', p.credits.spent]]} /><button className="btn sm" onClick={() => edit('credit', (x) => { x.credits.attempts++; x.credits.spent += 10; })}>+1 deneme</button></div></div>
+        <label className="field" htmlFor="v-img"><span>Görsel modeli (paket için)</span><select id="v-img" className="select" value={imgCard} onChange={(e) => setImgCard(e.target.value)}>{imageCards.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+      </div>
+      <div className="tile">
+        <div className="row" style={{ justifyContent: 'space-between' }}><b>Sahne paketi</b><Slate items={[['Tahmin', `${est.total} kr`], ['Harcanan', p.credits.spent], ['Deneme', p.credits.attempts]]} /></div>
+        <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{est.images} görsel × {price(imgCard, 'image')} + {est.videos} video × {price(card.id, 'video')} kredi. Fiyatları Ayarlar’dan düzenle.</p>
+        <div className="row">
+          <button className="btn primary" onClick={() => exportPackage('file')}><Icon name="download" size={16} /> Paketi indir (.md)</button>
+          <button className="btn" onClick={() => exportPackage('copy')}><Icon name="copy" size={16} /> Hepsini kopyala</button>
+          <button className="btn" onClick={() => logCredit({ cardId: imgCard, kind: 'image', credits: price(imgCard, 'image') })}>+ görsel üretildi</button>
+          <button className="btn" onClick={() => logCredit({ cardId: card.id, kind: 'video', credits: price(card.id, 'video') })}>+ video üretildi</button>
+        </div>
       </div>
       {!card.verified && <span className="badge-unverified">{card.name}: doğrulanmadı. {card.notesTr}</span>}
+      <div className="row"><span className="eyebrow">Karşılaştır</span>{videoCards.filter((c) => c.id !== card.id).map((c) => <button key={c.id} className="chip" aria-pressed={compare.includes(c.id)} onClick={() => setCompare((x) => (x.includes(c.id) ? x.filter((y) => y !== c.id) : [...x, c.id].slice(-2)))}>{c.name}</button>)}</div>
       <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Süreklilik: her parçanın son karesi sonrakinin başlangıç karesi olur.</p>
-      {p.parts.map((part, i) => { const c = compilePart(p, part, card.id); return <PromptBlock key={part.id} en={c.en} tr={c.tr} legend={c.legendTr} label={`Parça ${i + 1} · ${card.partSec ?? 10} sn`} />; })}
+      {p.parts.map((part, i) => {
+        const ids = [card.id, ...compare];
+        return (
+          <div key={part.id} className="stack">
+            <div className="grid" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${ids.length > 1 ? 300 : 500}px), 1fr))` }}>
+              {ids.map((id) => {
+                const c = compilePart(p, part, id); const lim = limitsFor(id, i); const mc = MODEL_CARDS.find((x) => x.id === id)!;
+                return (
+                  <div key={id} className="stack">
+                    <PromptBlock en={c.en} tr={c.tr} legend={c.legendTr} label={`Parça ${i + 1} · ${mc.name} · ${mc.partSec ?? 10} sn`} />
+                    {lim.map((l) => <span key={l} className="sev warn" style={{ alignSelf: 'start' }}>{l}</span>)}
+                    <div><button className="btn sm ghost" onClick={() => { edit('save prompt', (x) => { x.prompts.push({ id: uid('pb'), partId: part.id, target: id, en: c.en, tr: c.tr, createdAt: Date.now(), label: `${x.title} · Parça ${i + 1} · ${mc.name}` }); }); toast('Prompt kütüphaneye kaydedildi.', 'ok'); }}>Kütüphaneye kaydet</button></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
       <h4>Çelişki bekçisi ve süreklilik</h4>
       <RuleList results={rules} />
     </div>
@@ -238,12 +327,12 @@ export function Factory() {
         </nav>
         <section className="panel">
           <div className="panel-head"><h3>{step}. {STEPS[step - 1]}</h3></div>
-          {step === 1 && <StepIdea />}
-          {step === 2 && <StepStory />}
-          {step === 3 && <StepCharacters />}
-          {step === 4 && <StepLocation />}
-          {step === 5 && <StepFrames />}
-          {step === 6 && <StepGate />}
+          {step === 1 && <><StepNote step={1} /><StepIdea /></>}
+          {step === 2 && <><StepNote step={2} /><StepStory /></>}
+          {step === 3 && <><StepNote step={3} /><StepCharacters /></>}
+          {step === 4 && <><StepNote step={4} /><StepLocation /></>}
+          {step === 5 && <><StepNote step={5} /><StepFrames /></>}
+          {step === 6 && <><StepNote step={6} /><StepGate /></>}
           {step === 7 && <StepVideo />}
           <div className="row" style={{ justifyContent: 'space-between' }}>
             <button className="btn ghost" disabled={step === 1} onClick={() => setStep(step - 1)}>{t('common.back')}</button>

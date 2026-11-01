@@ -42,6 +42,20 @@ for (const [name, viewport, scheme] of [['phone', { width: 390, height: 844 }, '
     await page.getByRole('button', { name: /Katalog/ }).click();
     await page.waitForTimeout(800);
     await page.screenshot({ path: `${out}/${name}-catalog.png` });
+    // acceptance flow: "İstasyonda veda" from step 1 to the video prompts, through the visual gate
+    const t0 = Date.now();
+    await page.evaluate(() => { location.hash = 'fabrika'; });
+    await page.waitForTimeout(300);
+    await page.getByRole('button', { name: 'Şablon akışını uygula' }).click();
+    for (let i = 0; i < 5; i++) { await page.getByRole('button', { name: /^Devam/ }).last().click(); await page.waitForTimeout(150); }
+    await page.locator('#gate').check();
+    await page.waitForTimeout(150);
+    await page.getByRole('button', { name: /^Devam/ }).last().click();
+    await page.waitForSelector('text=Sahne paketi');
+    const blocks = await page.locator('.prompt pre').count();
+    if (blocks < 3) errors.push(`[${name}] factory step 7 shows ${blocks} prompts, expected 3`);
+    await page.screenshot({ path: `${out}/${name}-factory-video.png`, fullPage: true });
+    console.log(`Acceptance: İstasyonda veda reached video prompts in ${Date.now() - t0} ms of UI time (${blocks} prompts).`);
     await page.keyboard.press('Control+k');
     await page.keyboard.type('alt açı');
     await page.waitForTimeout(200);

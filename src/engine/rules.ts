@@ -79,6 +79,7 @@ const checks: Record<string, Check> = {
     if (!text || !text.trim()) return [];
     const body = textNoParams(text);
     if (body.endsWith(TEXTURE_LINE) || body.endsWith(TEXTURE_LINE_TR)) return [];
+    if (body.startsWith('{')) { try { const j = JSON.parse(body); if (j && Object.values(j).at(-1) === TEXTURE_LINE) return []; } catch { /* not JSON */ } }
     return [{ messageTr: 'Prompt doku satırıyla bitmiyor.', fixText: `${text.trimEnd()}\n${TEXTURE_LINE}` }];
   },
 

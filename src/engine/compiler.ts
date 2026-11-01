@@ -35,7 +35,11 @@ export const card = (id: string): ModelCard => MODEL_CARDS.find((c) => c.id === 
 
 const join = (xs: (string | undefined | false | null)[], sep = ', ') =>
   xs.filter(Boolean).map((x) => (sep.trim() === '.' ? String(x).replace(/[.\s]+$/, '') : String(x))).join(sep);
-const sentence = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/[.\s]+$/, '') + '.' : '');
+const sentence = (s: string) => {
+  if (!s) return '';
+  const body = s.charAt(0).toUpperCase() + s.slice(1).replace(/[.\s]+$/, '');
+  return /[?!"”]$/.test(body) ? body : body + '.';
+};
 
 export function cameraText(c: CameraRig, cardId = 'universal'): { en: string; tr: string } {
   const pick = (id?: string) => (id ? CATALOG_BY_ID[id] : undefined);
@@ -140,14 +144,14 @@ export function compilePart(project: Project, part: Part, cardId = 'universal'):
   const sec = c.partSec ?? 10;
 
   const boxesEn: Boxes = {
-    scene: sentence(join([c.kind !== 'image' ? `${sec}-second shot` : '', part.sceneEn || part.scene, dlg.en, sound.en], '. ')),
+    scene: sentence(join([c.kind !== 'image' ? `${sec}-second shot` : '', c.kind !== 'image' && part.index > 0 ? 'continues directly from the final frame of the previous shot' : '', part.sceneEn || part.scene, dlg.en, sound.en], '. ')),
     camera: sentence(cam.en),
     characters: sentence(chars.en),
     light: sentence(light.en),
     environment: sentence(env.en),
   };
   const boxesTr: Boxes = {
-    scene: sentence(join([c.kind !== 'image' ? `${sec} saniyelik plan` : '', part.scene, dlg.tr, sound.tr], '. ')),
+    scene: sentence(join([c.kind !== 'image' ? `${sec} saniyelik plan` : '', c.kind !== 'image' && part.index > 0 ? 'önceki planın son karesinden devam eder' : '', part.scene, dlg.tr, sound.tr], '. ')),
     camera: sentence(cam.tr),
     characters: sentence(chars.tr),
     light: sentence(light.tr),
@@ -165,6 +169,10 @@ export function assemble(b: Boxes, c: ModelCard, aspect: string, lang: 'en' | 't
     ? { scene: 'Scene', camera: 'Camera', characters: 'Characters', light: 'Light', environment: 'Environment' }
     : { scene: 'Sahne', camera: 'Kamera', characters: 'Karakterler', light: 'Işık', environment: 'Mekân' };
   const lines = (Object.keys(L) as (keyof Boxes)[]).filter((k) => b[k]).map((k) => `${L[k]}: ${b[k]}`);
+  if (c.id === 'gpt-image' && lang === 'en') {
+    // structured prompt; the texture line stays the last field
+    return JSON.stringify({ scene: b.scene, camera: b.camera, characters: b.characters, light: b.light, environment: b.environment, aspect_ratio: aspect, texture: TEXTURE_LINE }, null, 2);
+  }
   if (c.id === 'midjourney' && lang === 'en') {
     return `${Object.values(b).filter(Boolean).join(' ')} ${TEXTURE_LINE} --ar ${aspect.replace('2.39:1', '239:100')} --style raw`;
   }

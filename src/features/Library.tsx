@@ -3,6 +3,10 @@ import { useApp } from '../store/app';
 import { saveFile, readFileText } from '../lib/files';
 import { Icon } from '../ui/Icon';
 import { Slate } from '../ui/misc';
+import { PromptBlock } from '../ui/Prompt';
+import { MODEL_CARDS } from '../content';
+import { uid } from '../lib/text';
+import type { Character, Location } from '../model/types';
 import { t } from '../i18n';
 
 export function Library() {
@@ -14,6 +18,16 @@ export function Library() {
   const [err, setErr] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
   const current = projects.find((p) => p.id === currentId)!;
+  const [aq, setAq] = useState('');
+  const [pq, setPq] = useState('');
+  const edit = useApp((s) => s.edit);
+  const norm = (x: string) => x.toLocaleLowerCase('tr');
+  const chars = projects.flatMap((p) => p.characters.map((c) => ({ c, p })));
+  const locs = projects.flatMap((p) => p.locations.map((l) => ({ l, p })));
+  const match = (txt: string) => !aq.trim() || norm(txt).includes(norm(aq.trim()));
+  const prompts = projects.flatMap((p) => p.prompts.map((b) => ({ b, p }))).filter(({ b }) => !pq.trim() || norm(`${b.label ?? ''} ${b.en} ${b.tags?.join(' ') ?? ''} ${b.resultNote ?? ''}`).includes(norm(pq.trim()))).sort((a, b) => b.b.createdAt - a.b.createdAt);
+  const copyChar = (c: Character) => { edit('reuse char', (x) => { const { versions: _v, ...rest } = c; x.characters.push({ ...structuredClone(rest), id: uid('c_') }); }); toast(`${c.name} bu projeye eklendi.`, 'ok'); };
+  const copyLoc = (l: Location) => { edit('reuse loc', (x) => { const { versions: _v, ...rest } = l; const id = uid('l_'); x.locations.push({ ...structuredClone(rest), id }); x.locationId = id; }); toast(`${l.name} bu projenin mekânı oldu.`, 'ok'); };
 
   const doImport = (text: string) => {
     setErr('');
@@ -47,6 +61,44 @@ export function Library() {
                 : <button className="btn sm ghost danger" onClick={() => setConfirm(p.id)} aria-label={`${p.title} sil`}><Icon name="trash" size={14} /></button>}
             </div>
           </article>
+        ))}
+      </section>
+
+      <section className="panel">
+        <div className="panel-head"><h3>Varlık kütüphanesi</h3><input className="input" style={{ maxWidth: 320 }} aria-label="Varlık ara" placeholder="Ad ya da etiket ara" value={aq} onChange={(e) => setAq(e.target.value)} /></div>
+        <p className="muted">Bütün projelerdeki karakterler ve mekânlar. Yeniden kullanmak için açık projeye kopyala.</p>
+        <div className="grid three">
+          {chars.filter(({ c }) => match(`${c.name} ${c.descriptionTr} ${(c.tags ?? []).join(' ')}`)).map(({ c, p }) => (
+            <div className="tile" key={p.id + c.id}>
+              <span className="eyebrow">Karakter · {p.title}</span><b>{c.name || 'İsimsiz'}</b>
+              <span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{c.descriptionTr}</span>
+              <div className="row">{(c.tags ?? []).map((t) => <span key={t} className="chip static">{t}</span>)}<span className="chip static">{(c.versions ?? []).length} sürüm</span></div>
+              {p.id !== currentId && <button className="btn sm" onClick={() => copyChar(c)}>Bu projeye kopyala</button>}
+            </div>
+          ))}
+          {locs.filter(({ l }) => match(`${l.name} ${l.descriptionEn} ${(l.tags ?? []).join(' ')}`)).map(({ l, p }) => (
+            <div className="tile" key={p.id + l.id}>
+              <span className="eyebrow">Mekân · {p.title}</span><b>{l.name}</b>
+              <span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{l.descriptionEn}</span>
+              {p.id !== currentId && <button className="btn sm" onClick={() => copyLoc(l)}>Bu projede kullan</button>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-head"><h3>Kayıtlı promptlar · deneyim defteri</h3><input className="input" style={{ maxWidth: 320 }} aria-label="Prompt ara" placeholder="Ara: model, sahne, not" value={pq} onChange={(e) => setPq(e.target.value)} /></div>
+        <p className="muted">Fabrika’dan kaydettiğin promptlar. Ürettikten sonra sonucu puanla ve not düş: iyi çalışan kalıplar burada birikir.</p>
+        {prompts.length === 0 ? <p className="empty">Henüz kayıtlı prompt yok. Fabrika → Video promptları → “Kütüphaneye kaydet”.</p> : prompts.slice(0, 30).map(({ b, p }) => (
+          <div className="tile" key={b.id}>
+            <div className="row" style={{ justifyContent: 'space-between' }}><b>{b.label ?? MODEL_CARDS.find((c) => c.id === b.target)?.name}</b><span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>{new Date(b.createdAt).toLocaleDateString('tr-TR')}</span></div>
+            <PromptBlock en={b.en} tr={b.tr} />
+            <div className="row">
+              <span className="eyebrow">Sonuç</span>
+              {([1, 2, 3] as const).map((r) => <button key={r} className="chip" aria-pressed={b.rating === r} onClick={() => { if (p.id !== currentId) useApp.getState().openProject(p.id); useApp.getState().edit('rate', (x) => { const it = x.prompts.find((y) => y.id === b.id); if (it) it.rating = r; }); }}>{['', 'Kötü', 'İdare eder', 'Çok iyi'][r]}</button>)}
+            </div>
+            <label className="field" htmlFor={`note-${b.id}`}><span>Sonuç notu</span><input id={`note-${b.id}`} className="input" value={b.resultNote ?? ''} placeholder="ör. yüz kaydı, ışık doğru geldi" onChange={(e) => { if (p.id !== currentId) useApp.getState().openProject(p.id); useApp.getState().edit('note', (x) => { const it = x.prompts.find((y) => y.id === b.id); if (it) it.resultNote = e.target.value; }); }} /></label>
+          </div>
         ))}
       </section>
 

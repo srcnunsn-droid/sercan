@@ -5,10 +5,7 @@
 - Kamera yolunu anahtar karelerle elle çizme (şu an katalog hareketleri hazır eğrilerle oynar).
 
 ## Faz 4 kalanları
-- Varlık sürüm geçmişi ve yeni projede yeniden kullanma.
-- Aynı sahne grafının farklı model çıktıları yan yana; sınırı aşan yerlerin işaretlenmesi.
-- Düzenlenebilir kredi fiyat tablosu.
-- Model kartlarını Ayarlar’dan düzenleme ve “Model kartını güncelle” (Claude taslağı + onay).
+- Mekân için de sürüm geçmişi (karakterde var).
 
 ## Faz 5
 - Düzeltme laboratuvarı (`sample` + `images: true`), `diagnoseResult`.

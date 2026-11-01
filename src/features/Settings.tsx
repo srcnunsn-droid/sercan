@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useApp, type Theme } from '../store/app';
+import { useApp, DEFAULT_PRICE, type Theme } from '../store/app';
+import { baseCard, type ModelCard } from '../content';
+import { today } from '../lib/text';
 import { MODEL_CARDS } from '../content';
 import { PROVIDERS, setSessionKey, hasSessionKey } from '../ai/providers';
 import { callStats } from '../ai/tasks';
@@ -18,7 +20,6 @@ export function Settings() {
   const [key, setKey] = useState('');
   const [confirmReset, setConfirmReset] = useState(false);
   useEffect(() => { Promise.all(PROVIDERS.map(async (p) => [p.id, await p.available()] as const)).then((xs) => setAvail(Object.fromEntries(xs))); }, [key]);
-  const stale = (d: string | null) => !d || (Date.now() - new Date(d).getTime()) / 86_400_000 > 60;
 
   return (
     <>
@@ -57,27 +58,61 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="panel">
-        <h3>{t('settings.models')}</h3>
-        <p className="muted">Model özellikleri ezberden doldurulmadı: hepsi “doğrulanmadı” etiketli başlangıç değerleri. 60 günden eski doğrulama yeniden kontrol ister.</p>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}>
-            <thead><tr style={{ textAlign: 'left', color: 'var(--muted)' }}>{['Model', 'Tür', 'Parça', 'Referans', 'En fazla ref.', 'Durum'].map((h) => <th key={h} style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{h}</th>)}</tr></thead>
-            <tbody>
-              {MODEL_CARDS.map((c) => (
-                <tr key={c.id}>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}><b>{c.name}</b><br /><span className="muted" style={{ fontSize: 12 }}>{c.notesTr}</span></td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{{ image: 'Görsel', video: 'Video', both: 'Her ikisi' }[c.kind]}</td>
-                  <td className="tabnum" style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{c.partSec ? `${c.partSec} sn` : '—'}</td>
-                  <td className="mono" style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{c.refSyntax}</td>
-                  <td className="tabnum" style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{c.maxRefs}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid var(--line)' }}>{c.verified && !stale(c.lastVerified) ? <span className="sev ok">doğrulandı</span> : <span className="badge-unverified">{c.verified ? 'tekrar doğrula' : 'doğrulanmadı'}</span>}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <ModelCards />
     </>
+  );
+}
+
+function ModelCards() {
+  const prefs = useApp((s) => s.prefs);
+  const setPrefs = useApp((s) => s.setPrefs);
+  const [open, setOpen] = useState<string | null>(null);
+  const stale = (d: string | null) => !d || (Date.now() - new Date(d).getTime()) / 86_400_000 > 60;
+  const patch = (id: string, v: Partial<ModelCard>) => setPrefs((p) => { p.cardOverrides[id] = { ...(p.cardOverrides[id] ?? {}), ...v }; });
+  const cell = { padding: '8px 10px', borderBottom: '1px solid var(--line)' } as const;
+  return (
+    <section className="panel">
+      <h3>{t('settings.models')}</h3>
+      <p className="muted">Model özellikleri ezberden doldurulmadı: hepsi “doğrulanmadı” etiketli başlangıç değerleri. Kendi denemelerine göre düzelt, sonra “doğrulandı” işaretle. 60 günden eski doğrulama yeniden kontrol ister. Kredi fiyatları da senin hesabına göre düzenlenir.</p>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}>
+          <thead><tr style={{ textAlign: 'left', color: 'var(--muted)' }}>{['Model', 'Tür', 'Parça', 'En fazla ref.', 'Kredi/üretim', 'Durum', ''].map((h) => <th key={h} style={cell}>{h}</th>)}</tr></thead>
+          <tbody>
+            {MODEL_CARDS.map((c) => {
+              const kind = c.kind === 'video' ? 'video' : 'image';
+              return (
+                <tr key={c.id}>
+                  <td style={cell}><b>{c.name}</b><br /><span className="muted" style={{ fontSize: 12 }}>{c.notesTr}</span></td>
+                  <td style={cell}>{{ image: 'Görsel', video: 'Video', both: 'Her ikisi' }[c.kind]}</td>
+                  <td className="tabnum" style={cell}>{c.partSec ? `${c.partSec} sn` : '—'}</td>
+                  <td className="tabnum" style={cell}>{c.maxRefs}</td>
+                  <td style={cell}><input className="input tabnum" style={{ width: 90, minHeight: 36 }} type="number" min={0} aria-label={`${c.name} kredi`} value={prefs.creditPrices[c.id] ?? DEFAULT_PRICE[kind]} onChange={(e) => setPrefs((p) => { p.creditPrices[c.id] = Math.max(0, Number(e.target.value)); })} /></td>
+                  <td style={cell}>{c.verified && !stale(c.lastVerified) ? <span className="sev ok">doğrulandı {c.lastVerified}</span> : <span className="badge-unverified">{c.verified ? 'tekrar doğrula' : 'doğrulanmadı'}</span>}</td>
+                  <td style={cell}><button className="btn sm" onClick={() => setOpen(open === c.id ? null : c.id)}>{open === c.id ? 'Kapat' : 'Düzenle'}</button></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {open && (() => {
+        const c = MODEL_CARDS.find((x) => x.id === open)!;
+        return (
+          <div className="tile">
+            <b>{c.name}</b>
+            <div className="grid three" style={{ gap: 'var(--sp-2)' }}>
+              <label className="field" htmlFor="mc-sec"><span>Parça süresi (sn)</span><input id="mc-sec" className="input" type="number" min={1} value={c.partSec ?? ''} onChange={(e) => patch(c.id, { partSec: e.target.value ? Number(e.target.value) : null })} /></label>
+              <label className="field" htmlFor="mc-refs"><span>En fazla referans</span><input id="mc-refs" className="input" type="number" min={0} value={c.maxRefs} onChange={(e) => patch(c.id, { maxRefs: Number(e.target.value) })} /></label>
+              <label className="field" htmlFor="mc-syn"><span>Referans sözdizimi</span><input id="mc-syn" className="input mono" value={c.refSyntax} onChange={(e) => patch(c.id, { refSyntax: e.target.value })} /></label>
+            </div>
+            <label className="field" htmlFor="mc-notes"><span>Notlar</span><input id="mc-notes" className="input" value={c.notesTr} onChange={(e) => patch(c.id, { notesTr: e.target.value })} /></label>
+            <div className="row">
+              <button className="btn primary" onClick={() => patch(c.id, { verified: true, lastVerified: today() })}>Doğrulandı olarak işaretle</button>
+              {baseCard(c.id) && <button className="btn ghost" onClick={() => setPrefs((p) => { delete p.cardOverrides[c.id]; })}>Başlangıç değerlerine dön</button>}
+            </div>
+          </div>
+        );
+      })()}
+    </section>
   );
 }

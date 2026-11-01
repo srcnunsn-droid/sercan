@@ -40,7 +40,12 @@ export interface ModelCard {
   maxRefs: number; dialogueSyntax: string | null; wordLimit: number | null; weaknessesTr: string[];
   extraRulesTr: string[]; verified: boolean; lastVerified: string | null; notesTr: string;
 }
-export interface Template { id: string; tr: string; beats: string[]; hintTr: string }
+export interface Template {
+  id: string; tr: string; beats: string[]; hintTr: string;
+  beatLabelsTr?: string[]; cardHint?: string;
+  stepNotesTr?: Record<string, string>;
+  defaults?: { framing?: string; angle?: string; motion?: string; lensMm?: number }[];
+}
 
 export type Game =
   | { id: string; type: 'slider'; titleTr: string; introTr: string; rounds: { param: 'kelvin' | 'lensMm'; min: number; max: number; step: number; target: number; tolerance: number; askTr: string; whyTr: string }[] }
@@ -73,8 +78,17 @@ export const LIGHT_BY_ID: Record<string, LightSource> = Object.fromEntries(LIGHT
 export const EMOTIONS = emotions as Emotion[];
 export const GLOSSARY = glossary as GlossaryEntry[];
 export const RULES_META = rulesMeta as RuleMeta[];
-export const MODEL_CARDS = modelCards as ModelCard[];
-export const TEMPLATES = templates as Template[];
+const BASE_CARDS: ModelCard[] = structuredClone(modelCards as ModelCard[]);
+/** Live list used everywhere. User edits from Settings are applied in place via applyCardOverrides. */
+export const MODEL_CARDS: ModelCard[] = structuredClone(BASE_CARDS);
+export type CardOverride = Partial<Omit<ModelCard, 'id'>>;
+export function applyCardOverrides(overrides: Record<string, CardOverride>, custom: ModelCard[] = []) {
+  MODEL_CARDS.length = 0;
+  for (const c of BASE_CARDS) MODEL_CARDS.push({ ...structuredClone(c), ...(overrides[c.id] ?? {}) });
+  for (const c of custom) if (!MODEL_CARDS.some((x) => x.id === c.id)) MODEL_CARDS.push({ ...c, ...(overrides[c.id] ?? {}) });
+}
+export const baseCard = (id: string) => BASE_CARDS.find((c) => c.id === id);
+export const TEMPLATES = templates as unknown as Template[];
 export const GAMES = games as Game[];
 export const GAME_BY_ID: Record<string, Game> = Object.fromEntries(GAMES.map((g) => [g.id, g]));
 

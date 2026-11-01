@@ -70,6 +70,8 @@ export interface Character {
   wardrobe: string;
   sheetPromptEn?: string;
   locked?: boolean;
+  tags?: string[];
+  versions?: { at: number; note?: string; data: Omit<Character, 'versions'> }[];
 }
 
 export interface Location {
@@ -80,6 +82,8 @@ export interface Location {
   weather: 'clear' | 'overcast' | 'rain' | 'snow' | 'fog';
   setId?: string;          // 3D set preset (engine/sets.ts)
   props?: { id: string; propId: string; pos: [number, number]; rotY: number }[];
+  tags?: string[];
+  versions?: { at: number; note?: string; data: Omit<Location, 'versions'> }[];
 }
 
 export interface Asset {
@@ -98,7 +102,13 @@ export interface PromptBundle {
   en: string;
   tr: string;
   createdAt: number;
+  label?: string;
+  tags?: string[];
+  resultNote?: string;     // what came out when the user ran it (experience notebook)
+  rating?: 1 | 2 | 3;
 }
+
+export interface CreditEntry { at: number; cardId: string; kind: 'image' | 'video'; credits: number; note?: string }
 
 export interface Project {
   schemaVersion: number;
@@ -115,7 +125,7 @@ export interface Project {
   assets: Asset[];
   prompts: PromptBundle[];
   factory: { step: number; visualsApproved: boolean };
-  credits: { attempts: number; spent: number };
+  credits: { attempts: number; spent: number; log?: CreditEntry[] };
 }
 
 // Academy / progression

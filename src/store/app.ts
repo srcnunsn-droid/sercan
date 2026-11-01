@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import type { GraphFix, Part, Progress, Project } from '../model/types';
+import type { CreditEntry, GraphFix, Part, Progress, Project } from '../model/types';
 import { defaultProgress, sampleProject, emptyProject } from '../model/factory';
 import { migrateProject } from '../model/migrate';
 import { cloud, local, makeSaver, type CloudStatus } from '../lib/storage';
 import { today } from '../lib/text';
-import { ALL_LESSONS } from '../content';
+import { ALL_LESSONS, applyCardOverrides, type CardOverride, type ModelCard } from '../content';
 import { PROVIDERS } from '../ai/providers';
 import type { AIProvider } from '../ai/types';
 
@@ -24,6 +24,16 @@ export const RANKS = [
 export const rankOf = (xp: number) => [...RANKS].reverse().find((r) => xp >= r.min)!;
 export const nextRank = (xp: number) => RANKS.find((r) => r.min > xp) ?? null;
 
+export interface Prefs {
+  creditPrices: Record<string, number>;      // credits per generation, by model card id (user-editable)
+  cardOverrides: Record<string, CardOverride>;
+  customCards: ModelCard[];
+  reviewDue: Record<string, number>;         // spaced repetition: card id -> next due timestamp
+  reviewBox: Record<string, number>;         // Leitner box 1..5
+}
+export const defaultPrefs = (): Prefs => ({ creditPrices: {}, cardOverrides: {}, customCards: [], reviewDue: {}, reviewBox: {} });
+export const DEFAULT_PRICE = { image: 2, video: 30 } as const;
+
 interface Toast { id: number; text: string; kind: 'ok' | 'info' | 'warn' | 'celebrate' }
 
 interface State {
@@ -41,6 +51,7 @@ interface State {
   future: Project[];
 
   progress: Progress;
+  prefs: Prefs;
   activeLessonId: string | null;
   cardId: string;
 
@@ -69,6 +80,9 @@ interface State {
   recordRuleHits(ids: string[]): void;
   toggleFavorite(catalogId: string): void;
 
+  setPrefs(recipe: (p: Prefs) => void): void;
+  logCredit(e: Omit<CreditEntry, 'at'>): void;
+
   hydrateFromCloud(): Promise<void>;
 }
 
@@ -86,6 +100,8 @@ function initialProjects(): Project[] {
 }
 
 const initial = initialProjects();
+const initialPrefs: Prefs = { ...defaultPrefs(), ...(local.get<Prefs>('prefs') ?? {}) };
+applyCardOverrides(initialPrefs.cardOverrides, initialPrefs.customCards);
 const initialUi = local.get<{ theme?: Theme; providerId?: AIProvider['id']; currentId?: string; route?: Route; cardId?: string }>('ui') ?? {};
 
 export const useApp = create<State>()((set, get) => {
@@ -111,6 +127,7 @@ export const useApp = create<State>()((set, get) => {
     past: [],
     future: [],
     progress: { ...defaultProgress(), ...(local.get<Progress>('progress') ?? {}) },
+    prefs: initialPrefs,
     activeLessonId: null,
     cardId: initialUi.cardId ?? 'seedance-2',
 
@@ -235,11 +252,25 @@ export const useApp = create<State>()((set, get) => {
       persistProgress();
     },
 
+    setPrefs(recipe) {
+      const next = clone(get().prefs); recipe(next);
+      applyCardOverrides(next.cardOverrides, next.customCards);
+      set({ prefs: next });
+      saver('prefs', next);
+    },
+    logCredit(e) {
+      get().edit('credit', (p) => {
+        p.credits.log = [...(p.credits.log ?? []), { ...e, at: Date.now() }];
+        p.credits.attempts += 1; p.credits.spent += e.credits;
+      });
+    },
+
     async hydrateFromCloud() {
       const ok = await cloud.available();
       if (!ok) { set({ cloudStatus: 'local' }); return; }
       set({ cloudStatus: 'cloud' });
-      const [projects, progress] = await Promise.all([cloud.get<unknown[]>('projects'), cloud.get<Progress>('progress')]);
+      const [projects, progress, prefs] = await Promise.all([cloud.get<unknown[]>('projects'), cloud.get<Progress>('progress'), cloud.get<Prefs>('prefs')]);
+      if (prefs?.value) { const merged = { ...defaultPrefs(), ...prefs.value }; applyCardOverrides(merged.cardOverrides, merged.customCards); set({ prefs: merged }); local.set('prefs', merged); }
       if (projects && Array.isArray(projects.value) && projects.value.length) {
         const localNewest = Math.max(0, ...get().projects.map((p) => p.updatedAt));
         const migrated: Project[] = [];
