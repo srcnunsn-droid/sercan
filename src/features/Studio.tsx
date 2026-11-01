@@ -6,7 +6,12 @@ import { runRules } from '../engine/rules';
 import { rigParams, shotAt } from '../engine/shot';
 import { POSES, type PoseId } from '../engine/figures';
 import type { Aspect, Dir, Part } from '../model/types';
-import { FaceLight, FramePreview } from '../ui/FramePreview';
+import { FaceLight, FramePreview, renderPosePng } from '../ui/FramePreview';
+import { PROPS, SETS, type PlacedProp } from '../engine/sets';
+import { generateBpy } from '../engine/blender';
+import { worldPrims } from '../engine/sets';
+import { countWords, uid } from '../lib/text';
+import type { Location, Project } from '../model/types';
 import { Viewport3D, type ViewMode, type Viewport3DHandle } from '../ui/Viewport3D';
 import { PromptBlock } from '../ui/Prompt';
 import { RuleList } from '../ui/Rules';
@@ -16,7 +21,15 @@ import { saveFile } from '../lib/files';
 import { kelvinHex } from '../lib/color';
 import { t } from '../i18n';
 
-const ASPECT_NUM: Record<Aspect, number> = { '16:9': 16 / 9, '9:16': 9 / 16, '1:1': 1, '4:5': 4 / 5, '2.39:1': 2.39 };
+export const ASPECT_NUM: Record<Aspect, number> = { '16:9': 16 / 9, '9:16': 9 / 16, '1:1': 1, '4:5': 4 / 5, '2.39:1': 2.39 };
+const PROP_DEFAULT_POS: Record<string, [number, number]> = { bench: [1.8, -2.5], train: [-5.2, -6], door: [0, -3], table: [1.3, -1.4], lamp: [-1.6, -1.2], luggage: [-1.2, 0.6] };
+/** The 3D set lives on the project's location (so time/weather stay shared with the Factory). */
+export function ensureLocation(x: Project): Location {
+  let loc = x.locations.find((l) => l.id === x.locationId);
+  if (!loc) { loc = { id: uid('l_'), name: 'Mekân', descriptionEn: '', timeOfDay: 'dusk', weather: 'clear', setId: 'platform', props: [] }; x.locations.push(loc); x.locationId = loc.id; }
+  return loc;
+}
+const WORDS_PER_SEC = 2.5;
 const DIRS: Dir[] = ['front', 'front-left', 'left', 'back-left', 'back', 'back-right', 'right', 'front-right', 'top', 'bottom'];
 const BEAT_TR = { durum: 'Durum', catisma: 'Çatışma', zirve: 'Zirve' } as const;
 const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
@@ -62,10 +75,18 @@ function Lab() {
   const [mode, setMode] = useState<'3d' | '2d'>('3d');
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [quality, setQuality] = useState<'high' | 'low'>('high');
+  const [fps, setFps] = useState<number | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
   const vref = useRef<Viewport3DHandle>(null);
   const part = project.parts[pi] ?? project.parts[0];
   const card = MODEL_CARDS.find((c) => c.id === cardId)!;
   const sec = card.partSec ?? 10;
+  const loc = project.locations.find((l) => l.id === project.locationId);
+  const setId = loc?.setId ?? 'platform';
+  const placed: PlacedProp[] = loc?.props ?? [];
+  const weather = loc?.weather ?? 'clear';
+  const editLoc = (r: (l: Location) => void) => edit('location', (x) => r(ensureLocation(x)));
 
   useEffect(() => {
     if (!playing) return;
@@ -88,16 +109,31 @@ function Lab() {
   const figCount = Math.max(1, part.characters.length);
 
   const set = (recipe: (p: Part) => void) => editPart(pi, recipe);
-  const snapshot = async () => {
-    if (mode !== '3d') { toast('Referans kare 3D görünümden alınır.', 'info'); return; }
-    const blob = await vref.current?.snapshot();
-    if (!blob) { toast('Kare alınamadı.', 'warn'); return; }
-    const n = project.assets.length + 1;
-    const res = await saveFile(`${project.title.replace(/\s+/g, '-')}-parca${pi + 1}-referans.png`, blob, 'image/png');
-    const saved = res !== 'declined';
-    edit('asset', (p) => { p.assets.push({ id: 'a' + Date.now(), kind: 'reference', label: `Parça ${pi + 1} referans karesi (3D)`, ref: `@image-${n}`, createdAt: Date.now() }); });
-    toast(saved ? 'Referans kare kaydedildi ve kütüphaneye eklendi.' : 'Kare kütüphaneye eklendi; indirme onaylanmadı.', 'ok');
+  const fileBase = `${project.title.replace(/[^\p{L}\p{N}]+/gu, '-')}-parca${pi + 1}`;
+  const saveBlob = async (blob: Blob | null, name: string, mime: string, label: string, asAsset?: Parameters<Project['assets']['push']>[0]['kind']) => {
+    if (!blob) { toast(`${label} hazırlanamadı.`, 'warn'); return; }
+    const res = await saveFile(name, blob, mime);
+    if (asAsset) edit('asset', (p) => { p.assets.push({ id: uid('a'), kind: asAsset, label: `Parça ${pi + 1} · ${label}`, createdAt: Date.now() }); });
+    toast(res === 'declined' ? `${label} indirilmedi (onay verilmedi).` : `${label} hazır.`, res === 'declined' ? 'warn' : 'ok');
   };
+  const exportAs = async (kind: 'png' | 'depth' | 'pose' | 'glb' | 'bpy') => {
+    setBusy(kind);
+    try {
+      if (kind === 'pose') return await saveBlob(await renderPosePng({ params, figures: figCount, poses, aspect: ASPECT_NUM[project.aspect] }, time), `${fileBase}-poz.png`, 'image/png', 'Poz çizimi', 'reference');
+      if (kind === 'bpy') {
+        const py = generateBpy({ title: project.title, params, light: part.light, aspect: ASPECT_NUM[project.aspect], figures: figCount, poses, prims: worldPrims(setId, placed), seconds: sec });
+        return await saveBlob(new Blob([py], { type: 'text/x-python' }), `${fileBase}-blender.py`, 'text/x-python', 'Blender betiği');
+      }
+      if (mode !== '3d') { toast('Bu çıktı 3D görünümden alınır; 3D’ye geç.', 'info'); return; }
+      if (kind === 'glb') return await saveBlob((await vref.current?.exportGlb()) ?? null, `${fileBase}.glb`, 'model/gltf-binary', '.glb sahnesi');
+      const blob = (await vref.current?.snapshot(kind === 'depth' ? 'depth' : 'color')) ?? null;
+      await saveBlob(blob, `${fileBase}-${kind === 'depth' ? 'derinlik' : 'referans'}.png`, 'image/png', kind === 'depth' ? 'Derinlik haritası' : 'Referans kare', 'reference');
+    } finally { setBusy(null); }
+  };
+  const dlgSegs = part.dialogue.map((d) => {
+    const words = countWords(d.textEn || d.textTr); const dur = Math.max(0.6, words / WORDS_PER_SEC);
+    return { d, words, start: d.atSec, dur, over: d.atSec + dur > sec };
+  });
 
   return (
     <div className="grid two" style={{ alignItems: 'start' }}>
@@ -108,22 +144,43 @@ function Lab() {
         </div>
         <div className="viewport" style={{ aspectRatio: project.aspect === '9:16' ? '4 / 5' : '16 / 10', maxWidth: '100%' }}>
           {mode === '3d'
-            ? <Viewport3D ref={vref} params={params} light={part.light} t={time} aspect={ASPECT_NUM[project.aspect]} view={view} figures={figCount} poses={poses} />
-            : <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}><div style={{ aspectRatio: String(ASPECT_NUM[project.aspect]), height: '100%', maxWidth: '100%' }}><FramePreview params={params} t={time} light={part.light} figures={figCount} poses={poses} /></div></div>}
+            ? <Viewport3D ref={vref} params={params} light={part.light} t={time} aspect={ASPECT_NUM[project.aspect]} view={view} figures={figCount} poses={poses} setId={setId} props={placed} weather={weather} quality={quality} onFps={setFps} />
+            : <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}><div style={{ aspectRatio: String(ASPECT_NUM[project.aspect]), height: '100%', maxWidth: '100%' }}><FramePreview params={params} t={time} light={part.light} figures={figCount} poses={poses} setId={setId} props={placed} /></div></div>}
           <div className="hud">
             <span className="hud-tag">{project.aspect}</span>
             <span className="hud-tag">{Math.round(shot.lensMm)}mm · f/{part.camera.fStop}</span>
             <span className="hud-tag">00:{String(Math.floor(time * sec)).padStart(2, '0')}:{String(Math.floor((time * sec * 24) % 24)).padStart(2, '0')}</span>
+            {fps !== null && mode === '3d' && (weather === 'rain' || weather === 'snow') && <span className="hud-tag">{fps} fps</span>}
           </div>
         </div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           {mode === '3d' && <Seg label="Görünüm" value={view} onChange={setView} options={[{ id: 'camera', label: t('studio.view.camera') }, { id: 'orbit', label: t('studio.view.orbit') }, { id: 'top', label: t('studio.view.top') }]} />}
-          <button className="btn sm" onClick={snapshot}><Icon name="camera" size={16} /> PNG referans kare</button>
+          <Seg label="Kalite" value={quality} onChange={setQuality} options={[{ id: 'high', label: 'Yüksek' }, { id: 'low', label: 'Mobil' }]} />
+        </div>
+        <div className="row" role="group" aria-label="Dışa aktarma">
+          <button className="btn sm" disabled={!!busy} onClick={() => exportAs('png')}><Icon name="camera" size={16} /> Referans kare</button>
+          <button className="btn sm" disabled={!!busy} onClick={() => exportAs('depth')}>Derinlik</button>
+          <button className="btn sm" disabled={!!busy} onClick={() => exportAs('pose')}>Poz çizimi</button>
+          <button className="btn sm" disabled={!!busy} onClick={() => exportAs('glb')}>.glb</button>
+          <button className="btn sm" disabled={!!busy} onClick={() => exportAs('bpy')}>Blender .py</button>
         </div>
         <div className="timeline">
           <button className="btn iconbtn" aria-label={playing ? t('studio.pause') : t('studio.play')} onClick={() => { if (reduce()) { setTime(time >= 1 ? 0 : 1); return; } if (time >= 1) setTime(0); setPlaying(!playing); }}><Icon name={playing ? 'pause' : 'play'} /></button>
           <input type="range" min={0} max={1} step={0.001} value={time} onChange={(e) => { setPlaying(false); setTime(Number(e.target.value)); }} aria-label="Zaman çizelgesi" id="timeline" />
           <span className="mono muted tabnum" style={{ fontSize: 12 }}>{(time * sec).toFixed(1)} / {sec}s</span>
+        </div>
+        <div className="stack" style={{ gap: 6 }} aria-label="Zaman çizelgesi şeritleri">
+          <div className="strip-label"><span>Replik</span><span>{dlgSegs.reduce((a, x) => a + x.words, 0)} kelime</span></div>
+          <div className="strip">
+            {dlgSegs.map((x, i) => <span key={i} className={x.over ? 'err' : x.words > Math.round(14 * sec / 10) ? 'warn' : ''} style={{ left: `${(x.start / sec) * 100}%`, width: `${Math.min(100 - (x.start / sec) * 100, (x.dur / sec) * 100)}%` }} title={`${x.d.speaker}: ${x.d.textTr}`}>{x.d.speaker}: {x.d.textTr}</span>)}
+            <i className="strip-head" style={{ left: `${time * 100}%` }} />
+          </div>
+          {dlgSegs.some((x) => x.over) && <p className="feedback bad" style={{ fontSize: 'var(--fs-xs)' }}>Bir replik {sec}. saniyeyi aşıyor: daha erken başlat ya da kısalt.</p>}
+          <div className="strip-label"><span>Hareket</span></div>
+          <div className="strip"><span className="alt" style={{ left: 0, width: '100%' }}>{CATALOG_BY_ID[part.camera.motion]?.tr ?? 'Sabit'}</span><i className="strip-head" style={{ left: `${time * 100}%` }} /></div>
+          <div className="strip-label"><span>Ses</span></div>
+          <div className="strip"><span style={{ left: 0, width: '100%', background: 'var(--surface-3)', color: 'var(--fg)' }}>{part.sound || 'Ortam sesi notu yok'}</span><i className="strip-head" style={{ left: `${time * 100}%` }} /></div>
+          <label className="field" htmlFor="sound-note"><span>Ses notu</span><input id="sound-note" className="input" value={part.sound ?? ''} onChange={(e) => set((p) => { p.sound = e.target.value; })} placeholder="train doors hiss, distant announcement" /></label>
         </div>
         <p className="muted" style={{ fontSize: 'var(--fs-xs)' }}>
           Sahne özeti: {figCount} manken, kamera {CATALOG_BY_ID[part.camera.angle]?.tr.toLocaleLowerCase('tr')}, {CATALOG_BY_ID[part.camera.framing]?.tr.toLocaleLowerCase('tr')}, {part.camera.lensMm} mm; ışık {DIR_TR[part.light.direction]} {LIGHT_SOURCES.find((s) => s.id === part.light.source)?.tr.toLocaleLowerCase('tr')}. {view === 'orbit' && 'Sürükleyerek döndür, tekerlek ya da iki parmakla yakınlaş.'}
@@ -163,6 +220,15 @@ function Lab() {
             </div>
             <div className="viewport" style={{ aspectRatio: '3 / 4', maxWidth: '100%' }}><FaceLight light={part.light} /></div>
           </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head"><h3>Mekân seti</h3><Seg label="Kadraj oranı" value={project.aspect} onChange={(v) => edit('aspect', (x) => { x.aspect = v; })} options={(['9:16', '16:9', '2.39:1', '1:1', '4:5'] as Aspect[]).map((a) => ({ id: a, label: a }))} /></div>
+          <div className="row">{SETS.map((st) => <button key={st.id} className="chip" aria-pressed={setId === st.id} onClick={() => editLoc((l) => { l.setId = st.id; })}>{st.tr}</button>)}</div>
+          <span className="eyebrow">Proplar</span>
+          <div className="row">{PROPS.map((pd) => { const on = placed.some((x) => x.propId === pd.id); return <button key={pd.id} className="chip" aria-pressed={on} onClick={() => editLoc((l) => { const list = l.props ?? []; l.props = on ? list.filter((x) => x.propId !== pd.id) : [...list, { id: uid('pr'), propId: pd.id, pos: PROP_DEFAULT_POS[pd.id] ?? [1, -1], rotY: 0 }]; })}>{pd.tr}</button>; })}</div>
+          <span className="eyebrow">Hava (üç parçada sabit)</span>
+          <div className="row">{([['clear', 'Açık'], ['overcast', 'Kapalı'], ['rain', 'Yağmur'], ['snow', 'Kar'], ['fog', 'Sis']] as const).map(([w, l]) => <button key={w} className="chip" aria-pressed={weather === w} onClick={() => editLoc((x) => { x.weather = w; })}>{l}</button>)}</div>
         </section>
 
         <section className="panel">

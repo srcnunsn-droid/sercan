@@ -5,6 +5,7 @@ import type { LightRig } from '../model/types';
 import { dirVector, makeProjector, shotAt, type V3 } from '../engine/shot';
 import { BONES, layoutFigures, worldJoints, type PoseId } from '../engine/figures';
 import { kelvinToRgb } from '../lib/color';
+import { worldPrims, type PlacedProp, type Prim } from '../engine/sets';
 
 export interface FrameProps {
   params: ThreeParams;
@@ -17,6 +18,8 @@ export interface FrameProps {
   overlays?: boolean;
   label?: string;
   onTime?: (t: number) => void;
+  setId?: string;
+  props?: PlacedProp[];
 }
 
 const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
@@ -46,14 +49,23 @@ export function drawFrame(ctx: CanvasRenderingContext2D, w: number, h: number, p
   ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(227,180,80,0.13)';
   for (let x = -12; x <= 12; x += 1) seg([x, 0, -30], [x, 0, 10], 24);
   for (let z = -30; z <= 10; z += 1) seg([-12, 0, z], [12, 0, z], 24);
-  // set pieces: pillars that reveal lens compression
+  // set pieces: the same primitives the 3D viewport builds (default: platform pillars that reveal lens compression)
   ctx.strokeStyle = 'rgba(200,190,170,0.28)';
-  for (const z of [-3, -7, -11, -15, -19]) for (const x of [-2.6, 2.6]) {
-    const a = pr.project([x, 0, z]); const b = pr.project([x, 3.2, z]);
-    if (!a || !b) continue;
-    ctx.lineWidth = Math.max(1, (0.25 * h) / a.z);
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-  }
+  const line = (a: V3, b: V3, wM = 0) => {
+    const A = pr.project(a); const B = pr.project(b);
+    if (!A || !B) return;
+    ctx.lineWidth = wM ? Math.max(1, (wM * h) / ((A.z + B.z) / 2)) : 1;
+    ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+  };
+  const drawPrim = (q: Prim) => {
+    const [x, y, z] = q.pos; const [sx, sy, sz] = q.size;
+    if (q.kind === 'cyl') { line([x, y - sy / 2, z], [x, y + sy / 2, z], sx * 1.2); return; }
+    if (q.kind === 'cone') { for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) line([x + dx * sx, y - sy / 2, z + dz * sx], [x, y + sy / 2, z]); return; }
+    const c = Math.cos(q.rotY ?? 0), sn = Math.sin(q.rotY ?? 0);
+    const corner = (i: number): V3 => { const lx = (i & 1 ? 0.5 : -0.5) * sx, ly = (i & 2 ? 0.5 : -0.5) * sy, lz = (i & 4 ? 0.5 : -0.5) * sz; return [x + lx * c + lz * sn, y + ly, z - lx * sn + lz * c]; };
+    for (const [a, b] of [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]]) line(corner(a), corner(b));
+  };
+  for (const q of worldPrims(p.setId ?? 'platform', p.props).slice(0, 160)) drawPrim(q);
 
   // figures sorted far -> near
   const figs = layoutFigures({ count: p.figures ?? (p.params.two || p.params.ots ? 2 : 1), ots: p.params.ots, two: p.params.two, poses: p.poses });
@@ -123,7 +135,7 @@ export function FramePreview(props: FrameProps) {
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; cancelAnimationFrame(raf); if (visible) { start = performance.now(); raf = requestAnimationFrame(paint); } });
     io.observe(canvas);
     return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
-  }, [props.animate, props.t, JSON.stringify(props.params), JSON.stringify(props.light), props.figures, JSON.stringify(props.poses)]);
+  }, [props.animate, props.t, JSON.stringify(props.params), JSON.stringify(props.light), props.figures, JSON.stringify(props.poses), props.setId, JSON.stringify(props.props)]);
 
   return <canvas ref={ref} role="img" aria-label={props.label ?? 'Kadraj önizlemesi'} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }
@@ -173,4 +185,34 @@ export function FaceLight({ light }: { light: LightRig }) {
     ctx.fillText(`${src?.tr ?? light.source} · ${light.kelvin}K`, w * 0.04, h * 0.95);
   }, [JSON.stringify(light)]);
   return <canvas ref={ref} role="img" aria-label="Yüz ışık önizlemesi" style={{ width: '100%', height: '100%', display: 'block' }} />;
+}
+
+// OpenPose-style limb colours: a pose map image models understand as a structural reference.
+const POSE_COLORS: Record<string, string> = {
+  'neck-pelvis': '#ff0055', 'lSh-rSh': '#ff5500', 'lSh-lEl': '#ffaa00', 'lEl-lHa': '#ffff00', 'rSh-rEl': '#aaff00', 'rEl-rHa': '#55ff00',
+  'lHip-rHip': '#00ff55', 'lHip-lKn': '#00ffaa', 'lKn-lFt': '#00ffff', 'rHip-rKn': '#00aaff', 'rKn-rFt': '#0055ff',
+};
+
+/** Renders the mannequins as a coloured skeleton on black, from the shot camera, as a PNG blob. */
+export function renderPosePng(p: FrameProps & { aspect: number }, time: number): Promise<Blob | null> {
+  const short = 1080;
+  const w = p.aspect >= 1 ? Math.round(short * p.aspect) : short; const h = p.aspect >= 1 ? short : Math.round(short / p.aspect);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d')!;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+  const shot = shotAt(p.params, time); const pr = makeProjector(shot, w, h);
+  const figs = layoutFigures({ count: p.figures ?? 1, ots: p.params.ots, two: p.params.two, poses: p.poses });
+  ctx.lineCap = 'round';
+  for (const f of figs) {
+    if (p.params.pov && f.tint === 0 && figs.length > 1) continue;
+    const J = worldJoints(f);
+    for (const [a, b] of BONES) {
+      const A = pr.project(J[a]); const B = pr.project(J[b]); if (!A || !B) continue;
+      ctx.strokeStyle = POSE_COLORS[`${a}-${b}`] ?? '#fff'; ctx.lineWidth = Math.max(3, h * 0.012);
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+    }
+    const H = pr.project(J.head); const N = pr.project(J.neck);
+    if (H && N) { ctx.strokeStyle = '#0000ff'; ctx.beginPath(); ctx.moveTo(N.x, N.y); ctx.lineTo(H.x, H.y); ctx.stroke(); ctx.fillStyle = '#ff0000'; ctx.beginPath(); ctx.arc(H.x, H.y, Math.max(4, h * 0.01), 0, Math.PI * 2); ctx.fill(); }
+  }
+  return new Promise((res) => c.toBlob(res, 'image/png'));
 }

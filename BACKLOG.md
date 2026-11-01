@@ -1,11 +1,8 @@
 # BACKLOG (kapsam dışı ya da sonraki fazlar)
 
 ## Faz 3 kalanları
-- `.glb` dışa aktarma (three/examples GLTFExporter) ve Blender `bpy` betiği.
-- Nesne seçme + taşı/döndür/ölçekle gizmosu, ızgaraya yapışma.
-- Hazır mekân setleri (peron, sokak, oda, orman, taht salonu, köprü, mağara), proplar, yağmur/kar parçacıkları.
-- Derinlik haritası ve poz çizimi çıktısı; replik/hareket/ses şeritli zaman çizelgesi.
-- 16:9 / 9:16 / 2.39:1 çerçeve seçici ve güvenli alan çizgileri 3D görünümde.
+- Nesne seçme + taşı/döndür/ölçekle gizmosu, ızgaraya yapışma (şu an proplar sabit konumla eklenir).
+- Kamera yolunu anahtar karelerle elle çizme (şu an katalog hareketleri hazır eğrilerle oynar).
 
 ## Faz 4 kalanları
 - Varlık sürüm geçmişi ve yeni projede yeniden kullanma.

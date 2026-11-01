@@ -44,7 +44,7 @@ export function sampleProject(): Project {
     { id: 'c_kerem', name: 'Kerem', descriptionTr: '30 yaşında erkek, kısa siyah saç, üç günlük sakal', descriptionEn: '30-year-old man, short black hair, three-day stubble, tired eyes', wardrobe: 'dark navy peacoat, grey wool sweater' },
   ];
   p.locations = [
-    { id: 'l_peron', name: 'Eski tren peronu', descriptionEn: 'old stone train platform with cast-iron pillars, wet tiles, a waiting steam-free regional train', timeOfDay: 'dusk', weather: 'overcast' },
+    { id: 'l_peron', name: 'Eski tren peronu', descriptionEn: 'old stone train platform with cast-iron pillars, wet tiles, a waiting steam-free regional train', timeOfDay: 'dusk', weather: 'overcast', setId: 'platform', props: [{ id: 'pr1', propId: 'bench', pos: [1.8, -2.5], rotY: 0 }, { id: 'pr2', propId: 'luggage', pos: [-1.2, 0.6], rotY: 0.4 }] },
   ];
   p.locationId = 'l_peron';
   const [a, b, c] = p.parts;

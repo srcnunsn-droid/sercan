@@ -78,6 +78,8 @@ export interface Location {
   descriptionEn: string;
   timeOfDay: 'dawn' | 'day' | 'golden-hour' | 'dusk' | 'night';
   weather: 'clear' | 'overcast' | 'rain' | 'snow' | 'fog';
+  setId?: string;          // 3D set preset (engine/sets.ts)
+  props?: { id: string; propId: string; pos: [number, number]; rotY: number }[];
 }
 
 export interface Asset {
