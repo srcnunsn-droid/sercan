@@ -1,8 +1,417 @@
 [
-  {"id":"persp.ots","category":"perspective","tr":"Omuz üstü","en":"Over-the-shoulder shot","descTr":"Bir karakterin omzu ön planda, karşısındakinin yüzü netlikte. Konuşmanın iki tarafını birbirine bağlar.","emotions":["yakinlik","gerilim"],"avoidTr":"Sahnede tek karakter varsa kullanılamaz; omuz birine ait olmalı.","promptEn":"over-the-shoulder shot, foreground shoulder out of focus","promptTr":"omuz üstü çekim, öndeki omuz flu","variants":{},"three":{"height":1.6,"distance":1.5,"targetY":1.6,"lensMm":50,"yawDeg":20,"ots":true},"mistakes":["Tek karakterle omuz üstü yazmak.","Öndeki omzu net yazmak."],"lessonId":"m2.l2","gameId":"g.whose-eyes"},
-  {"id":"persp.pov","category":"perspective","tr":"Bakış açısı (POV)","en":"Point-of-view shot","descTr":"Kamera karakterin gözü olur. İzleyici onun gördüğünü görür; karakterin yüzü görünmez.","emotions":["gerilim","merak","panik"],"avoidTr":"POV planında bakan karakterin yüz ifadesini yazma; görünmez.","promptEn":"first-person point-of-view shot","promptTr":"birinci şahıs bakış açısı çekimi","variants":{},"three":{"height":1.65,"distance":3,"targetY":1.6,"lensMm":28,"pov":true},"mistakes":["POV'da bakanın yüzünü tarif etmek."],"lessonId":"m2.l2","gameId":"g.whose-eyes"},
-  {"id":"persp.two-shot","category":"perspective","tr":"İkili plan","en":"Two-shot","descTr":"İki karakter aynı kadrajda. Aralarındaki mesafe ilişkiyi anlatır.","emotions":["yakinlik","gerilim"],"avoidTr":"Tek karakterin iç dünyasını anlatırken kalabalık kalır.","promptEn":"two-shot framing both characters","promptTr":"iki karakteri birlikte gösteren ikili plan","variants":{},"three":{"height":1.6,"distance":3.4,"targetY":1.4,"lensMm":35,"two":true},"mistakes":[],"lessonId":"m2.l2","gameId":"g.whose-eyes"},
-  {"id":"persp.establishing","category":"perspective","tr":"Mekânı tanıtan plan","en":"Establishing shot","descTr":"Sahnenin başında mekânı geniş gösterir. İzleyici nerede olduğunu anlar.","emotions":["huzur","merak","yalnizlik"],"avoidTr":"Sahnenin ortasında kullanırsan tempo düşer.","promptEn":"wide establishing shot of the location","promptTr":"mekânı tanıtan geniş plan","variants":{},"three":{"height":4,"distance":12,"targetY":1,"lensMm":24},"mistakes":["Mekânı göstermeden karakterle başlamak; izleyici kaybolur."],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"persp.insert","category":"perspective","tr":"Ara detay (insert)","en":"Insert shot","descTr":"Bir nesneye kısa ve yakın bakış: yüzük, mektup, tetik. Hikâyede önemli olanı işaret eder.","emotions":["merak","gerilim"],"avoidTr":"Hikâyeye etkisi olmayan nesnede kullanma.","promptEn":"insert shot, extreme close detail of the object","promptTr":"nesnenin çok yakın detayı, ara plan","variants":{},"three":{"height":1.1,"distance":0.35,"targetY":1.05,"lensMm":100},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"persp.reaction","category":"perspective","tr":"Tepki planı","en":"Reaction shot","descTr":"Bir şey olduktan sonra dinleyen karakterin yüzü. Duyguyu izleyiciye taşıyan plandır.","emotions":["yakinlik","kirilganlik"],"avoidTr":"Tepki yazmadan kullanma; yüzde görünür bir değişim olmalı.","promptEn":"reaction shot on the listener's face","promptTr":"dinleyen karakterin yüzünde tepki planı","variants":{},"three":{"height":1.62,"distance":0.9,"targetY":1.65,"lensMm":85,"yawDeg":25},"mistakes":["Tepkiyi 'üzgün' diye yazmak; görünür karşılığını yaz: dudak titrer, gözler aşağı iner."],"lessonId":"m2.l2","gameId":"g.emotion-director"}
+ {
+  "id": "persp.ots",
+  "category": "perspective",
+  "tr": "Omuz üstü",
+  "en": "Over-the-shoulder shot",
+  "descTr": "Bir karakterin omzu ön planda, karşısındakinin yüzü netlikte. Konuşmanın iki tarafını birbirine bağlar.",
+  "emotions": [
+   "yakinlik",
+   "gerilim"
+  ],
+  "avoidTr": "Sahnede tek karakter varsa kullanılamaz; omuz birine ait olmalı.",
+  "promptEn": "over-the-shoulder shot, foreground shoulder out of focus",
+  "promptTr": "omuz üstü çekim, öndeki omuz flu",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 1.5,
+   "targetY": 1.6,
+   "lensMm": 50,
+   "yawDeg": 20,
+   "ots": true
+  },
+  "mistakes": [
+   "Tek karakterle omuz üstü yazmak.",
+   "Öndeki omzu net yazmak."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.pov",
+  "category": "perspective",
+  "tr": "Bakış açısı (POV)",
+  "en": "Point-of-view shot",
+  "descTr": "Kamera karakterin gözü olur. İzleyici onun gördüğünü görür; karakterin yüzü görünmez.",
+  "emotions": [
+   "gerilim",
+   "merak",
+   "panik"
+  ],
+  "avoidTr": "POV planında bakan karakterin yüz ifadesini yazma; görünmez.",
+  "promptEn": "first-person point-of-view shot",
+  "promptTr": "birinci şahıs bakış açısı çekimi",
+  "variants": {},
+  "three": {
+   "height": 1.65,
+   "distance": 3,
+   "targetY": 1.6,
+   "lensMm": 28,
+   "pov": true
+  },
+  "mistakes": [
+   "POV'da bakanın yüzünü tarif etmek."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.two-shot",
+  "category": "perspective",
+  "tr": "İkili plan",
+  "en": "Two-shot",
+  "descTr": "İki karakter aynı kadrajda. Aralarındaki mesafe ilişkiyi anlatır.",
+  "emotions": [
+   "yakinlik",
+   "gerilim"
+  ],
+  "avoidTr": "Tek karakterin iç dünyasını anlatırken kalabalık kalır.",
+  "promptEn": "two-shot framing both characters",
+  "promptTr": "iki karakteri birlikte gösteren ikili plan",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 3.4,
+   "targetY": 1.4,
+   "lensMm": 35,
+   "two": true
+  },
+  "mistakes": [],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.establishing",
+  "category": "perspective",
+  "tr": "Mekânı tanıtan plan",
+  "en": "Establishing shot",
+  "descTr": "Sahnenin başında mekânı geniş gösterir. İzleyici nerede olduğunu anlar.",
+  "emotions": [
+   "huzur",
+   "merak",
+   "yalnizlik"
+  ],
+  "avoidTr": "Sahnenin ortasında kullanırsan tempo düşer.",
+  "promptEn": "wide establishing shot of the location",
+  "promptTr": "mekânı tanıtan geniş plan",
+  "variants": {},
+  "three": {
+   "height": 4,
+   "distance": 12,
+   "targetY": 1,
+   "lensMm": 24
+  },
+  "mistakes": [
+   "Mekânı göstermeden karakterle başlamak; izleyici kaybolur."
+  ],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.insert",
+  "category": "perspective",
+  "tr": "Ara detay (insert)",
+  "en": "Insert shot",
+  "descTr": "Bir nesneye kısa ve yakın bakış: yüzük, mektup, tetik. Hikâyede önemli olanı işaret eder.",
+  "emotions": [
+   "merak",
+   "gerilim"
+  ],
+  "avoidTr": "Hikâyeye etkisi olmayan nesnede kullanma.",
+  "promptEn": "insert shot, extreme close detail of the object",
+  "promptTr": "nesnenin çok yakın detayı, ara plan",
+  "variants": {},
+  "three": {
+   "height": 1.1,
+   "distance": 0.35,
+   "targetY": 1.05,
+   "lensMm": 100
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.reaction",
+  "category": "perspective",
+  "tr": "Tepki planı",
+  "en": "Reaction shot",
+  "descTr": "Bir şey olduktan sonra dinleyen karakterin yüzü. Duyguyu izleyiciye taşıyan plandır.",
+  "emotions": [
+   "yakinlik",
+   "kirilganlik"
+  ],
+  "avoidTr": "Tepki yazmadan kullanma; yüzde görünür bir değişim olmalı.",
+  "promptEn": "reaction shot on the listener's face",
+  "promptTr": "dinleyen karakterin yüzünde tepki planı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 0.9,
+   "targetY": 1.65,
+   "lensMm": 85,
+   "yawDeg": 25
+  },
+  "mistakes": [
+   "Tepkiyi 'üzgün' diye yazmak; görünür karşılığını yaz: dudak titrer, gözler aşağı iner."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.emotion-director"
+ },
+ {
+  "id": "persp.ots-double",
+  "category": "perspective",
+  "tr": "Çift omuz üstü",
+  "en": "Dirty over-the-shoulder pair",
+  "descTr": "Karşılıklı iki omuz üstü plan kesilerek kullanılır. Konuşma ping-pong gibi akar.",
+  "emotions": [
+   "yakinlik",
+   "gerilim"
+  ],
+  "avoidTr": "Tek karakterde kullanılamaz.",
+  "promptEn": "matching over-the-shoulder shots on both characters, 180-degree line respected",
+  "promptTr": "iki karaktere eşleşen omuz üstü planlar, 180 derece çizgisi korunuyor",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 1.5,
+   "targetY": 1.6,
+   "lensMm": 50,
+   "yawDeg": -20,
+   "ots": true
+  },
+  "mistakes": [
+   "180 derece çizgisini atlamak."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.object-pov",
+  "category": "perspective",
+  "tr": "Nesne bakış açısı",
+  "en": "Object POV",
+  "descTr": "Kamera bir nesnenin içinden bakar: buzdolabı, kasa, çanta. Esprili ya da tekinsiz.",
+  "emotions": [
+   "merak",
+   "kaos"
+  ],
+  "avoidTr": "Duygusal yakın anlarda dikkat dağıtır.",
+  "promptEn": "point of view from inside the fridge looking out at the character",
+  "promptTr": "buzdolabının içinden karaktere bakan nesne bakış açısı",
+  "variants": {},
+  "three": {
+   "height": 1.1,
+   "distance": 1.2,
+   "targetY": 1.4,
+   "lensMm": 16
+  },
+  "mistakes": [],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.reverse",
+  "category": "perspective",
+  "tr": "Ters plan",
+  "en": "Reverse shot",
+  "descTr": "Bir önceki planın karşı tarafından çekilir; konuşmanın öbür yüzü.",
+  "emotions": [
+   "gerilim",
+   "yakinlik"
+  ],
+  "avoidTr": "Çizgiyi atlarsan karakterler aynı yöne bakıyor görünür.",
+  "promptEn": "reverse shot from the opposite side of the conversation",
+  "promptTr": "konuşmanın karşı tarafından ters plan",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 2.2,
+   "targetY": 1.6,
+   "lensMm": 50,
+   "yawDeg": -25
+  },
+  "mistakes": [],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.three-shot",
+  "category": "perspective",
+  "tr": "Üçlü plan",
+  "en": "Three-shot",
+  "descTr": "Üç karakter aynı kadrajda. Aralarındaki güç ilişkisi dizilişten okunur.",
+  "emotions": [
+   "gerilim",
+   "merak"
+  ],
+  "avoidTr": "Tek kişinin duygusu için kalabalık.",
+  "promptEn": "three-shot framing all three characters",
+  "promptTr": "üç karakteri birlikte gösteren üçlü plan",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 4.2,
+   "targetY": 1.4,
+   "lensMm": 35,
+   "two": true
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.group",
+  "category": "perspective",
+  "tr": "Kalabalık planı",
+  "en": "Group shot",
+  "descTr": "Bir grubu bütün olarak gösterir: takım, aile, ordu.",
+  "emotions": [
+   "zafer",
+   "guc"
+  ],
+  "avoidTr": "Tek yüzde duygu taşımaz.",
+  "promptEn": "group shot of the whole team standing together",
+  "promptTr": "tüm takımı birlikte gösteren grup planı",
+  "variants": {},
+  "three": {
+   "height": 1.9,
+   "distance": 6,
+   "targetY": 1.2,
+   "lensMm": 28,
+   "two": true
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.master",
+  "category": "perspective",
+  "tr": "Ana plan (master)",
+  "en": "Master shot",
+  "descTr": "Sahnenin tamamını baştan sona tek geniş açıdan kaydeder. Kurguda güvenli dönüş noktasıdır.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Tek başına bırakırsan sahne mesafeli kalır.",
+  "promptEn": "wide master shot covering the whole scene",
+  "promptTr": "sahnenin tamamını kapsayan geniş ana plan",
+  "variants": {},
+  "three": {
+   "height": 1.8,
+   "distance": 7,
+   "targetY": 1.1,
+   "lensMm": 28,
+   "two": true
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.cutaway",
+  "category": "perspective",
+  "tr": "Ara kesme (cutaway)",
+  "en": "Cutaway",
+  "descTr": "Ana aksiyondan çevredeki bir ayrıntıya kısa kaçış: saat, kuş, kapı kolu. Zamanı ya da gerilimi esnetir.",
+  "emotions": [
+   "merak",
+   "gerilim"
+  ],
+  "avoidTr": "Hikâyeyle bağı yoksa kopukluk yaratır.",
+  "promptEn": "cutaway to the station clock above the platform",
+  "promptTr": "peron üstündeki istasyon saatine ara kesme",
+  "variants": {},
+  "three": {
+   "height": 1.4,
+   "distance": 0.6,
+   "targetY": 1.4,
+   "lensMm": 85,
+   "offsetX": 0.4
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "persp.cctv",
+  "category": "perspective",
+  "tr": "Güvenlik kamerası",
+  "en": "Security camera view",
+  "descTr": "Tavan köşesinden geniş, soğuk, sabit bakış. Gözetlenme ve suç hissi.",
+  "emotions": [
+   "tehdit",
+   "gerilim"
+  ],
+  "avoidTr": "Sıcak, romantik anlarda kullanma.",
+  "promptEn": "high corner security camera view, wide lens, slight fisheye, timestamp-free",
+  "promptTr": "yüksek köşeden güvenlik kamerası görüntüsü, geniş lens, hafif balıkgözü, zaman damgası yok",
+  "variants": {},
+  "three": {
+   "height": 3.2,
+   "distance": 4,
+   "targetY": 1,
+   "lensMm": 16,
+   "yawDeg": 35
+  },
+  "mistakes": [
+   "Ekranda yazı istemek; çoğu model bozuk yazı üretir."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.selfie",
+  "category": "perspective",
+  "tr": "Selfie ve found footage",
+  "en": "Selfie / found footage",
+  "descTr": "Karakter kamerayı kendisi tutar. Kol mesafesi, geniş lens, sallantı. Belgesel gerçekliği.",
+  "emotions": [
+   "panik",
+   "yakinlik"
+  ],
+  "avoidTr": "Sinematik, kontrollü bir anda kullanma.",
+  "promptEn": "selfie-style handheld footage, arm’s length, wide lens",
+  "promptTr": "kol mesafesinden selfie tarzı el kamerası, geniş lens",
+  "variants": {},
+  "three": {
+   "height": 1.7,
+   "distance": 0.7,
+   "targetY": 1.62,
+   "lensMm": 20,
+   "move": "handheld"
+  },
+  "mistakes": [],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "persp.mirror",
+  "category": "perspective",
+  "tr": "Ayna ve cam içinden",
+  "en": "Through a mirror or glass",
+  "descTr": "Karakteri yansımadan ya da camın arkasından gösterir. İkilik, mesafe, iç hesaplaşma.",
+  "emotions": [
+   "yalnizlik",
+   "gerilim"
+  ],
+  "avoidTr": "Yansımada kamera görünmesin; açıyı eğik seç.",
+  "promptEn": "shot through a rain-streaked train window, reflection overlapping the face",
+  "promptTr": "yağmur izli tren camından çekim, yansıma yüzün üstüne biniyor",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 1.6,
+   "targetY": 1.6,
+   "lensMm": 50,
+   "yawDeg": 30
+  },
+  "mistakes": [
+   "Aynaya tam karşıdan bakıp kamerayı göstermek."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ }
 ]

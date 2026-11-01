@@ -8,6 +8,8 @@ import size from './catalog/camera/size.json';
 import lens from './catalog/camera/lens.json';
 import movement from './catalog/camera/movement.json';
 import composition from './catalog/camera/composition.json';
+import focus from './catalog/camera/focus.json';
+import aspect from './catalog/camera/aspect.json';
 import invisibleWords from './invisible-words.json';
 import lightSources from './light-sources.json';
 import emotions from './emotions.json';
@@ -18,6 +20,14 @@ import templates from './templates.json';
 import games from './games/games.json';
 import m1 from './lessons/m1.json';
 import m2 from './lessons/m2.json';
+import m3 from './lessons/m3.json';
+import m4 from './lessons/m4.json';
+import m5 from './lessons/m5.json';
+import m6 from './lessons/m6.json';
+import m7 from './lessons/m7.json';
+import m8 from './lessons/m8.json';
+import m9 from './lessons/m9.json';
+import m10 from './lessons/m10.json';
 
 export interface ThreeParams {
   height: number; distance: number; targetY: number; lensMm: number;
@@ -29,6 +39,8 @@ export interface CatalogEntry {
   emotions: string[]; avoidTr: string; promptEn: string; promptTr: string;
   variants: Record<string, string>; three: ThreeParams; mistakes: string[];
   lessonId: string; gameId: string;
+  fStop?: number;          // focus entries set the aperture
+  aspect?: string;         // aspect entries set the project frame
 }
 export interface InvisibleWord { word: string; lang: 'en' | 'tr'; visibleEn: string; visibleTr: string }
 export interface LightSource { id: string; tr: string; en: string; kelvin: number; hardness: 'sert' | 'yumusak'; allowed: string[]; colorEn: string; colorTr: string }
@@ -55,7 +67,7 @@ export type Game =
 
 export interface Lesson {
   id: string; titleTr: string; minutes: number; goalTr: string;
-  demo: { kind: string; textTr: string; catalogIds?: string[] };
+  demo: { kind: string; textTr: string; catalogIds?: string[]; exampleEn?: string; exampleTr?: string };
   gameId: string;
   write: { taskTr: string; focus: string[] };
   quiz: { qTr: string; options: string[]; answer: number; whyTr: string }[];
@@ -64,12 +76,13 @@ export interface Lesson {
 export interface Module { id: string; titleTr: string; subtitleTr: string; lessons: Lesson[] }
 
 export const CATALOG: CatalogEntry[] = [
-  ...angle, ...position, ...tilt, ...perspective, ...size, ...lens, ...movement, ...composition,
+  ...angle, ...position, ...tilt, ...perspective, ...size, ...lens, ...movement, ...composition, ...focus, ...aspect,
 ] as CatalogEntry[];
 export const CATALOG_BY_ID: Record<string, CatalogEntry> = Object.fromEntries(CATALOG.map((e) => [e.id, e]));
 export const CATEGORY_TR: Record<string, string> = {
   angle: 'Dikey açı', position: 'Yatay konum', tilt: 'Eğim', perspective: 'Perspektif ve çekim tipi',
   size: 'Kadraj boyutu', lens: 'Lens', movement: 'Kamera hareketi', composition: 'Kompozisyon',
+  focus: 'Odak ve derinlik', aspect: 'Kadraj oranı',
 };
 
 export const INVISIBLE_WORDS = invisibleWords as InvisibleWord[];
@@ -92,18 +105,9 @@ export const TEMPLATES = templates as unknown as Template[];
 export const GAMES = games as Game[];
 export const GAME_BY_ID: Record<string, Game> = Object.fromEntries(GAMES.map((g) => [g.id, g]));
 
-/** Modules in curriculum order. M3–M10 are listed as locked placeholders until their phase ships. */
-export const MODULES: Module[] = [m1 as Module, m2 as Module];
-export const FUTURE_MODULES = [
-  { id: 'm3', titleTr: 'Işık katmanları', subtitleTr: '4 katmanlı ışık, zıt ışık, atmosfer' },
-  { id: 'm4', titleTr: 'Yapay görünümü kırma', subtitleTr: 'Gren, motion blur, lens lekesi' },
-  { id: 'm5', titleTr: 'Karakter sürekliliği', subtitleTr: 'Kimlik kilidi ve sheet' },
-  { id: 'm6', titleTr: 'Taslaktan master’a', subtitleTr: 'İyileştirme düellosu' },
-  { id: 'm7', titleTr: 'Düzeltme ve model çevirisi', subtitleTr: 'Upscale, düzeltme istemleri' },
-  { id: 'm8', titleTr: 'Video', subtitleTr: 'Hareket, diyalog, süre, ses' },
-  { id: 'm9', titleTr: 'Hikâye ve duygu', subtitleTr: 'Kanca, 3 perde, short drama' },
-  { id: 'm10', titleTr: 'Yayın paketi', subtitleTr: 'İlk 3 saniye, 9:16, thumbnail' },
-];
+/** Modules in curriculum order (M1–M10). */
+export const MODULES: Module[] = [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10] as Module[];
+export const FUTURE_MODULES: { id: string; titleTr: string; subtitleTr: string }[] = [];
 export const ALL_LESSONS: Lesson[] = MODULES.flatMap((m) => m.lessons);
 export const LESSON_BY_ID: Record<string, Lesson> = Object.fromEntries(ALL_LESSONS.map((l) => [l.id, l]));
 

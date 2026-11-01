@@ -1,0 +1,101 @@
+{
+ "id": "m10",
+ "titleTr": "Yayın paketi",
+ "subtitleTr": "İlk 3 saniye, 9:16, altyazı, thumbnail",
+ "lessons": [
+  {
+   "id": "m10.l1",
+   "titleTr": "9:16 ve güvenli alan",
+   "minutes": 7,
+   "goalTr": "Dikey kadrajda yüzü ve altyazıyı arayüzün altında kalmayacak yere koy.",
+   "demo": {
+    "kind": "camera",
+    "catalogIds": [
+     "aspect.9x16",
+     "aspect.16x9",
+     "aspect.2_39x1"
+    ],
+    "textTr": "Aynı sahne üç oranda. 9:16’da alt %20 ve sağ kenar uygulama düğmelerinin altında kalır."
+   },
+   "gameId": "g.hook-test",
+   "write": {
+    "taskTr": "9:16 bir açılış karesi yaz: yüz üst-orta bölgede, altta boşluk.",
+    "focus": [
+     "boxes",
+     "camera"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "9:16’da altyazı nereye?",
+     "options": [
+      "Orta-üst",
+      "En alt kenar"
+     ],
+     "answer": 0,
+     "whyTr": "Alt kısım arayüzün altında kalır."
+    },
+    {
+     "qTr": "Gerçek kişi ve marka için ne yapılır?",
+     "options": [
+      "Uyarı okunur, karar kullanıcıda",
+      "Hiçbir şey"
+     ],
+     "answer": 0,
+     "whyTr": "Platform reddedebilir."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "size.mcu"
+    ]
+   }
+  },
+  {
+   "id": "m10.l2",
+   "titleTr": "Thumbnail ve paket",
+   "minutes": 8,
+   "goalTr": "Tıklanan bir kapak promptu ve yayın paketi hazırla.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Tek yüz, güçlü ifade, sıcak-soğuk karşıtlık, başlık için temiz boşluk. Yazıyı modele değil, kurguya bırak.",
+    "exampleEn": "Thumbnail: close-up of Kerem on the empty platform, wet eyes catching warm lamp light, cold blue background, clean empty space in the top third for a title.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Kapak: boş peronda Kerem’in yakın planı, sıcak lamba ışığını yakalayan nemli gözler, soğuk mavi arka plan, üst üçte birde başlık için boşluk."
+   },
+   "gameId": "g.thumb-duel",
+   "write": {
+    "taskTr": "Kendi videon için bir thumbnail promptu yaz: tek yüz, boşluk, karşıtlık.",
+    "focus": [
+     "boxes",
+     "light5",
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Kapakta yazı nasıl eklenir?",
+     "options": [
+      "Kurgu programında sonradan",
+      "Modelden istenir"
+     ],
+     "answer": 0,
+     "whyTr": "Model yazıyı bozar."
+    },
+    {
+     "qTr": "Küçük boyutta en iyi okunan?",
+     "options": [
+      "Tek yüz",
+      "Kalabalık"
+     ],
+     "answer": 0,
+     "whyTr": "Telefon ekranında tek yüz okunur."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "size.cu"
+    ]
+   }
+  }
+ ]
+}

@@ -69,6 +69,10 @@ export function shotAt(p: ThreeParams, t = 0): Shot {
     case 'whip': tx += e < 0.5 ? 0 : 6; break;
     case 'crashzoom': lensMm *= e > 0.55 ? 3.5 : 1; break;
     case 'drone': height += 8 * e; distance *= 1 + 1.5 * e; ty += 0.2 * e; break;
+    case 'whiptilt': ty = e < 0.5 ? targetY : targetY + 3; break;
+    case 'slowzoom': lensMm *= 1 + 0.8 * e; break;
+    case 'fpv': height = Math.max(0.6, height - (height - 0.8) * e); distance *= 1 - 0.65 * e; yaw += 40 * e; break;
+    case 'spin360': yaw += 360 * e; break;
   }
   const pos: V3 = [tx + Math.sin(rad(yaw)) * distance, height, Math.cos(rad(yaw)) * distance];
   if (p.distance < 0.05) { pos[0] = tx; pos[2] = 0.001; }

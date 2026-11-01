@@ -1,0 +1,88 @@
+{
+ "id": "m9",
+ "titleTr": "Hikâye ve duygu",
+ "subtitleTr": "Kanca, 3 perde, short drama",
+ "lessons": [
+  {
+   "id": "m9.l1",
+   "titleTr": "Kanca ve 3 perde",
+   "minutes": 8,
+   "goalTr": "İlk 3 saniyede kanca at, 3 parçayı durum-çatışma-zirve olarak kur.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Durum: ne oluyor? Çatışma: ne bozuluyor? Zirve: kim ne karar veriyor?",
+    "exampleEn": "Part 1 hook: a hand pressed against the closing train door glass.\nPart 2 conflict: he steps closer, she looks away.\nPart 3 climax: the train leaves, he stays alone on the platform.",
+    "exampleTr": "1. parça kanca: kapanan tren kapısının camına bastırılmış el. 2. parça çatışma: yaklaşıyor, kadın bakışını kaçırıyor. 3. parça zirve: tren gidiyor, adam peronda yalnız."
+   },
+   "gameId": "g.hook-workshop",
+   "write": {
+    "taskTr": "Kendi fikrin için 3 parçalık planı yaz: her parçada görünür bir eylem.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Kanca nerede olur?",
+     "options": [
+      "İlk 3 saniyede",
+      "Son saniyede",
+      "Ortada"
+     ],
+     "answer": 0,
+     "whyTr": "Kaydırma ilk saniyelerde durur."
+    },
+    {
+     "qTr": "Short dramanın sonu?",
+     "options": [
+      "Cliffhanger",
+      "Özet",
+      "Teşekkür"
+     ],
+     "answer": 0,
+     "whyTr": "Devamını izletir."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m9.l2",
+   "titleTr": "Replik doktoru",
+   "minutes": 7,
+   "goalTr": "Repliği kısalt, doğallaştır, mantık hatalarını temizle.",
+   "demo": {
+    "kind": "rules",
+    "textTr": "Bekçi uzun ve çelişkili replikleri yakalar."
+   },
+   "gameId": "g.dialogue-doctor",
+   "write": {
+    "taskTr": "Çok uzun bir veda repliğini 10 kelimeye indir.",
+    "focus": [
+     "contradiction"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "“Evlat edindiğim üvey oğlum” neden hatalı?",
+     "options": [
+      "İki kavram çelişiyor",
+      "Çok kısa",
+      "Yanlış yazım"
+     ],
+     "answer": 0,
+     "whyTr": "Tek kavramı seç."
+    },
+    {
+     "qTr": "Doğal replik nasıl?",
+     "options": [
+      "Kısa ve konuşma dili",
+      "Uzun ve edebi"
+     ],
+     "answer": 0,
+     "whyTr": "İnsanlar kısa konuşur."
+    }
+   ],
+   "studio": {}
+  }
+ ]
+}

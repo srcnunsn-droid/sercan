@@ -60,6 +60,9 @@ for (const [name, viewport, scheme] of [['phone', { width: 390, height: 844 }, '
     await page.getByRole('button', { name: /Kontrol listesi ve güçlendirilmiş prompt/ }).click();
     await page.waitForSelector('text=Düzeltme promptu');
     await page.screenshot({ path: `${out}/${name}-factory-fix.png` });
+    await page.getByRole('button', { name: /^Devam/ }).last().click();
+    await page.waitForSelector('text=Altyazı (.srt)');
+    await page.screenshot({ path: `${out}/${name}-factory-publish.png`, fullPage: true });
     console.log(`Acceptance: İstasyonda veda reached video prompts in ${Date.now() - t0} ms of UI time (${blocks} prompts).`);
     await page.keyboard.press('Control+k');
     await page.keyboard.type('alt açı');

@@ -1,0 +1,95 @@
+{
+ "id": "m6",
+ "titleTr": "Taslaktan master’a",
+ "subtitleTr": "İyileştirme düellosu",
+ "lessons": [
+  {
+   "id": "m6.l1",
+   "titleTr": "Taslak iyileştirme",
+   "minutes": 9,
+   "goalTr": "Dağınık bir taslağı 5 kutulu master prompta dönüştür.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Önce görünmeyen kelimeleri at, sonra 5 kutuya dağıt, ışığın 5 parçasını tamamla."
+   },
+   "gameId": "g.draft-duel",
+   "write": {
+    "taskTr": "“Sad epic goodbye, cinematic, beautiful light” taslağını master prompta çevir.",
+    "focus": [
+     "boxes",
+     "light5",
+     "invisible",
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "İlk adım?",
+     "options": [
+      "Görünmeyen kelimeleri görünür yapmak",
+      "Daha çok sıfat eklemek",
+      "4K yazmak"
+     ],
+     "answer": 0,
+     "whyTr": "Model görmediğini çizemez."
+    },
+    {
+     "qTr": "Master promptta ışık kaç parça?",
+     "options": [
+      "2",
+      "5",
+      "10"
+     ],
+     "answer": 1,
+     "whyTr": "Kaynak, yön, renk, sertlik, gölge."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "angle.eye-level",
+     "size.ms"
+    ]
+   }
+  },
+  {
+   "id": "m6.l2",
+   "titleTr": "Kendi taslağını düzelt",
+   "minutes": 8,
+   "goalTr": "Çelişki bekçisini kullanarak kendi promptunu temizle.",
+   "demo": {
+    "kind": "rules",
+    "textTr": "Yaz, bekçi okusun, tek tıkla düzelt."
+   },
+   "gameId": "g.contradiction-hunter",
+   "write": {
+    "taskTr": "Daha önce yazdığın bir promptu yapıştır ve bekçinin bütün uyarılarını gider.",
+    "focus": [
+     "contradiction",
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Bekçi neyi otomatik düzeltebilir?",
+     "options": [
+      "Doku satırı ve görünmeyen kelime",
+      "Hikâye fikri",
+      "Model seçimi"
+     ],
+     "answer": 0,
+     "whyTr": "Metin kuralları düzeltme önerir."
+    },
+    {
+     "qTr": "Öneri senin metnini ezer mi?",
+     "options": [
+      "Evet",
+      "Hayır, sen seçersin"
+     ],
+     "answer": 1,
+     "whyTr": "Karar her zaman senin."
+    }
+   ],
+   "studio": {}
+  }
+ ]
+}

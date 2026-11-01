@@ -1,0 +1,152 @@
+[
+ {
+  "id": "focus.shallow",
+  "category": "focus",
+  "tr": "Sığ alan derinliği",
+  "en": "Shallow depth of field",
+  "descTr": "Yalnızca yüz net, gerisi yumuşak bulut. Dikkat tek noktaya toplanır.",
+  "emotions": [
+   "yakinlik",
+   "yalnizlik"
+  ],
+  "avoidTr": "Mekânın önemli olduğu anda arka planı kaybettirir.",
+  "promptEn": "shallow depth of field, f/1.4, background melts into soft bokeh",
+  "promptTr": "sığ alan derinliği, f/1.4, arka plan yumuşak bokehe dönüşüyor",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.6,
+   "targetY": 1.62,
+   "lensMm": 85
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 1.4
+ },
+ {
+  "id": "focus.deep",
+  "category": "focus",
+  "tr": "Derin odak",
+  "en": "Deep focus",
+  "descTr": "Önden arkaya her şey net. İzleyici kadrajı kendisi okur.",
+  "emotions": [
+   "merak",
+   "huzur"
+  ],
+  "avoidTr": "Tek yüze dikkat çekmek istiyorsan dağınık kalır.",
+  "promptEn": "deep focus, f/11, foreground and background equally sharp",
+  "promptTr": "derin odak, f/11, ön ve arka plan eşit net",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 4,
+   "targetY": 1.3,
+   "lensMm": 24
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 11
+ },
+ {
+  "id": "focus.split-diopter",
+  "category": "focus",
+  "tr": "Split diopter",
+  "en": "Split diopter",
+  "descTr": "Kadrajın iki yarısı farklı mesafede net: yakındaki yüz ve uzaktaki kapı aynı anda keskin.",
+  "emotions": [
+   "gerilim",
+   "merak"
+  ],
+  "avoidTr": "Yarılma çizgisi bir nesnenin ortasına denk gelmesin.",
+  "promptEn": "split diopter, close face on the left and distant door on the right both in focus",
+  "promptTr": "split diopter: soldaki yakın yüz ve sağdaki uzak kapı birlikte net",
+  "variants": {},
+  "three": {
+   "height": 1.5,
+   "distance": 1,
+   "targetY": 1.5,
+   "lensMm": 35,
+   "offsetX": 0.3
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 4
+ },
+ {
+  "id": "focus.bokeh",
+  "category": "focus",
+  "tr": "Bokeh biçimleri",
+  "en": "Bokeh shapes",
+  "descTr": "Odak dışı ışıklar daire, oval (anamorfik) ya da altıgen olur. Gece şehrine doku katar.",
+  "emotions": [
+   "huzur",
+   "yakinlik"
+  ],
+  "avoidTr": "Işık noktası olmayan sahnede bokeh oluşmaz.",
+  "promptEn": "creamy round bokeh from city lights behind her",
+  "promptTr": "arkadaki şehir ışıklarından yumuşak yuvarlak bokeh",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.8,
+   "targetY": 1.62,
+   "lensMm": 85
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 1.8
+ },
+ {
+  "id": "focus.shift",
+  "category": "focus",
+  "tr": "Odak kayması",
+  "en": "Focus shift",
+  "descTr": "Netlik sahnenin içinde yavaşça ileri geri yüzer; rüya ya da sarhoşluk hissi.",
+  "emotions": [
+   "kaos",
+   "kirilganlik"
+  ],
+  "avoidTr": "Net bilgi vermesi gereken planda kullanma.",
+  "promptEn": "focus slowly drifting in and out on her face",
+  "promptTr": "netlik yüzünde yavaşça gelip gidiyor",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.4,
+   "targetY": 1.62,
+   "lensMm": 50
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 2
+ },
+ {
+  "id": "focus.tilt-falloff",
+  "category": "focus",
+  "tr": "Tilt-shift netlik düşüşü",
+  "en": "Tilt-shift focus falloff",
+  "descTr": "Üstte ve altta netlik hızla düşer; ortadaki dar bant keskin.",
+  "emotions": [
+   "merak"
+  ],
+  "avoidTr": "Portrede yapay görünür.",
+  "promptEn": "tilt-shift focus falloff, only a thin horizontal band sharp",
+  "promptTr": "tilt-shift netlik düşüşü, yalnızca ince yatay bant net",
+  "variants": {},
+  "three": {
+   "height": 5,
+   "distance": 8,
+   "targetY": 0.6,
+   "lensMm": 45
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap",
+  "fStop": 2.8
+ }
+]

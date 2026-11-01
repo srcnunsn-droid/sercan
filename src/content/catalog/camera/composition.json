@@ -1,7 +1,370 @@
 [
-  {"id":"comp.thirds","category":"composition","tr":"Üçler kuralı","en":"Rule of thirds","descTr":"Kadraj 3x3 ızgaraya bölünür, göz ya da ufuk çizgilerden birine oturur. Doğal bir denge verir.","emotions":["huzur"],"avoidTr":"Simetri istenen törensel sahnede kullanma.","promptEn":"subject placed on the left third of the frame","promptTr":"karakter kadrajın sol üçte birinde","variants":{},"three":{"height":1.6,"distance":2.4,"targetY":1.55,"lensMm":35,"offsetX":0.5},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"comp.symmetry","category":"composition","tr":"Merkez simetri","en":"Centered symmetry","descTr":"Karakter tam ortada, mekân iki yana eşit. Düzen, ritüel ya da takıntı hissi.","emotions":["guc","gerilim"],"avoidTr":"Doğal, rahat bir anı yapay gösterir.","promptEn":"perfectly symmetrical centered composition","promptTr":"tam ortalanmış simetrik kompozisyon","variants":{},"three":{"height":1.6,"distance":3,"targetY":1.5,"lensMm":28},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"comp.leading-lines","category":"composition","tr":"Yönlendirici çizgiler","en":"Leading lines","descTr":"Ray, yol, koridor gibi çizgiler gözü karaktere taşır.","emotions":["merak","yalnizlik"],"avoidTr":"Çizgiler karakterden uzağa gidiyorsa dikkat dağılır.","promptEn":"leading lines of the platform edge guide the eye to the subject","promptTr":"peron kenarının çizgileri gözü karaktere taşıyor","variants":{},"three":{"height":1.4,"distance":5,"targetY":1.2,"lensMm":24,"yawDeg":25},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"comp.negative-space","category":"composition","tr":"Negatif boşluk","en":"Negative space","descTr":"Kadrajın çoğu boş, karakter küçük bir köşede. Yalnızlık ve sessizlik.","emotions":["yalnizlik","huzur"],"avoidTr":"Kalabalık, enerjik sahnede kullanma.","promptEn":"large negative space, subject small in the lower right corner","promptTr":"geniş boşluk, karakter sağ alt köşede küçük","variants":{},"three":{"height":1.6,"distance":6,"targetY":2.2,"lensMm":28,"offsetX":-1.6},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"},
-  {"id":"comp.frame-in-frame","category":"composition","tr":"Çerçeve içinde çerçeve","en":"Frame within a frame","descTr":"Kapı, pencere ya da ayna karakteri ikinci kez çerçeveler. Hapsolmuşluk ya da gözetlenme.","emotions":["gerilim","yalnizlik"],"avoidTr":"Çerçeve nesnesi sahnede yoksa uydurma.","promptEn":"subject framed through a doorway, frame within a frame","promptTr":"karakter kapı aralığından görünüyor, çerçeve içinde çerçeve","variants":{},"three":{"height":1.6,"distance":4,"targetY":1.5,"lensMm":35},"mistakes":[],"lessonId":"m2.l3","gameId":"g.camera-hut"}
+ {
+  "id": "comp.thirds",
+  "category": "composition",
+  "tr": "Üçler kuralı",
+  "en": "Rule of thirds",
+  "descTr": "Kadraj 3x3 ızgaraya bölünür, göz ya da ufuk çizgilerden birine oturur. Doğal bir denge verir.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Simetri istenen törensel sahnede kullanma.",
+  "promptEn": "subject placed on the left third of the frame",
+  "promptTr": "karakter kadrajın sol üçte birinde",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35,
+   "offsetX": 0.5
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.symmetry",
+  "category": "composition",
+  "tr": "Merkez simetri",
+  "en": "Centered symmetry",
+  "descTr": "Karakter tam ortada, mekân iki yana eşit. Düzen, ritüel ya da takıntı hissi.",
+  "emotions": [
+   "guc",
+   "gerilim"
+  ],
+  "avoidTr": "Doğal, rahat bir anı yapay gösterir.",
+  "promptEn": "perfectly symmetrical centered composition",
+  "promptTr": "tam ortalanmış simetrik kompozisyon",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 3,
+   "targetY": 1.5,
+   "lensMm": 28
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.leading-lines",
+  "category": "composition",
+  "tr": "Yönlendirici çizgiler",
+  "en": "Leading lines",
+  "descTr": "Ray, yol, koridor gibi çizgiler gözü karaktere taşır.",
+  "emotions": [
+   "merak",
+   "yalnizlik"
+  ],
+  "avoidTr": "Çizgiler karakterden uzağa gidiyorsa dikkat dağılır.",
+  "promptEn": "leading lines of the platform edge guide the eye to the subject",
+  "promptTr": "peron kenarının çizgileri gözü karaktere taşıyor",
+  "variants": {},
+  "three": {
+   "height": 1.4,
+   "distance": 5,
+   "targetY": 1.2,
+   "lensMm": 24,
+   "yawDeg": 25
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.negative-space",
+  "category": "composition",
+  "tr": "Negatif boşluk",
+  "en": "Negative space",
+  "descTr": "Kadrajın çoğu boş, karakter küçük bir köşede. Yalnızlık ve sessizlik.",
+  "emotions": [
+   "yalnizlik",
+   "huzur"
+  ],
+  "avoidTr": "Kalabalık, enerjik sahnede kullanma.",
+  "promptEn": "large negative space, subject small in the lower right corner",
+  "promptTr": "geniş boşluk, karakter sağ alt köşede küçük",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 6,
+   "targetY": 2.2,
+   "lensMm": 28,
+   "offsetX": -1.6
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.frame-in-frame",
+  "category": "composition",
+  "tr": "Çerçeve içinde çerçeve",
+  "en": "Frame within a frame",
+  "descTr": "Kapı, pencere ya da ayna karakteri ikinci kez çerçeveler. Hapsolmuşluk ya da gözetlenme.",
+  "emotions": [
+   "gerilim",
+   "yalnizlik"
+  ],
+  "avoidTr": "Çerçeve nesnesi sahnede yoksa uydurma.",
+  "promptEn": "subject framed through a doorway, frame within a frame",
+  "promptTr": "karakter kapı aralığından görünüyor, çerçeve içinde çerçeve",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 4,
+   "targetY": 1.5,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.headroom",
+  "category": "composition",
+  "tr": "Baş boşluğu",
+  "en": "Headroom",
+  "descTr": "Başın üstünde bırakılan boşluk. Az olursa sıkışmış, çok olursa küçülmüş hissi.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Yakın planda çok baş boşluğu karakteri küçük gösterir.",
+  "promptEn": "correct headroom, eyes on the upper third line",
+  "promptTr": "doğru baş boşluğu, gözler üst üçte bir çizgisinde",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.2,
+   "targetY": 1.55,
+   "lensMm": 50
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.lookroom",
+  "category": "composition",
+  "tr": "Bakış boşluğu",
+  "en": "Lookroom",
+  "descTr": "Karakterin baktığı yönde boşluk bırakılır. Ters yapılırsa sıkışma ve tehdit hissi.",
+  "emotions": [
+   "huzur",
+   "gerilim"
+  ],
+  "avoidTr": "Bilerek tersini yapmıyorsan boşluğu bakış yönüne bırak.",
+  "promptEn": "lookroom on the right, subject on the left third looking right",
+  "promptTr": "sağda bakış boşluğu, karakter sol üçte birde sağa bakıyor",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.6,
+   "targetY": 1.55,
+   "lensMm": 50,
+   "offsetX": 0.4,
+   "yawDeg": -30
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.180-rule",
+  "category": "composition",
+  "tr": "180 derece kuralı",
+  "en": "180-degree rule",
+  "descTr": "İki karakter arasında hayali bir çizgi vardır; kamera hep aynı tarafta kalır. Bakış yönleri tutarlı olur.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Bilinçli bir şok için kırılabilir.",
+  "promptEn": "camera stays on one side of the 180-degree line",
+  "promptTr": "kamera 180 derece çizgisinin hep aynı tarafında",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 3.4,
+   "targetY": 1.4,
+   "lensMm": 35,
+   "two": true,
+   "yawDeg": 20
+  },
+  "mistakes": [
+   "Ters planda çizgiyi atlayıp yönleri karıştırmak."
+  ],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "comp.30-rule",
+  "category": "composition",
+  "tr": "30 derece kuralı",
+  "en": "30-degree rule",
+  "descTr": "Aynı kişiye iki plan arasında kamera en az 30 derece yer değiştirir; yoksa kesme zıplar.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Bilerek jump cut yapıyorsan kural bozulur.",
+  "promptEn": "next shot moved 30 degrees around the subject to avoid a jump cut",
+  "promptTr": "jump cut olmaması için sonraki plan 30 derece döndürülmüş",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35,
+   "yawDeg": 30
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.eyeline",
+  "category": "composition",
+  "tr": "Bakış eşleşmesi",
+  "en": "Eyeline match",
+  "descTr": "Karakter bir yere bakar, sonraki planda baktığı şeyi görürüz. Yön ve yükseklik tutmalı.",
+  "emotions": [
+   "merak"
+  ],
+  "avoidTr": "Bakış yönü ile sonraki plan uyuşmazsa izleyici kaybolur.",
+  "promptEn": "eyeline match: she looks up and to the left, cut to the clock above on the left",
+  "promptTr": "bakış eşleşmesi: sol yukarı bakıyor, kesme soldaki yüksek saate",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.4,
+   "targetY": 1.55,
+   "lensMm": 50
+  },
+  "mistakes": [],
+  "lessonId": "m2.l2",
+  "gameId": "g.whose-eyes"
+ },
+ {
+  "id": "comp.depth-layers",
+  "category": "composition",
+  "tr": "Derinlik katmanları",
+  "en": "Foreground, midground, background layers",
+  "descTr": "Ön planda bir nesne, ortada karakter, arkada mekân. Düz görüntüye derinlik verir.",
+  "emotions": [
+   "merak",
+   "huzur"
+  ],
+  "avoidTr": "Ön plan nesnesi yüzü kapatmasın.",
+  "promptEn": "layered composition: blurred luggage in the foreground, her in the midground, train in the background",
+  "promptTr": "katmanlı kompozisyon: önde flu bavul, ortada kadın, arkada tren",
+  "variants": {},
+  "three": {
+   "height": 1.3,
+   "distance": 3,
+   "targetY": 1.4,
+   "lensMm": 50,
+   "yawDeg": 15
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.golden",
+  "category": "composition",
+  "tr": "Altın oran",
+  "en": "Golden ratio composition",
+  "descTr": "Karakter altın spiralin odağına yerleşir; üçler kuralından daha organik bir denge.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Simetri gereken törensel sahnede kullanma.",
+  "promptEn": "subject placed on the golden ratio point, spiral leading to the face",
+  "promptTr": "karakter altın oran noktasında, spiral yüze akıyor",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35,
+   "offsetX": 0.35
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.diagonal",
+  "category": "composition",
+  "tr": "Diyagonal",
+  "en": "Diagonal composition",
+  "descTr": "Ana çizgiler kadrajı çaprazlama keser. Hareket ve gerilim.",
+  "emotions": [
+   "kaos",
+   "gerilim"
+  ],
+  "avoidTr": "Sakin, huzurlu sahnede gerilim yaratır.",
+  "promptEn": "strong diagonal composition, platform edge cutting corner to corner",
+  "promptTr": "güçlü diyagonal kompozisyon, peron kenarı köşeden köşeye kesiyor",
+  "variants": {},
+  "three": {
+   "height": 1.2,
+   "distance": 4,
+   "targetY": 1.2,
+   "lensMm": 24,
+   "yawDeg": 40
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.balanced",
+  "category": "composition",
+  "tr": "Dengeli kadraj",
+  "en": "Balanced frame",
+  "descTr": "Görsel ağırlık iki yana eşit dağılır. Huzur ve düzen.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Gerilimli anda fazla rahat kalır.",
+  "promptEn": "balanced composition, visual weight equal on both sides",
+  "promptTr": "dengeli kompozisyon, görsel ağırlık iki yanda eşit",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 3.4,
+   "targetY": 1.4,
+   "lensMm": 35,
+   "two": true
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ },
+ {
+  "id": "comp.unbalanced",
+  "category": "composition",
+  "tr": "Dengesiz kadraj",
+  "en": "Unbalanced frame",
+  "descTr": "Ağırlık bir köşeye yığılır, öbür taraf boş kalır. Huzursuzluk ve kopukluk.",
+  "emotions": [
+   "gerilim",
+   "yalnizlik"
+  ],
+  "avoidTr": "Bilinçsizce yapılırsa hata gibi görünür.",
+  "promptEn": "unbalanced composition, subject pushed to the frame edge, heavy empty space",
+  "promptTr": "dengesiz kompozisyon, karakter kenara itilmiş, ağır bir boşluk",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 3,
+   "targetY": 1.55,
+   "lensMm": 35,
+   "offsetX": -0.9
+  },
+  "mistakes": [],
+  "lessonId": "m2.l3",
+  "gameId": "g.camera-hut"
+ }
 ]

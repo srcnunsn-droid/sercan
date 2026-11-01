@@ -1,0 +1,98 @@
+{
+ "id": "m5",
+ "titleTr": "Karakter sürekliliği",
+ "subtitleTr": "Kimlik kilidi ve sheet",
+ "lessons": [
+  {
+   "id": "m5.l1",
+   "titleTr": "Tek sheet, kimlik kilidi",
+   "minutes": 9,
+   "goalTr": "Her karakter için tek sheet promptu yaz; referansı @image-N ile taşı.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Sheet: gri zemin, gölgesiz ışık, üç panel. Sonra her parçada @image-1 aynı yüzü taşır."
+   },
+   "gameId": "g.sheet-workshop",
+   "write": {
+    "taskTr": "Kendi karakterin için tek bir sheet promptu yaz: üç panel, gri zemin.",
+    "focus": [
+     "boxes",
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Sheet’te ışık nasıl?",
+     "options": [
+      "Dramatik gün batımı",
+      "Gölgesiz eşit ışık",
+      "Neon"
+     ],
+     "answer": 1,
+     "whyTr": "Işık sahnede kurulur."
+    },
+    {
+     "qTr": "Karakter başına kaç sheet promptu?",
+     "options": [
+      "1",
+      "3",
+      "5"
+     ],
+     "answer": 0,
+     "whyTr": "Tek prompt, çok adımlı zincir yok."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "size.full"
+    ]
+   }
+  },
+  {
+   "id": "m5.l2",
+   "titleTr": "Aynı yüzü bul",
+   "minutes": 7,
+   "goalTr": "Kimliği görünür ayrıntılarla ve referansla kilitle.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Çil, yara izi, saç biçimi, kıyafet: her parçada aynı kelimeler.",
+    "exampleEn": "@image-1 Elif, narrow face, light freckles, shoulder-length dark brown wavy hair, camel wool coat (same as @image-1).\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "@image-1 Elif, ince yüz, hafif çiller, omuz hizasında koyu kahve dalgalı saç, deve tüyü palto (@image-1 ile aynı)."
+   },
+   "gameId": "g.same-face",
+   "write": {
+    "taskTr": "Kerem’i ikinci parçada aynı kalacak şekilde 3 ayırt edici özellikle yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Kimliği en iyi ne kilitler?",
+     "options": [
+      "“beautiful”",
+      "Görünür ayırt edici özellik + referans",
+      "Daha uzun prompt"
+     ],
+     "answer": 1,
+     "whyTr": "Görünür detay ve referans."
+    },
+    {
+     "qTr": "Maske yüzü kapatıyorsa ne yazılmaz?",
+     "options": [
+      "Kaş ve ifade",
+      "Maske rengi",
+      "Gözler"
+     ],
+     "answer": 0,
+     "whyTr": "Kapalı yerde ifade görünmez."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "size.mcu"
+    ]
+   }
+  }
+ ]
+}

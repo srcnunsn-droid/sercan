@@ -1,0 +1,197 @@
+[
+ {
+  "id": "aspect.16x9",
+  "category": "aspect",
+  "tr": "Geniş ekran 16:9",
+  "en": "16:9 aspect ratio",
+  "descTr": "YouTube ve televizyonun standart oranı. Yatay hikâye anlatımı.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Telefon dikey akışında küçük kalır.",
+  "promptEn": "16:9 aspect ratio framing",
+  "promptTr": "16:9 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "16:9"
+ },
+ {
+  "id": "aspect.9x16",
+  "category": "aspect",
+  "tr": "Dikey 9:16",
+  "en": "9:16 aspect ratio",
+  "descTr": "TikTok, Reels ve Shorts. Tek karakter ve yüz için ideal.",
+  "emotions": [
+   "yakinlik"
+  ],
+  "avoidTr": "Geniş manzara ve ikili planlarda sıkışır.",
+  "promptEn": "9:16 aspect ratio framing",
+  "promptTr": "9:16 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "9:16"
+ },
+ {
+  "id": "aspect.1x1",
+  "category": "aspect",
+  "tr": "Kare 1:1",
+  "en": "1:1 aspect ratio",
+  "descTr": "Instagram akışı. Merkez kompozisyon güçlüdür.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Yatay hareketler dar görünür.",
+  "promptEn": "1:1 aspect ratio framing",
+  "promptTr": "1:1 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "1:1"
+ },
+ {
+  "id": "aspect.4x5",
+  "category": "aspect",
+  "tr": "Dikey 4:5",
+  "en": "4:5 aspect ratio",
+  "descTr": "Instagram gönderisinde en büyük alan. Portreye uygun.",
+  "emotions": [
+   "yakinlik"
+  ],
+  "avoidTr": "Sinematik geniş his vermez.",
+  "promptEn": "4:5 aspect ratio framing",
+  "promptTr": "4:5 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "4:5"
+ },
+ {
+  "id": "aspect.4x3",
+  "category": "aspect",
+  "tr": "Klasik 4:3",
+  "en": "4:3 aspect ratio",
+  "descTr": "Eski televizyon ve nostalji. Kutu gibi, kapalı his.",
+  "emotions": [
+   "huzur",
+   "yalnizlik"
+  ],
+  "avoidTr": "Modern aksiyon için dar.",
+  "promptEn": "4:3 aspect ratio framing",
+  "promptTr": "4:3 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "4:3"
+ },
+ {
+  "id": "aspect.1_85x1",
+  "category": "aspect",
+  "tr": "Sinema 1.85:1",
+  "en": "1.85:1 aspect ratio",
+  "descTr": "Amerikan sinema standardı; 16:9’dan biraz geniş.",
+  "emotions": [
+   "huzur"
+  ],
+  "avoidTr": "Dikey yayın için uygun değil.",
+  "promptEn": "1.85:1 aspect ratio framing",
+  "promptTr": "1.85:1 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "1.85:1"
+ },
+ {
+  "id": "aspect.2_39x1",
+  "category": "aspect",
+  "tr": "Anamorfik 2.39:1",
+  "en": "2.39:1 aspect ratio",
+  "descTr": "Destansı sinema oranı. Geniş manzara ve yalnızlık.",
+  "emotions": [
+   "ozgurluk",
+   "yalnizlik"
+  ],
+  "avoidTr": "Telefonda dikey akışta çok küçük kalır.",
+  "promptEn": "2.39:1 aspect ratio framing",
+  "promptTr": "2.39:1 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "2.39:1"
+ },
+ {
+  "id": "aspect.2_76x1",
+  "category": "aspect",
+  "tr": "Ultra Panavision 2.76:1",
+  "en": "2.76:1 aspect ratio",
+  "descTr": "En geniş sinema oranı; tören ve büyük kalabalıklar.",
+  "emotions": [
+   "guc",
+   "ozgurluk"
+  ],
+  "avoidTr": "Tek yüz için aşırı geniş.",
+  "promptEn": "2.76:1 aspect ratio framing",
+  "promptTr": "2.76:1 kadraj oranı",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35
+  },
+  "mistakes": [],
+  "lessonId": "m10.l1",
+  "gameId": "g.thumb-duel",
+  "aspect": "2.76:1"
+ }
+]

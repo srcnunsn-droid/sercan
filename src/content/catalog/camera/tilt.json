@@ -1,4 +1,80 @@
 [
-  {"id":"tilt.dutch","category":"tilt","tr":"Dutch açı (yatık kadraj)","en":"Dutch angle","descTr":"Kamera kendi ekseninde 15-30 derece yatırılır. Ufuk çizgisi eğilir, dünya dengesini kaybeder.","emotions":["panik","gerilim","kaos"],"avoidTr":"Huzurlu sahnede kullanma; her şey 'yanlış' hissettirir.","promptEn":"dutch angle, camera tilted about 20 degrees","promptTr":"kamera yaklaşık 20 derece yatık, Dutch açı","variants":{},"three":{"height":1.5,"distance":2.4,"targetY":1.55,"lensMm":28,"rollDeg":20},"mistakes":["Her planda Dutch kullanmak; etkisi kaybolur."],"lessonId":"m2.l1","gameId":"g.emotion-director"},
-  {"id":"tilt.roll","category":"tilt","tr":"Tam yatış (roll)","en":"Camera roll","descTr":"Kamera hareket sırasında kendi ekseninde döner. Baş dönmesi, sarhoşluk ya da düşüş hissi verir.","emotions":["panik","kaos"],"avoidTr":"Diyalog sırasında kullanma; izleyici repliği kaçırır.","promptEn":"camera rolls slowly on its axis","promptTr":"kamera kendi ekseninde yavaşça dönüyor","variants":{},"three":{"height":1.5,"distance":2.4,"targetY":1.55,"lensMm":24,"move":"roll"},"mistakes":[],"lessonId":"m2.l4","gameId":"g.move-studio"}
+ {
+  "id": "tilt.dutch",
+  "category": "tilt",
+  "tr": "Dutch açı (yatık kadraj)",
+  "en": "Dutch angle",
+  "descTr": "Kamera kendi ekseninde 15-30 derece yatırılır. Ufuk çizgisi eğilir, dünya dengesini kaybeder.",
+  "emotions": [
+   "panik",
+   "gerilim",
+   "kaos"
+  ],
+  "avoidTr": "Huzurlu sahnede kullanma; her şey 'yanlış' hissettirir.",
+  "promptEn": "dutch angle, camera tilted about 20 degrees",
+  "promptTr": "kamera yaklaşık 20 derece yatık, Dutch açı",
+  "variants": {},
+  "three": {
+   "height": 1.5,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 28,
+   "rollDeg": 20
+  },
+  "mistakes": [
+   "Her planda Dutch kullanmak; etkisi kaybolur."
+  ],
+  "lessonId": "m2.l1",
+  "gameId": "g.emotion-director"
+ },
+ {
+  "id": "tilt.roll",
+  "category": "tilt",
+  "tr": "Tam yatış (roll)",
+  "en": "Camera roll",
+  "descTr": "Kamera hareket sırasında kendi ekseninde döner. Baş dönmesi, sarhoşluk ya da düşüş hissi verir.",
+  "emotions": [
+   "panik",
+   "kaos"
+  ],
+  "avoidTr": "Diyalog sırasında kullanma; izleyici repliği kaçırır.",
+  "promptEn": "camera rolls slowly on its axis",
+  "promptTr": "kamera kendi ekseninde yavaşça dönüyor",
+  "variants": {},
+  "three": {
+   "height": 1.5,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 24,
+   "move": "roll"
+  },
+  "mistakes": [],
+  "lessonId": "m2.l4",
+  "gameId": "g.move-studio"
+ },
+ {
+  "id": "tilt.whip",
+  "category": "tilt",
+  "tr": "Kamçı tilt",
+  "en": "Whip tilt",
+  "descTr": "Kamera çok hızlı yukarı ya da aşağı savrulur. Bakışı ani bir şeye çevirir: gökyüzündeki ejderha, yerdeki ayak izi.",
+  "emotions": [
+   "kaos",
+   "merak"
+  ],
+  "avoidTr": "Sakin anlatımda sarsar.",
+  "promptEn": "fast whip tilt up with motion blur",
+  "promptTr": "hareket bulanıklıklı hızlı kamçı tilt",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 35,
+   "move": "whiptilt"
+  },
+  "mistakes": [],
+  "lessonId": "m2.l4",
+  "gameId": "g.move-studio"
+ }
 ]

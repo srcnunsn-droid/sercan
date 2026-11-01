@@ -13,6 +13,7 @@ import { RuleList } from '../ui/Rules';
 import { Icon } from '../ui/Icon';
 import { applyCatalogToPart } from './Studio';
 import { ContradictionGame, GameRunner } from './Games';
+import { buildCards, dueCards, grade } from '../engine/review';
 import { t } from '../i18n';
 
 const STEP_KEYS = ['demo', 'game', 'write', 'quiz', 'export'] as const;
@@ -57,6 +58,12 @@ function Demo({ lesson }: { lesson: Lesson }) {
       </div>
     );
   }
+  if (k === 'text') return (
+    <div className="stack">
+      <p>{lesson.demo.textTr}</p>
+      {lesson.demo.exampleEn && <PromptBlock en={lesson.demo.exampleEn} tr={lesson.demo.exampleTr} label="Örnek" />}
+    </div>
+  );
   if (k === 'invisible') return (
     <div className="stack">
       <p>{lesson.demo.textTr}</p>
@@ -168,7 +175,7 @@ function LessonPlayer({ lesson }: { lesson: Lesson }) {
   };
   const exportToStudio = () => {
     editPart(0, (p) => {
-      lesson.studio.catalogIds?.forEach((id) => CATALOG_BY_ID[id] && applyCatalogToPart(CATALOG_BY_ID[id], p));
+      lesson.studio.catalogIds?.forEach((id) => CATALOG_BY_ID[id] && CATALOG_BY_ID[id].category !== 'aspect' && applyCatalogToPart(CATALOG_BY_ID[id], p));
       if (lesson.studio.light) p.light = { ...p.light, ...lesson.studio.light, direction: lesson.studio.light.direction as any };
     });
     finish();
@@ -239,6 +246,39 @@ function ExerciseLab() {
       <p className="muted">Zayıf noktalarına göre yeni bir çelişki avı. Claude yoksa şablon motoru hazırlar.</p>
       {note && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{note}</p>}
       {ex && <><h4>{ex.titleTr}</h4><ContradictionGame key={JSON.stringify(ex.items)} game={ex} onDone={() => setEx(null)} /></>}
+    </section>
+  );
+}
+
+function ReviewCards() {
+  const progress = useApp((s) => s.progress);
+  const prefs = useApp((s) => s.prefs);
+  const setPrefs = useApp((s) => s.setPrefs);
+  const addXp = useApp((s) => s.addXp);
+  const [shown, setShown] = useState(false);
+  const cards = useMemo(() => buildCards(progress), [progress]);
+  const due = dueCards(cards, prefs.reviewDue);
+  const card = due[0];
+  const answer = (knew: boolean) => {
+    setPrefs((p) => { const g = grade(p.reviewBox, p.reviewDue, card.id, knew); p.reviewBox = g.box; p.reviewDue = g.due; });
+    if (knew) addXp(3);
+    setShown(false);
+  };
+  return (
+    <section className="panel">
+      <div className="panel-head"><h3>Tekrar kartları</h3><span className="chip static tabnum">{due.length} kart bugün</span></div>
+      <p className="muted">Bildiğin kart daha seyrek gelir (1, 2, 4, 8, 16 gün). Bilemediğin yarın yine gelir. Zayıf noktaların öne alınır.</p>
+      {!card ? <p className="feedback good">Bugünlük tekrar bitti. Yarın yeni kartlar gelecek.</p> : (
+        <div className="tile" style={{ gap: 'var(--sp-3)' }}>
+          <span className="eyebrow">{{ term: 'Terim', camera: 'Kamera', rule: 'Kural' }[card.kind]} · kutu {prefs.reviewBox[card.id] ?? 0}/5</span>
+          <b style={{ fontSize: 'var(--fs-lg)' }}>{card.frontTr}</b>
+          {card.frontEn && card.kind !== 'term' && <span className="mono muted" style={{ fontSize: 12 }}>{card.frontEn}</span>}
+          {shown ? <>
+            <p className="feedback good">{card.backTr}</p>
+            <div className="row"><button className="btn primary" onClick={() => answer(true)}>Bildim</button><button className="btn" onClick={() => answer(false)}>Bilemedim</button></div>
+          </> : <div><button className="btn primary" onClick={() => setShown(true)}>Cevabı göster</button></div>}
+        </div>
+      )}
     </section>
   );
 }
@@ -316,13 +356,14 @@ export function Academy() {
             </div>
           </section>
         ))}
-        <section className="panel">
+        {FUTURE_MODULES.length > 0 && <section className="panel">
           <h3>Sıradaki modüller</h3>
           <div className="stack" style={{ gap: 'var(--sp-2)' }}>
             {FUTURE_MODULES.map((m) => <div className="lessonrow" data-state="locked" key={m.id}><span className="num">{m.id.slice(1)}</span><div><b>{m.titleTr}</b><p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{m.subtitleTr}</p></div><Icon name="lock" size={18} /></div>)}
           </div>
-        </section>
+        </section>}
       </div>
+      <ReviewCards />
       <ExerciseLab />
       <WeakMap />
       <Glossary />

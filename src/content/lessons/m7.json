@@ -1,0 +1,90 @@
+{
+ "id": "m7",
+ "titleTr": "Düzeltme ve model çevirisi",
+ "subtitleTr": "Düzeltme istemleri, upscale, model adaptasyonu",
+ "lessons": [
+  {
+   "id": "m7.l1",
+   "titleTr": "Hata teşhisi",
+   "minutes": 8,
+   "goalTr": "Üretim hatasını gör, adlandır ve düzeltme promptu yaz.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Yüz kayması, ışık sıçraması, parmak hatası, yazı bozulması: her birinin bir düzeltmesi var.",
+    "exampleEn": "Keep exactly the same face and hair as @image-1. Keep the light direction identical to the previous frame. Natural hands with five fingers. No text.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "@image-1 ile aynı yüz ve saç, önceki karedeki ışık yönü, beş parmaklı doğal eller, yazı yok."
+   },
+   "gameId": "g.error-diagnosis",
+   "write": {
+    "taskTr": "Yüzü değişen bir 2. parça için düzeltme promptu yaz.",
+    "focus": [
+     "boxes",
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Eller bozuksa?",
+     "options": [
+      "Eli kadrajdan çıkar ya da “natural hands” ekle",
+      "Daha çok el ekle",
+      "Upscale yap"
+     ],
+     "answer": 0,
+     "whyTr": "Eller zayıf noktadır."
+    },
+    {
+     "qTr": "Upscale neyi düzeltmez?",
+     "options": [
+      "Çözünürlüğü",
+      "Yanlış anatomiyi",
+      "Keskinliği"
+     ],
+     "answer": 1,
+     "whyTr": "Büyütme hatayı da büyütür; önce düzelt."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m7.l2",
+   "titleTr": "Model çevirmeni",
+   "minutes": 7,
+   "goalTr": "Aynı sahneyi farklı modellerin sözdizimine çevir.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Aynı sahne grafı: Seedance’te zaman damgalı replik, Midjourney’de --ar, GPT Image’da JSON."
+   },
+   "gameId": "g.model-translator",
+   "write": {
+    "taskTr": "Peron sahnesini Midjourney için tek satır prompt olarak yaz (--ar ile).",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Midjourney’de oran nasıl yazılır?",
+     "options": [
+      "--ar 9:16",
+      "@ratio",
+      "ratio=9:16"
+     ],
+     "answer": 0,
+     "whyTr": "Parametre sona eklenir."
+    },
+    {
+     "qTr": "Veo 3.1 parça süresi (kullanıcı notu)?",
+     "options": [
+      "8 sn",
+      "30 sn",
+      "60 sn"
+     ],
+     "answer": 0,
+     "whyTr": "Model kartında doğrulanmadı etiketiyle durur."
+    }
+   ],
+   "studio": {}
+  }
+ ]
+}

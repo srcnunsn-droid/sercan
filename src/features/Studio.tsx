@@ -47,6 +47,12 @@ function Select({ id, label, value, onChange, options, hint }: { id: string; lab
 
 const opts = (cat: string, none?: string) => [...(none ? [{ id: '', label: none }] : []), ...CATALOG.filter((e) => e.category === cat).map((e) => ({ id: e.id, label: `${e.tr} · ${e.en}` }))];
 
+/** Applies a catalog entry to one part; aspect entries change the whole project frame. */
+export function applyCatalogToProject(entry: CatalogEntry, project: Project, partIndex: number) {
+  if (entry.category === 'aspect' && entry.aspect) { project.aspect = entry.aspect as Aspect; return; }
+  const part = project.parts[partIndex]; if (part) applyCatalogToPart(entry, part);
+}
+
 export function applyCatalogToPart(entry: CatalogEntry, part: Part) {
   const c = part.camera;
   switch (entry.category) {
@@ -56,6 +62,8 @@ export function applyCatalogToPart(entry: CatalogEntry, part: Part) {
     case 'lens': c.lensMm = entry.three.lensMm; break;
     case 'movement': c.motion = entry.id; break;
     case 'tilt': c.dutch = true; break;
+    case 'focus': if (entry.fStop) c.fStop = entry.fStop; if (entry.three.lensMm >= 50) c.lensMm = entry.three.lensMm; break;
+    case 'aspect': break; // project-level; see applyCatalogToProject
     default: {
       part.sceneEn = [part.sceneEn, entry.promptEn].filter(Boolean).join(', ');
       part.scene = [part.scene, entry.promptTr].filter(Boolean).join(', ');
@@ -364,7 +372,7 @@ function Catalog() {
           <PromptBlock en={open.promptEn} tr={open.promptTr} label="Prompt cümlesi" />
           <div className="row">
             <Seg label="Hedef parça" value={String(targetPart)} onChange={(v) => setTargetPart(Number(v))} options={[0, 1, 2].map((i) => ({ id: String(i), label: `Parça ${i + 1}` }))} />
-            <button className="btn primary" onClick={() => { editPart(targetPart, (p) => applyCatalogToPart(open, p)); toast(['position', 'composition'].includes(open.category) ? 'Cümle prompta eklendi.' : 'Stüdyoya uygulandı.', 'ok'); }}>
+            <button className="btn primary" onClick={() => { useApp.getState().edit('catalog', (x) => applyCatalogToProject(open, x, targetPart)); toast(['position', 'composition'].includes(open.category) ? 'Cümle prompta eklendi.' : open.category === 'aspect' ? `Proje kadrajı ${open.aspect} oldu.` : 'Stüdyoya uygulandı.', 'ok'); }}>
               {['position', 'composition'].includes(open.category) ? 'Prompta ekle' : 'Stüdyoya uygula'}
             </button>
             <button className="btn" onClick={() => toggleFavorite(open.id)}><Icon name="star" size={16} /> {progress.favorites.includes(open.id) ? 'Favoriden çıkar' : 'Favorilere ekle'}</button>

@@ -114,7 +114,7 @@ function DuelGame({ game, onDone }: { game: Extract<Game, { type: 'duel' }>; onD
           const state = pick ? (k === r.correct ? 'right' : pick === k ? 'wrong' : undefined) : undefined;
           return (
             <button key={k} className="choice" data-state={state} onClick={() => choose(k)} style={{ padding: 8 }}>
-              <div className="viewport" style={{ aspectRatio: '16 / 9', marginBottom: 8, maxWidth: '100%' }}>{e && <FramePreview params={e.three} animate overlays={false} figures={e.three.two || e.three.ots ? 2 : 1} />}</div>
+              {e && <div className="viewport" style={{ aspectRatio: '16 / 9', marginBottom: 8, maxWidth: '100%' }}><FramePreview params={e.three} animate overlays={false} figures={e.three.two || e.three.ots ? 2 : 1} /></div>}
               <b>{o.label}</b>
             </button>
           );

@@ -5,6 +5,7 @@ import { FramePreview } from '../ui/FramePreview';
 import { Icon } from '../ui/Icon';
 import { SaveIndicator } from '../App';
 import { Slate } from '../ui/misc';
+import { buildCards, dueCards } from '../engine/review';
 
 const FACTORY_STEPS = ['Fikir', 'Hikâye', 'Karakter', 'Mekân', 'Kareler', 'Onay', 'Video', 'Düzeltme', 'Yayın'];
 
@@ -20,6 +21,8 @@ export function Home() {
   const proposed = !next ? ALL_LESSONS.find((l) => !progress.unlockedLessons.includes(l.id)) : null;
   const weak = Object.entries(progress.ruleHits).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const demo = CATALOG_BY_ID['move.push-in'];
+  const prefs = useApp((s) => s.prefs);
+  const reviews = dueCards(buildCards(progress), prefs.reviewDue).length;
 
   return (
     <>
@@ -82,6 +85,7 @@ export function Home() {
           <div className="meter" aria-label="Rütbe ilerlemesi"><i style={{ width: `${pct}%` }} /></div>
           <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>{nr ? `${nr.min - progress.xp} XP ${t('home.toNext')} (${nr.tr})` : 'En yüksek rütbe!'}</p>
           <div className="statline"><b className="tabnum">{progress.streak}</b><span className="muted">{t('home.days')} · {t('home.streak')}</span></div>
+          <button className="btn sm" onClick={() => go('academy')}>{reviews} tekrar kartı bekliyor</button>
         </div>
       </section>
 

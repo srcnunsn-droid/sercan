@@ -11,8 +11,9 @@
 - Deneyim defterinden model başına kalıp çıkarma (puanlı promptlardan otomatik öneri).
 - Her adaptör için 3 standart sahnelik mini deneme seti.
 
-## Faz 6
-- M3–M10 içerikleri, aralıklı tekrar kartları, yayın paketi, kataloğun 100+ kayda tamamlanması, model kartları test seti.
+## Faz 6 kalanları
+- M3–M10 için ikinci tur içerik: her modüle 3.–5. dersler.
+- Yayın paketi açıklama ve hashtag önerisini Claude ile zenginleştirme (şu an deterministik).
 
 ## Fikirler
 - SECO Director OS’taki “seri bible” ve LensLab’in kamera/lens seçicisi modül olarak yeniden kurulabilir (kod gerekirse kullanıcıdan istenecek).

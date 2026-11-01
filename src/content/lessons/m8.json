@@ -1,0 +1,93 @@
+{
+ "id": "m8",
+ "titleTr": "Video",
+ "subtitleTr": "Hareket, diyalog, süre, süreklilik, ses",
+ "lessons": [
+  {
+   "id": "m8.l1",
+   "titleTr": "Süreklilik",
+   "minutes": 9,
+   "goalTr": "Işık, zaman, hava ve kıyafeti üç parçada sabit tut.",
+   "demo": {
+    "kind": "rules",
+    "textTr": "Bekçi parçalar arasındaki ışık ve zaman çelişkilerini yakalar."
+   },
+   "gameId": "g.continuity-check",
+   "write": {
+    "taskTr": "3 parçalık bir sahnenin her parçası için ışık ve zamanı aynı tutarak tek cümle yaz.",
+    "focus": [
+     "light5",
+     "contradiction"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Parça 2 nereden başlar?",
+     "options": [
+      "Parça 1’in son karesinden",
+      "Rastgele bir kareden",
+      "Mekân görselinden"
+     ],
+     "answer": 0,
+     "whyTr": "Süreklilik zinciri."
+    },
+    {
+     "qTr": "Hava ne zaman değişebilir?",
+     "options": [
+      "Her parçada",
+      "Hiçbir parçada (mekânda sabit)"
+     ],
+     "answer": 1,
+     "whyTr": "Hava mekânda seçilir ve sabittir."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m8.l2",
+   "titleTr": "Diyalog ve süre",
+   "minutes": 8,
+   "goalTr": "Replikleri süreye sığdır ve zaman damgasıyla yaz.",
+   "demo": {
+    "kind": "text",
+    "textTr": "10 saniyeye 14 kelime rahat sığar. Replik 3. saniyede başlasın, sonda nefes payı kalsın.",
+    "exampleEn": "at 0:03 Kerem says: \"Do you really have to go?\"; ambient sound: distant station announcement, wind.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "0:03’te Kerem: \"Gitmek zorunda mısın?\"; ortam sesi: uzak anons, rüzgâr."
+   },
+   "gameId": "g.scene-planner",
+   "write": {
+    "taskTr": "Bir parça için 12 kelimeyi geçmeyen, zaman damgalı bir replik ve ortam sesi yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "10 saniyeye rahat kaç kelime?",
+     "options": [
+      "14",
+      "25",
+      "40"
+     ],
+     "answer": 0,
+     "whyTr": "15–16 sıkışık, 16 üstü sığmaz."
+    },
+    {
+     "qTr": "Parça başına kaç kamera hareketi?",
+     "options": [
+      "1",
+      "2",
+      "3"
+     ],
+     "answer": 0,
+     "whyTr": "Tek hareket."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "move.push-in"
+    ]
+   }
+  }
+ ]
+}

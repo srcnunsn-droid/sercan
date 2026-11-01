@@ -1,0 +1,101 @@
+{
+ "id": "m4",
+ "titleTr": "Yapay görünümü kırma",
+ "subtitleTr": "Gren, motion blur, lens lekesi, yasaklar",
+ "lessons": [
+  {
+   "id": "m4.l1",
+   "titleTr": "Doku ve gren",
+   "minutes": 7,
+   "goalTr": "Yapay pürüzsüzlüğü doku satırı ve gren ile kır.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Kusursuz cilt yapay görünür. Gözenek, gren ve doku satırı gerçeklik katar.",
+    "exampleEn": "Close-up, visible skin pores, faint freckles, subtle 35mm film grain.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Yakın plan, görünür gözenekler, hafif çiller, ince 35 mm film greni."
+   },
+   "gameId": "g.real-or-fake",
+   "write": {
+    "taskTr": "Kahve içen yaşlı bir balıkçıyı yapay görünmeyecek şekilde yaz.",
+    "focus": [
+     "texture",
+     "invisible"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Hangisi yapay görünüm üretir?",
+     "options": [
+      "skin pores",
+      "flawless perfect skin, 8k",
+      "film grain"
+     ],
+     "answer": 1,
+     "whyTr": "Kusursuzluk yapaylıktır."
+    },
+    {
+     "qTr": "Her prompt hangi satırla biter?",
+     "options": [
+      "masterpiece",
+      "No sharpen, no color bleeding, natural photographic texture.",
+      "ultra HD"
+     ],
+     "answer": 1,
+     "whyTr": "Doku satırı sabit kuraldır."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "size.cu",
+     "lens.vintage"
+    ]
+   }
+  },
+  {
+   "id": "m4.l2",
+   "titleTr": "Kusur ekleme",
+   "minutes": 7,
+   "goalTr": "Hareket bulanıklığı ve lens izleriyle canlılık kat.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Koşan elde hafif bulanıklık, karşı ışıkta küçük flare.",
+    "exampleEn": "Running toward camera, slight motion blur on the swinging hands, small lens flare from the low sun.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Kameraya koşuyor, sallanan ellerde hafif hareket bulanıklığı, alçak güneşten küçük flare."
+   },
+   "gameId": "g.add-flaw",
+   "write": {
+    "taskTr": "Yağmurda koşan bir çocuğu iki gerçekçi kusurla yaz.",
+    "focus": [
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Hız hissini ne verir?",
+     "options": [
+      "Motion blur",
+      "Donmuş net kare",
+      "Daha çok ışık"
+     ],
+     "answer": 0,
+     "whyTr": "Bulanıklık hareketin izidir."
+    },
+    {
+     "qTr": "Abartılırsa bozuk görünen kusur?",
+     "options": [
+      "Kromatik sapma",
+      "Gözenek",
+      "Gölge"
+     ],
+     "answer": 0,
+     "whyTr": "Hafif tutulmalı."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "move.handheld"
+    ]
+   }
+  }
+ ]
+}

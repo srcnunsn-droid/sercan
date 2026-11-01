@@ -1,10 +1,297 @@
 [
-  {"id":"lens.fisheye","category":"lens","tr":"Balıkgözü (8-14 mm)","en":"Fisheye lens","descTr":"Kenarlar küre gibi bükülür. Kaykay, rüya, sarhoşluk ya da gözetleme deliği hissi verir.","emotions":["kaos","panik"],"avoidTr":"Doğal bir portrede kullanma; yüz bozulur.","promptEn":"fisheye lens, strong barrel distortion","promptTr":"balıkgözü lens, güçlü fıçı bükülmesi","variants":{},"three":{"height":1.5,"distance":0.9,"targetY":1.5,"lensMm":10},"mistakes":[],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.ultra-wide","category":"lens","tr":"Ultra geniş (14-20 mm)","en":"Ultra-wide lens","descTr":"Mekânı derin ve büyük gösterir, yakındaki nesneleri abartır.","emotions":["ozgurluk","kaos"],"avoidTr":"Yakın portrede burun büyür.","promptEn":"shot on an ultra-wide 16mm lens","promptTr":"16 mm ultra geniş lensle çekim","variants":{},"three":{"height":1.5,"distance":1.6,"targetY":1.4,"lensMm":16},"mistakes":["Ultra geniş lensle yakın portre."],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.wide","category":"lens","tr":"Geniş (24-35 mm)","en":"Wide lens","descTr":"Karakter ve mekân birlikte. Sokak, belgesel ve el kamerası hissi.","emotions":["merak","huzur"],"avoidTr":"Arka planı eritmek istiyorsan uzun lens seç.","promptEn":"shot on a 28mm wide lens","promptTr":"28 mm geniş lensle çekim","variants":{},"three":{"height":1.55,"distance":2.4,"targetY":1.4,"lensMm":28},"mistakes":[],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.normal","category":"lens","tr":"Normal (40-50 mm)","en":"Normal lens","descTr":"İnsan gözüne yakın perspektif. Tarafsız, dürüst görüntü.","emotions":["huzur","yakinlik"],"avoidTr":"Dramatik bir bozulma istiyorsan yetmez.","promptEn":"shot on a 50mm lens, natural perspective","promptTr":"50 mm lens, doğal perspektif","variants":{},"three":{"height":1.6,"distance":2,"targetY":1.5,"lensMm":50},"mistakes":[],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.portrait","category":"lens","tr":"Portre (85 mm)","en":"Portrait lens","descTr":"Yüzü inceltir, arka planı yumuşak bir buluta çevirir.","emotions":["yakinlik","kirilganlik"],"avoidTr":"Dar mekânda kamerayı geri çekecek yer olmayabilir.","promptEn":"shot on an 85mm portrait lens, shallow depth of field","promptTr":"85 mm portre lens, sığ alan derinliği","variants":{},"three":{"height":1.64,"distance":1.6,"targetY":1.62,"lensMm":85},"mistakes":["f/8 yazıp bulanık arka plan beklemek."],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.tele","category":"lens","tr":"Tele (200 mm+)","en":"Telephoto lens","descTr":"Arka planı karakterin üstüne yığar, mesafeyi sıkıştırır. Gözetleme ve kalabalık hissi verir.","emotions":["gerilim","yalnizlik"],"avoidTr":"Mekânı tanıtmak için kullanma.","promptEn":"shot on a 200mm telephoto lens, compressed background","promptTr":"200 mm tele lens, sıkışmış arka plan","variants":{},"three":{"height":1.6,"distance":8,"targetY":1.6,"lensMm":200},"mistakes":[],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.macro","category":"lens","tr":"Makro","en":"Macro lens","descTr":"Damla, göz bebeği, kumaş lifi gibi çok küçük ayrıntıları dev gösterir.","emotions":["merak","huzur"],"avoidTr":"İnsan bütünü için kullanma.","promptEn":"macro lens extreme detail","promptTr":"makro lens, çok ince ayrıntı","variants":{},"three":{"height":1.1,"distance":0.18,"targetY":1.08,"lensMm":100},"mistakes":[],"lessonId":"m2.l5","gameId":"g.lens-swap"},
-  {"id":"lens.anamorphic","category":"lens","tr":"Anamorfik","en":"Anamorphic lens","descTr":"Yatay ışık çizgileri, oval bokeh ve geniş 2.39:1 kadraj. Klasik sinema dokusu.","emotions":["guc","huzur"],"avoidTr":"9:16 dikey videoda kadraj oranı çelişir.","promptEn":"anamorphic lens, horizontal lens flares, oval bokeh","promptTr":"anamorfik lens, yatay ışık çizgileri, oval bokeh","variants":{},"three":{"height":1.6,"distance":2.4,"targetY":1.55,"lensMm":40},"mistakes":["9:16 kadrajda anamorfik istemek."],"lessonId":"m2.l5","gameId":"g.lens-swap"}
+ {
+  "id": "lens.fisheye",
+  "category": "lens",
+  "tr": "Balıkgözü (8-14 mm)",
+  "en": "Fisheye lens",
+  "descTr": "Kenarlar küre gibi bükülür. Kaykay, rüya, sarhoşluk ya da gözetleme deliği hissi verir.",
+  "emotions": [
+   "kaos",
+   "panik"
+  ],
+  "avoidTr": "Doğal bir portrede kullanma; yüz bozulur.",
+  "promptEn": "fisheye lens, strong barrel distortion",
+  "promptTr": "balıkgözü lens, güçlü fıçı bükülmesi",
+  "variants": {},
+  "three": {
+   "height": 1.5,
+   "distance": 0.9,
+   "targetY": 1.5,
+   "lensMm": 10
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.ultra-wide",
+  "category": "lens",
+  "tr": "Ultra geniş (14-20 mm)",
+  "en": "Ultra-wide lens",
+  "descTr": "Mekânı derin ve büyük gösterir, yakındaki nesneleri abartır.",
+  "emotions": [
+   "ozgurluk",
+   "kaos"
+  ],
+  "avoidTr": "Yakın portrede burun büyür.",
+  "promptEn": "shot on an ultra-wide 16mm lens",
+  "promptTr": "16 mm ultra geniş lensle çekim",
+  "variants": {},
+  "three": {
+   "height": 1.5,
+   "distance": 1.6,
+   "targetY": 1.4,
+   "lensMm": 16
+  },
+  "mistakes": [
+   "Ultra geniş lensle yakın portre."
+  ],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.wide",
+  "category": "lens",
+  "tr": "Geniş (24-35 mm)",
+  "en": "Wide lens",
+  "descTr": "Karakter ve mekân birlikte. Sokak, belgesel ve el kamerası hissi.",
+  "emotions": [
+   "merak",
+   "huzur"
+  ],
+  "avoidTr": "Arka planı eritmek istiyorsan uzun lens seç.",
+  "promptEn": "shot on a 28mm wide lens",
+  "promptTr": "28 mm geniş lensle çekim",
+  "variants": {},
+  "three": {
+   "height": 1.55,
+   "distance": 2.4,
+   "targetY": 1.4,
+   "lensMm": 28
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.normal",
+  "category": "lens",
+  "tr": "Normal (40-50 mm)",
+  "en": "Normal lens",
+  "descTr": "İnsan gözüne yakın perspektif. Tarafsız, dürüst görüntü.",
+  "emotions": [
+   "huzur",
+   "yakinlik"
+  ],
+  "avoidTr": "Dramatik bir bozulma istiyorsan yetmez.",
+  "promptEn": "shot on a 50mm lens, natural perspective",
+  "promptTr": "50 mm lens, doğal perspektif",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 2,
+   "targetY": 1.5,
+   "lensMm": 50
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.portrait",
+  "category": "lens",
+  "tr": "Portre (85 mm)",
+  "en": "Portrait lens",
+  "descTr": "Yüzü inceltir, arka planı yumuşak bir buluta çevirir.",
+  "emotions": [
+   "yakinlik",
+   "kirilganlik"
+  ],
+  "avoidTr": "Dar mekânda kamerayı geri çekecek yer olmayabilir.",
+  "promptEn": "shot on an 85mm portrait lens, shallow depth of field",
+  "promptTr": "85 mm portre lens, sığ alan derinliği",
+  "variants": {},
+  "three": {
+   "height": 1.64,
+   "distance": 1.6,
+   "targetY": 1.62,
+   "lensMm": 85
+  },
+  "mistakes": [
+   "f/8 yazıp bulanık arka plan beklemek."
+  ],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.tele",
+  "category": "lens",
+  "tr": "Tele (200 mm+)",
+  "en": "Telephoto lens",
+  "descTr": "Arka planı karakterin üstüne yığar, mesafeyi sıkıştırır. Gözetleme ve kalabalık hissi verir.",
+  "emotions": [
+   "gerilim",
+   "yalnizlik"
+  ],
+  "avoidTr": "Mekânı tanıtmak için kullanma.",
+  "promptEn": "shot on a 200mm telephoto lens, compressed background",
+  "promptTr": "200 mm tele lens, sıkışmış arka plan",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 8,
+   "targetY": 1.6,
+   "lensMm": 200
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.macro",
+  "category": "lens",
+  "tr": "Makro",
+  "en": "Macro lens",
+  "descTr": "Damla, göz bebeği, kumaş lifi gibi çok küçük ayrıntıları dev gösterir.",
+  "emotions": [
+   "merak",
+   "huzur"
+  ],
+  "avoidTr": "İnsan bütünü için kullanma.",
+  "promptEn": "macro lens extreme detail",
+  "promptTr": "makro lens, çok ince ayrıntı",
+  "variants": {},
+  "three": {
+   "height": 1.1,
+   "distance": 0.18,
+   "targetY": 1.08,
+   "lensMm": 100
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.anamorphic",
+  "category": "lens",
+  "tr": "Anamorfik",
+  "en": "Anamorphic lens",
+  "descTr": "Yatay ışık çizgileri, oval bokeh ve geniş 2.39:1 kadraj. Klasik sinema dokusu.",
+  "emotions": [
+   "guc",
+   "huzur"
+  ],
+  "avoidTr": "9:16 dikey videoda kadraj oranı çelişir.",
+  "promptEn": "anamorphic lens, horizontal lens flares, oval bokeh",
+  "promptTr": "anamorfik lens, yatay ışık çizgileri, oval bokeh",
+  "variants": {},
+  "three": {
+   "height": 1.6,
+   "distance": 2.4,
+   "targetY": 1.55,
+   "lensMm": 40
+  },
+  "mistakes": [
+   "9:16 kadrajda anamorfik istemek."
+  ],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.short-tele",
+  "category": "lens",
+  "tr": "Kısa tele (100-135 mm)",
+  "en": "Short telephoto",
+  "descTr": "Yüzü düzleştirmeden sıkıştırır; röportaj ve sıkı portreler için.",
+  "emotions": [
+   "yakinlik",
+   "gerilim"
+  ],
+  "avoidTr": "Dar mekânda geri çekilecek yer yoksa kullanma.",
+  "promptEn": "shot on a 135mm lens, compressed background",
+  "promptTr": "135 mm lens, sıkışmış arka plan",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 3,
+   "targetY": 1.62,
+   "lensMm": 135
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.tilt-shift",
+  "category": "lens",
+  "tr": "Tilt-shift",
+  "en": "Tilt-shift lens",
+  "descTr": "Netlik düzlemi eğilir; gerçek şehir maket gibi görünür.",
+  "emotions": [
+   "merak",
+   "huzur"
+  ],
+  "avoidTr": "Yakın portrede yapay durur.",
+  "promptEn": "tilt-shift lens, miniature effect, narrow band of focus",
+  "promptTr": "tilt-shift lens, minyatür etkisi, dar netlik bandı",
+  "variants": {},
+  "three": {
+   "height": 6,
+   "distance": 9,
+   "targetY": 0.5,
+   "lensMm": 45
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.probe",
+  "category": "lens",
+  "tr": "Probe lens",
+  "en": "Probe lens",
+  "descTr": "İnce uzun lens nesnelerin arasına girer; böcek gözü gibi yakın ve derin.",
+  "emotions": [
+   "merak",
+   "kaos"
+  ],
+  "avoidTr": "İnsan ölçeğinde geniş sahnede anlamsız.",
+  "promptEn": "probe lens gliding between objects at ground level",
+  "promptTr": "yer seviyesinde nesnelerin arasında süzülen probe lens",
+  "variants": {},
+  "three": {
+   "height": 0.3,
+   "distance": 1.2,
+   "targetY": 0.6,
+   "lensMm": 24,
+   "move": "push"
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ },
+ {
+  "id": "lens.vintage",
+  "category": "lens",
+  "tr": "Vintage ve yumuşak lens",
+  "en": "Vintage soft lens",
+  "descTr": "Kenarlar yumuşar, ışıklar parlar, kontrast düşer. Anı ve nostalji.",
+  "emotions": [
+   "huzur",
+   "yakinlik"
+  ],
+  "avoidTr": "Keskin aksiyon için uygun değil.",
+  "promptEn": "vintage lens with soft glow, gentle halation around highlights, lower contrast",
+  "promptTr": "yumuşak parıltılı vintage lens, parlak noktalarda hafif hale, düşük kontrast",
+  "variants": {},
+  "three": {
+   "height": 1.62,
+   "distance": 1.8,
+   "targetY": 1.6,
+   "lensMm": 58
+  },
+  "mistakes": [],
+  "lessonId": "m2.l5",
+  "gameId": "g.lens-swap"
+ }
 ]

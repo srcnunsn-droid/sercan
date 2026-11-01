@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useApp, currentProvider, DEFAULT_PRICE } from '../store/app';
 import { buildPackage, estimateCredits } from '../engine/package';
+import { buildSrt, caption, editList, hashtags, hook, thumbnailPrompt, SAFE_916, POST_TIMES_TR } from '../engine/publish';
+import { rigParams } from '../engine/shot';
+import { FramePreview } from '../ui/FramePreview';
+import { ASPECT_NUM } from './Studio';
 import { saveFile, copyText } from '../lib/files';
 import { CATALOG_BY_ID } from '../content';
 import type { Project } from '../model/types';
@@ -13,7 +17,7 @@ import type { Location } from '../model/types';
 import { PromptBlock } from '../ui/Prompt';
 import { RuleList } from '../ui/Rules';
 import { Icon } from '../ui/Icon';
-import { Slate } from '../ui/misc';
+import { Seg, Slate } from '../ui/misc';
 import { countWords, uid } from '../lib/text';
 import { t } from '../i18n';
 
@@ -336,6 +340,58 @@ function ContinuityAudit() {
   );
 }
 
+function StepPublish() {
+  const p = useApp((s) => s.project());
+  const cardId = useApp((s) => s.cardId);
+  const toast = useApp((s) => s.toast);
+  const sec = MODEL_CARDS.find((c) => c.id === cardId)?.partSec ?? 10;
+  const imageCards = MODEL_CARDS.filter((c) => c.kind !== 'video');
+  const [imgCard, setImgCard] = useState(imageCards.find((c) => c.id === 'nano-banana-2')?.id ?? imageCards[0].id);
+  const [lang, setLang] = useState<'tr' | 'en'>('tr');
+  const srt = buildSrt(p, sec, lang);
+  const tags = hashtags(p);
+  const thumb = thumbnailPrompt(p, imgCard);
+  const first = p.parts[0];
+  const vertical = p.aspect === '9:16';
+  const saveSrt = async () => { const r = await saveFile(`${p.title.replace(/[^\p{L}\p{N}]+/gu, '-')}-${lang}.srt`, srt, 'application/x-subrip'); toast(r === 'declined' ? 'İndirme onaylanmadı.' : 'Altyazı dosyası hazır.', r === 'declined' ? 'warn' : 'ok'); };
+  return (
+    <div className="stack">
+      <div className="grid two" style={{ alignItems: 'start' }}>
+        <div className="stack">
+          <div className="tile"><span className="eyebrow">Kanca</span><b>{hook(p)}</b><span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>İlk karede yüz ve görünür bir gerilim olsun; ilk ses ilk saniyede gelsin.</span></div>
+          <div className="tile"><span className="eyebrow">Açıklama</span><pre className="mono" style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13 }}>{caption(p)}</pre><div><button className="btn sm" onClick={async () => toast((await copyText(caption(p))) ? 'Açıklama kopyalandı.' : 'Kopyalanamadı.', 'ok')}><Icon name="copy" size={14} /> Kopyala</button></div></div>
+          <div className="tile"><span className="eyebrow">Hashtag</span><div className="row">{tags.map((h) => <span key={h} className="chip static">{h}</span>)}</div><div><button className="btn sm" onClick={async () => toast((await copyText(tags.join(' '))) ? 'Hashtagler kopyalandı.' : 'Kopyalanamadı.', 'ok')}><Icon name="copy" size={14} /> Hepsini kopyala</button></div></div>
+          <div className="tile"><span className="eyebrow">Paylaşım zamanı (genel öneri, doğrulanmadı)</span><div className="row">{POST_TIMES_TR.map((x) => <span key={x} className="chip static">{x}</span>)}</div><span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>Kendi kanal istatistiklerin her zaman bu öneriden önce gelir.</span></div>
+        </div>
+        <div className="stack">
+          <span className="eyebrow">{vertical ? '9:16 güvenli alan' : `${p.aspect} kadraj`}</span>
+          <div className="viewport" style={{ aspectRatio: String(ASPECT_NUM[p.aspect]), maxHeight: 460, maxWidth: '100%', margin: '0 auto' }}>
+            <FramePreview params={rigParams(first.camera, ASPECT_NUM[p.aspect])} light={first.light} figures={Math.max(1, first.characters.length)} poses={first.characters.map((c) => c.pose as any)} setId={p.locations.find((l) => l.id === p.locationId)?.setId} overlays={false} />
+            {vertical && <>
+              <div aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: `${SAFE_916.top * 100}%`, background: 'rgba(239,107,91,.28)' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: `${SAFE_916.bottom * 100}%`, background: 'rgba(239,107,91,.28)' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', top: `${SAFE_916.top * 100}%`, bottom: `${SAFE_916.bottom * 100}%`, right: 0, width: `${SAFE_916.right * 100}%`, background: 'rgba(239,107,91,.2)' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', left: '8%', right: '20%', top: '58%', padding: 6, borderRadius: 6, background: 'rgba(0,0,0,.6)', color: '#fff', fontSize: 12, textAlign: 'center' }}>{p.parts[0].dialogue[0]?.textTr ?? 'Altyazı burada'}</div>
+            </>}
+          </div>
+          {vertical && <p className="muted" style={{ fontSize: 'var(--fs-xs)' }}>Kırmızı alanlar uygulama arayüzünün altında kalır: üst %10, alt %20, sağ %15. Yüzü ve altyazıyı ortada tut.</p>}
+        </div>
+      </div>
+
+      <div className="tile">
+        <div className="row" style={{ justifyContent: 'space-between' }}><b>Altyazı (.srt)</b><Seg<'tr' | 'en'> label="Altyazı dili" value={lang} onChange={setLang} options={[{ id: 'tr', label: 'Türkçe' }, { id: 'en', label: 'English' }]} /></div>
+        <pre className="mono" style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 12, maxHeight: 220, overflow: 'auto' }}>{srt || 'Henüz replik yok.'}</pre>
+        <div><button className="btn sm primary" disabled={!srt} onClick={saveSrt}><Icon name="download" size={14} /> .srt indir</button></div>
+      </div>
+
+      <label className="field" htmlFor="th-card"><span>Thumbnail görsel modeli</span><select id="th-card" className="select" value={imgCard} onChange={(e) => setImgCard(e.target.value)}>{imageCards.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+      <PromptBlock en={thumb.en} tr={thumb.tr} label="Thumbnail promptu (yazıyı kurguda ekle)" />
+
+      <div className="tile"><b>Kurgu listesi (CapCut, Premiere, DaVinci)</b><ol style={{ margin: 0, paddingLeft: 18 }}>{editList(p, sec).map((x) => <li key={x} style={{ listStyle: 'none' }}>{x}</li>)}</ol></div>
+    </div>
+  );
+}
+
 function StepFix() {
   const p = useApp((s) => s.project());
   const cardId = useApp((s) => s.cardId);
@@ -392,8 +448,8 @@ function StepFix() {
 export function Factory() {
   const p = useApp((s) => s.project());
   const edit = useApp((s) => s.edit);
-  const [step, setStep] = useState(Math.min(p.factory.step, 8));
-  const canOpen = (n: number) => n <= 6 || ((n === 7 || n === 8) && p.factory.visualsApproved);
+  const [step, setStep] = useState(Math.min(p.factory.step, 9));
+  const canOpen = (n: number) => n <= 6 || p.factory.visualsApproved;
   const goStep = (n: number) => { if (!canOpen(n)) return; setStep(n); if (n > p.factory.step) edit('step', (x) => { x.factory.step = n; }); };
   return (
     <>
@@ -404,7 +460,7 @@ export function Factory() {
       <div className="wizard">
         <nav className="wsteps" aria-label="Üretim adımları">
           {STEPS.map((s, i) => {
-            const n = i + 1; const locked = !canOpen(n) || n >= 9;
+            const n = i + 1; const locked = !canOpen(n);
             return (
               <button key={s} className="wstep" aria-current={step === n ? 'step' : undefined} data-done={n < p.factory.step || (n === 6 && p.factory.visualsApproved)} disabled={locked} onClick={() => goStep(n)} title={n === 7 && !p.factory.visualsApproved ? t('factory.gateLocked') : undefined}>
                 <span className="n">{n}</span>{s}{locked && <Icon name="lock" size={14} />}
@@ -422,11 +478,11 @@ export function Factory() {
           {step === 6 && <><StepNote step={6} /><StepGate /></>}
           {step === 7 && <StepVideo />}
           {step === 8 && <><StepNote step={8} /><StepFix /></>}
+          {step === 9 && <><StepNote step={9} /><StepPublish /></>}
           <div className="row" style={{ justifyContent: 'space-between' }}>
             <button className="btn ghost" disabled={step === 1} onClick={() => setStep(step - 1)}>{t('common.back')}</button>
-            {step < 8 && <button className="btn primary" disabled={!canOpen(step + 1)} onClick={() => goStep(step + 1)}>{step === 6 && !p.factory.visualsApproved ? t('factory.gateLocked') : <>{t('common.next')} <Icon name="arrow" size={16} /></>}</button>}
+            {step < 9 && <button className="btn primary" disabled={!canOpen(step + 1)} onClick={() => goStep(step + 1)}>{step === 6 && !p.factory.visualsApproved ? t('factory.gateLocked') : <>{t('common.next')} <Icon name="arrow" size={16} /></>}</button>}
           </div>
-          {step >= 8 && <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>9. Yayın paketi Faz 6’da açılacak.</p>}
         </section>
       </div>
     </>

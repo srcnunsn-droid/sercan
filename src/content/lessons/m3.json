@@ -1,0 +1,104 @@
+{
+ "id": "m3",
+ "titleTr": "Işık katmanları",
+ "subtitleTr": "4 katmanlı ışık, ikinci zıt ışık, atmosfer",
+ "lessons": [
+  {
+   "id": "m3.l1",
+   "titleTr": "4 katmanlı ışık",
+   "minutes": 9,
+   "goalTr": "Ana, dolgu, kenar ve sahne içi ışığı birlikte kur.",
+   "demo": {
+    "kind": "light",
+    "textTr": "Önce ana ışık, sonra kenar ışığı ekle. Yüz arka plandan ayrılır."
+   },
+   "gameId": "g.poster-workshop",
+   "write": {
+    "taskTr": "Gece mutfakta buzdolabını açan bir adamı 4 ışık katmanıyla yaz.",
+    "focus": [
+     "light5",
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Karakteri arka plandan ayıran ışık?",
+     "options": [
+      "Dolgu",
+      "Kenar",
+      "Ana"
+     ],
+     "answer": 1,
+     "whyTr": "Kenar ışığı arkadan gelir."
+    },
+    {
+     "qTr": "En güçlü ışık hangisi?",
+     "options": [
+      "Ana ışık",
+      "Dolgu",
+      "Pratik"
+     ],
+     "answer": 0,
+     "whyTr": "Ana ışık yüzün şeklini kurar."
+    }
+   ],
+   "studio": {
+    "light": {
+     "source": "screen",
+     "kelvin": 7500,
+     "hardness": "yumusak",
+     "direction": "front"
+    }
+   }
+  },
+  {
+   "id": "m3.l2",
+   "titleTr": "Zıt ışık ve atmosfer",
+   "minutes": 8,
+   "goalTr": "Sıcak-soğuk karşıtlığı ve sisle ışığı görünür kıl.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Turuncu lamba ve mavi ay ışığı aynı yüzde. Sis ışığı huzmeye çevirir.",
+    "exampleEn": "Warm tungsten lamp from the left at 3200K, cool blue moonlight rim from behind on the right, thin haze catching the light.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Soldan 3200K sıcak lamba, sağ arkadan soğuk mavi ay ışığı kenarı, ışığı yakalayan ince pus."
+   },
+   "gameId": "g.fog-volume",
+   "write": {
+    "taskTr": "Yağmurlu sokakta neon ve sokak lambası arasında duran bir kadını iki zıt ışıkla yaz.",
+    "focus": [
+     "light5"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Işık huzmesinin görünmesi için ne gerekir?",
+     "options": [
+      "Atmosfer (sis, toz)",
+      "Daha güçlü lens",
+      "Daha çok karakter"
+     ],
+     "answer": 0,
+     "whyTr": "Işık havadaki parçacıklara çarpınca görünür."
+    },
+    {
+     "qTr": "Zıt ışığa örnek?",
+     "options": [
+      "İki beyaz lamba",
+      "Turuncu lamba + mavi ay ışığı",
+      "Tek pencere"
+     ],
+     "answer": 1,
+     "whyTr": "Sıcak-soğuk karşıtlık derinlik verir."
+    }
+   ],
+   "studio": {
+    "light": {
+     "source": "street-lamp",
+     "kelvin": 2200,
+     "hardness": "sert",
+     "direction": "back-left"
+    }
+   }
+  }
+ ]
+}
