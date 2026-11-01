@@ -7,6 +7,7 @@ import { today } from '../lib/text';
 import { ALL_LESSONS, applyCardOverrides, type CardOverride, type ModelCard } from '../content';
 import { PROVIDERS } from '../ai/providers';
 import type { AIProvider } from '../ai/types';
+import type { TestRun } from '../engine/testset';
 
 export type Route = 'home' | 'academy' | 'studio' | 'factory' | 'library' | 'settings';
 export const ROUTES: Route[] = ['home', 'academy', 'studio', 'factory', 'library', 'settings'];
@@ -30,8 +31,9 @@ export interface Prefs {
   customCards: ModelCard[];
   reviewDue: Record<string, number>;         // spaced repetition: card id -> next due timestamp
   reviewBox: Record<string, number>;         // Leitner box 1..5
+  testRuns: Record<string, TestRun[]>;       // mini test set results per model card
 }
-export const defaultPrefs = (): Prefs => ({ creditPrices: {}, cardOverrides: {}, customCards: [], reviewDue: {}, reviewBox: {} });
+export const defaultPrefs = (): Prefs => ({ creditPrices: {}, cardOverrides: {}, customCards: [], reviewDue: {}, reviewBox: {}, testRuns: {} });
 export const DEFAULT_PRICE = { image: 2, video: 30 } as const;
 
 interface Toast { id: number; text: string; kind: 'ok' | 'info' | 'warn' | 'celebrate' }

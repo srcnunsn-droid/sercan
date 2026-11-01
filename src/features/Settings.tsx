@@ -3,6 +3,8 @@ import { useApp, DEFAULT_PRICE, type Theme } from '../store/app';
 import { baseCard, type ModelCard } from '../content';
 import { today, uid } from '../lib/text';
 import { runTask, type CardDraft } from '../ai/tasks';
+import { compileTestSet, passRates, TEST_CHECKS, type TestCheck } from '../engine/testset';
+import { PromptBlock } from '../ui/Prompt';
 import { currentProvider } from '../store/app';
 import { MODEL_CARDS } from '../content';
 import { PROVIDERS, setSessionKey, hasSessionKey } from '../ai/providers';
@@ -110,6 +112,7 @@ function ModelCards() {
             </div>
             <label className="field" htmlFor="mc-notes"><span>Notlar</span><input id="mc-notes" className="input" value={c.notesTr} onChange={(e) => patch(c.id, { notesTr: e.target.value })} /></label>
             <UpdateWithClaude card={c} onApply={(d) => patch(c.id, { ...d, verified: false, lastVerified: null })} />
+            <TestSet card={c} />
             <div className="row">
               <button className="btn primary" onClick={() => patch(c.id, { verified: true, lastVerified: today() })}>Doğrulandı olarak işaretle</button>
               {baseCard(c.id) && <button className="btn ghost" onClick={() => setPrefs((p) => { delete p.cardOverrides[c.id]; })}>Başlangıç değerlerine dön</button>}
@@ -181,6 +184,44 @@ function UpdateWithClaude({ card, onApply }: { card: ModelCard; onApply: (d: Car
       <label className="field" htmlFor={`upd-${card.id}`}><span>Model kartını güncelle: yeni sürüm notlarını yapıştır</span><textarea id={`upd-${card.id}`} className="textarea" style={{ minHeight: 70 }} value={docs} onChange={(e) => setDocs(e.target.value)} /></label>
       <div><button className="btn sm" disabled={!docs.trim() || busy} onClick={async () => { setBusy(true); try { const { id: _i, verified: _v, lastVerified: _l, ...existing } = card; const o = await runTask<CardDraft>(currentProvider(), 'draftModelCard', { name: card.name, docs, existing: JSON.stringify(existing) }, { noCache: true }); setDraft(o.value); } finally { setBusy(false); } }}>{busy ? '…' : 'Claude’dan taslak iste'}</button></div>
       {draft && <div className="tile"><DraftPreview d={draft} onChange={setDraft} /><div className="row"><button className="btn sm primary" onClick={() => { onApply(draft); setDraft(null); setDocs(''); }}>Taslağı uygula</button><button className="btn sm ghost" onClick={() => setDraft(null)}>Vazgeç</button></div></div>}
+    </div>
+  );
+}
+
+function TestSet({ card }: { card: ModelCard }) {
+  const runs = useApp((s) => s.prefs.testRuns[card.id] ?? []);
+  const setPrefs = useApp((s) => s.setPrefs);
+  const toast = useApp((s) => s.toast);
+  const [open, setOpen] = useState(false);
+  const [marks, setMarks] = useState<Record<string, Partial<Record<TestCheck, boolean>>>>({});
+  const rates = passRates(runs);
+  const set = compileTestSet(card.id);
+  const toggle = (sid: string, cid: TestCheck, v: boolean) => setMarks((m) => ({ ...m, [sid]: { ...(m[sid] ?? {}), [cid]: v } }));
+  return (
+    <div className="stack" style={{ gap: 'var(--sp-2)' }}>
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <b>Mini deneme seti</b>
+        <button className="btn sm" onClick={() => setOpen(!open)}>{open ? 'Gizle' : `3 sahneyi aç (${runs.length} kayıt)`}</button>
+      </div>
+      <div className="row">{TEST_CHECKS.map((c) => <span key={c.id} className={`sev ${rates[c.id] === null ? 'tip' : rates[c.id]! >= 0.7 ? 'ok' : rates[c.id]! >= 0.4 ? 'warn' : 'error'}`}>{c.tr}: {rates[c.id] === null ? '—' : `%${Math.round(rates[c.id]! * 100)}`}</span>)}</div>
+      {open && <>
+        <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Bu üç promptu {card.name} ile üret, sonra her sahne için modelin neyi doğru yaptığını işaretle. Sonuçlar bu kartta birikir.</p>
+        {set.map((s) => (
+          <div key={s.id} className="tile">
+            <b>{s.titleTr}</b>
+            <PromptBlock en={s.compiled.en} tr={s.compiled.tr} legend={s.compiled.legendTr} />
+            <div className="row">{TEST_CHECKS.filter((c) => c.id !== 'dialogue' || s.id === 'dialogue').map((c) => (
+              <label key={c.id} className="chip" style={{ cursor: 'pointer' }}><input type="checkbox" checked={!!marks[s.id]?.[c.id]} onChange={(e) => toggle(s.id, c.id, e.target.checked)} /> {c.tr}</label>
+            ))}</div>
+          </div>
+        ))}
+        <div><button className="btn primary" onClick={() => {
+          const results: Record<string, Partial<Record<TestCheck, boolean>>> = {};
+          for (const s of set) { results[s.id] = {}; for (const c of TEST_CHECKS) if (c.id !== 'dialogue' || s.id === 'dialogue') results[s.id][c.id] = !!marks[s.id]?.[c.id]; }
+          setPrefs((p) => { p.testRuns[card.id] = [...(p.testRuns[card.id] ?? []), { at: Date.now(), results }].slice(-20); });
+          setMarks({}); toast('Deneme sonucu kaydedildi.', 'ok');
+        }}>Sonucu kaydet</button></div>
+      </>}
     </div>
   );
 }

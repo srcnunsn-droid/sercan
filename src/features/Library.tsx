@@ -6,6 +6,7 @@ import { Slate } from '../ui/misc';
 import { PromptBlock } from '../ui/Prompt';
 import { MODEL_CARDS } from '../content';
 import { uid } from '../lib/text';
+import { learnPatterns } from '../engine/notebook';
 import type { Character, Location } from '../model/types';
 import { t } from '../i18n';
 
@@ -89,6 +90,21 @@ export function Library() {
       <section className="panel">
         <div className="panel-head"><h3>Kayıtlı promptlar · deneyim defteri</h3><input className="input" style={{ maxWidth: 320 }} aria-label="Prompt ara" placeholder="Ara: model, sahne, not" value={pq} onChange={(e) => setPq(e.target.value)} /></div>
         <p className="muted">Fabrika’dan kaydettiğin promptlar. Ürettikten sonra sonucu puanla ve not düş: iyi çalışan kalıplar burada birikir.</p>
+        {(() => {
+          const all = projects.flatMap((x) => x.prompts);
+          const pats = MODEL_CARDS.map((c) => learnPatterns(all, c.id)).filter((x) => x.rated > 0);
+          return pats.length > 0 && (
+            <div className="grid two">{pats.map((x) => (
+              <div className="tile" key={x.cardId}>
+                <b>{MODEL_CARDS.find((c) => c.id === x.cardId)?.name}</b>
+                <span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>{x.rated} puanlı prompt · {x.good} çok iyi · {x.bad} kötü</span>
+                {x.keep.length > 0 && <div className="row"><span className="sev ok">İşe yarıyor</span>{x.keep.map((k) => <span key={k.text} className="chip static mono" style={{ fontSize: 12 }}>{k.text} ×{k.n}</span>)}</div>}
+                {x.avoid.length > 0 && <div className="row"><span className="sev error">Kaçın</span>{x.avoid.map((k) => <span key={k.text} className="chip static mono" style={{ fontSize: 12 }}>{k.text} ×{k.n}</span>)}</div>}
+                {!x.keep.length && !x.avoid.length && <span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Kalıp için en az 2 benzer sonuç gerekiyor. Puanlamaya devam et.</span>}
+              </div>
+            ))}</div>
+          );
+        })()}
         {prompts.length === 0 ? <p className="empty">Henüz kayıtlı prompt yok. Fabrika → Video promptları → “Kütüphaneye kaydet”.</p> : prompts.slice(0, 30).map(({ b, p }) => (
           <div className="tile" key={b.id}>
             <div className="row" style={{ justifyContent: 'space-between' }}><b>{b.label ?? MODEL_CARDS.find((c) => c.id === b.target)?.name}</b><span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>{new Date(b.createdAt).toLocaleDateString('tr-TR')}</span></div>

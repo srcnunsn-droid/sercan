@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useApp, currentProvider, DEFAULT_PRICE } from '../store/app';
 import { buildPackage, estimateCredits } from '../engine/package';
+import { learnPatterns } from '../engine/notebook';
 import { buildSrt, caption, editList, hashtags, hook, thumbnailPrompt, SAFE_916, POST_TIMES_TR } from '../engine/publish';
 import { rigParams } from '../engine/shot';
 import { FramePreview } from '../ui/FramePreview';
@@ -305,6 +306,9 @@ function StepVideo() {
         </div>
       </div>
       {!card.verified && <span className="badge-unverified">{card.name}: doğrulanmadı. {card.notesTr}</span>}
+      {(() => { const pat = learnPatterns(useApp.getState().projects.flatMap((x) => x.prompts), card.id); return (pat.keep.length > 0 || pat.avoid.length > 0) && (
+        <p className="feedback"><b>Deneyim defterin ({card.name}):</b> {pat.keep.length > 0 && <>işe yarayanlar: {pat.keep.slice(0, 3).map((k) => `“${k.text}”`).join(', ')}. </>}{pat.avoid.length > 0 && <>kaçın: {pat.avoid.slice(0, 3).map((k) => `“${k.text}”`).join(', ')}.</>}</p>
+      ); })()}
       <div className="row"><span className="eyebrow">Karşılaştır</span>{videoCards.filter((c) => c.id !== card.id).map((c) => <button key={c.id} className="chip" aria-pressed={compare.includes(c.id)} onClick={() => setCompare((x) => (x.includes(c.id) ? x.filter((y) => y !== c.id) : [...x, c.id].slice(-2)))}>{c.name}</button>)}</div>
       <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Süreklilik: her parçanın son karesi sonrakinin başlangıç karesi olur.</p>
       {p.parts.map((part, i) => {
