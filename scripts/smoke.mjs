@@ -39,6 +39,17 @@ for (const [name, viewport, scheme] of [['phone', { width: 390, height: 844 }, '
     await page.screenshot({ path: `${out}/${name}-lesson-game.png`, fullPage: true });
     await page.evaluate(() => { location.hash = 'studyo'; });
     await page.waitForTimeout(400);
+    // hand-drawn camera path and prop placement
+    await page.getByRole('button', { name: 'Elle yol çiz' }).click();
+    await page.locator('#timeline').fill('0.5');
+    await page.getByRole('button', { name: /sn’ye kare/ }).click();
+    await page.waitForSelector('text=3 anahtar kare');
+    await page.getByRole('button', { name: '+ Bank' }).click();
+    await page.getByRole('button', { name: 'Propu taşı →' }).click();
+    await page.getByRole('button', { name: 'Yukarıdan' }).click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: `${out}/${name}-studio-path.png` });
+    await page.getByRole('button', { name: 'Yolu kaldır' }).click();
     await page.getByRole('button', { name: /Katalog/ }).click();
     await page.waitForTimeout(800);
     await page.screenshot({ path: `${out}/${name}-catalog.png` });

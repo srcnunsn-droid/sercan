@@ -33,6 +33,7 @@ export interface ThreeParams {
   height: number; distance: number; targetY: number; lensMm: number;
   yawDeg?: number; rollDeg?: number; move?: string; offsetX?: number;
   ots?: boolean; pov?: boolean; two?: boolean;
+  path?: import('../model/types').CamKey[];
 }
 export interface CatalogEntry {
   id: string; category: string; tr: string; en: string; descTr: string;

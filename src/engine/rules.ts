@@ -3,6 +3,7 @@ import { CARD_FALLBACK, cardMax } from './cards';
 import { INVISIBLE_WORDS, LIGHT_BY_ID, RULES_META, TEXTURE_LINE, TEXTURE_LINE_TR, type RuleMeta } from '../content';
 import type { Dir, GraphFix, Part, Project, RuleResult, Severity } from '../model/types';
 import { anyWord, countWords, hasWord, lower, wordRegex } from '../lib/text';
+import { describePath } from './shot';
 
 export interface RuleCtx {
   text?: string;           // a prompt or a sentence the user wrote
@@ -232,6 +233,12 @@ const checks: Record<string, Check> = {
     }
     project?.parts.forEach((p, i) => {
       const f = count(`${p.scene} ${p.sceneEn ?? ''}`);
+      if (p.camera.path && p.camera.path.length >= 2) {
+        const d = describePath(p.camera.path);
+        const moves = d.en[0] === 'the camera holds almost still' ? 0 : d.en.length;
+        if (moves + f.length > 1) hits.push({ partIndex: i, messageTr: `${i + 1}. parçanın kamera yolunda ${moves + f.length} hareket var: ${d.tr.join(' + ')}. Bir parçada tek hareket olmalı.` });
+        return;
+      }
       const graphMove = p.camera.motion && p.camera.motion !== 'move.static' ? 1 : 0;
       if (f.length + graphMove > 1) hits.push({ partIndex: i, messageTr: `${i + 1}. parçada birden fazla kamera hareketi var.` });
     });

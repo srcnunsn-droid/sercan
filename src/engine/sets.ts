@@ -3,7 +3,7 @@
 import type { V3 } from './shot';
 
 export type PrimKind = 'box' | 'cyl' | 'cone' | 'plane';
-export interface Prim { kind: PrimKind; pos: V3; size: V3; color: string; rotY?: number; emissive?: string; name?: string }
+export interface Prim { kind: PrimKind; pos: V3; size: V3; color: string; rotY?: number; emissive?: string; name?: string; placedId?: string }
 export interface SetDef { id: string; tr: string; en: string; sky: string; floor: string; prims: Prim[] }
 export interface PropDef { id: string; tr: string; en: string; prims: Prim[] }
 
@@ -114,7 +114,7 @@ export function worldPrims(setId: string | undefined, props: PlacedProp[] = []):
     const c = Math.cos(pp.rotY), s = Math.sin(pp.rotY);
     for (const p of def.prims) {
       const [x, y, z] = p.pos;
-      out.push({ ...p, name: `${pp.propId}_${p.name ?? ''}`, pos: [pp.pos[0] + x * c + z * s, y, pp.pos[1] - x * s + z * c], rotY: (p.rotY ?? 0) + pp.rotY });
+      out.push({ ...p, name: `${pp.propId}_${p.name ?? ''}`, placedId: pp.id, pos: [pp.pos[0] + x * c + z * s, y, pp.pos[1] - x * s + z * c], rotY: (p.rotY ?? 0) + pp.rotY });
     }
   }
   return out;

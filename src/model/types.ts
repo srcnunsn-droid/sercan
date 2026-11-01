@@ -10,6 +10,17 @@ export type AngleId = string; // catalog id, e.g. "angle.low"
 export type MotionId = string; // catalog id, e.g. "move.push-in"
 export type Aspect = '16:9' | '9:16' | '1:1' | '4:5' | '2.39:1';
 
+/** One keyframe of a hand-drawn camera path (absolute values around the subject at the origin). */
+export interface CamKey {
+  t: number;               // 0..1 across the part
+  yawDeg: number;          // around the subject, 0 = in front
+  height: number;          // metres
+  distance: number;        // metres from the subject
+  lensMm: number;
+  targetY: number;         // where the camera looks (height)
+  ease?: 'linear' | 'smooth' | 'in' | 'out';   // easing INTO this key
+}
+
 export interface CameraRig {
   angle: AngleId;          // vertical angle (catalog)
   framing: string;         // shot size (catalog), e.g. "size.medium"
@@ -18,6 +29,7 @@ export interface CameraRig {
   fStop: number;
   motion: MotionId;        // single camera move per part
   dutch?: boolean;
+  path?: CamKey[];         // hand-drawn path; overrides `motion` when it has 2+ keys
 }
 
 export interface LightRig {

@@ -3,7 +3,8 @@ import { useApp } from '../store/app';
 import { CATALOG, CATALOG_BY_ID, CATEGORY_TR, EMOTIONS, LIGHT_SOURCES, MODEL_CARDS, type CatalogEntry } from '../content';
 import { compilePart, DIR_TR } from '../engine/compiler';
 import { runRules } from '../engine/rules';
-import { rigParams, shotAt } from '../engine/shot';
+import { rigParams, rigStateAt, shotAt, describePath } from '../engine/shot';
+import type { CamKey } from '../model/types';
 import { POSES, type PoseId } from '../engine/figures';
 import type { Aspect, Dir, Part } from '../model/types';
 import { FaceLight, FramePreview, renderPosePng } from '../ui/FramePreview';
@@ -86,6 +87,8 @@ function Lab() {
   const [quality, setQuality] = useState<'high' | 'low'>('high');
   const [fps, setFps] = useState<number | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [selProp, setSelProp] = useState<string | null>(null);
+  const [snap, setSnap] = useState(true);
   const vref = useRef<Viewport3DHandle>(null);
   const part = project.parts[pi] ?? project.parts[0];
   const card = MODEL_CARDS.find((c) => c.id === cardId)!;
@@ -152,7 +155,8 @@ function Lab() {
         </div>
         <div className="viewport" style={{ aspectRatio: project.aspect === '9:16' ? '4 / 5' : '16 / 10', maxWidth: '100%' }}>
           {mode === '3d'
-            ? <Viewport3D ref={vref} params={params} light={part.light} t={time} aspect={ASPECT_NUM[project.aspect]} view={view} figures={figCount} poses={poses} setId={setId} props={placed} weather={weather} quality={quality} onFps={setFps} />
+            ? <Viewport3D ref={vref} params={params} light={part.light} t={time} aspect={ASPECT_NUM[project.aspect]} view={view} figures={figCount} poses={poses} setId={setId} props={placed} weather={weather} quality={quality} onFps={setFps}
+                selectedPropId={selProp} onSelectProp={setSelProp} snap={snap} onMoveProp={(id, pos) => editLoc((l) => { const it = l.props?.find((x) => x.id === id); if (it) it.pos = pos; })} />
             : <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}><div style={{ aspectRatio: String(ASPECT_NUM[project.aspect]), height: '100%', maxWidth: '100%' }}><FramePreview params={params} t={time} light={part.light} figures={figCount} poses={poses} setId={setId} props={placed} /></div></div>}
           <div className="hud">
             <span className="hud-tag">{project.aspect}</span>
@@ -202,7 +206,7 @@ function Lab() {
             <Select id="cam-angle" label="Dikey açı" value={part.camera.angle} options={opts('angle')} onChange={(v) => set((p) => { p.camera.angle = v; })} />
             <Select id="cam-size" label="Kadraj boyutu" value={part.camera.framing} options={opts('size')} onChange={(v) => set((p) => { p.camera.framing = v; })} />
             <Select id="cam-persp" label={<Term en="over-the-shoulder">Perspektif</Term>} value={part.camera.perspective ?? ''} options={opts('perspective', 'Standart')} onChange={(v) => set((p) => { p.camera.perspective = v || undefined; })} />
-            <Select id="cam-move" label={<Term en="push-in">Hareket (tek)</Term>} value={part.camera.motion} options={opts('movement')} onChange={(v) => set((p) => { p.camera.motion = v; })} />
+            <Select id="cam-move" label={<Term en="push-in">Hareket (tek)</Term>} hint={part.camera.path && part.camera.path.length >= 2 ? 'elle yol aktif' : undefined} value={part.camera.motion} options={opts('movement')} onChange={(v) => set((p) => { p.camera.motion = v; p.camera.path = undefined; })} />
           </div>
           <label className="field" htmlFor="cam-lens"><span><Term en="focal length">Lens</Term><em className="mono" style={{ fontStyle: 'normal' }}>{part.camera.lensMm} mm</em></span>
             <input id="cam-lens" type="range" min={14} max={200} step={1} value={part.camera.lensMm} onChange={(e) => set((p) => { p.camera.lensMm = Number(e.target.value); })} />
@@ -211,6 +215,7 @@ function Lab() {
             <input id="cam-f" type="range" min={0} max={8} step={1} value={[1.4, 1.8, 2.8, 4, 5.6, 8, 11, 16, 22].indexOf(part.camera.fStop)} onChange={(e) => set((p) => { p.camera.fStop = [1.4, 1.8, 2.8, 4, 5.6, 8, 11, 16, 22][Number(e.target.value)]; })} />
           </label>
           <label className="row" style={{ gap: 8 }}><input type="checkbox" id="cam-dutch" checked={!!part.camera.dutch} onChange={(e) => set((p) => { p.camera.dutch = e.target.checked; })} style={{ width: 22, height: 22 }} /> Dutch açı (yatık kadraj)</label>
+          <PathEditor path={part.camera.path} params={params} time={time} sec={sec} onChange={(path) => set((p) => { p.camera.path = path; })} onSeek={setTime} />
         </section>
 
         <section className="panel">
@@ -234,7 +239,26 @@ function Lab() {
           <div className="panel-head"><h3>Mekân seti</h3><Seg label="Kadraj oranı" value={project.aspect} onChange={(v) => edit('aspect', (x) => { x.aspect = v; })} options={(['9:16', '16:9', '2.39:1', '1:1', '4:5'] as Aspect[]).map((a) => ({ id: a, label: a }))} /></div>
           <div className="row">{SETS.map((st) => <button key={st.id} className="chip" aria-pressed={setId === st.id} onClick={() => editLoc((l) => { l.setId = st.id; })}>{st.tr}</button>)}</div>
           <span className="eyebrow">Proplar</span>
-          <div className="row">{PROPS.map((pd) => { const on = placed.some((x) => x.propId === pd.id); return <button key={pd.id} className="chip" aria-pressed={on} onClick={() => editLoc((l) => { const list = l.props ?? []; l.props = on ? list.filter((x) => x.propId !== pd.id) : [...list, { id: uid('pr'), propId: pd.id, pos: PROP_DEFAULT_POS[pd.id] ?? [1, -1], rotY: 0 }]; })}>{pd.tr}</button>; })}</div>
+          <div className="row">{PROPS.map((pd) => <button key={pd.id} className="chip" onClick={() => { const id = uid('pr'); editLoc((l) => { const n = (l.props ?? []).filter((x) => x.propId === pd.id).length; const [x, z] = PROP_DEFAULT_POS[pd.id] ?? [1, -1]; l.props = [...(l.props ?? []), { id, propId: pd.id, pos: [x + n * 0.75, z], rotY: 0 }]; }); setSelProp(id); }}>+ {pd.tr}</button>)}</div>
+          {placed.length > 0 && <div className="row">{placed.map((x) => <button key={x.id} className="chip" aria-pressed={selProp === x.id} onClick={() => setSelProp(selProp === x.id ? null : x.id)}>{PROPS.find((d) => d.id === x.propId)?.tr}</button>)}</div>}
+          {(() => {
+            const sel = placed.find((x) => x.id === selProp);
+            if (!sel) return <p className="muted" style={{ fontSize: 'var(--fs-xs)' }}>Serbest ya da Yukarıdan görünümde bir propa dokun ve sürükle. Kamera görünümünde seçim kapalıdır.</p>;
+            const setSel = (r: (x: PlacedProp) => void) => editLoc((l) => { const it = l.props?.find((y) => y.id === sel.id); if (it) r(it); });
+            return (
+              <div className="tile">
+                <div className="row" style={{ justifyContent: 'space-between' }}><b>{PROPS.find((d) => d.id === sel.propId)?.tr}</b><span className="mono muted tabnum" style={{ fontSize: 12 }}>x {sel.pos[0].toFixed(2)} · z {sel.pos[1].toFixed(2)} m</span></div>
+                <label className="field" htmlFor="prop-rot"><span>Yön<em className="mono" style={{ fontStyle: 'normal' }}>{Math.round((sel.rotY * 180) / Math.PI)}°</em></span>
+                  <input id="prop-rot" type="range" min={-180} max={180} step={15} value={Math.round((sel.rotY * 180) / Math.PI)} onChange={(e) => setSel((x) => { x.rotY = (Number(e.target.value) * Math.PI) / 180; })} />
+                </label>
+                <div className="row">
+                  {([['←', -0.5, 0], ['→', 0.5, 0], ['↑ geri', 0, -0.5], ['↓ öne', 0, 0.5]] as const).map(([l, dx, dz]) => <button key={l} className="btn sm" aria-label={`Propu taşı ${l}`} onClick={() => setSel((x) => { x.pos = [x.pos[0] + dx, x.pos[1] + dz]; })}>{l}</button>)}
+                  <label className="chip" style={{ cursor: 'pointer' }}><input type="checkbox" checked={snap} onChange={(e) => setSnap(e.target.checked)} /> Izgaraya yapış (25 cm)</label>
+                  <button className="btn sm ghost danger" onClick={() => { editLoc((l) => { l.props = (l.props ?? []).filter((x) => x.id !== sel.id); }); setSelProp(null); }}><Icon name="trash" size={14} /> Kaldır</button>
+                </div>
+              </div>
+            );
+          })()}
           <span className="eyebrow">Hava (üç parçada sabit)</span>
           <div className="row">{([['clear', 'Açık'], ['overcast', 'Kapalı'], ['rain', 'Yağmur'], ['snow', 'Kar'], ['fog', 'Sis']] as const).map(([w, l]) => <button key={w} className="chip" aria-pressed={weather === w} onClick={() => editLoc((x) => { x.weather = w; })}>{l}</button>)}</div>
         </section>
@@ -273,6 +297,48 @@ function Lab() {
           <RuleList results={partRules} />
         </section>
       </div>
+    </div>
+  );
+}
+
+// ---------------- camera path ----------------
+const EASE_TR = { smooth: 'Yumuşak', linear: 'Doğrusal', in: 'Hızlanarak', out: 'Yavaşlayarak' } as const;
+
+function PathEditor({ path, params, time, sec, onChange, onSeek }: { path?: CamKey[]; params: ReturnType<typeof rigParams>; time: number; sec: number; onChange: (p: CamKey[] | undefined) => void; onSeek: (t: number) => void }) {
+  const on = !!path && path.length >= 2;
+  const keyAt = (t: number): CamKey => { const s = rigStateAt(params, t); return { t: Math.round(t * 100) / 100, yawDeg: Math.round(s.yawDeg), height: +s.height.toFixed(2), distance: +s.distance.toFixed(2), lensMm: Math.round(s.lensMm), targetY: +s.targetY.toFixed(2), ease: 'smooth' }; };
+  if (!on) return (
+    <div className="tile">
+      <div className="row" style={{ justifyContent: 'space-between' }}><b>Kamera yolu</b><button className="btn sm" onClick={() => onChange([keyAt(0), keyAt(1)])}>Elle yol çiz</button></div>
+      <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Seçili hareketin başlangıç ve bitişi iki anahtar kare olarak açılır. Sonra araya kare ekleyip açıyı, yüksekliği, uzaklığı ve lensi kendin ayarlarsın.</p>
+    </div>
+  );
+  const keys = [...path!].sort((a, b) => a.t - b.t);
+  const upd = (i: number, patch: Partial<CamKey>) => onChange(keys.map((k, j) => (j === i ? { ...k, ...patch } : k)));
+  const d = describePath(keys);
+  return (
+    <div className="tile">
+      <div className="row" style={{ justifyContent: 'space-between' }}><b>Kamera yolu · {keys.length} anahtar kare</b>
+        <div className="row"><button className="btn sm" disabled={keys.some((k) => Math.abs(k.t - time) < 0.02)} onClick={() => onChange([...keys, keyAt(time)].sort((a, b) => a.t - b.t))}>+ {(time * sec).toFixed(1)} sn’ye kare</button><button className="btn sm ghost" onClick={() => onChange(undefined)}>Yolu kaldır</button></div>
+      </div>
+      <p className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Prompta giden: {d.tr.join(', ')}.</p>
+      {keys.map((k, i) => (
+        <details key={i} className="stack" style={{ gap: 6 }} open={keys.length <= 2}>
+          <summary style={{ cursor: 'pointer', minHeight: 32 }}><span className="mono tabnum">{(k.t * sec).toFixed(1)} sn</span> · açı {k.yawDeg}° · yük. {k.height} m · uzak. {k.distance} m · {k.lensMm} mm</summary>
+          <div className="grid two" style={{ gap: 'var(--sp-2)' }}>
+            {([['t', 'Zaman', 0, 1, 0.01, (v: number) => `${(v * sec).toFixed(1)} sn`], ['yawDeg', 'Yatay açı', -180, 180, 5, (v: number) => `${v}°`], ['height', 'Yükseklik', 0.1, 12, 0.05, (v: number) => `${v} m`], ['distance', 'Uzaklık', 0.3, 25, 0.05, (v: number) => `${v} m`], ['lensMm', 'Lens', 10, 200, 1, (v: number) => `${v} mm`], ['targetY', 'Bakış yüksekliği', 0, 4, 0.05, (v: number) => `${v} m`]] as const).map(([key, label, min, max, step, fmt]) => (
+              <label key={key} className="field" htmlFor={`k${i}-${key}`}><span>{label}<em className="mono" style={{ fontStyle: 'normal' }}>{fmt(k[key] as number)}</em></span>
+                <input id={`k${i}-${key}`} type="range" min={min} max={max} step={step} value={k[key] as number} onChange={(e) => upd(i, { [key]: Number(e.target.value) })} />
+              </label>
+            ))}
+          </div>
+          <div className="row">
+            {i > 0 && (Object.keys(EASE_TR) as (keyof typeof EASE_TR)[]).map((e) => <button key={e} className="chip" aria-pressed={(k.ease ?? 'smooth') === e} onClick={() => upd(i, { ease: e })}>{EASE_TR[e]}</button>)}
+            <button className="btn sm ghost" onClick={() => onSeek(k.t)}>Bu kareye git</button>
+            {keys.length > 2 && <button className="btn sm ghost danger" onClick={() => onChange(keys.filter((_, j) => j !== i))}>Sil</button>}
+          </div>
+        </details>
+      ))}
     </div>
   );
 }

@@ -19,7 +19,13 @@ export interface Viewport3DProps {
   figures: number; poses: PoseId[]; setId?: string; props?: PlacedProp[];
   weather?: 'clear' | 'overcast' | 'rain' | 'snow' | 'fog'; quality?: 'low' | 'high'; overlay?: boolean;
   onFps?: (fps: number) => void;
+  selectedPropId?: string | null;
+  onSelectProp?: (id: string | null) => void;
+  onMoveProp?: (id: string, pos: [number, number]) => void;
+  snap?: boolean;
 }
+
+export const snapTo = (v: number, step = 0.25) => Math.round(v / step) * step;
 
 const coarse = () => { try { return matchMedia('(pointer: coarse)').matches; } catch { return false; } };
 const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
@@ -66,10 +72,18 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
     const keyBulb = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
     scene.add(keyBulb);
     const camHelper = new THREE.CameraHelper(shotCam); scene.add(camHelper);
+    // camera trajectory over the part, and keyframe markers for hand-drawn paths
+    const pathGeo = new THREE.BufferGeometry();
+    const pathLine = new THREE.Line(pathGeo, new THREE.LineBasicMaterial({ color: 0xe3b450 }));
+    scene.add(pathLine);
+    const keyGroup = new THREE.Group(); scene.add(keyGroup);
+    const keyMat = new THREE.MeshBasicMaterial({ color: 0xf0cd7d });
+    const keyGeo = new THREE.SphereGeometry(0.09, 10, 10);
+    const selBox = new THREE.Box3Helper(new THREE.Box3(), 0xe3b450); selBox.visible = false; scene.add(selBox);
 
     const setGroup = new THREE.Group(); setGroup.name = 'Set'; scene.add(setGroup);
     const figGroup = new THREE.Group(); figGroup.name = 'Mannequins'; scene.add(figGroup);
-    const helpers = new Set<THREE.Object3D>([grid, keyBulb, camHelper]);
+    const helpers = new Set<THREE.Object3D>([grid, keyBulb, camHelper, pathLine, keyGroup, selBox]);
     const mats = [new THREE.MeshStandardMaterial({ color: '#d7b27a', roughness: 0.55 }), new THREE.MeshStandardMaterial({ color: '#8fa8cf', roughness: 0.55 }), new THREE.MeshStandardMaterial({ color: '#b48fc7', roughness: 0.55 })];
     const matCache = new Map<string, THREE.MeshStandardMaterial>();
     const matFor = (color: string, emissive?: string) => {
@@ -115,6 +129,9 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
         else geo = new THREE.PlaneGeometry(pr.size[0], pr.size[2]);
         const m = new THREE.Mesh(geo, matFor(pr.color, pr.emissive));
         m.position.set(...pr.pos); m.rotation.y = pr.rotY ?? 0; m.name = pr.name ?? pr.kind;
+        if (pr.placedId) m.userData.placedId = pr.placedId;
+        // roofs, ceilings and canopies would hide the floor plan in the top view
+        m.userData.overhead = pr.pos[1] - pr.size[1] / 2 > 2.4;
         m.castShadow = !low; m.receiveShadow = true;
         setGroup.add(m);
       }
@@ -169,7 +186,9 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
     const render = () => {
       const p = current;
       const showHelpers = p.view !== 'camera';
-      helpers.forEach((h) => { if (h !== particles) h.visible = showHelpers; });
+      helpers.forEach((h) => { if (h !== particles && h !== selBox) h.visible = showHelpers; });
+      selBox.visible = showHelpers && !!p.selectedPropId && propMeshes(p.selectedPropId).length > 0;
+      setGroup.children.forEach((o) => { if (o.userData.overhead) o.visible = p.view !== 'top'; });
       particles.visible = p.weather === 'rain' || p.weather === 'snow';
       let cam: THREE.Camera = shotCam;
       if (p.view === 'orbit') {
@@ -205,8 +224,22 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
       const setKey = (p.setId ?? 'platform') + JSON.stringify(p.props ?? []) + low;
       if (setKey !== lastSetKey) { buildSet(p); lastSetKey = setKey; }
       pMat.size = p.weather === 'snow' ? 0.06 : 0.03; pMat.color.set(p.weather === 'snow' ? 0xffffff : 0xa8bcd6);
+      // trajectory
+      const pts: number[] = [];
+      for (let i = 0; i <= 40; i++) { const sh = shotAt(p.params, i / 40); pts.push(...sh.pos); }
+      pathGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+      keyGroup.clear();
+      for (const k of p.params.path ?? []) { const m = new THREE.Mesh(keyGeo, keyMat); m.position.set(...shotAt({ ...p.params, path: undefined, move: 'static', yawDeg: k.yawDeg, height: k.height, distance: k.distance, targetY: k.targetY, lensMm: k.lensMm }, 0).pos); keyGroup.add(m); }
+      updateSelection(p.selectedPropId ?? null);
       applyLight(p.light); applyShot(p); render();
       ensureLoop();
+    };
+    const propMeshes = (id: string) => setGroup.children.filter((o) => o.userData.placedId === id);
+    const updateSelection = (id: string | null) => {
+      const ms = id ? propMeshes(id) : [];
+      if (!ms.length) { selBox.visible = false; return; }
+      const box = new THREE.Box3(); ms.forEach((m) => box.expandByObject(m));
+      selBox.box.copy(box); selBox.visible = current.view !== 'camera';
     };
 
     // animation loop only while particles fall (render on demand otherwise); reports fps
@@ -235,8 +268,37 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
 
     const pointers = new Map<number, { x: number; y: number }>();
     let pinch = 0;
-    const onDown = (e: PointerEvent) => { pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); renderer.domElement.setPointerCapture(e.pointerId); };
+    // prop picking and dragging on the floor plane (free and top views)
+    const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2(); const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    let drag: { id: string; start: THREE.Vector3; origin: Map<THREE.Object3D, THREE.Vector3>; base: [number, number] } | null = null;
+    const viewCam = () => (current.view === 'top' ? topCam : freeCam);
+    const castAt = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, viewCam()); };
+    const floorHit = () => { const v = new THREE.Vector3(); return ray.ray.intersectPlane(floorPlane, v) ? v : null; };
+    const onDown = (e: PointerEvent) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); cv.setPointerCapture(e.pointerId);
+      if (current.view === 'camera' || pointers.size > 1) return;
+      castAt(e);
+      const hit = ray.intersectObjects(setGroup.children, false).find((h) => h.object.userData.placedId);
+      if (!hit) { if (current.selectedPropId) current.onSelectProp?.(null); return; }
+      const id = hit.object.userData.placedId as string;
+      current.onSelectProp?.(id);
+      const start = floorHit(); if (!start) return;
+      const placed = current.props?.find((x) => x.id === id);
+      drag = { id, start, origin: new Map(propMeshes(id).map((m) => [m, m.position.clone()])), base: placed ? [...placed.pos] as [number, number] : [0, 0] };
+      updateSelection(id); render();
+    };
+    const dragTo = (e: PointerEvent): [number, number] | null => {
+      if (!drag) return null;
+      castAt(e); const v = floorHit(); if (!v) return null;
+      let nx = drag.base[0] + (v.x - drag.start.x); let nz = drag.base[1] + (v.z - drag.start.z);
+      if (current.snap !== false) { nx = snapTo(nx); nz = snapTo(nz); }
+      const dx = nx - drag.base[0], dz = nz - drag.base[1];
+      drag.origin.forEach((o, m) => m.position.set(o.x + dx, o.y, o.z + dz));
+      updateSelection(drag.id); render();
+      return [nx, nz];
+    };
     const onMove = (e: PointerEvent) => {
+      if (drag) { dragTo(e); return; }
       if (current.view !== 'orbit' || !pointers.has(e.pointerId)) return;
       const prev = pointers.get(e.pointerId)!; pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pointers.size === 2) {
@@ -245,7 +307,10 @@ export const Viewport3D = forwardRef<Viewport3DHandle, Viewport3DProps>(function
       } else { orbit.yaw -= (e.clientX - prev.x) * 0.008; orbit.pitch = Math.min(1.45, Math.max(0.02, orbit.pitch + (e.clientY - prev.y) * 0.006)); }
       render();
     };
-    const onUp = (e: PointerEvent) => { pointers.delete(e.pointerId); pinch = 0; };
+    const onUp = (e: PointerEvent) => {
+      pointers.delete(e.pointerId); pinch = 0;
+      if (drag) { const pos = dragTo(e); const id = drag.id; const moved = pos && (pos[0] !== drag.base[0] || pos[1] !== drag.base[1]); drag = null; if (moved && pos) current.onMoveProp?.(id, pos); }
+    };
     const onWheel = (e: WheelEvent) => { if (current.view !== 'orbit') return; e.preventDefault(); orbit.dist = Math.min(40, Math.max(2, orbit.dist * (1 + Math.sign(e.deltaY) * 0.1))); render(); };
     const cv = renderer.domElement;
     cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove);

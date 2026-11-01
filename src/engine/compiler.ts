@@ -2,6 +2,7 @@
 // Claude may enrich or critique the result, but every prompt is produced without it.
 import { CATALOG_BY_ID, LIGHT_BY_ID, MODEL_CARDS, TEXTURE_LINE, TEXTURE_LINE_TR, type ModelCard } from '../content';
 import type { Character, Dir, LightRig, Part, Project, CameraRig, Location } from '../model/types';
+import { describePath } from './shot';
 
 export interface Boxes { scene: string; camera: string; characters: string; light: string; environment: string }
 export interface Compiled { en: string; tr: string; boxesEn: Boxes; boxesTr: Boxes; refs: string[]; legendTr: string[] }
@@ -44,7 +45,8 @@ const sentence = (s: string) => {
 export function cameraText(c: CameraRig, cardId = 'universal'): { en: string; tr: string } {
   const pick = (id?: string) => (id ? CATALOG_BY_ID[id] : undefined);
   const parts = [pick(c.framing), pick(c.perspective), pick(c.angle)].filter(Boolean);
-  const mv = pick(c.motion);
+  const custom = c.path && c.path.length >= 2 ? describePath(c.path) : null;
+  const mv = custom ? undefined : pick(c.motion);
   const variant = (e?: { variants: Record<string, string>; promptEn: string }) => {
     if (!e) return '';
     const fam = cardId.startsWith('seedance') ? 'seedance' : cardId;
@@ -53,8 +55,8 @@ export function cameraText(c: CameraRig, cardId = 'universal'): { en: string; tr
   const dof = c.fStop <= 2.8 ? 'shallow depth of field' : c.fStop >= 8 ? 'deep focus' : '';
   const dofTr = c.fStop <= 2.8 ? 'sığ alan derinliği' : c.fStop >= 8 ? 'derin odak' : '';
   return {
-    en: join([...parts.map((e) => variant(e!)), c.dutch ? 'dutch angle tilted 20 degrees' : '', `shot on a ${c.lensMm}mm lens at f/${c.fStop}`, dof, mv ? variant(mv) : '']),
-    tr: join([...parts.map((e) => e!.promptTr), c.dutch ? '20 derece yatık Dutch açı' : '', `${c.lensMm} mm lens, f/${c.fStop}`, dofTr, mv?.promptTr]),
+    en: join([...parts.map((e) => variant(e!)), c.dutch ? 'dutch angle tilted 20 degrees' : '', `shot on a ${c.lensMm}mm lens at f/${c.fStop}`, dof, mv ? variant(mv) : '', custom ? custom.en.join(' while ') : '']),
+    tr: join([...parts.map((e) => e!.promptTr), c.dutch ? '20 derece yatık Dutch açı' : '', `${c.lensMm} mm lens, f/${c.fStop}`, dofTr, mv?.promptTr, custom ? custom.tr.join(', ') : '']),
   };
 }
 

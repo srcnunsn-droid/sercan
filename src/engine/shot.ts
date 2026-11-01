@@ -1,6 +1,6 @@
 // Shot math shared by the 2D frame preview, catalog demos and the 3D viewport.
 import { CATALOG_BY_ID, type ThreeParams } from '../content';
-import type { CameraRig, Dir } from '../model/types';
+import type { CamKey, CameraRig, Dir } from '../model/types';
 
 export type V3 = [number, number, number];
 export interface Shot { pos: V3; target: V3; fovDeg: number; rollDeg: number; lensMm: number }
@@ -38,15 +38,53 @@ export function rigParams(rig: CameraRig, aspect = 16 / 9): ThreeParams {
     lensMm: rig.lensMm,
     yawDeg: persp?.yawDeg ?? 0,
     rollDeg: rig.dutch ? 20 : 0,
-    move: CATALOG_BY_ID[rig.motion]?.three.move ?? 'static',
+    move: rig.path && rig.path.length >= 2 ? 'path' : CATALOG_BY_ID[rig.motion]?.three.move ?? 'static',
     ots: persp?.ots, pov: persp?.pov, two: persp?.two,
+    path: rig.path && rig.path.length >= 2 ? [...rig.path].sort((a, b) => a.t - b.t) : undefined,
   };
+}
+
+export interface RigState { yawDeg: number; height: number; distance: number; lensMm: number; targetY: number; offsetX: number; rollDeg: number }
+
+const EASES: Record<NonNullable<CamKey['ease']>, (x: number) => number> = {
+  linear: (x) => x,
+  smooth: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2),
+  in: (x) => x * x,
+  out: (x) => 1 - (1 - x) * (1 - x),
+};
+
+/** Interpolates a hand-drawn path at time t. Keys outside [first.t, last.t] hold their value. */
+export function pathAt(keys: CamKey[], t: number): Omit<CamKey, 't' | 'ease'> {
+  const k = [...keys].sort((a, b) => a.t - b.t);
+  if (t <= k[0].t) return k[0];
+  if (t >= k[k.length - 1].t) return k[k.length - 1];
+  const i = k.findIndex((x) => x.t >= t);
+  const a = k[i - 1], b = k[i];
+  const u = EASES[b.ease ?? 'smooth']((t - a.t) / Math.max(1e-6, b.t - a.t));
+  const mix = (x: number, y: number) => x + (y - x) * u;
+  return { yawDeg: mix(a.yawDeg, b.yawDeg), height: mix(a.height, b.height), distance: mix(a.distance, b.distance), lensMm: mix(a.lensMm, b.lensMm), targetY: mix(a.targetY, b.targetY) };
 }
 
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
+/** Camera state (before projection) at normalized time t. Used to seed path keyframes. */
+export function rigStateAt(p: ThreeParams, t = 0): RigState {
+  if (p.path && p.path.length >= 2) {
+    const k = pathAt(p.path, t);
+    return { ...k, offsetX: p.offsetX ?? 0, rollDeg: p.rollDeg ?? 0 };
+  }
+  return stateFromMove(p, t);
+}
+
 /** Camera at normalized time t (0..1) for the given params. Deterministic (handheld uses seeded noise). */
 export function shotAt(p: ThreeParams, t = 0): Shot {
+  const s = rigStateAt(p, t);
+  const pos: V3 = [s.offsetX + Math.sin(rad(s.yawDeg)) * s.distance, s.height, Math.cos(rad(s.yawDeg)) * s.distance];
+  if (s.distance < 0.05) { pos[0] = s.offsetX; pos[2] = 0.001; }
+  return { pos, target: [s.offsetX, s.targetY, 0], fovDeg: lensToVFov(s.lensMm), rollDeg: s.rollDeg, lensMm: s.lensMm };
+}
+
+function stateFromMove(p: ThreeParams, t: number): RigState {
   let { distance, height, targetY, lensMm } = p;
   let yaw = p.yawDeg ?? 0;
   let roll = p.rollDeg ?? 0;
@@ -74,9 +112,27 @@ export function shotAt(p: ThreeParams, t = 0): Shot {
     case 'fpv': height = Math.max(0.6, height - (height - 0.8) * e); distance *= 1 - 0.65 * e; yaw += 40 * e; break;
     case 'spin360': yaw += 360 * e; break;
   }
-  const pos: V3 = [tx + Math.sin(rad(yaw)) * distance, height, Math.cos(rad(yaw)) * distance];
-  if (p.distance < 0.05) { pos[0] = tx; pos[2] = 0.001; }
-  return { pos, target: [tx, ty, 0], fovDeg: lensToVFov(lensMm), rollDeg: roll, lensMm };
+  return { yawDeg: yaw, height, distance: p.distance < 0.05 ? 0 : distance, lensMm, targetY: ty, offsetX: tx, rollDeg: roll };
+}
+
+/** Plain-language description of what a hand-drawn path does (first key -> last key). */
+export function describePath(keys: CamKey[]): { en: string[]; tr: string[] } {
+  const k = [...keys].sort((a, b) => a.t - b.t);
+  const a = k[0], b = k[k.length - 1];
+  const en: string[] = []; const tr: string[] = [];
+  const dd = b.distance / Math.max(0.05, a.distance);
+  if (dd < 0.85) { en.push('the camera pushes in toward the subject'); tr.push('kamera karaktere yaklaşıyor'); }
+  else if (dd > 1.18) { en.push('the camera pulls back away from the subject'); tr.push('kamera karakterden uzaklaşıyor'); }
+  const dh = b.height - a.height;
+  if (dh > 0.8) { en.push('the camera rises like a crane'); tr.push('kamera vinç gibi yükseliyor'); }
+  else if (dh < -0.8) { en.push('the camera lowers toward the ground'); tr.push('kamera yere doğru alçalıyor'); }
+  const dy = b.yawDeg - a.yawDeg;
+  if (Math.abs(dy) > 15) { const deg = Math.round(Math.abs(dy)); en.push(`the camera arcs ${deg} degrees around the subject to the ${dy > 0 ? 'right' : 'left'}`); tr.push(`kamera karakterin çevresinde ${dy > 0 ? 'sağa' : 'sola'} ${deg} derece yay çiziyor`); }
+  const dl = b.lensMm / Math.max(1, a.lensMm);
+  if (dl > 1.2) { en.push('a slow zoom in'); tr.push('yavaş zoom içeri'); }
+  else if (dl < 0.83) { en.push('a slow zoom out'); tr.push('yavaş zoom dışarı'); }
+  if (!en.length) { en.push('the camera holds almost still'); tr.push('kamera neredeyse sabit'); }
+  return { en, tr };
 }
 
 /** Unit vector pointing FROM the subject TOWARD the light, for a named direction (subject faces +z). */
