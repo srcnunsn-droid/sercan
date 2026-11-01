@@ -1,0 +1,19 @@
+[
+  {"id":"light.source-direction","group":"Işık","severity":"error","whyTr":"Işık, kaynağın durduğu yerden gelmeli. Tavan lambası aşağıdan vuramaz.","fixTr":"Yönü kaynağa uydur ya da kaynağı elde tutulan bir ışık yap.","lessonId":"m1.l3"},
+  {"id":"light.shadow-side","group":"Işık","severity":"warn","whyTr":"Gölge, ışığın karşı tarafına düşer.","fixTr":"Gölgeyi ışığın ters tarafına yaz.","lessonId":"m1.l3"},
+  {"id":"light.hardness-edge","group":"Işık","severity":"warn","whyTr":"Sert ışığın gölge kenarı keskin, yumuşak ışığınki siliktir.","fixTr":"Sertlik ile gölge kenarını eşleştir.","lessonId":"m1.l3"},
+  {"id":"light.color-match","group":"Işık","severity":"warn","whyTr":"Işığın rengi kaynağın rengiyle aynı olmalı. Mum mavi yanmaz.","fixTr":"Kelvin değerini kaynağın doğal rengine çek.","lessonId":"m1.l3"},
+  {"id":"continuity.light","group":"Süreklilik","severity":"warn","whyTr":"Işık yönü ve kaynağı parçalar arasında sabit kalmalı, yoksa kurgu atlar.","fixTr":"1. parçanın ışığını diğer parçalara kopyala.","lessonId":"m8.l1"},
+  {"id":"continuity.time-weather","group":"Süreklilik","severity":"warn","whyTr":"Zaman ve hava üç parçada aynı kalmalı.","fixTr":"Mekândaki zaman ve havayı kullan, parça metninden çelişen kelimeyi sil.","lessonId":"m8.l1"},
+  {"id":"camera.single-move","group":"Kamera","severity":"error","whyTr":"10 saniyelik parçada tek kamera hareketi olur. İki hareket modeli şaşırtır.","fixTr":"Fazla hareketi sil, birini seç.","lessonId":"m2.l4"},
+  {"id":"camera.pov-face","group":"Kamera","severity":"error","whyTr":"POV planında bakan karakterin yüzü görünmez.","fixTr":"Yüz ifadesini sil ya da açıyı tepki planına çevir.","lessonId":"m2.l2"},
+  {"id":"camera.ots-two","group":"Kamera","severity":"error","whyTr":"Omuz üstü çekim iki karakter ister: biri omuz, biri yüz.","fixTr":"İkinci karakter ekle ya da açıyı yakın plana çevir.","lessonId":"m2.l2"},
+  {"id":"camera.motivated-move","group":"Kamera","severity":"tip","whyTr":"Kamera hareketinin bir sebebi olmalı. Duran karakterlerde pan boş kalır.","fixTr":"Yavaş yaklaşma ya da sabit kamera dene.","lessonId":"m2.l4"},
+  {"id":"char.invisible-word","group":"Karakter","severity":"warn","whyTr":"Model görmediği kelimeyi çizemez. 'Epik', 'gizemli' gibi kelimelerin görünür karşılığını yaz.","fixTr":"Kelimeyi görünür karşılığıyla değiştir.","lessonId":"m1.l2"},
+  {"id":"char.mask-expression","group":"Karakter","severity":"warn","whyTr":"Maske yüzü kapatıyorsa kaş ve ifade görünmez.","fixTr":"Maskeyi burna indir ya da ifadeyi sil.","lessonId":"m5.l1"},
+  {"id":"dialogue.length","group":"Replik","severity":"error","whyTr":"10 saniyeye 14 kelimeye kadar rahat sığar, 15-16 sıkışık, 16 üstü sığmaz.","fixTr":"Repliği kısalt.","lessonId":"m8.l2"},
+  {"id":"dialogue.logic","group":"Replik","severity":"warn","whyTr":"Aynı cümlede birbiriyle çelişen iki kavram var.","fixTr":"Tek kavramı seç.","lessonId":"m9.l2"},
+  {"id":"ref.order","group":"Referans","severity":"warn","whyTr":"@image-N referansları 1'den başlayıp sırayla gitmeli ve model sınırını aşmamalı.","fixTr":"Sırayı düzelt: önce karakter sheet'leri, sonra mekân.","lessonId":"m5.l1"},
+  {"id":"text.texture-line","group":"Metin","severity":"error","whyTr":"Her prompt doku satırıyla bitmeli.","fixTr":"Sona doku satırını ekle.","lessonId":"m4.l1"},
+  {"id":"safety.ip","group":"Uyarı","severity":"tip","whyTr":"Gerçek kişi, ünlü yüzü, marka ya da telifli karakter var gibi görünüyor. Platform bunu reddedebilir.","fixTr":"Karar senin. İstersen genel bir tarifle değiştir.","lessonId":"m10.l1"}
+]

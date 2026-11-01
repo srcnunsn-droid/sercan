@@ -1,0 +1,59 @@
+[
+  {"id":"g.light-toy","type":"slider","titleTr":"Işık oyuncağı","introTr":"Kaydırıcıyla ışığın rengini ayarla. Hedef kaynağın doğal rengini bul.","rounds":[
+    {"param":"kelvin","min":1500,"max":10000,"step":100,"target":1900,"tolerance":400,"askTr":"Mum ışığının rengini bul.","whyTr":"Mum yaklaşık 1900K: koyu kehribar."},
+    {"param":"kelvin","min":1500,"max":10000,"step":100,"target":3200,"tolerance":400,"askTr":"Sıcak tungsten tavan lambasını bul.","whyTr":"Tungsten ampul yaklaşık 3200K."},
+    {"param":"kelvin","min":1500,"max":10000,"step":100,"target":5600,"tolerance":500,"askTr":"Öğlen gün ışığını bul.","whyTr":"Gün ışığı yaklaşık 5600K: nötr beyaz."},
+    {"param":"kelvin","min":1500,"max":10000,"step":100,"target":7500,"tolerance":700,"askTr":"Karanlıkta telefon ekranının yüze vuran rengini bul.","whyTr":"Ekran ışığı 7000K üstü: soğuk mavi."}
+  ]},
+  {"id":"g.light-detective","type":"match","titleTr":"Işık dedektifi","introTr":"Her kaynağı yüze geldiği doğru yönle eşleştir.","pairs":[
+    {"left":"Tavan lambası","right":"Yukarıdan","whyTr":"Tavandaki kaynak yalnızca yukarıdan vurur."},
+    {"left":"Kucaktaki telefon","right":"Aşağıdan","whyTr":"Ekran göğüs hizasında, ışık çeneden yukarı vurur."},
+    {"left":"Yandaki pencere","right":"Yandan","whyTr":"Pencere duvardadır, ışık yandan girer."},
+    {"left":"Arkadaki batan güneş","right":"Arkadan (kenar ışığı)","whyTr":"Güneş karakterin arkasında kalırsa saçları parlatır."}
+  ]},
+  {"id":"g.contradiction-hunter","type":"contradiction","titleTr":"Çelişki avcısı","introTr":"Çelişen cümlelere dokun. Doğru olanlara dokunma.","items":[
+    {"text":"A ceiling lamp lights her chin from below.","tr":"Tavan lambası çenesini aşağıdan aydınlatıyor.","bad":true,"whyTr":"Tavan lambası aşağıdan vuramaz."},
+    {"text":"Candle light, cold blue glow on his face.","tr":"Mum ışığı, yüzünde soğuk mavi parıltı.","bad":true,"whyTr":"Mum turuncu yanar, mavi değil."},
+    {"text":"Hard noon sun, crisp shadow under the hat brim.","tr":"Sert öğle güneşi, şapka siperliğinin altında keskin gölge.","bad":false,"whyTr":"Sert ışık keskin gölge verir. Doğru."},
+    {"text":"Soft overcast light with razor-sharp shadows.","tr":"Yumuşak kapalı hava ışığı, jilet keskinliğinde gölgeler.","bad":true,"whyTr":"Yumuşak ışığın gölgesi siliktir."},
+    {"text":"Window light from the left, shadow falls to the right.","tr":"Işık soldaki pencereden, gölge sağa düşüyor.","bad":false,"whyTr":"Gölge ışığın karşı tarafına düşer. Doğru."},
+    {"text":"POV shot, we see her smiling face as she looks at the sea.","tr":"POV çekim, denize bakarken gülen yüzünü görüyoruz.","bad":true,"whyTr":"POV'da bakanın yüzü görünmez."}
+  ]},
+  {"id":"g.color-twins","type":"match","titleTr":"Renk ikizleri","introTr":"Her kaynağı kendi ışık rengiyle eşleştir.","pairs":[
+    {"left":"Mum","right":"Koyu kehribar","whyTr":"Yaklaşık 1900K."},
+    {"left":"Sokak lambası","right":"Sodyum turuncusu","whyTr":"Yaklaşık 2200K."},
+    {"left":"Kapalı gökyüzü","right":"Düz serin gri","whyTr":"Yaklaşık 6500K, yumuşak."},
+    {"left":"Telefon ekranı","right":"Soğuk mavi","whyTr":"7000K üstü."}
+  ]},
+  {"id":"g.camera-hut","type":"match","titleTr":"Kamera kulübesi","introTr":"Her açıyı izleyicide yarattığı duyguyla eşleştir.","pairs":[
+    {"left":"Alt açı","right":"Güç","whyTr":"Aşağıdan bakınca karakter büyür."},
+    {"left":"Üst açı","right":"Kırılganlık","whyTr":"Yukarıdan bakınca karakter küçülür."},
+    {"left":"Dutch açı","right":"Panik","whyTr":"Yatık ufuk dengesizlik hissi verir."},
+    {"left":"Çok geniş plan","right":"Yalnızlık","whyTr":"Dev mekânda küçük figür."},
+    {"left":"Göz hizası","right":"Eşitlik","whyTr":"İzleyici karakterle aynı seviyede."}
+  ]},
+  {"id":"g.emotion-director","type":"duel","titleTr":"Duygu yönetmeni","introTr":"Hangi kamera bu duyguyu daha iyi verir?","rounds":[
+    {"askTr":"Kahraman zafer anında kılıcını kaldırıyor.","a":{"label":"Alt açı + yavaş orbit","catalogId":"angle.low"},"b":{"label":"Üst açı + sabit","catalogId":"angle.high"},"correct":"a","whyTr":"Alt açı ve yörünge güç ile zafer verir."},
+    {"askTr":"Kız terk edilmiş peronda tek başına kalıyor.","a":{"label":"Yakın plan, göz hizası","catalogId":"size.cu"},"b":{"label":"Çok geniş plan, pull-out","catalogId":"size.ews"},"correct":"b","whyTr":"Dev boş peronda küçük figür yalnızlığı anlatır."},
+    {"askTr":"Adam koridorda bir şeyin onu takip ettiğini fark ediyor.","a":{"label":"El kamerası, Dutch açı","catalogId":"tilt.dutch"},"b":{"label":"Simetrik, sabit kamera","catalogId":"comp.symmetry"},"correct":"a","whyTr":"Sallantı ve yatık kadraj panik verir."},
+    {"askTr":"Anne bebeğini ilk kez kucağına alıyor.","a":{"label":"Crash zoom","catalogId":"move.crash-zoom"},"b":{"label":"85 mm yakın plan, yavaş yaklaşma","catalogId":"lens.portrait"},"correct":"b","whyTr":"Portre lensi ve yavaş yaklaşma yakınlık kurar."}
+  ]},
+  {"id":"g.whose-eyes","type":"duel","titleTr":"Kimin gözünden?","introTr":"Doğru perspektifi seç.","rounds":[
+    {"askTr":"İzleyici, katilin kurbanı izlediğini hissetmeli; katilin yüzü gizli kalmalı.","a":{"label":"POV","catalogId":"persp.pov"},"b":{"label":"Omuz üstü","catalogId":"persp.ots"},"correct":"a","whyTr":"POV'da bakanın yüzü görünmez."},
+    {"askTr":"İki eski dost masada tartışıyor, ikisinin de tepkisi önemli.","a":{"label":"Omuz üstü (karşılıklı)","catalogId":"persp.ots"},"b":{"label":"POV","catalogId":"persp.pov"},"correct":"a","whyTr":"Omuz üstü iki karakteri birbirine bağlar."},
+    {"askTr":"Sahnede tek bir karakter var ve konuşuyor.","a":{"label":"Omuz üstü","catalogId":"persp.ots"},"b":{"label":"Göğüs plan","catalogId":"size.mcu"},"correct":"b","whyTr":"Omuz üstü için ikinci karakter gerekir."},
+    {"askTr":"Haberi duyan annenin yüzündeki değişimi göstermek istiyorsun.","a":{"label":"Tepki planı","catalogId":"persp.reaction"},"b":{"label":"Mekânı tanıtan plan","catalogId":"persp.establishing"},"correct":"a","whyTr":"Tepki planı duyguyu izleyiciye taşır."}
+  ]},
+  {"id":"g.move-studio","type":"duel","titleTr":"Hareket stüdyosu","introTr":"Sahneye en uygun tek kamera hareketini seç.","rounds":[
+    {"askTr":"Karakter bir sırrı fark ediyor, içinde bir şey büyüyor.","a":{"label":"Yavaş yaklaşma","catalogId":"move.push-in"},"b":{"label":"Kamçı pan","catalogId":"move.whip-pan"},"correct":"a","whyTr":"Push-in iç dünyaya girer."},
+    {"askTr":"Filmin son karesi: karakter peronda kalıyor, tren gidiyor.","a":{"label":"Vinç yükseliş","catalogId":"move.crane"},"b":{"label":"Crash zoom","catalogId":"move.crash-zoom"},"correct":"a","whyTr":"Vinç yükselişi veda ve son hissi verir."},
+    {"askTr":"İki karakter sakin, hareketsiz oturup konuşuyor.","a":{"label":"Sebepsiz pan","catalogId":"move.pan"},"b":{"label":"Sabit kamera","catalogId":"move.static"},"correct":"b","whyTr":"Duran karakterde hareketin sebebi yok."},
+    {"askTr":"Karakter korkunç gerçeği aynı saniyede anlıyor.","a":{"label":"Dolly zoom","catalogId":"move.dolly-zoom"},"b":{"label":"Truck","catalogId":"move.truck"},"correct":"a","whyTr":"Dolly zoom şok anının klasiğidir."}
+  ]},
+  {"id":"g.lens-swap","type":"slider","titleTr":"Lens değiştirici","introTr":"Kaydırıcıyla lensi değiştir, istenen görüntüyü bul.","rounds":[
+    {"param":"lensMm","min":10,"max":200,"step":1,"target":85,"tolerance":12,"askTr":"Arka planı eriten klasik portre lensini bul.","whyTr":"85 mm portre lensidir."},
+    {"param":"lensMm","min":10,"max":200,"step":1,"target":16,"tolerance":5,"askTr":"Dar odayı büyük gösteren ultra geniş lensi bul.","whyTr":"14-20 mm ultra geniştir."},
+    {"param":"lensMm","min":10,"max":200,"step":1,"target":50,"tolerance":8,"askTr":"İnsan gözüne en yakın lensi bul.","whyTr":"40-50 mm normal lenstir."},
+    {"param":"lensMm","min":10,"max":200,"step":1,"target":200,"tolerance":25,"askTr":"Kalabalığı karakterin üstüne yığan tele lensi bul.","whyTr":"200 mm ve üstü teledir."}
+  ]}
+]

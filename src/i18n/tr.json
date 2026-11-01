@@ -1,0 +1,22 @@
+{
+  "app.name": "SECO Film Atölyesi",
+  "app.tagline": "Öğren, sahneyi canlı kur, hazır promptu al.",
+  "nav.home": "Ana Sayfa", "nav.academy": "Akademi", "nav.studio": "Stüdyo", "nav.factory": "Fabrika", "nav.library": "Kütüphane", "nav.settings": "Ayarlar",
+  "nav.home.short": "Ana", "nav.academy.short": "Akademi", "nav.studio.short": "Stüdyo", "nav.factory.short": "Fabrika", "nav.library.short": "Kütüp.", "nav.settings.short": "Ayarlar",
+  "common.copy": "Kopyala", "common.copied": "Kopyalandı", "common.copyFallback": "Metin seçildi, Ctrl+C ile kopyala",
+  "common.undo": "Geri al", "common.redo": "Yinele", "common.close": "Kapat", "common.next": "Devam", "common.back": "Geri",
+  "common.start": "Başla", "common.apply": "Uygula", "common.cancel": "Vazgeç", "common.delete": "Sil", "common.confirmDelete": "Evet, sil",
+  "common.saved": "Kaydedildi", "common.saving": "Kaydediliyor…", "common.cloud": "Hesabına kaydediliyor", "common.local": "Bu tarayıcıya kaydediliyor",
+  "common.learnThis": "Bunu öğren", "common.fix": "Düzelt", "common.example": "Örnek",
+  "palette.placeholder": "Komut ya da konu ara… (ör. “alt açı”, “yeni proje”)", "palette.empty": "Sonuç yok.",
+  "home.today": "Bugünün görevi", "home.continue": "Kaldığın yerden devam", "home.streak": "Günlük seri", "home.weak": "Zayıf noktaların", "home.weakEmpty": "Henüz hata kaydı yok. Alıştırma yaptıkça burada görünecek.",
+  "home.rank": "Rütbe", "home.days": "gün", "home.toNext": "sonraki rütbeye",
+  "academy.title": "Akademi", "academy.locked": "Kilitli", "academy.start": "Başla", "academy.review": "Tekrar et", "academy.done": "Tamamlandı",
+  "academy.steps.demo": "Canlı demo", "academy.steps.game": "Oyun", "academy.steps.write": "Kendin yaz", "academy.steps.quiz": "Mini sınav", "academy.steps.export": "Stüdyoya aktar",
+  "academy.suggestNext": "Sıradaki konu hazır. Ne zaman istersen “başla” de.", "academy.newExercise": "Yeni alıştırma üret", "academy.weakMap": "Zayıf nokta haritası", "academy.glossary": "Sinema sözlüğü",
+  "studio.title": "Stüdyo", "studio.lab": "Laboratuvar", "studio.catalog": "Katalog", "studio.part": "Parça", "studio.camera": "Kamera", "studio.light": "Işık", "studio.prompt": "Prompt",
+  "studio.view.camera": "Kamera görünümü", "studio.view.orbit": "Serbest", "studio.view.top": "Yukarıdan", "studio.play": "Oynat", "studio.pause": "Durdur",
+  "factory.title": "Fabrika", "factory.gate": "Görselleri onaylıyorum", "factory.gateLocked": "Video adımı, görseller onaylanmadan açılmaz.",
+  "library.title": "Kütüphane", "library.new": "Yeni proje", "library.export": "JSON olarak dışa aktar", "library.import": "JSON içe aktar",
+  "settings.title": "Ayarlar", "settings.theme": "Tema", "settings.ai": "Yapay zekâ", "settings.models": "Model kartları", "settings.storage": "Depolama"
+}

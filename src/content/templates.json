@@ -1,0 +1,10 @@
+[
+  {"id":"emotional-dialogue","tr":"Duygusal diyaloglu 30 sn","beats":["durum","catisma","zirve"],"hintTr":"İki karakter, tek mekân, 3 replik."},
+  {"id":"epic-battle","tr":"Epik savaş","beats":["durum","catisma","zirve"],"hintTr":"Ölçek: geniş plan, alt açı, toz ve duman."},
+  {"id":"ad-film","tr":"Reklam filmi","beats":["durum","catisma","zirve"],"hintTr":"Ürün 3. parçada kahraman olur."},
+  {"id":"comedy","tr":"Komedi ve parodi","beats":["durum","catisma","zirve"],"hintTr":"Zamanlama: sabit kamera, crash zoom ile vuruş."},
+  {"id":"short-drama","tr":"Short drama","beats":["durum","catisma","zirve"],"hintTr":"Kanca, bağlam, tırmanış, cliffhanger."},
+  {"id":"stadium-reveal","tr":"Stadyum ve kutlama reveal","beats":["durum","catisma","zirve"],"hintTr":"Arkadan takip, drone ifşa."},
+  {"id":"motion-transfer","tr":"Motion transfer (Genjutsu)","beats":["durum","catisma","zirve"],"hintTr":"Kaynak klip + karakter referansı."},
+  {"id":"animation-episode","tr":"3D animasyon dizi bölümü","beats":["durum","catisma","zirve"],"hintTr":"Seri bible ile karakter kilidi."}
+]

@@ -1,0 +1,14 @@
+[
+  {"id":"guc","tr":"Güç","en":"power"},
+  {"id":"yalnizlik","tr":"Yalnızlık","en":"loneliness"},
+  {"id":"panik","tr":"Panik","en":"panic"},
+  {"id":"huzur","tr":"Huzur","en":"calm"},
+  {"id":"tehdit","tr":"Tehdit","en":"threat"},
+  {"id":"yakinlik","tr":"Yakınlık","en":"intimacy"},
+  {"id":"merak","tr":"Merak","en":"curiosity"},
+  {"id":"zafer","tr":"Zafer","en":"triumph"},
+  {"id":"kirilganlik","tr":"Kırılganlık","en":"vulnerability"},
+  {"id":"gerilim","tr":"Gerilim","en":"tension"},
+  {"id":"ozgurluk","tr":"Özgürlük","en":"freedom"},
+  {"id":"kaos","tr":"Kaos","en":"chaos"}
+]

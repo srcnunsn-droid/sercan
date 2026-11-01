@@ -1,0 +1,12 @@
+[
+  {"id":"window","tr":"Pencere","en":"window light","kelvin":5600,"hardness":"yumusak","allowed":["front","left","right","front-left","front-right","back","back-left","back-right"],"colorEn":"cool daylight","colorTr":"serin gün ışığı"},
+  {"id":"ceiling-lamp","tr":"Tavan lambası","en":"overhead ceiling lamp","kelvin":3200,"hardness":"sert","allowed":["top"],"colorEn":"warm tungsten","colorTr":"sıcak tungsten"},
+  {"id":"candle","tr":"Mum","en":"candle flame","kelvin":1900,"hardness":"yumusak","allowed":["front","left","right","bottom","front-left","front-right"],"colorEn":"deep amber","colorTr":"koyu kehribar"},
+  {"id":"sun","tr":"Güneş","en":"direct sunlight","kelvin":5500,"hardness":"sert","allowed":["front","left","right","back","top","front-left","front-right","back-left","back-right"],"colorEn":"neutral daylight","colorTr":"nötr gün ışığı"},
+  {"id":"golden-sun","tr":"Altın saat güneşi","en":"low golden-hour sun","kelvin":3500,"hardness":"sert","allowed":["left","right","back","front","front-left","front-right","back-left","back-right"],"colorEn":"warm golden","colorTr":"sıcak altın"},
+  {"id":"neon","tr":"Neon tabela","en":"neon sign","kelvin":9000,"hardness":"yumusak","allowed":["left","right","back","front-left","front-right","back-left","back-right"],"colorEn":"saturated magenta-cyan","colorTr":"doygun macenta-camgöbeği"},
+  {"id":"screen","tr":"Telefon/ekran","en":"phone screen glow","kelvin":7500,"hardness":"yumusak","allowed":["front","bottom","front-left","front-right"],"colorEn":"cold blue","colorTr":"soğuk mavi"},
+  {"id":"fire","tr":"Ateş","en":"campfire","kelvin":1800,"hardness":"yumusak","allowed":["front","bottom","left","right","front-left","front-right"],"colorEn":"flickering orange","colorTr":"titreyen turuncu"},
+  {"id":"street-lamp","tr":"Sokak lambası","en":"sodium street lamp","kelvin":2200,"hardness":"sert","allowed":["top","left","right","back","back-left","back-right"],"colorEn":"sodium orange","colorTr":"sodyum turuncusu"},
+  {"id":"overcast","tr":"Kapalı gökyüzü","en":"overcast sky","kelvin":6500,"hardness":"yumusak","allowed":["top","front","left","right","back","front-left","front-right","back-left","back-right"],"colorEn":"flat cool grey","colorTr":"düz serin gri"}
+]

@@ -1,0 +1,5 @@
+{
+  "app.name": "SECO Film Workshop",
+  "app.tagline": "Learn, build the scene live, get the finished prompt.",
+  "nav.home": "Home", "nav.academy": "Academy", "nav.studio": "Studio", "nav.factory": "Factory", "nav.library": "Library", "nav.settings": "Settings"
+}
