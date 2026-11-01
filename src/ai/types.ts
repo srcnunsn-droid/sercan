@@ -1,7 +1,7 @@
 // One AIProvider interface, three implementations. Claude is optional: the Mock engine always answers.
 export type TaskName =
   | 'generateExercise' | 'evaluatePrompt' | 'suggestIdeas' | 'writeStoryPlan' | 'dialogueDoctor'
-  | 'continuityAudit' | 'diagnoseResult' | 'translateToEnglish' | 'tutor' | 'draftModelCard';
+  | 'continuityAudit' | 'diagnoseResult' | 'translateToEnglish' | 'tutor' | 'draftModelCard' | 'publishCopy';
 
 export interface AIProvider {
   id: 'claude-artifact' | 'api-key' | 'mock';

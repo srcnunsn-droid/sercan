@@ -11,7 +11,7 @@ import type { Project } from '../model/types';
 import { MODEL_CARDS, TEMPLATES } from '../content';
 import { compileCharacterSheet, compileLocation, compilePart, referenceMap } from '../engine/compiler';
 import { runRules } from '../engine/rules';
-import { runTask, type IdeasOut, type StoryOut, type DiagnoseOut } from '../ai/tasks';
+import { runTask, type IdeasOut, type StoryOut, type DiagnoseOut, type PublishOut } from '../ai/tasks';
 import { imagesSupported } from '../ai/providers';
 import type { Location } from '../model/types';
 import { PromptBlock } from '../ui/Prompt';
@@ -32,6 +32,22 @@ function Field({ id, label, value, onChange, area, placeholder }: { id: string; 
     </label>
   );
 }
+
+/** Save / restore snapshots of a character or location (last 10 kept). */
+function VersionBar<T extends { versions?: { at: number; data: any }[] }>({ item, save, restore }: { item: T; save: () => void; restore: (data: any) => void }) {
+  return (
+    <div className="row" role="group" aria-label="Sürüm geçmişi">
+      <button className="btn sm" onClick={save}>Sürüm kaydet</button>
+      {(item.versions ?? []).slice().reverse().map((v) => (
+        <button key={v.at} className="chip" title="Bu sürüme dön" onClick={() => restore(v.data)}>
+          ↺ {new Date(v.at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function snapshotOf<T extends { versions?: unknown }>(x: T) { const { versions: _v, ...data } = x; return structuredClone(data); }
 
 function StepNote({ step }: { step: number }) {
   const p = useApp((s) => s.project());
@@ -161,14 +177,9 @@ function StepCharacters() {
               <Field id={`c-de-${i}`} label="Appearance (English, visible only)" area value={c.descriptionEn} onChange={(v) => edit('c', (x) => { x.characters[i].descriptionEn = v; })} />
             </div>
             <Field id={`c-tags-${i}`} label="Etiketler (virgülle)" value={(c.tags ?? []).join(', ')} onChange={(v) => edit('c', (x) => { x.characters[i].tags = v.split(',').map((t) => t.trim()).filter(Boolean); })} placeholder="dram, peron, kadın" />
-            <div className="row">
-              <button className="btn sm" onClick={() => edit('version', (x) => { const { versions, ...data } = x.characters[i]; x.characters[i].versions = [...(versions ?? []), { at: Date.now(), data: structuredClone(data) }].slice(-10); })}>Sürüm kaydet</button>
-              {(c.versions ?? []).slice().reverse().map((v) => (
-                <button key={v.at} className="chip" title="Bu sürüme dön" onClick={() => edit('restore', (x) => { const keep = x.characters[i].versions; x.characters[i] = { ...structuredClone(v.data), versions: keep }; })}>
-                  ↺ {new Date(v.at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })}
-                </button>
-              ))}
-            </div>
+            <VersionBar item={c}
+              save={() => edit('version', (x) => { const it = x.characters[i]; it.versions = [...(it.versions ?? []), { at: Date.now(), data: snapshotOf(it) }].slice(-10); })}
+              restore={(data) => edit('restore', (x) => { const keep = x.characters[i].versions; x.characters[i] = { ...structuredClone(data), versions: keep }; })} />
             <PromptBlock en={sheet.en} tr={sheet.tr} label="Sheet promptu" />
             <RuleList results={runRules({ text: sheet.en + ' ' + c.descriptionEn }, ['char.invisible-word', 'safety.ip'])} empty="Görünmeyen kelime yok." />
           </div>
@@ -196,6 +207,10 @@ function StepLocation() {
         <label className="field" htmlFor="l-time"><span>Zaman</span><select id="l-time" className="select" value={loc.timeOfDay} onChange={(e) => set((l) => { l.timeOfDay = e.target.value as any; })}>{[['dawn', 'Şafak'], ['day', 'Gündüz'], ['golden-hour', 'Altın saat'], ['dusk', 'Alacakaranlık'], ['night', 'Gece']].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
         <label className="field" htmlFor="l-weather"><span>Hava</span><select id="l-weather" className="select" value={loc.weather} onChange={(e) => set((l) => { l.weather = e.target.value as any; })}>{[['clear', 'Açık'], ['overcast', 'Kapalı'], ['rain', 'Yağmur'], ['snow', 'Kar'], ['fog', 'Sis']].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
       </div>
+      <Field id="l-tags" label="Etiketler (virgülle)" value={(loc.tags ?? []).join(', ')} onChange={(v) => set((l) => { l.tags = v.split(',').map((t) => t.trim()).filter(Boolean); })} placeholder="gece, istasyon, yağmur" />
+      <VersionBar item={loc}
+        save={() => set((l) => { l.versions = [...(l.versions ?? []), { at: Date.now(), data: snapshotOf(l) }].slice(-10); })}
+        restore={(data) => set((l) => { const keep = l.versions; Object.keys(l).forEach((k) => { delete (l as any)[k]; }); Object.assign(l, structuredClone(data), { versions: keep }); })} />
       <PromptBlock en={c.en} tr={c.tr} label={`Mekân promptu · ${referenceMap(p).location}`} />
       <RuleList results={runRules({ project: p }, ['continuity.time-weather'])} empty="Parçalar mekânın zamanı ve havasıyla uyumlu." />
     </div>
@@ -353,6 +368,16 @@ function StepPublish() {
   const thumb = thumbnailPrompt(p, imgCard);
   const first = p.parts[0];
   const vertical = p.aspect === '9:16';
+  const [copy, setCopy] = useState<(PublishOut & { source: string }) | null>(null);
+  const [copyBusy, setCopyBusy] = useState(false);
+  const enrich = async () => {
+    setCopyBusy(true);
+    try {
+      const tpl = TEMPLATES.find((x) => x.id === p.template)?.tr ?? p.template;
+      const o = await runTask<PublishOut>(currentProvider(), 'publishCopy', { title: p.title, template: tpl, hook: hook(p), dialogue: p.parts.flatMap((x) => x.dialogue.map((d) => d.textTr)).filter(Boolean), caption: caption(p), hashtags: tags }, { noCache: true });
+      setCopy({ ...o.value, source: o.source === 'claude' ? 'Claude önerisi' : (o.noteTr ?? 'Şablon önerisi') });
+    } finally { setCopyBusy(false); }
+  };
   const saveSrt = async () => { const r = await saveFile(`${p.title.replace(/[^\p{L}\p{N}]+/gu, '-')}-${lang}.srt`, srt, 'application/x-subrip'); toast(r === 'declined' ? 'İndirme onaylanmadı.' : 'Altyazı dosyası hazır.', r === 'declined' ? 'warn' : 'ok'); };
   return (
     <div className="stack">
@@ -361,6 +386,16 @@ function StepPublish() {
           <div className="tile"><span className="eyebrow">Kanca</span><b>{hook(p)}</b><span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>İlk karede yüz ve görünür bir gerilim olsun; ilk ses ilk saniyede gelsin.</span></div>
           <div className="tile"><span className="eyebrow">Açıklama</span><pre className="mono" style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13 }}>{caption(p)}</pre><div><button className="btn sm" onClick={async () => toast((await copyText(caption(p))) ? 'Açıklama kopyalandı.' : 'Kopyalanamadı.', 'ok')}><Icon name="copy" size={14} /> Kopyala</button></div></div>
           <div className="tile"><span className="eyebrow">Hashtag</span><div className="row">{tags.map((h) => <span key={h} className="chip static">{h}</span>)}</div><div><button className="btn sm" onClick={async () => toast((await copyText(tags.join(' '))) ? 'Hashtagler kopyalandı.' : 'Kopyalanamadı.', 'ok')}><Icon name="copy" size={14} /> Hepsini kopyala</button></div></div>
+          <div className="tile">
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="eyebrow">Claude ile zenginleştir</span><button className="btn sm" disabled={copyBusy} onClick={enrich}><Icon name="spark" size={14} /> {copyBusy ? 'Yazılıyor…' : 'Öneri al'}</button></div>
+            {copy ? <>
+              <span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>{copy.source}</span>
+              <pre className="mono" style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13 }}>{copy.captionTr}{'\n'}{copy.commentQuestionTr}</pre>
+              <div className="row"><span className="eyebrow">Kapak başlığı</span>{copy.titleIdeasTr.map((x) => <span key={x} className="chip static">{x}</span>)}</div>
+              <div className="row">{copy.hashtags.map((h) => <span key={h} className="chip static">{h}</span>)}</div>
+              <div><button className="btn sm" onClick={async () => toast((await copyText(`${copy.captionTr}\n${copy.commentQuestionTr}\n${copy.hashtags.join(' ')}`)) ? 'Öneri kopyalandı.' : 'Kopyalanamadı.', 'ok')}><Icon name="copy" size={14} /> Öneriyi kopyala</button></div>
+            </> : <span className="muted" style={{ fontSize: 'var(--fs-sm)' }}>Açıklama, yorum sorusu, 3 kapak başlığı ve hashtag önerisi. Seninki yerinde kalır.</span>}
+          </div>
           <div className="tile"><span className="eyebrow">Paylaşım zamanı (genel öneri, doğrulanmadı)</span><div className="row">{POST_TIMES_TR.map((x) => <span key={x} className="chip static">{x}</span>)}</div><span className="muted" style={{ fontSize: 'var(--fs-xs)' }}>Kendi kanal istatistiklerin her zaman bu öneriden önce gelir.</span></div>
         </div>
         <div className="stack">

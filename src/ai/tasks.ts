@@ -10,6 +10,7 @@ import tDialogue from '../prompts/dialogueDoctor.md?raw';
 import tContinuity from '../prompts/continuityAudit.md?raw';
 import tDiagnose from '../prompts/diagnoseResult.md?raw';
 import tCard from '../prompts/draftModelCard.md?raw';
+import tPublish from '../prompts/publishCopy.md?raw';
 import { GAME_BY_ID, CATALOG, INVISIBLE_WORDS, LIGHT_SOURCES, TEXTURE_LINE, TEXTURE_LINE_TR, type ModelCard } from '../content';
 import { scorePrompt, type Rubric } from '../engine/rubric';
 import { countWords, lower } from '../lib/text';
@@ -170,8 +171,25 @@ const draftModelCard: TaskDef<{ name: string; docs: string; existing?: string },
   },
 };
 
+export interface PublishIn { title: string; template: string; hook: string; dialogue: string[]; caption: string; hashtags: string[] }
+export interface PublishOut { captionTr: string; titleIdeasTr: string[]; hashtags: string[]; commentQuestionTr: string }
+const publishCopy: TaskDef<PublishIn, PublishOut> = {
+  quick: true,
+  build: ({ title, template, hook, dialogue }) => fill(tPublish, { title, template, hook, dialogue: dialogue.join(' / ') || 'yok' }),
+  valid: (x): x is PublishOut => x && isStr(x.captionTr) && isArr(x.titleIdeasTr) && x.titleIdeasTr.every(isStr) && isArr(x.hashtags) && x.hashtags.length > 0 && x.hashtags.every((h: unknown) => isStr(h) && h.startsWith('#')) && isStr(x.commentQuestionTr),
+  template: ({ title, caption, hashtags, dialogue }) => {
+    const short = title.replace(/\(.*?\)/g, '').trim();
+    return {
+      captionTr: caption,
+      titleIdeasTr: [short, dialogue[0] ? dialogue[0].split(' ').slice(0, 4).join(' ') : 'Son karar', 'Sonunu bekle'].map((x) => x.replace(/[?.!]$/, '')),
+      hashtags,
+      commentQuestionTr: 'Sen olsan kalır mıydın, gider miydin?',
+    };
+  },
+};
+
 export const TASKS: Record<TaskName, TaskDef<any, any>> = {
-  evaluatePrompt, translateToEnglish, tutor, generateExercise, suggestIdeas, writeStoryPlan, dialogueDoctor, continuityAudit, diagnoseResult, draftModelCard,
+  evaluatePrompt, translateToEnglish, tutor, generateExercise, suggestIdeas, writeStoryPlan, dialogueDoctor, continuityAudit, diagnoseResult, draftModelCard, publishCopy,
 };
 
 // ---------------- runner ----------------

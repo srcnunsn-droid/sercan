@@ -18,6 +18,7 @@ const INPUTS: Record<TaskName, any> = {
   continuityAudit: { parts: '1: night; 2: day' },
   diagnoseResult: { prompt: `Scene: x\n${TEXTURE_LINE}` },
   draftModelCard: { name: 'Yeni Model', docs: 'Video model, 8 seconds per clip, use @image1 references' },
+  publishCopy: { title: 'İstasyonda veda (örnek)', template: 'Duygusal diyaloglu 30 sn', hook: 'İlk 3 saniye: el camda.', dialogue: ['Gitmek zorunda mısın?'], caption: '“Gitmek zorunda mısın?”', hashtags: ['#veda', '#yapayzeka'] },
 };
 
 describe('Claude task layer', () => {
