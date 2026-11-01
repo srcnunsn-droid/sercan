@@ -90,6 +90,125 @@
     }
    ],
    "studio": {}
+  },
+  {
+   "id": "m6.l3",
+   "titleTr": "Taslağı kısalt",
+   "minutes": 7,
+   "goalTr": "Fazla kelimeyi at; her kelime görünen bir şeye karşılık gelsin.",
+   "demo": {
+    "kind": "rules",
+    "textTr": "Uzun bir taslak yaz, bekçi görünmeyen ve çelişen kelimeleri işaretlesin; sonra sadeleştir."
+   },
+   "gameId": "g.draft-duel",
+   "write": {
+    "taskTr": "40 kelimelik bir taslağı aynı görüntüyü veren 25 kelimeye indir.",
+    "focus": [
+     "boxes",
+     "invisible"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Kısaltırken önce ne atılır?",
+     "options": [
+      "Görünmeyen ve tekrar eden kelimeler",
+      "Işık yönü"
+     ],
+     "answer": 0,
+     "whyTr": "Görünen bilgi kalır."
+    },
+    {
+     "qTr": "Kısa prompt her zaman daha iyi mi?",
+     "options": [
+      "Hayır, eksik kutu olmamalı",
+      "Evet"
+     ],
+     "answer": 0,
+     "whyTr": "5 kutu dolu kalmalı."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m6.l4",
+   "titleTr": "Duygudan görünür eyleme",
+   "minutes": 8,
+   "goalTr": "Her duyguyu bir beden hareketine ya da nesneyle etkileşime çevir.",
+   "demo": {
+    "kind": "invisible",
+    "textTr": "Model “üzgün” çizemez; titreyen dudak, düşen omuz çizer."
+   },
+   "gameId": "g.emotion-to-action",
+   "write": {
+    "taskTr": "“Kıskanç, kırgın ve kararlı” bir karakteri yalnızca görünür eylemlerle yaz.",
+    "focus": [
+     "invisible"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "“Öfkeli” yerine?",
+     "options": [
+      "Çenesi kasılır, yumruğu masaya iner",
+      "Çok öfkeli"
+     ],
+     "answer": 0,
+     "whyTr": "Görünür kas gerginliği."
+    },
+    {
+     "qTr": "Nesneyle eylem neden güçlü?",
+     "options": [
+      "Duyguyu dışa vurur",
+      "Prompt uzar"
+     ],
+     "answer": 0,
+     "whyTr": "İzleyici eylemi görür."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m6.l5",
+   "titleTr": "Master prompt sınavı",
+   "minutes": 10,
+   "goalTr": "Bir fikri tek seferde 5 kutulu, çelişkisiz master prompta çevir.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Sınav: kutular, ışığın 5 parçası, görünür kelimeler ve doku satırı. 80 puan geçer."
+   },
+   "gameId": "g.contradiction-hunter",
+   "write": {
+    "taskTr": "“Yağmurlu gecede telefon kulübesinde bekleyen kadın” fikrini master prompt olarak yaz.",
+    "focus": [
+     "boxes",
+     "light5",
+     "invisible",
+     "texture",
+     "contradiction"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Master promptun son satırı?",
+     "options": [
+      "Doku satırı",
+      "Hashtag"
+     ],
+     "answer": 0,
+     "whyTr": "Sabit kural."
+    },
+    {
+     "qTr": "Geçme puanı?",
+     "options": [
+      "80",
+      "50"
+     ],
+     "answer": 0,
+     "whyTr": "Rubrik puanı."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

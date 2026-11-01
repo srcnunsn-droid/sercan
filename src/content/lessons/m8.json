@@ -88,6 +88,129 @@
      "move.push-in"
     ]
    }
+  },
+  {
+   "id": "m8.l3",
+   "titleTr": "Aksiyon zamanlaması",
+   "minutes": 8,
+   "goalTr": "10 saniyeyi saniye saniye eylemlere böl.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Her eylemin bir saniyesi olsun: 0–3 bakış, 3–6 adım, 6–10 tepki.",
+    "exampleEn": "0:00–0:03 she looks at the train door; 0:03–0:06 she steps back; 0:06–0:10 the door closes, her hand stays on the glass.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "0:00–0:03 tren kapısına bakıyor; 0:03–0:06 geri adım atıyor; 0:06–0:10 kapı kapanıyor, eli camda kalıyor."
+   },
+   "gameId": "g.scene-planner",
+   "write": {
+    "taskTr": "Bir kapıyı açıp şaşıran karakterin 10 saniyesini zaman damgalı yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "10 saniyede kaç ana eylem rahat sığar?",
+     "options": [
+      "2–3",
+      "8–10"
+     ],
+     "answer": 0,
+     "whyTr": "Az eylem net görünür."
+    },
+    {
+     "qTr": "Zaman damgası neden işe yarar?",
+     "options": [
+      "Model sırayı anlar",
+      "Prompt süslenir"
+     ],
+     "answer": 0,
+     "whyTr": "Sıra netleşir."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "move.static"
+    ]
+   }
+  },
+  {
+   "id": "m8.l4",
+   "titleTr": "Ses tasarımı",
+   "minutes": 7,
+   "goalTr": "Ortam sesi, foley ve repliği ayrı ayrı düşün.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Ses sahneyi gerçek yapar. Müzik kurguda eklenir.",
+    "exampleEn": "Ambient sound: distant station announcement, light wind; foley: heels on wet tiles, train doors hissing.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Ortam sesi: uzak istasyon anonsu, hafif rüzgâr; foley: ıslak karoda topuk sesi, tren kapılarının tıslaması."
+   },
+   "gameId": "g.sound-design",
+   "write": {
+    "taskTr": "Yağmurlu bir sokak sahnesi için ortam sesi ve foley satırı yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Foley nedir?",
+     "options": [
+      "Eylemlerin sesi: adım, kapı",
+      "Arka plan müziği"
+     ],
+     "answer": 0,
+     "whyTr": "Hareketin sesi."
+    },
+    {
+     "qTr": "Müzik nerede eklenir?",
+     "options": [
+      "Kurguda",
+      "Her video promptunda"
+     ],
+     "answer": 0,
+     "whyTr": "Model müziği karıştırabilir."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m8.l5",
+   "titleTr": "Parçaları birleştirme",
+   "minutes": 8,
+   "goalTr": "Üç parçayı son kare = başlangıç karesi zinciriyle bağla.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Her parça bir öncekinin son karesinden devam eder; ışık, kıyafet ve hava aynı kalır."
+   },
+   "gameId": "g.continuity-check",
+   "write": {
+    "taskTr": "2. parçanın son karesini, 3. parçanın açılışı olarak tek cümleyle tarif et.",
+    "focus": [
+     "boxes",
+     "contradiction"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Zincirin kuralı?",
+     "options": [
+      "Son kare = sonraki başlangıç",
+      "Her parça yeni mekân"
+     ],
+     "answer": 0,
+     "whyTr": "Süreklilik."
+    },
+    {
+     "qTr": "Kurguda geçiş türü?",
+     "options": [
+      "Düz kesme",
+      "Uzun çözülme"
+     ],
+     "answer": 0,
+     "whyTr": "Kesme akışı korur."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

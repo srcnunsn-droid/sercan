@@ -53,3 +53,11 @@ npm run check      # hepsi sırayla (test, build + 3 MB bütçe, smoke, a11y, e2
 - Faz 5 (Claude katmanı): tamam. 10 görev (`draftModelCard` eklendi), görsel gönderebilen sağlayıcılar (`sample` images beyanı), düzeltme laboratuvarı (Fabrika 8), replik doktoru, Claude süreklilik denetimi, “Yeni sistem ekle” sihirbazı ve “Claude ile güncelle”, genişletilmiş telif uyarısı. Görev çalıştırıcı sahte sağlayıcılarla test edilir.
 - Faz 6 (ileri modüller): tamam. M3–M10 (16 ders, toplam 25), 24 oyun, katalog 104 kayıt / 10 kategori (odak ve kadraj oranı eklendi), aralıklı tekrar kartları (`engine/review.ts`, Leitner), Fabrika 9. adım yayın paketi (`engine/publish.ts`: kanca, açıklama, hashtag, .srt, thumbnail promptu, 9:16 güvenli alan, kurgu listesi).
 - Faz 7 (cilalama): tamam. axe-core denetimi temiz, 3 uçtan uca senaryo yeşil, 3 MB sayfa bütçesi, katalog önizlemeleri yalnızca ekrandayken çizilir, kontrast ve ARIA düzeltmeleri.
+
+## Eksik kapatma turu (Faz 7 sonrası)
+- Mekân sürüm geçmişi + etiketler (karakterle ortak `VersionBar`).
+- `publishCopy` görevi: yayın açıklaması, yorum sorusu, kapak başlıkları, hashtag (Claude yoksa deterministik).
+- Deneyim defteri kalıpları (`engine/notebook.ts`) ve model başına 3 sahnelik mini deneme seti (`engine/testset.ts`, `prefs.testRuns`).
+- Elle kamera yolu: `CameraRig.path` anahtar kareleri; `rigStateAt` / `pathAt` / `describePath` (`engine/shot.ts`); prompt, kural, 3D ve Blender aynı yolu kullanır.
+- 3D prop seçme/sürükleme (serbest ve üst görünüm), 25 cm ızgara, 15° döndürme; üst görünümde yüksek parçalar gizlenir.
+- M1–M10 her biri en az 5 ders (toplam 50 ders, 33 oyun; her oyun bir derste kullanılır).

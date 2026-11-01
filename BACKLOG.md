@@ -1,19 +1,11 @@
 # BACKLOG (kapsam dışı ya da sonraki fazlar)
 
-## Faz 3 kalanları
-- Nesne seçme + taşı/döndür/ölçekle gizmosu, ızgaraya yapışma (şu an proplar sabit konumla eklenir).
-- Kamera yolunu anahtar karelerle elle çizme (şu an katalog hareketleri hazır eğrilerle oynar).
+## 3D
+- Prop ölçekleme ve mankenleri elle konumlama (şu an taşıma + döndürme var, mankenler kadraja göre yerleşir).
+- Kamera yolunu 3D görünümde doğrudan sürükleyerek düzenleme (şu an kaydırıcılarla).
 
-## Faz 4 kalanları
-- Mekân için de sürüm geçmişi (karakterde var).
-
-## Faz 5 kalanları
-- Deneyim defterinden model başına kalıp çıkarma (puanlı promptlardan otomatik öneri).
-- Her adaptör için 3 standart sahnelik mini deneme seti.
-
-## Faz 6 kalanları
-- M3–M10 için ikinci tur içerik: her modüle 3.–5. dersler.
-- Yayın paketi açıklama ve hashtag önerisini Claude ile zenginleştirme (şu an deterministik).
+## İçerik
+- Her modüle modül sonu sınavı.
 
 ## Fikirler
 - SECO Director OS’taki “seri bible” ve LensLab’in kamera/lens seçicisi modül olarak yeniden kurulabilir (kod gerekirse kullanıcıdan istenecek).

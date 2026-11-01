@@ -93,6 +93,134 @@
      "size.mcu"
     ]
    }
+  },
+  {
+   "id": "m5.l3",
+   "titleTr": "Kıyafet ve aksesuar kilidi",
+   "minutes": 7,
+   "goalTr": "Kıyafeti renk, kumaş ve ayırt edici detayla kilitle.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Her parçada aynı kelimeler: renk + kumaş + detay + konum.",
+    "exampleEn": "@image-1 Elif wearing the same camel wool coat with large brown buttons and a cream knit scarf as in @image-1.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "@image-1 Elif, @image-1’deki aynı büyük kahverengi düğmeli deve tüyü yün palto ve krem örgü atkıyla."
+   },
+   "gameId": "g.wardrobe-lock",
+   "write": {
+    "taskTr": "Bir dedektifin kıyafetini 3 parçada aynı kalacak şekilde tarif et.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Kıyafeti en iyi ne kilitler?",
+     "options": [
+      "Renk, kumaş ve ayırt edici detay",
+      "“Şık kıyafet”"
+     ],
+     "answer": 0,
+     "whyTr": "Görünür detay."
+    },
+    {
+     "qTr": "Aksesuarın konumu yazılır mı?",
+     "options": [
+      "Evet: “sol bileğinde”",
+      "Hayır, gereksiz"
+     ],
+     "answer": 0,
+     "whyTr": "Konum sürekliliği korur."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m5.l4",
+   "titleTr": "Aynı kimlik, farklı açı",
+   "minutes": 8,
+   "goalTr": "Açı ve ifade değişse de kimliği koru.",
+   "demo": {
+    "kind": "camera",
+    "textTr": "Aynı karakter üç açıdan: kimliği taşıyan özellikler her açıda görünür kalmalı.",
+    "catalogIds": [
+     "pos.front",
+     "pos.three-quarter",
+     "pos.profile"
+    ]
+   },
+   "gameId": "g.same-face",
+   "write": {
+    "taskTr": "Kerem’i profilden ve 3/4 önden iki prompt olarak, aynı kimlikle yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Profilde hangi özellik kimliği taşır?",
+     "options": [
+      "Burun ve çene çizgisi",
+      "Göz rengi"
+     ],
+     "answer": 0,
+     "whyTr": "Profilde göz rengi zor görünür."
+    },
+    {
+     "qTr": "Açı değişince ne değişmemeli?",
+     "options": [
+      "Saç, yara izi, kıyafet",
+      "Kamera"
+     ],
+     "answer": 0,
+     "whyTr": "Kimlik işaretleri sabit."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "pos.three-quarter"
+    ]
+   }
+  },
+  {
+   "id": "m5.l5",
+   "titleTr": "Seri bible",
+   "minutes": 8,
+   "goalTr": "Bir dizi için karakterin değişmez özelliklerini tek kartta topla.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Her karakter için 3 değişmez görünür özellik, 1 kıyafet, 1 aksesuar. Her bölümde aynen kopyala.",
+    "exampleEn": "Series bible — Elif: narrow face with light freckles; shoulder-length dark brown wavy hair; small mole above the left lip. Wardrobe: camel wool coat. Accessory: thin gold ring on the right hand.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Seri bible — Elif: çilli ince yüz; omuz hizasında koyu kahve dalgalı saç; sol dudak üstünde küçük ben. Kıyafet: deve tüyü palto. Aksesuar: sağ elde ince altın yüzük."
+   },
+   "gameId": "g.sheet-workshop",
+   "write": {
+    "taskTr": "Kendi dizinin ana karakteri için bir bible kartı yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Bible’da kaç değişmez özellik önerilir?",
+     "options": [
+      "3",
+      "10",
+      "1"
+     ],
+     "answer": 0,
+     "whyTr": "Az ama net."
+    },
+    {
+     "qTr": "Bible ne zaman güncellenir?",
+     "options": [
+      "Hikâye gerçekten değiştirince",
+      "Her bölümde rastgele"
+     ],
+     "answer": 0,
+     "whyTr": "Süreklilik için sabit kalır."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

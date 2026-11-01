@@ -85,6 +85,125 @@
     }
    ],
    "studio": {}
+  },
+  {
+   "id": "m7.l3",
+   "titleTr": "Büyütme ve yüz düzeltme",
+   "minutes": 7,
+   "goalTr": "Büyütmenin neyi düzeltip neyi düzeltmediğini bil.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Büyütme çözünürlüğü artırır; yanlış anatomiyi düzeltmez. Önce düzelt, sonra büyüt.",
+    "exampleEn": "Upscale 2x, keep natural skin texture, no extra sharpening, preserve the original face exactly.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "2 kat büyüt, doğal cilt dokusunu koru, ek keskinlik yok, orijinal yüzü aynen koru."
+   },
+   "gameId": "g.inpaint",
+   "write": {
+    "taskTr": "Doğru ama küçük bir kare için büyütme notu yaz.",
+    "focus": [
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Önce hangisi?",
+     "options": [
+      "Düzelt, sonra büyüt",
+      "Büyüt, sonra düzelt"
+     ],
+     "answer": 0,
+     "whyTr": "Büyütme hatayı da büyütür."
+    },
+    {
+     "qTr": "Aşırı keskinlik ne yapar?",
+     "options": [
+      "Yapay görünüm",
+      "Daha doğal"
+     ],
+     "answer": 0,
+     "whyTr": "Doku satırı bu yüzden var."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m7.l4",
+   "titleTr": "Yerel düzeltme",
+   "minutes": 8,
+   "goalTr": "Yalnızca bozuk bölgeyi tarif ederek düzelt; iyi olanı koru.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Bütün sahneyi değil, sadece düzeltilecek bölgeyi yaz.",
+    "exampleEn": "Fix only the left hand: relaxed natural hand holding the cup handle, five fingers, same skin tone and light as the rest of the frame.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Yalnızca sol eli düzelt: fincan kulpunu tutan rahat doğal el, beş parmak, karenin geri kalanıyla aynı ten ve ışık."
+   },
+   "gameId": "g.inpaint",
+   "write": {
+    "taskTr": "Yüzü doğru ama arka planda bozuk yazı olan bir kare için yerel düzeltme promptu yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Yerel düzeltmede ne tarif edilir?",
+     "options": [
+      "Sadece düzeltilecek bölge",
+      "Tüm sahne"
+     ],
+     "answer": 0,
+     "whyTr": "Gerisi korunur."
+    },
+    {
+     "qTr": "Işık nasıl korunur?",
+     "options": [
+      "“same light as the rest of the frame”",
+      "Yeni ışık yazarak"
+     ],
+     "answer": 0,
+     "whyTr": "Bölge sahneye uymalı."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m7.l5",
+   "titleTr": "Aynı sahne, üç model",
+   "minutes": 8,
+   "goalTr": "Bir sahneyi üç modele çevir ve sınır uyarılarını oku.",
+   "demo": {
+    "kind": "boxes",
+    "textTr": "Fabrika → Video adımındaki “Karşılaştır” ile aynı sahneyi yan yana gör."
+   },
+   "gameId": "g.model-translator",
+   "write": {
+    "taskTr": "Peron sahnesinin 1. parçasını Seedance ve Veo 3.1 için iki ayrı prompt olarak yaz; süre farkına dikkat et.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Veo 3.1 parçası (kullanıcı notu) kaç saniye?",
+     "options": [
+      "8",
+      "10",
+      "30"
+     ],
+     "answer": 0,
+     "whyTr": "Kart doğrulanmadı."
+    },
+    {
+     "qTr": "Sınır aşınca ne yapılır?",
+     "options": [
+      "Replik kısaltılır ya da referans azaltılır",
+      "Göz ardı edilir"
+     ],
+     "answer": 0,
+     "whyTr": "Model sınırı bozar."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

@@ -83,6 +83,125 @@
     }
    ],
    "studio": {}
+  },
+  {
+   "id": "m9.l3",
+   "titleTr": "Short drama yapısı",
+   "minutes": 8,
+   "goalTr": "Kanca, bağlam, tırmanış ve cliffhanger ile 30 saniye kur.",
+   "demo": {
+    "kind": "text",
+    "textTr": "0–3 sn kanca, 3–10 bağlam, 10–25 tırmanış, son 5 sn cevapsız soru.",
+    "exampleEn": "Part 1: a ring falls into a glass of wine. Part 2: the bride notices, the groom looks away. Part 3: she holds up the ring — cut to black before he answers.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "1. parça: yüzük bir kadeh şaraba düşüyor. 2. parça: gelin fark ediyor, damat bakışını kaçırıyor. 3. parça: yüzüğü kaldırıyor; damat cevap vermeden kararma."
+   },
+   "gameId": "g.hook-workshop",
+   "write": {
+    "taskTr": "Kendi short drama fikrini 4 vuruşla yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Cliffhanger nerede biter?",
+     "options": [
+      "Cevap verilmeden",
+      "Her şey çözülünce"
+     ],
+     "answer": 0,
+     "whyTr": "Devamı merak edilir."
+    },
+    {
+     "qTr": "Kanca kaç saniye?",
+     "options": [
+      "İlk 3",
+      "Son 3"
+     ],
+     "answer": 0,
+     "whyTr": "Kaydırma hemen durur."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m9.l4",
+   "titleTr": "İstek ve engel",
+   "minutes": 7,
+   "goalTr": "Her sahnede karakterin bir isteği ve görünür bir engeli olsun.",
+   "demo": {
+    "kind": "text",
+    "textTr": "İstek + engel = çatışma. Engel görünür olmalı: kapanan kapı, sönen mum.",
+    "exampleEn": "Kerem reaches for her hand, but the train door slides shut between them.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Kerem elini tutmaya uzanıyor ama tren kapısı aralarında kapanıyor."
+   },
+   "gameId": "g.want-obstacle",
+   "write": {
+    "taskTr": "Bir karakterin isteğini ve onu durduran görünür engeli tek cümleyle yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Çatışmanın formülü?",
+     "options": [
+      "İstek + engel",
+      "İki karakter + mekân"
+     ],
+     "answer": 0,
+     "whyTr": "Engel olmadan gerilim yok."
+    },
+    {
+     "qTr": "İyi engel nasıl olur?",
+     "options": [
+      "Görünür ve zamana bağlı",
+      "Soyut ve içsel"
+     ],
+     "answer": 0,
+     "whyTr": "Kamera görebilmeli."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m9.l5",
+   "titleTr": "Sessiz anlatım",
+   "minutes": 7,
+   "goalTr": "Repliksiz, yalnızca görüntü ve sesle duygu anlat.",
+   "demo": {
+    "kind": "invisible",
+    "textTr": "Replik yoksa yüz, el ve nesneler konuşur."
+   },
+   "gameId": "g.emotion-to-action",
+   "write": {
+    "taskTr": "Hiç replik kullanmadan bir barışma sahnesi yaz (3 parça).",
+    "focus": [
+     "invisible",
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Repliksiz sahnede ne öne çıkar?",
+     "options": [
+      "Yakın plan tepkiler ve nesneler",
+      "Uzun geniş planlar"
+     ],
+     "answer": 0,
+     "whyTr": "Yüz ve detay anlatır."
+    },
+    {
+     "qTr": "Ses ne iş görür?",
+     "options": [
+      "Duyguyu taşır: nefes, adım",
+      "Gereksiz"
+     ],
+     "answer": 0,
+     "whyTr": "Sessizlik de sestir."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

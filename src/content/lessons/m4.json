@@ -96,6 +96,132 @@
      "move.handheld"
     ]
    }
+  },
+  {
+   "id": "m4.l3",
+   "titleTr": "Yasak kelimeler",
+   "minutes": 6,
+   "goalTr": "Yapay keskinlik getiren kalıp kelimeleri bırak.",
+   "demo": {
+    "kind": "invisible",
+    "textTr": "“8k, masterpiece, ultra detailed, HDR” yerine görünür doku yaz."
+   },
+   "gameId": "g.banned-words",
+   "write": {
+    "taskTr": "“Masterpiece, 8k, hyper detailed portrait” cümlesini doğal fotoğraf diliyle yeniden yaz.",
+    "focus": [
+     "texture",
+     "invisible"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Hangisi yasak listede?",
+     "options": [
+      "subtle film grain",
+      "masterpiece, 8k",
+      "soft window light"
+     ],
+     "answer": 1,
+     "whyTr": "Yapay görünüm üretir."
+    },
+    {
+     "qTr": "Yerine ne yazılır?",
+     "options": [
+      "Görünür doku ve ışık",
+      "Daha çok sıfat"
+     ],
+     "answer": 0,
+     "whyTr": "Göze görünen yazılır."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m4.l4",
+   "titleTr": "Film ve lens hissi",
+   "minutes": 7,
+   "goalTr": "Belirli bir marka yazmadan film stoğu ve lens dokusunu tarif et.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Marka adı yerine görünen sonucu yaz: sıcak tonlar, yumuşak kontrast, ince gren, hafif kenar kararması.",
+    "exampleEn": "Warm 35mm film look, soft contrast, fine grain, gentle vignette at the edges, slightly lifted blacks.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Sıcak 35 mm film görünümü, yumuşak kontrast, ince gren, kenarlarda hafif kararma, hafif açılmış siyahlar."
+   },
+   "gameId": "g.real-or-fake",
+   "write": {
+    "taskTr": "Bir aile yemeğini 90’lardan kalma fotoğraf hissiyle yaz.",
+    "focus": [
+     "texture"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Film hissini ne verir?",
+     "options": [
+      "İnce gren ve yumuşak kontrast",
+      "Aşırı keskinlik",
+      "Neon renkler"
+     ],
+     "answer": 0,
+     "whyTr": "Analog doku."
+    },
+    {
+     "qTr": "Vignette nedir?",
+     "options": [
+      "Kenarların hafif kararması",
+      "Bulanık arka plan",
+      "Lens kırılması"
+     ],
+     "answer": 0,
+     "whyTr": "Göz merkeze toplanır."
+    }
+   ],
+   "studio": {
+    "catalogIds": [
+     "lens.vintage"
+    ]
+   }
+  },
+  {
+   "id": "m4.l5",
+   "titleTr": "Doğal anatomi",
+   "minutes": 7,
+   "goalTr": "Elleri, dişleri ve pozları modelin bozmayacağı şekilde kur.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Eller zayıf noktadır: ya görünür ve basit bir iş yapsın ya da kadraj dışında kalsın.",
+    "exampleEn": "Her hands rest relaxed on the table, five natural fingers, holding a simple white cup.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Elleri masada rahat duruyor, beş doğal parmak, sade beyaz bir fincan tutuyor."
+   },
+   "gameId": "g.error-diagnosis",
+   "write": {
+    "taskTr": "Piyano çalan birini ellerin bozulmayacağı şekilde yaz (açı ve kadraj seç).",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Karmaşık el hareketinde güvenli yol?",
+     "options": [
+      "Elleri kadraj dışında bırakmak ya da yakından basit iş",
+      "Ellerin hepsini yakın plan göstermek"
+     ],
+     "answer": 0,
+     "whyTr": "Model elleri bozabilir."
+    },
+    {
+     "qTr": "Gülümsemede dişler için?",
+     "options": [
+      "Dudaklar hafif aralık, doğal",
+      "Geniş sırıtış, tüm dişler"
+     ],
+     "answer": 0,
+     "whyTr": "Az diş daha az hata."
+    }
+   ],
+   "studio": {}
   }
  ]
 }

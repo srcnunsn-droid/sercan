@@ -36,7 +36,12 @@ describe('curriculum content', () => {
       [...(l.demo.catalogIds ?? []), ...(l.studio.catalogIds ?? [])].forEach((id) => expect(CATALOG_BY_ID[id], id).toBeDefined());
     }
   });
-  it('M1–M10 are all present with at least 2 lessons each', () => { expect(MODULES.map((m) => m.id)).toEqual(['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10']); MODULES.forEach((m) => expect(m.lessons.length).toBeGreaterThanOrEqual(2)); });
+  it('M1–M10 are all present with at least 2 lessons each', () => { expect(MODULES.map((m) => m.id)).toEqual(['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10']); MODULES.forEach((m) => expect(m.lessons.length, m.id).toBeGreaterThanOrEqual(5)); });
+  it('lesson ids are unique and every game is used by a lesson', () => {
+    const ids = ALL_LESSONS.map((l) => l.id); expect(new Set(ids).size).toBe(ids.length);
+    const used = new Set(ALL_LESSONS.map((l) => l.gameId));
+    Object.keys(GAME_BY_ID).forEach((g) => expect(used.has(g), g).toBe(true));
+  });
   it('rule lessons all exist now', () => RULES_META.forEach((r) => expect(LESSON_BY_ID[r.lessonId], r.id).toBeDefined()));
   it('M1 and M2 ship at least 6 games', () => expect(new Set(ALL_LESSONS.map((l) => l.gameId)).size).toBeGreaterThanOrEqual(6));
   it('rule metadata links to lesson ids that are either present or in future modules', () => {

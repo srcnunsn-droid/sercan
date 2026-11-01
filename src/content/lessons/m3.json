@@ -99,6 +99,151 @@
      "direction": "back-left"
     }
    }
+  },
+  {
+   "id": "m3.l3",
+   "titleTr": "Işığın sebebi",
+   "minutes": 8,
+   "goalTr": "Her ışığın sahnede görünen bir kaynağı olsun: lamba, ekran, ateş.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Işık bir yerden gelir. Kaynağı kadraja koyarsan izleyici ışığa inanır.",
+    "exampleEn": "A small brass desk lamp in the frame lights her face from the front left, warm 2700K, soft shadows to the right.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Kadrajdaki küçük pirinç masa lambası yüzünü sol önden aydınlatıyor, sıcak 2700K, yumuşak gölgeler sağa."
+   },
+   "gameId": "g.practical-motivation",
+   "write": {
+    "taskTr": "Gece buzdolabının ışığında su içen birini, ışığın kaynağı görünecek şekilde yaz.",
+    "focus": [
+     "light5"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Pratik ışık nedir?",
+     "options": [
+      "Kadrajda görünen gerçek kaynak",
+      "Kameranın flaşı",
+      "Sonradan eklenen efekt"
+     ],
+     "answer": 0,
+     "whyTr": "Lamba, mum, ekran gibi."
+    },
+    {
+     "qTr": "Açık buzdolabının ışığı nereden gelir?",
+     "options": [
+      "Yukarıdan",
+      "Aşağıdan ve önden",
+      "Arkadan"
+     ],
+     "answer": 1,
+     "whyTr": "Buzdolabı bel hizasındadır."
+    }
+   ],
+   "studio": {
+    "light": {
+     "source": "screen",
+     "kelvin": 7500,
+     "hardness": "yumusak",
+     "direction": "front"
+    }
+   }
+  },
+  {
+   "id": "m3.l4",
+   "titleTr": "Günün saati",
+   "minutes": 8,
+   "goalTr": "Saati ışığın rengi, yönü ve gölge uzunluğuyla anlat.",
+   "demo": {
+    "kind": "light",
+    "textTr": "Kaynağı “Güneş” ya da “Altın saat güneşi” yap, yönü ve rengi değiştir: öğle, altın saat, gece."
+   },
+   "gameId": "g.time-of-day",
+   "write": {
+    "taskTr": "Aynı sokağı altın saatte ve mavi saatte iki ayrı ışık cümlesiyle yaz.",
+    "focus": [
+     "light5"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Altın saatte gölgeler?",
+     "options": [
+      "Uzun",
+      "Yok",
+      "Kısa"
+     ],
+     "answer": 0,
+     "whyTr": "Güneş alçakta."
+    },
+    {
+     "qTr": "Mavi saatte gökyüzü?",
+     "options": [
+      "Derin mavi",
+      "Turuncu",
+      "Beyaz"
+     ],
+     "answer": 0,
+     "whyTr": "Gün batımından hemen sonra."
+    }
+   ],
+   "studio": {
+    "light": {
+     "source": "golden-sun",
+     "kelvin": 3500,
+     "hardness": "sert",
+     "direction": "back-left"
+    }
+   }
+  },
+  {
+   "id": "m3.l5",
+   "titleTr": "Siluet ve kontrast",
+   "minutes": 7,
+   "goalTr": "Arka ışık ve koyu gölgelerle siluet ve chiaroscuro kur.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Işık arkadan gelince karakter siyah bir şekle döner. Tek yandan sert ışık yüzü yarı karanlıkta bırakır.",
+    "exampleEn": "Full silhouette against a bright orange sunset sky, hard sun directly behind her, no fill light.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Parlak turuncu gün batımı önünde tam siluet, sert güneş tam arkasında, dolgu ışığı yok."
+   },
+   "gameId": "g.poster-workshop",
+   "write": {
+    "taskTr": "Bir savaşçıyı tepe üzerinde siluet olarak yaz.",
+    "focus": [
+     "light5"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Siluet için ışık nerede?",
+     "options": [
+      "Arkada",
+      "Önde",
+      "Kameranın yanında"
+     ],
+     "answer": 0,
+     "whyTr": "Arka ışık yüzü karartır."
+    },
+    {
+     "qTr": "Chiaroscuro nedir?",
+     "options": [
+      "Güçlü ışık-gölge karşıtlığı",
+      "Renkli ışık",
+      "Bulanık arka plan"
+     ],
+     "answer": 0,
+     "whyTr": "Yüzün yarısı karanlıkta."
+    }
+   ],
+   "studio": {
+    "light": {
+     "source": "golden-sun",
+     "kelvin": 3200,
+     "hardness": "sert",
+     "direction": "back"
+    }
+   }
   }
  ]
 }

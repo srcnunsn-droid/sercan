@@ -1034,5 +1034,343 @@
     "whyTr": "Model yazıyı bozar; yazıyı sonra ekle."
    }
   ]
+ },
+ {
+  "id": "g.practical-motivation",
+  "type": "match",
+  "titleTr": "Işığın sebebi",
+  "introTr": "Her sahne içi kaynağı, yüze düşürdüğü ışıkla eşleştir.",
+  "pairs": [
+   {
+    "left": "Masadaki gece lambası",
+    "right": "Yüzün bir yanında sıcak, yumuşak ışık",
+    "whyTr": "Lamba yakın ve küçük, renk sıcak."
+   },
+   {
+    "left": "Açık buzdolabı",
+    "right": "Aşağıdan ve önden soğuk beyaz ışık",
+    "whyTr": "Buzdolabı bel hizasında."
+   },
+   {
+    "left": "Yanan şömine",
+    "right": "Titreyen turuncu, aşağıdan",
+    "whyTr": "Ateş yerde ve hareketli."
+   },
+   {
+    "left": "TV ekranı",
+    "right": "Değişen mavi tonlar, önden",
+    "whyTr": "Ekran ışığı soğuk ve titreşir."
+   }
+  ]
+ },
+ {
+  "id": "g.time-of-day",
+  "type": "match",
+  "titleTr": "Günün saati",
+  "introTr": "Her saati ışığın rengi ve gölgesiyle eşleştir.",
+  "pairs": [
+   {
+    "left": "Şafak",
+    "right": "Pembe-mavi, çok yumuşak, gölge zayıf",
+    "whyTr": "Güneş ufkun altında."
+   },
+   {
+    "left": "Öğle",
+    "right": "Nötr beyaz, sert, kısa gölge",
+    "whyTr": "Güneş tepede."
+   },
+   {
+    "left": "Altın saat",
+    "right": "Sıcak altın, alçak, uzun gölge",
+    "whyTr": "Güneş ufka yakın."
+   },
+   {
+    "left": "Mavi saat",
+    "right": "Derin mavi gök, sokak lambaları turuncu",
+    "whyTr": "Gün batımından hemen sonra."
+   }
+  ]
+ },
+ {
+  "id": "g.banned-words",
+  "type": "contradiction",
+  "titleTr": "Yasak kelimeler",
+  "introTr": "Yapay görünüm üreten kelimeleri içeren cümlelere dokun.",
+  "items": [
+   {
+    "text": "Masterpiece, best quality, 8k, ultra detailed.",
+    "tr": "Başyapıt, en iyi kalite, 8k, ultra detaylı.",
+    "bad": true,
+    "whyTr": "Bu kelimeler yapay keskinlik getirir."
+   },
+   {
+    "text": "Natural skin texture, soft window light.",
+    "tr": "Doğal cilt dokusu, yumuşak pencere ışığı.",
+    "bad": false,
+    "whyTr": "Görünür ve doğal."
+   },
+   {
+    "text": "Hyper-sharp, HDR, oversaturated colors.",
+    "tr": "Aşırı keskin, HDR, aşırı doygun renkler.",
+    "bad": true,
+    "whyTr": "Doğal fotoğraf dokusunu bozar."
+   },
+   {
+    "text": "Subtle film grain, slight lens vignette.",
+    "tr": "Hafif film greni, hafif lens kararması.",
+    "bad": false,
+    "whyTr": "Gerçek lens izleri."
+   },
+   {
+    "text": "Trending on artstation, award winning.",
+    "tr": "Artstation’da trend, ödüllü.",
+    "bad": true,
+    "whyTr": "Görünmeyen, yapay stil kelimeleri."
+   }
+  ]
+ },
+ {
+  "id": "g.wardrobe-lock",
+  "type": "duel",
+  "titleTr": "Kıyafet kilidi",
+  "introTr": "Hangi tarif kıyafeti parçadan parçaya sabit tutar?",
+  "rounds": [
+   {
+    "askTr": "Elif’in paltosu",
+    "a": {
+     "label": "“camel wool coat with large brown buttons, cream knit scarf”",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "“nice winter clothes”",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Renk, kumaş ve ayırt edici detay."
+   },
+   {
+    "askTr": "Kerem’in saati",
+    "a": {
+     "label": "“silver watch with a cracked glass on his left wrist”",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "“a watch”",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Konum ve kusur kilidi güçlendirir."
+   },
+   {
+    "askTr": "Kral",
+    "a": {
+     "label": "“the same crown as @image-1, gold with three red stones”",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "“royal look”",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Referansa bağla ve detayla."
+   }
+  ]
+ },
+ {
+  "id": "g.emotion-to-action",
+  "type": "match",
+  "titleTr": "Duygudan eyleme",
+  "introTr": "Her duyguyu görünür bir eylemle eşleştir.",
+  "pairs": [
+   {
+    "left": "Utanç",
+    "right": "Gözlerini kaçırır, kulakları kızarır",
+    "whyTr": "Görünür beden tepkisi."
+   },
+   {
+    "left": "Öfke",
+    "right": "Çenesi kasılır, yumruğu masaya iner",
+    "whyTr": "Kas gerginliği görünür."
+   },
+   {
+    "left": "Özlem",
+    "right": "Eski bir fotoğrafın kenarını parmağıyla okşar",
+    "whyTr": "Nesneyle küçük bir eylem."
+   },
+   {
+    "left": "Korku",
+    "right": "Bir adım geri atar, nefesi hızlanır",
+    "whyTr": "Geri çekilme görünür."
+   }
+  ]
+ },
+ {
+  "id": "g.inpaint",
+  "type": "duel",
+  "titleTr": "Yerel düzeltme",
+  "introTr": "Hangi düzeltme yolu daha az kredi harcar ve iyi olanı korur?",
+  "rounds": [
+   {
+    "askTr": "Sadece el bozuk, gerisi mükemmel.",
+    "a": {
+     "label": "Yalnızca el bölgesini seçip yeniden üret",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Tüm kareyi baştan üret",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "İyi olanı koru, bozuk yeri düzelt."
+   },
+   {
+    "askTr": "Yüz başka birine dönmüş.",
+    "a": {
+     "label": "Referans @image-1 ile yüz düzeltme",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Işığı değiştir",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Kimlik referansla geri gelir."
+   },
+   {
+    "askTr": "Görüntü bulanık ama doğru.",
+    "a": {
+     "label": "Upscale ve hafif keskinlik",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Promptu baştan yaz",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Doğru kareyi büyüt."
+   }
+  ]
+ },
+ {
+  "id": "g.sound-design",
+  "type": "match",
+  "titleTr": "Ses katmanları",
+  "introTr": "Her ses türünü örneğiyle eşleştir.",
+  "pairs": [
+   {
+    "left": "Ortam sesi",
+    "right": "Uzak anons, rüzgâr, kalabalık uğultusu",
+    "whyTr": "Mekânı duyurur."
+   },
+   {
+    "left": "Foley",
+    "right": "Ayak sesi, kapı gıcırtısı, kumaş hışırtısı",
+    "whyTr": "Eylemin sesi."
+   },
+   {
+    "left": "Replik",
+    "right": "Karakterin konuştuğu cümle",
+    "whyTr": "Zaman damgasıyla yazılır."
+   },
+   {
+    "left": "Müzik",
+    "right": "Duyguyu taşıyan melodi",
+    "whyTr": "Kurguda eklenir; modelden genelde istenmez."
+   }
+  ]
+ },
+ {
+  "id": "g.want-obstacle",
+  "type": "duel",
+  "titleTr": "İstek ve engel",
+  "introTr": "Hangi sahne daha güçlü bir çatışma kurar?",
+  "rounds": [
+   {
+    "askTr": "Veda",
+    "a": {
+     "label": "Kerem Elif’i durdurmak istiyor, ama tren kapısı kapanıyor",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Kerem ve Elif peronda konuşuyor",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "İstek + görünür engel = çatışma."
+   },
+   {
+    "askTr": "Mektup",
+    "a": {
+     "label": "Ayşe mektubu okumak istiyor, ama mum sönmek üzere",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Ayşe mektup okuyor",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Zaman baskısı gerilim yaratır."
+   },
+   {
+    "askTr": "Yarış",
+    "a": {
+     "label": "Koşucu bitişe yetişmek istiyor, ama ayakkabı bağı çözülüyor",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Koşucu koşuyor",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Küçük engel büyük duygu."
+   }
+  ]
+ },
+ {
+  "id": "g.subtitle-read",
+  "type": "duel",
+  "titleTr": "Okunur altyazı",
+  "introTr": "Hangi altyazı telefonda daha iyi okunur?",
+  "rounds": [
+   {
+    "askTr": "Uzunluk",
+    "a": {
+     "label": "Satır başına en fazla 32 karakter, 2 satır",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Tek satırda 80 karakter",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Kısa satır hızlı okunur."
+   },
+   {
+    "askTr": "Süre",
+    "a": {
+     "label": "Her altyazı en az 1,2 saniye ekranda",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "0,5 saniye yanıp sönen",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Göz okumaya yetişmeli."
+   },
+   {
+    "askTr": "Konum",
+    "a": {
+     "label": "Yüzün altında, güvenli alanda",
+     "catalogId": ""
+    },
+    "b": {
+     "label": "Ekranın en alt kenarında",
+     "catalogId": ""
+    },
+    "correct": "a",
+    "whyTr": "Alt kısım arayüzün altında kalır."
+   }
+  ]
  }
 ]

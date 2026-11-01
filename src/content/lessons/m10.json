@@ -96,6 +96,125 @@
      "size.cu"
     ]
    }
+  },
+  {
+   "id": "m10.l3",
+   "titleTr": "Altyazı ve okunabilirlik",
+   "minutes": 6,
+   "goalTr": "Altyazıyı kısa satırlarla ve güvenli alanda tut.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Satır başına en fazla 32 karakter, en fazla 2 satır, en az 1,2 saniye. Fabrika → Yayın paketi .srt üretir.",
+    "exampleEn": "Do you really have to go?",
+    "exampleTr": "Gitmek zorunda mısın?"
+   },
+   "gameId": "g.subtitle-read",
+   "write": {
+    "taskTr": "Uzun bir repliği iki okunur altyazı satırına böl.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Satır başına önerilen karakter?",
+     "options": [
+      "32",
+      "80"
+     ],
+     "answer": 0,
+     "whyTr": "Telefonda hızlı okunur."
+    },
+    {
+     "qTr": "Altyazı en az ne kadar kalmalı?",
+     "options": [
+      "1,2 sn",
+      "0,3 sn"
+     ],
+     "answer": 0,
+     "whyTr": "Göz yetişmeli."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m10.l4",
+   "titleTr": "Haftalık yayın planı",
+   "minutes": 7,
+   "goalTr": "Haftada 3–4 videoyu tek mekân ve karakter setiyle planla.",
+   "demo": {
+    "kind": "text",
+    "textTr": "Aynı karakter ve mekânı tekrar kullan: kütüphaneden kopyala, yeni hikâye yaz.",
+    "exampleEn": "Week plan: Mon — station farewell; Wed — same station, the return; Fri — the letter; Sun — behind the scenes of the 3D blocking.\nNo sharpen, no color bleeding, natural photographic texture.",
+    "exampleTr": "Hafta planı: Pzt — istasyonda veda; Çar — aynı istasyon, dönüş; Cum — mektup; Paz — 3D sahne kurulumunun kamera arkası."
+   },
+   "gameId": "g.hook-test",
+   "write": {
+    "taskTr": "Önümüzdeki hafta için aynı karakterlerle 3 video fikri yaz.",
+    "focus": [
+     "boxes"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Hızlı üretimin sırrı?",
+     "options": [
+      "Varlıkları yeniden kullanmak",
+      "Her video için yeni karakter"
+     ],
+     "answer": 0,
+     "whyTr": "Kütüphane zaman kazandırır."
+    },
+    {
+     "qTr": "Seri ne kazandırır?",
+     "options": [
+      "Takipçi devamı bekler",
+      "Hiçbir şey"
+     ],
+     "answer": 0,
+     "whyTr": "Merak bağlılık getirir."
+    }
+   ],
+   "studio": {}
+  },
+  {
+   "id": "m10.l5",
+   "titleTr": "Sonuçtan öğren",
+   "minutes": 7,
+   "goalTr": "İzlenme ve sonuç notlarından bir sonraki promptu iyileştir.",
+   "demo": {
+    "kind": "rules",
+    "textTr": "Kütüphane → deneyim defteri: puanladığın promptlardan “işe yarıyor / kaçın” kalıpları çıkar."
+   },
+   "gameId": "g.draft-duel",
+   "write": {
+    "taskTr": "Kötü sonuç veren bir promptunu deneyim defterindeki “kaçın” kalıplarına göre düzelt.",
+    "focus": [
+     "boxes",
+     "contradiction"
+    ]
+   },
+   "quiz": [
+    {
+     "qTr": "Deneyim defteri neyi gösterir?",
+     "options": [
+      "Model başına işe yarayan ifadeler",
+      "Rastgele öneriler"
+     ],
+     "answer": 0,
+     "whyTr": "Senin sonuçlarından öğrenir."
+    },
+    {
+     "qTr": "Kalıp için kaç benzer sonuç gerekir?",
+     "options": [
+      "En az 2",
+      "1 yeter"
+     ],
+     "answer": 0,
+     "whyTr": "Tesadüfü eler."
+    }
+   ],
+   "studio": {}
   }
  ]
 }
