@@ -1,9 +1,13 @@
 # Kral ve Muhafız — Dış Ses (Anlatıcı) Metni
 
 **Format:** Instagram Reels, 9:16, 1080×1920, 30 fps, **62 saniye**
-**Ses tonu:** Derin, alçak, yavaş; masal anlatır gibi. Cümle sonlarında nefes payı bırak.
-**Kayıt ipucu:** Satırların başlangıç saniyelerine sadık kal, ekrandaki altyazılar bu zamanlara göre yanıyor.
-Ambiyans/müzik zaten videonun içinde (−3 dBFS tepe). Sesi üstüne koyarken müziği gerekirse 2–3 dB daha kıs.
+**Seslendirme:** Videoya gömülü Türkçe dış ses (yerel Piper TTS, CC0 lisanslı sesler):
+- Anlatıcı: *Fahrettin* (hafif kalınlaştırılmış, yavaş)
+- Kral: *Fettah* (tok, hafif yankılı)
+- Muhafız: *Fettah* (titreme efektli; duvardaki yazıda "öteden gelen" yankı)
+
+Ayrı dosyalar: `output/seslendirme.wav` (sadece ses), `output/muzik_ambiyans.wav` (sadece müzik/ambiyans).
+Kendi sesinizle yeniden okumak isterseniz aşağıdaki zamanlara sadık kalın; altyazılar bu zamanlara göre yanıyor.
 
 | Zaman | Sahne | Anlatıcı okur | Okuma notu |
 |---|---|---|---|
@@ -14,9 +18,9 @@ Ambiyans/müzik zaten videonun içinde (−3 dBFS tepe). Sesi üstüne koyarken 
 | 00:13.7 – 00:16.9 | | **"Üşüyor musun?"** | Kralın sesi: yumuşak, yukarıdan. |
 | 00:17.2 – 00:19.3 | İkili plan, muhafız titriyor | Muhafız titreyerek cevap verdi: | |
 | 00:19.4 – 00:22.4 | Muhafızın yüzüne yakınlaşma | **"Alışığım kralım."** | Muhafızın sesi: kısık, titrek, gururlu. |
-| 00:22.7 – 00:24.0 | Kral elini omzuna koyar | Kral gülümsedi: | |
-| 00:24.0 – 00:27.6 | | **"Olsun… Sana sıcak tutacak bir elbise getirmelerini emredeceğim."** | Cömert, kendinden emin. |
-| 00:27.7 – 00:28.9 | Kral uzaklaşır | Ve gitti. | Kısa, kuru. Ardından kapı çarpar (28.85). |
+| 00:22.45 – 00:23.5 | Kral elini omzuna koyar | Kral gülümsedi: | |
+| 00:23.55 – 00:27.95 | | **"Olsun… Sana sıcak tutacak bir elbise getirmelerini emredeceğim."** | Cömert, kendinden emin. |
+| 00:28.0 – 00:28.95 | Kral uzaklaşır | Ve gitti. | Kısa, kuru. Ardından kapı çarpar (28.85). |
 | 00:29.4 – 00:32.3 | Sıcak saray, şömine | Ama sıcacık sarayına girdiğinde… | |
 | 00:32.4 – 00:35.3 | Kral kadehiyle ateşin başında | …verdiği emri unuttu. | "unuttu"yu yavaş ve ağır söyle. |
 | 00:35.9 – 00:39.0 | Muhafız yalnız, meşale sönüyor | Muhafız bütün gece o kapıyı bekledi. | Kalp atışı başlar. |

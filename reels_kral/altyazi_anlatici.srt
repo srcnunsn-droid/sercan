@@ -27,15 +27,15 @@ Muhafız titreyerek cevap verdi:
 “Alışığım kralım.”
 
 8
-00:00:22,700 --> 00:00:24,000
+00:00:22,450 --> 00:00:23,500
 Kral gülümsedi:
 
 9
-00:00:24,000 --> 00:00:27,600
+00:00:23,550 --> 00:00:27,950
 “Olsun… Sana sıcak tutacak bir elbise getirmelerini emredeceğim.”
 
 10
-00:00:27,700 --> 00:00:28,900
+00:00:28,000 --> 00:00:28,950
 Ve gitti.
 
 11
