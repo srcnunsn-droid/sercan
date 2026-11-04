@@ -51,17 +51,11 @@ LINES = [
 ]
 
 ROLE = {
-    #           model       base speed  ffmpeg post chain
-    "narrator": ("fahrettin", 0.86, "rubberband=pitch=0.92:formant=preserved,"
-                                    "equalizer=f=140:t=q:w=1:g=3,equalizer=f=3500:t=q:w=1.5:g=2,"
-                                    "acompressor=threshold=-20dB:ratio=3:attack=8:release=120"),
-    "king": ("fettah", 0.90, "rubberband=pitch=0.86:formant=preserved,"
-                             "equalizer=f=120:t=q:w=1:g=4,acompressor=threshold=-20dB:ratio=3,"
-                             "aecho=0.8:0.6:45:0.18"),
-    "guard": ("fettah", 0.92, "rubberband=pitch=1.04,tremolo=f=7:d=0.35,"
-                              "highpass=f=120,acompressor=threshold=-22dB:ratio=3"),
-    "wall": ("fettah", 0.80, "rubberband=pitch=0.97,tremolo=f=5:d=0.2,highpass=f=110,"
-                             "aecho=0.8:0.7:90|180:0.32|0.18,acompressor=threshold=-22dB:ratio=3"),
+    # model, base speed, light ffmpeg chain (no pitch shifting / tremolo: they made the voice sound synthetic)
+    "narrator": ("fahrettin", 0.97, "highpass=f=70,acompressor=threshold=-20dB:ratio=2.5:attack=10:release=150"),
+    "king": ("fettah", 0.97, "highpass=f=70,acompressor=threshold=-20dB:ratio=2.5"),
+    "guard": ("fettah", 0.97, "highpass=f=80,acompressor=threshold=-20dB:ratio=2.5"),
+    "wall": ("fettah", 0.95, "highpass=f=80,aecho=0.8:0.5:60:0.12,acompressor=threshold=-20dB:ratio=2.5"),
 }
 
 
@@ -72,7 +66,7 @@ def tts_engine(name):
 
 
 def synth(engine, text, speed):
-    cfg = SynthesisConfig(length_scale=1.0 / speed, noise_scale=0.6, noise_w_scale=0.7)
+    cfg = SynthesisConfig(length_scale=1.0 / speed, noise_scale=0.667, noise_w_scale=0.8)
     parts, sr = [], 22050
     pieces = [p.strip() for p in text.split("...") if p.strip()]
     for k, piece in enumerate(pieces):
@@ -114,7 +108,7 @@ def main():
     for i, (start, wend, role, text) in enumerate(LINES):
         model, base, chain = ROLE[role]
         window = wend - start
-        lo, hi = (0.80, 1.12) if role == "narrator" else (base * 0.86, 1.22)
+        lo, hi = 0.93, 1.15  # keep close to the natural speaking rate
         # rubberband pitch shift keeps duration, so fit the speed on the raw take
         speed = 1.0
         for _ in range(4):
