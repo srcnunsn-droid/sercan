@@ -1,0 +1,13 @@
+<!doctype html><html><body style="margin:0;background:#222">
+<canvas id="c" width="1200" height="700"></canvas>
+<script src="../src/util.js"></script><script src="../src/head.js"></script>
+<script>
+const ctx = document.getElementById('c').getContext('2d');
+ctx.fillStyle='#3a4250'; ctx.fillRect(0,0,1200,700);
+const L = { kx: 1, c(b,k=0){ const m=1+0.35*k; return U.rgba([b[0]*m,b[1]*m,b[2]*m]); } };
+const guard = { skin:[196,150,125], hair:[52,40,32], beard:true, beardCol:[55,42,34], beardLen:0.07, eye:[85,95,90], tired:0.7, age:0.55, coldCheeks:0.8, seed:3 };
+const king = { skin:[205,165,140], hair:[150,145,140], hairHi:[230,230,230], beard:true, beardCol:[140,135,130], grey:0.5, beardLen:0.12, crown:true, age:0.7, seed:5, eye:[90,105,120] };
+const items = [[guard,{yaw:0.35,lid:0.75}],[guard,{yaw:0.1,lid:0.6,browIn:0.6}],[guard,{yaw:0.5,lid:0.85,smile:0.6,browIn:0.3}],[king,{yaw:0.3,lid:0.85,smile:0.2}],[king,{yaw:0.6,lid:0.8}]];
+items.forEach(([sp,st],i)=>{ ctx.save(); ctx.translate(130+i*235, 330); const R=70; ctx.scale(R,-R); HEAD.draw(ctx,sp,st,L,1/R); ctx.restore(); });
+window.READY=true;
+</script></body></html>

@@ -1,0 +1,18 @@
+<!doctype html><html><body style="margin:0;background:#222">
+<canvas id="c" width="1400" height="900"></canvas>
+<script src="../src/util.js"></script><script src="../src/rig.js"></script><script src="../src/head.js"></script><script src="../src/figure.js"></script><script src="../src/chars.js"></script>
+<script>
+const ctx = document.getElementById('c').getContext('2d');
+ctx.fillStyle='#46505e'; ctx.fillRect(0,0,1400,900);
+const Z=430; ctx.setTransform(Z,0,0,-Z,100,850);
+const env={t:1.3,amb:[0.95,0.95,1.0],lift:[0,0,0],keyX:-1,wind:0.6,px:1/Z};
+const g=CHARS.guardStand({}); g.x=0.35; g.dir=1; g.face={yaw:0.35,lid:0.75}; g.snow=0.3; g.shiver=1;
+FIG.draw(ctx,CHARS.guard,g,env);
+const k={x:1.4,dir:-1,hipY:0.925,lean:0.0,neck:0.03,arms:{near:{upper:0.1,fore:0.35,hand:'relaxed'},far:{upper:-0.05,fore:0.1,hand:'relaxed'}},legs:{near:{ik:{x:0.02,y:0.075}},far:{ik:{x:0.1,y:0.075}}},face:{yaw:0.35,lid:0.85}};
+FIG.draw(ctx,CHARS.king,k,env);
+const c={x:2.1,dir:1,hipY:0.92,arms:{near:{ik:{x:0.3,y:1.05},hand:'paper'},far:{upper:0,fore:0.1}},legs:{near:{ik:{x:-0.12,y:0.075}},far:{ik:{x:0.15,y:0.075}}},face:{yaw:0.4},doc:{hand:'near',rot:0.1}};
+FIG.draw(ctx,CHARS.clerk,c,env);
+const s={x:2.75,dir:-1,hipY:0.5,lean:0.35,neck:0.2,arms:{near:{ik:{x:0.45,y:0.6},hand:'open'},far:{upper:0.2,fore:0.5}},legs:{near:{ik:{x:0.3,y:0.075}},far:{ik:{x:-0.38,y:0.075},footAng:-1.2}},face:{yaw:0.3,browIn:0.7,lid:0.7}};
+FIG.draw(ctx,CHARS.sentryA,s,env);
+window.READY=true;
+</script></body></html>

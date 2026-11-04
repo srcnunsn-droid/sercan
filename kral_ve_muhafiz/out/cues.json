@@ -1,0 +1,178 @@
+{
+ "steps": [
+  {
+   "t": 9.308,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 10.154,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 11.32,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 18.092,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 18.82,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 28.092,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 28.637,
+   "who": "king",
+   "surface": "snow",
+   "gain": 0.5
+  },
+  {
+   "t": 29.975,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 30.321,
+   "who": "clerk",
+   "surface": "stone",
+   "gain": 0.35
+  },
+  {
+   "t": 30.442,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 30.7,
+   "who": "clerk",
+   "surface": "stone",
+   "gain": 0.35
+  },
+  {
+   "t": 30.904,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 31.146,
+   "who": "clerk",
+   "surface": "stone",
+   "gain": 0.35
+  },
+  {
+   "t": 31.375,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 31.62,
+   "who": "clerk",
+   "surface": "stone",
+   "gain": 0.35
+  },
+  {
+   "t": 31.867,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 32.383,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 32.933,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 33.55,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 34.346,
+   "who": "king",
+   "surface": "stone",
+   "gain": 0.5
+  },
+  {
+   "t": 56.671,
+   "who": "sentryA",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 57.146,
+   "who": "sentryB",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 57.2,
+   "who": "sentryA",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 57.733,
+   "who": "sentryA",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 57.754,
+   "who": "sentryB",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 58.267,
+   "who": "sentryA",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 58.367,
+   "who": "sentryB",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 59.12,
+   "who": "sentryA",
+   "surface": "snow",
+   "gain": 0.42
+  },
+  {
+   "t": 59.62,
+   "who": "sentryB",
+   "surface": "snow",
+   "gain": 0.42
+  }
+ ]
+}
