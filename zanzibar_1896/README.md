@@ -58,3 +58,32 @@ Notlar:
 - Anlatım, Higgsfield üzerinden **ElevenLabs v4** (hazır ses "Orion") ile cümle cümle üretildi. Telaffuz Whisper (small) ile denetlendi; hatalı okunan segmentler yeniden üretildi (ayrıntı: `edit_notes.md`). TTS dosyaları `work/tts_final/` içinde saklı, adım 2 ağ bağlantısı gerektirmez.
 - Bütün animasyon zamanları `src/data/timeline.json` dosyasındaki gerçek ses zamanlarına bağlıdır (`S('s31')` gibi). Animasyon kare numarasından hesaplanır; rastgelelik sabit tohumludur.
 - Higgsfield üretimleri, kullanılan aralıklar ve düzeltme denemeleri: `assets/higgsfield/jobs.md`.
+
+## Kalite kontrol sonuçları (son render)
+
+| Kontrol | Sonuç |
+|---|---|
+| Çözünürlük / oran / kare hızı | 1920×1080, 16:9, 30 fps (H.264 High, yuv420p) — iki sürümde de |
+| Süre | 394.40 sn (6:34) — iki sürümde de |
+| Kare sayısı | 11832 / 11832 (görüntü akışları bayt düzeyinde aynı, MD5 eşit) |
+| Sessiz sürümde ses akışı | yok (0 akış) |
+| Sesli sürüm ses | AAC 48 kHz stereo, −16.0 LUFS, tepe −2.4 dBFS |
+| Siyah kare (blackdetect 0.05 sn) | 0 |
+| Sessizlik (−50 dB, 1.5 sn) | yalnızca 230.6–232.3 sn: "Süre doldu" öncesi planlı bekleyiş |
+| Anlatım bütünlüğü | Miks üzerinde Whisper dökümü baştan sona tam; kelime eşleşmesi 0.896 (fark rakam/yazı biçiminden) |
+| Dosya boyutu | sesli 94.0 MB, sessiz 83.9 MB (2 geçişli H.264, ~1.7 Mbps görüntü) |
+
+## Üretken görüntü süresi (Higgsfield)
+
+| Bölüm | Aralık (sn) | Süre |
+|---|---|---|
+| Açılış — gemiler, saray, top, saray, geniş liman (klip A) | 5.8–16.0, 17.3–20.2 | 13.1 sn |
+| Açılış — çizgiye dönüşen durağan kare (klip A'dan) | 20.2–21.3 | 1.1 sn |
+| Taht anlaşmazlığı — 25 Ağustos, saray (klip A) | 82.0–86.2 | 4.2 sn |
+| Bombardıman (klip B) | 240.8–247.8 | 7.0 sn |
+| Final — hasarlı liman (klip C) | 363.5–365.9 | 2.4 sn |
+| **Toplam** | | **27.8 sn (%7.0)** — yerel animasyon %93 |
+
+Hedef 45 sn idi. Klip C'nin iki denemesinde de kimlik hataları (fazladan gemi, kubbeli yapı) çıktığı için yalnızca temiz 2.4 sn kullanıldı; kalan süre yerel animasyonla tamamlandı.
+
+Not: Depo büyük dosya (LFS) yüklemesine ağ katmanında izin vermediği için videolar 100 MB sınırının altında kalacak şekilde ~1.7 Mbps ile kodlandı. Daha yüksek bit hızlı bir ana kopya gerekirse `tools/finalize.sh` içindeki `VB` değeri artırılarak yeniden üretilebilir.
