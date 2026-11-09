@@ -1,0 +1,9 @@
+node_modules/
+out/
+work/check/
+work/stills/
+work/voice_previews/
+work/tts_raw/
+work/tts_v2/
+work/*.wav
+work/req_*.json

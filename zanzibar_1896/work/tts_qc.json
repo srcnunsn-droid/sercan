@@ -1,0 +1,440 @@
+[
+ {
+  "i": 0,
+  "id": "s01",
+  "ratio": 0.438,
+  "hyp": "27 Ağustos, 1896 Sabahı"
+ },
+ {
+  "i": 1,
+  "id": "s02",
+  "ratio": 0.97,
+  "hyp": "Zanzibar Limanı'nda 5 Britanya Savaş Gemisi, kıyıdaki bir sarayın karşısında bekliyor."
+ },
+ {
+  "i": 2,
+  "id": "s03",
+  "ratio": 1.0,
+  "hyp": "Bir saat dolmadan her şey bitecek."
+ },
+ {
+  "i": 3,
+  "id": "s04",
+  "ratio": 1.0,
+  "hyp": "Saray ağır hasar görecek ve bu çatışma kayıtlara tarihin en kısa savaşı olarak geçecek."
+ },
+ {
+  "i": 4,
+  "id": "s05",
+  "ratio": 1.0,
+  "hyp": "Bu hızın nedenini anlamak için iki gün geriye bir sultanın ölümüne gitmemiz gerekiyor."
+ },
+ {
+  "i": 5,
+  "id": "s06",
+  "ratio": 0.989,
+  "hyp": "Zanzibar, Dogu Afrika Kıyısının açıklarında bir adalar topluluğu. Bugün Tanzanya'nın parçası."
+ },
+ {
+  "i": 6,
+  "id": "s07",
+  "ratio": 0.747,
+  "hyp": "1890'den beri Britanya Himayesi altındaydı."
+ },
+ {
+  "i": 7,
+  "id": "s08",
+  "ratio": 1.0,
+  "hyp": "Bu, Avrupa devletlerinin Afrika'da nüfuz için yarıştığı bir dönemdi."
+ },
+ {
+  "i": 8,
+  "id": "s09",
+  "ratio": 1.0,
+  "hyp": "O yıl Britanya ile Almanya nüfuz alanlarını paylaştıran bir anlaşma imzaladı."
+ },
+ {
+  "i": 9,
+  "id": "s10",
+  "ratio": 1.0,
+  "hyp": "Almanya'nın Zanzibar üzerindeki Britanya Himayesini tanıması da bu anlaşmanın bir parçasıydı."
+ },
+ {
+  "i": 10,
+  "id": "s11",
+  "ratio": 0.989,
+  "hyp": "Yani adının geleceği, yalnızca Zanzibar'da değil, Avrupa başkentlerinde de pazarlık konusuydu."
+ },
+ {
+  "i": 11,
+  "id": "s12",
+  "ratio": 1.0,
+  "hyp": "Sultan Unvanını koruyordu. Ama yönetim üzerinde Britanya'nın etkisi büyüktü."
+ },
+ {
+  "i": 12,
+  "id": "s13",
+  "ratio": 0.843,
+  "hyp": "Sultan Hamad bin Tuveyni de 1893'te Britanya'nın desteğiyle tahta çıkmıştı."
+ },
+ {
+  "i": 13,
+  "id": "s14",
+  "ratio": 1.0,
+  "hyp": "Kaynaklara göre bunun bir nedeni, Britanya'nın bölgedeki üstünlüğünü kabul etmesiydi."
+ },
+ {
+  "i": 14,
+  "id": "s15",
+  "ratio": 1.0,
+  "hyp": "Hamad'ın saltanatı yaklaşık üç yıl sürdü."
+ },
+ {
+  "i": 15,
+  "id": "s16",
+  "ratio": 1.0,
+  "hyp": "Bu yüzden tahtın bir sonraki sahibi Britanya için sıradan bir saray meselesi değil, kendi düzeninin devamı demekti."
+ },
+ {
+  "i": 16,
+  "id": "s17",
+  "ratio": 0.586,
+  "hyp": "25 Ağustos, 1896'da Sultan Hamat öldü."
+ },
+ {
+  "i": 17,
+  "id": "s18",
+  "ratio": 1.0,
+  "hyp": "Ölümünün ardından zehirlenme iddiaları dolaştı. Ama bunlar kanıtlanmış değil."
+ },
+ {
+  "i": 18,
+  "id": "s19",
+  "ratio": 1.0,
+  "hyp": "Kesin olan, sonrasında yaşananlar."
+ },
+ {
+  "i": 19,
+  "id": "s20",
+  "ratio": 0.994,
+  "hyp": "Öğlen sultanın akrabası Halid bin Bargaş, Britanya'nın onayını almadan tahta geçti."
+ },
+ {
+  "i": 20,
+  "id": "s21",
+  "ratio": 1.0,
+  "hyp": "Britanya ise başka bir adayı Hamud bin Muhammed'i destekliyordu."
+ },
+ {
+  "i": 21,
+  "id": "s22",
+  "ratio": 1.0,
+  "hyp": "Britanya, Halid'i fazla bağımsız davranan biri olarak görüyordu."
+ },
+ {
+  "i": 22,
+  "id": "s23",
+  "ratio": 0.986,
+  "hyp": "Destekçileri ise farklı bakıyordu. Bazı anlatılara göre Halid Avlupa Müdahalesi'ne karşı direnişin simgesi haline gelmişti ve sarayda onu destekleyen kalabalık bir topluluk vardı."
+ },
+ {
+  "i": 23,
+  "id": "s24",
+  "ratio": 1.0,
+  "hyp": "Böylece mesele kişilerden çok yetkiye dönüştü."
+ },
+ {
+  "i": 24,
+  "id": "s25",
+  "ratio": 0.995,
+  "hyp": "Onaysız bir tahta geçiş kabul edilirse, Himayedüzeninin dayandığı onay mekanizması anlamını yitirirdi."
+ },
+ {
+  "i": 25,
+  "id": "s26",
+  "ratio": 1.0,
+  "hyp": "Artık sınanan şuydu. Zanzibar'da tahta kimin geçeceğine kim karar verecekti?"
+ },
+ {
+  "i": 26,
+  "id": "s27",
+  "ratio": 1.0,
+  "hyp": "Britanya önce diplomasiyi denedi. Konsolos, Halid'i saraydan kendi isteğiyle ayrılmaya ikna etmeye çalıştı."
+ },
+ {
+  "i": 27,
+  "id": "s28",
+  "ratio": 0.969,
+  "hyp": "Bu işe yaramayınca yanıt, siyasi baskıdan askeri tehdit de dönüştü."
+ },
+ {
+  "i": 28,
+  "id": "s29",
+  "ratio": 1.0,
+  "hyp": "Gemiler limanda toplandı. Kıyıya denizciler ve deniz piyadeleri çıkarıldı."
+ },
+ {
+  "i": 29,
+  "id": "s30",
+  "ratio": 0.991,
+  "hyp": "Askeri olmayan teknelerden limanı boşaltmaları istendi. Liman artık ticarete değil, çatışmaya hazırlanıyordu."
+ },
+ {
+  "i": 30,
+  "id": "s31",
+  "ratio": 0.881,
+  "hyp": "Halide saraydan ayrılması için son an bildirildi. 27 Ağustos Sabahı, saat 9."
+ },
+ {
+  "i": 31,
+  "id": "s32",
+  "ratio": 0.956,
+  "hyp": "Süre dolar ise yımandaki gemiler ateş açacaktı. Anlaşmazlık, somut bir geri sayıma dönüşmüştü."
+ },
+ {
+  "i": 32,
+  "id": "s33",
+  "ratio": 0.989,
+  "hyp": "Sabah Halid görüşme istedi. Britanya, yalnızca ultimatom kabul edilirse konuşacağını bildirdi."
+ },
+ {
+  "i": 33,
+  "id": "s34",
+  "ratio": 1.0,
+  "hyp": "Sarayın son yanıtı bayrağın indirilmeyeceği yönündeydi."
+ },
+ {
+  "i": 34,
+  "id": "s35",
+  "ratio": 1.0,
+  "hyp": "Aktarılan yanıtta, Britanya'nın gerçekten ateş açacağına inanılmadığı da yazıyordu."
+ },
+ {
+  "i": 35,
+  "id": "s36",
+  "ratio": 0.994,
+  "hyp": "Rededilen talep bir taht tartışmasını silahla çözülecek bir çatışmaya çevirdi."
+ },
+ {
+  "i": 36,
+  "id": "s37",
+  "ratio": 1.0,
+  "hyp": "Taraflara yukarıdan bakınca sürenin neden bu kadar kısa olduğu görünmeye başlıyor."
+ },
+ {
+  "i": 37,
+  "id": "s38",
+  "ratio": 0.976,
+  "hyp": "5 Britanya Savaş Gemisi Toplarını Denizden Doğrudan Saraya Çevirebilecek Konumdaydı."
+ },
+ {
+  "i": 38,
+  "id": "s39",
+  "ratio": 1.0,
+  "hyp": "Zanzibar'ın denizdeki başlıca unsuru ise silahlı bir kraliyet yatıydı. Glazgov. Yanında yalnızca birkaç küçük tekne vardı."
+ },
+ {
+  "i": 39,
+  "id": "s40",
+  "ratio": 0.93,
+  "hyp": "Saray çevresinde bazı kaynaklara göre yaklaşık 3 bin kişi toplanmıştı. Bunların 700 kadarı askerdi."
+ },
+ {
+  "i": 40,
+  "id": "s41",
+  "ratio": 1.0,
+  "hyp": "Ama bu çatışmada belirleyici olan insan sayısı değil. Ateş gücüydü."
+ },
+ {
+  "i": 41,
+  "id": "s42",
+  "ratio": 1.0,
+  "hyp": "Saray yerinden oynayamazdı. Savunması, kıyıdaki toplara dayanıyordu."
+ },
+ {
+  "i": 42,
+  "id": "s43",
+  "ratio": 1.0,
+  "hyp": "Karşı karşıya gelen şey, iki ordudan çok, bir filo ile bir bina ve onun toplarıydı."
+ },
+ {
+  "i": 43,
+  "id": "s44",
+  "ratio": 1.0,
+  "hyp": "Güç dengesi ilk atıştan önce de görülebiliyordu."
+ },
+ {
+  "i": 44,
+  "id": "s45",
+  "ratio": 1.0,
+  "hyp": "Süre Doldu. Kısa süre sonra Britanya gemileri sarayı bombalamaya başladı."
+ },
+ {
+  "i": 45,
+  "id": "s46",
+  "ratio": 0.994,
+  "hyp": "Ateş, Saray'ın ve Harem bölümünün yapılarına, bir de onları savunan toplara yöneldi."
+ },
+ {
+  "i": 46,
+  "id": "s47",
+  "ratio": 1.0,
+  "hyp": "Kısa sürede kıyıdaki toplar susturuldu. Saray ağır hasar gördü."
+ },
+ {
+  "i": 47,
+  "id": "s48",
+  "ratio": 0.979,
+  "hyp": "Kraliyet yatı Glazgov, Britanya'nın amiral gemisi Saint-Corca ateş açtı ve kısa sürede batırıldı."
+ },
+ {
+  "i": 48,
+  "id": "s49",
+  "ratio": 1.0,
+  "hyp": "Karşılık verecek araçlarını yitiren savunma için çatışma fiilen bitmişti."
+ },
+ {
+  "i": 49,
+  "id": "s50",
+  "ratio": 1.0,
+  "hyp": "Sonunda saraydaki bayrak vurulup düştü ve ateş kesildi."
+ },
+ {
+  "i": 50,
+  "id": "s51",
+  "ratio": 1.0,
+  "hyp": "O sabah indirilmeyeceği bildirilen bayraktı bu."
+ },
+ {
+  "i": 51,
+  "id": "s52",
+  "ratio": 0.934,
+  "hyp": "Bedeli ağır oldu. Zanzibar tarafında yaklaşık 500 kişi öldü ya da yaralandı."
+ },
+ {
+  "i": 52,
+  "id": "s53",
+  "ratio": 1.0,
+  "hyp": "Britanya tarafında tek bir yaralı bildirildi."
+ },
+ {
+  "i": 53,
+  "id": "s54",
+  "ratio": 0.989,
+  "hyp": "Bombardumanın ardından karaya çıkan denizciler saraydan yayılan yangını söndürmeye çalıştı."
+ },
+ {
+  "i": 54,
+  "id": "s55",
+  "ratio": 1.0,
+  "hyp": "Savaşın kısalığı bu kaybı küçültmez. Kısa süre, yalnızca ateşin ne kadar sürdüğünü ölçer."
+ },
+ {
+  "i": 55,
+  "id": "s56",
+  "ratio": 1.0,
+  "hyp": "Siyasi sonuç ise çok daha uzun sürdü."
+ },
+ {
+  "i": 56,
+  "id": "s57",
+  "ratio": 1.0,
+  "hyp": "Halid, Alman konsolosluğuna sığındı ve daha sonra bir Alman gemisiyle adadan ayrıldı."
+ },
+ {
+  "i": 57,
+  "id": "s58",
+  "ratio": 1.0,
+  "hyp": "Britanya'nın desteklediği, Hamud bin Muhammed Sultan oldu."
+ },
+ {
+  "i": 58,
+  "id": "s59",
+  "ratio": 0.993,
+  "hyp": "Anlaşmazlığın başladığı yerde, yani tahta, Britanya'nın istediği isim kaldı."
+ },
+ {
+  "i": 59,
+  "id": "s60",
+  "ratio": 0.965,
+  "hyp": "Hamud, izleyen 6 yıl boyunca Britanya'nın güçlü etkisi altında yönetti."
+ },
+ {
+  "i": 60,
+  "id": "s61",
+  "ratio": 0.822,
+  "hyp": "Himaye düzeni ise 1963'te Zanzibar'ın bağımsızlığına kadar sürdü."
+ },
+ {
+  "i": 61,
+  "id": "s62",
+  "ratio": 0.992,
+  "hyp": "Bazı kaynaklara göre, Britanya, bombardıma da kullanılan mermilerin ve yağmanın bedelini bile Halid'in destekçilerinden talep etti."
+ },
+ {
+  "i": 62,
+  "id": "s63",
+  "ratio": 1.0,
+  "hyp": "Başka anlatılar bu savaşı Zanzibar'ın egemen bir devlet olarak sonunun işareti sayar."
+ },
+ {
+  "i": 63,
+  "id": "s64",
+  "ratio": 0.992,
+  "hyp": "Daha geniş bakınca olay, Yerel yöneticilerin Avrupa devletlerinin askeri gücü karşısında ne kadar az seçeneği olduğunu da gösteriyordu."
+ },
+ {
+  "i": 64,
+  "id": "s65",
+  "ratio": 0.99,
+  "hyp": "Sultan Ünvanı yerinde durdu. Ama tahta kimin geçeceğine dair son sözün nerede olduğu açıkça görülmüştü."
+ },
+ {
+  "i": 65,
+  "id": "s66",
+  "ratio": 1.0,
+  "hyp": "Savaşın bu kadar hızlı bitmesi de tesadüf değildi."
+ },
+ {
+  "i": 66,
+  "id": "s67",
+  "ratio": 0.992,
+  "hyp": "Onaysız bir tahta geçiş, reddedilen bir süre sınırı ve karşılık gücü hızla tükenen bir savunma, artar da bu sonuca götürdü."
+ },
+ {
+  "i": 67,
+  "id": "s68",
+  "ratio": 0.986,
+  "hyp": "En kısa savaş ünvanının bir yan etkisi var. Süre öne çıktıkça, bunun bir tahtın ve yüzlerce insanın kaybının hikayesi olduğu geri planda kalıyor."
+ },
+ {
+  "i": 68,
+  "id": "s69",
+  "ratio": 0.898,
+  "hyp": "Kimi kayıtlar 38, kimileri 45 dakika der. Çünkü gemilerin ateşi bıraktığı saatler farklı kaydedilmiştir."
+ },
+ {
+  "i": 69,
+  "id": "s70",
+  "ratio": 0.915,
+  "hyp": "En güvenli ifade şu, Savaş yaklaşık 40 dakika sürdü. Herhalde 1 saatten kısa."
+ },
+ {
+  "i": 70,
+  "id": "s71",
+  "ratio": 0.993,
+  "hyp": "Rakam değişse de hikaye aynı kalıyor. Tahtı belirsizleştiren bir ölüm, kabul edilmeyen bir süre sınırı ve o sınır dolduktan sonra gelen bombardıman."
+ },
+ {
+  "i": 71,
+  "id": "s72",
+  "ratio": 1.0,
+  "hyp": "Bu kanalda tarihin böyle anlarını haritalar ve animasyonlarla anlatıyoruz."
+ },
+ {
+  "i": 72,
+  "id": "s73",
+  "ratio": 1.0,
+  "hyp": "Yeni videoları kaçırmak istemezseniz kanala abone olabilirsiniz."
+ }
+]

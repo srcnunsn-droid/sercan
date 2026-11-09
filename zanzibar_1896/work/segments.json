@@ -1,0 +1,478 @@
+[
+ {
+  "id": "s01",
+  "section": "acilis",
+  "text": "27 Ağustos 1896 sabahı.",
+  "tts": "Yirmi yedi Ağustos, bin sekiz yüz doksan altı sabahı.",
+  "pause": 0.35
+ },
+ {
+  "id": "s02",
+  "section": "acilis",
+  "text": "Zanzibar limanında beş Britanya savaş gemisi, kıyıdaki bir sarayın karşısında bekliyor.",
+  "tts": "Zanzibar limanında beş Britanya savaş gemisi, kıyıdaki bir sarayın karşısında bekliyor.",
+  "pause": 0.45
+ },
+ {
+  "id": "s03",
+  "section": "acilis",
+  "text": "Bir saat dolmadan her şey bitecek.",
+  "tts": "Bir saat dolmadan her şey bitecek.",
+  "pause": 0.45
+ },
+ {
+  "id": "s04",
+  "section": "acilis",
+  "text": "Saray ağır hasar görecek ve bu çatışma, kayıtlara tarihin en kısa savaşı olarak geçecek.",
+  "tts": "Saray ağır hasar görecek ve bu çatışma, kayıtlara tarihin en kısa savaşı olarak geçecek.",
+  "pause": 0.55
+ },
+ {
+  "id": "s05",
+  "section": "acilis",
+  "text": "Bu hızın nedenini anlamak için iki gün geriye, bir sultanın ölümüne gitmemiz gerekiyor.",
+  "tts": "Bu hızın nedenini anlamak için iki gün geriye, bir sultanın ölümüne gitmemiz gerekiyor.",
+  "pause": 2.4
+ },
+ {
+  "id": "s06",
+  "section": "konum",
+  "text": "Zanzibar, Doğu Afrika kıyısının açıklarında bir adalar topluluğu; bugün Tanzanya'nın parçası.",
+  "tts": "Zanzibar, Doğu Afrika kıyısının açıklarında bir adalar topluluğu; bugün Tanzanya'nın parçası.",
+  "pause": 0.5
+ },
+ {
+  "id": "s07",
+  "section": "konum",
+  "text": "1890'dan beri Britanya himayesi altındaydı.",
+  "tts": "Bin sekiz yüz doksandan beri Britanya himayesi altındaydı.",
+  "pause": 0.4
+ },
+ {
+  "id": "s08",
+  "section": "konum",
+  "text": "Bu, Avrupa devletlerinin Afrika'da nüfuz için yarıştığı bir dönemdi.",
+  "tts": "Bu, Avrupa devletlerinin Afrika'da nüfuz için yarıştığı bir dönemdi.",
+  "pause": 0.45
+ },
+ {
+  "id": "s09",
+  "section": "nufuz",
+  "text": "O yıl Britanya ile Almanya, nüfuz alanlarını paylaştıran bir anlaşma imzaladı.",
+  "tts": "O yıl Britanya ile Almanya, nüfuz alanlarını paylaştıran bir anlaşma imzaladı.",
+  "pause": 0.3
+ },
+ {
+  "id": "s10",
+  "section": "nufuz",
+  "text": "Almanya'nın, Zanzibar üzerindeki Britanya himayesini tanıması da bu anlaşmanın bir parçasıydı.",
+  "tts": "Almanya'nın, Zanzibar üzerindeki Britanya himayesini tanıması da bu anlaşmanın bir parçasıydı.",
+  "pause": 0.45
+ },
+ {
+  "id": "s11",
+  "section": "nufuz",
+  "text": "Yani, adanın geleceği yalnızca Zanzibar'da değil, Avrupa başkentlerinde de pazarlık konusuydu.",
+  "tts": "Yani, adanın geleceği yalnızca Zanzibar'da değil, Avrupa başkentlerinde de pazarlık konusuydu.",
+  "pause": 0.7
+ },
+ {
+  "id": "s12",
+  "section": "etki",
+  "text": "Sultan unvanını koruyordu; ama yönetim üzerinde Britanya'nın etkisi büyüktü.",
+  "tts": "Sultan unvanını koruyordu; ama yönetim üzerinde Britanya'nın etkisi büyüktü.",
+  "pause": 0.45
+ },
+ {
+  "id": "s13",
+  "section": "etki",
+  "text": "Sultan Hamad bin Thuwaini de 1893'te Britanya'nın desteğiyle tahta çıkmıştı.",
+  "tts": "Sultan Hamad bin Tuveyni de bin sekiz yüz doksan üçte Britanya'nın desteğiyle tahta çıkmıştı.",
+  "pause": 0.3
+ },
+ {
+  "id": "s14",
+  "section": "etki",
+  "text": "Kaynaklara göre bunun bir nedeni, Britanya'nın bölgedeki üstünlüğünü kabul etmesiydi.",
+  "tts": "Kaynaklara göre bunun bir nedeni, Britanya'nın bölgedeki üstünlüğünü kabul etmesiydi.",
+  "pause": 0.45
+ },
+ {
+  "id": "s16",
+  "section": "etki",
+  "text": "Bu yüzden tahtın bir sonraki sahibi, Britanya için sıradan bir saray meselesi değil, kendi düzeninin devamı demekti.",
+  "tts": "Bu yüzden tahtın bir sonraki sahibi, Britanya için sıradan bir saray meselesi değil, kendi düzeninin devamı demekti.",
+  "pause": 0.8
+ },
+ {
+  "id": "s17",
+  "section": "taht",
+  "text": "25 Ağustos 1896'da Sultan Hamad öldü.",
+  "tts": "Yirmi beş Ağustos, bin sekiz yüz doksan altıda, Sultan Hamad öldü.",
+  "pause": 0.5
+ },
+ {
+  "id": "s18",
+  "section": "taht",
+  "text": "Ölümünün ardından zehirlenme iddiaları dolaştı; ama bunlar kanıtlanmış değil.",
+  "tts": "Ölümünün ardından zehirlenme iddiaları dolaştı; ama bunlar kanıtlanmış değil.",
+  "pause": 0.3
+ },
+ {
+  "id": "s20",
+  "section": "taht",
+  "text": "Hamad'ın akrabası Khalid bin Barghash, Britanya'nın onayını almadan tahta geçti.",
+  "tts": "Hamad'ın akrabası Halid bin Bargaş, Britanya'nın onayını almadan tahta geçti.",
+  "pause": 0.45
+ },
+ {
+  "id": "s21",
+  "section": "taht",
+  "text": "Britanya ise başka bir adayı, Hamoud bin Muhammed'i destekliyordu.",
+  "tts": "Britanya ise başka bir adayı, Hamud bin Muhammed'i destekliyordu.",
+  "pause": 0.4
+ },
+ {
+  "id": "s22",
+  "section": "taht",
+  "text": "Britanya, Khalid'i fazla bağımsız davranan biri olarak görüyordu.",
+  "tts": "Britanya, Halid'i fazla bağımsız davranan biri olarak görüyordu.",
+  "pause": 0.35
+ },
+ {
+  "id": "s23",
+  "section": "taht",
+  "text": "Destekçileri ise farklı bakıyordu. Bazı anlatılara göre Khalid, Avrupa'nın müdahalesine karşı direnişin simgesi hâline gelmişti ve sarayda onu destekleyen kalabalık bir topluluk vardı.",
+  "tts": "Destekçileri ise farklı bakıyordu. Bazı anlatılara göre Halid, Avrupa'nın müdahalesine karşı direnişin simgesi hâline gelmişti, ve sarayda onu destekleyen kalabalık bir topluluk vardı.",
+  "pause": 0.5
+ },
+ {
+  "id": "s24",
+  "section": "taht",
+  "text": "Böylece mesele, kişilerden çok yetkiye dönüştü.",
+  "tts": "Böylece mesele, kişilerden çok yetkiye dönüştü.",
+  "pause": 0.35
+ },
+ {
+  "id": "s25",
+  "section": "taht",
+  "text": "Onaysız bir tahta geçiş kabul edilirse, himaye düzeninin dayandığı onay mekanizması anlamını yitirirdi.",
+  "tts": "Onaysız bir tahta geçiş kabul edilirse, himaye düzeninin dayandığı onay mekanizması anlamını yitirirdi.",
+  "pause": 0.4
+ },
+ {
+  "id": "s26",
+  "section": "taht",
+  "text": "Artık sınanan şuydu: Zanzibar'da tahta kimin geçeceğine kim karar verecekti?",
+  "tts": "Artık sınanan şuydu: Zanzibar'da tahta kimin geçeceğine kim karar verecekti?",
+  "pause": 0.9
+ },
+ {
+  "id": "s27",
+  "section": "ultimatom",
+  "text": "Britanya önce diplomasiyi denedi. Konsolos, Khalid'i saraydan kendi isteğiyle ayrılmaya ikna etmeye çalıştı.",
+  "tts": "Britanya önce diplomasiyi denedi. Konsolos, Halid'i saraydan kendi isteğiyle ayrılmaya ikna etmeye çalıştı.",
+  "pause": 0.4
+ },
+ {
+  "id": "s28",
+  "section": "ultimatom",
+  "text": "Bu işe yaramayınca yanıt, siyasi baskıdan askerî tehdide dönüştü.",
+  "tts": "Bu işe yaramayınca yanıt, siyasi baskıdan askerî tehdide dönüştü.",
+  "pause": 0.4
+ },
+ {
+  "id": "s29",
+  "section": "ultimatom",
+  "text": "Gemiler limanda toplandı, kıyıya denizciler ve deniz piyadeleri çıkarıldı.",
+  "tts": "Gemiler limanda toplandı, kıyıya denizciler ve deniz piyadeleri çıkarıldı.",
+  "pause": 0.3
+ },
+ {
+  "id": "s30",
+  "section": "ultimatom",
+  "text": "Askerî olmayan teknelerden limanı boşaltmaları istendi. Liman artık ticarete değil, çatışmaya hazırlanıyordu.",
+  "tts": "Askerî olmayan teknelerden limanı boşaltmaları istendi. Liman artık ticarete değil, çatışmaya hazırlanıyordu.",
+  "pause": 0.5
+ },
+ {
+  "id": "s31",
+  "section": "ultimatom",
+  "text": "Khalid'e saraydan ayrılması için son an bildirildi: 27 Ağustos sabahı, saat dokuz.",
+  "tts": "Halid'e saraydan ayrılması için son an bildirildi: yirmi yedi Ağustos sabahı, saat dokuz.",
+  "pause": 0.5
+ },
+ {
+  "id": "s32",
+  "section": "ultimatom",
+  "text": "Süre dolarsa, gemiler ateş açacaktı. Anlaşmazlık, somut bir geri sayıma dönüşmüştü.",
+  "tts": "Süre dolarsa, gemiler ateş açacaktı. Anlaşmazlık, somut bir geri sayıma dönüşmüştü.",
+  "pause": 0.5
+ },
+ {
+  "id": "s33",
+  "section": "ultimatom",
+  "text": "Sabah Khalid görüşme istedi. Britanya, yalnızca ültimatom kabul edilirse konuşacağını bildirdi.",
+  "tts": "Sabah Halid görüşme istedi. Britanya, yalnızca ültimatom kabul edilirse konuşacağını bildirdi.",
+  "pause": 0.4
+ },
+ {
+  "id": "s34",
+  "section": "ultimatom",
+  "text": "Sarayın son yanıtı, bayrağın indirilmeyeceği yönündeydi.",
+  "tts": "Sarayın son yanıtı, bayrağın indirilmeyeceği yönündeydi.",
+  "pause": 0.3
+ },
+ {
+  "id": "s35",
+  "section": "ultimatom",
+  "text": "Aktarılan yanıtta, Britanya'nın gerçekten ateş açacağına inanılmadığı da yazıyordu.",
+  "tts": "Aktarılan yanıtta, Britanya'nın gerçekten ateş açacağına inanılmadığı da yazıyordu.",
+  "pause": 0.45
+ },
+ {
+  "id": "s36",
+  "section": "ultimatom",
+  "text": "Reddedilen talep, bir taht tartışmasını silahla çözülecek bir çatışmaya çevirdi.",
+  "tts": "Reddedilen talep, bir taht tartışmasını silahla çözülecek bir çatışmaya çevirdi.",
+  "pause": 2.4
+ },
+ {
+  "id": "s37",
+  "section": "guc",
+  "text": "Taraflara yukarıdan bakınca, sürenin neden bu kadar kısa olduğu görünmeye başlıyor.",
+  "tts": "Taraflara yukarıdan bakınca, sürenin neden bu kadar kısa olduğu görünmeye başlıyor.",
+  "pause": 0.45
+ },
+ {
+  "id": "s38",
+  "section": "guc",
+  "text": "Beş Britanya savaş gemisi, toplarını denizden doğrudan saraya çevirebilecek konumdaydı.",
+  "tts": "Beş Britanya savaş gemisi, toplarını denizden doğrudan saraya çevirebilecek konumdaydı.",
+  "pause": 0.45
+ },
+ {
+  "id": "s39",
+  "section": "guc",
+  "text": "Zanzibar'ın denizdeki başlıca unsuru ise silahlı bir kraliyet yatıydı: HHS Glasgow. Yanında yalnızca birkaç küçük tekne vardı.",
+  "tts": "Zanzibar'ın denizdeki başlıca unsuru ise silahlı bir kraliyet yatıydı: Glazgov. Yanında yalnızca birkaç küçük tekne vardı.",
+  "pause": 0.45
+ },
+ {
+  "id": "s40",
+  "section": "guc",
+  "text": "Saray çevresinde, bazı kaynaklara göre yaklaşık üç bin kişi toplanmıştı; bunların yedi yüz kadarı askerdi.",
+  "tts": "Saray çevresinde, bazı kaynaklara göre yaklaşık üç bin kişi toplanmıştı; bunların yedi yüz kadarı askerdi.",
+  "pause": 0.4
+ },
+ {
+  "id": "s41",
+  "section": "guc",
+  "text": "Ama bu çatışmada belirleyici olan insan sayısı değil, ateş gücüydü.",
+  "tts": "Ama bu çatışmada belirleyici olan insan sayısı değil, ateş gücüydü.",
+  "pause": 0.4
+ },
+ {
+  "id": "s42",
+  "section": "guc",
+  "text": "Saray yerinden oynayamazdı; savunması kıyıdaki toplara dayanıyordu.",
+  "tts": "Saray yerinden oynayamazdı; savunması kıyıdaki toplara dayanıyordu.",
+  "pause": 0.4
+ },
+ {
+  "id": "s43",
+  "section": "guc",
+  "text": "Karşı karşıya gelen şey, iki ordudan çok, bir filo ile bir bina ve onun toplarıydı.",
+  "tts": "Karşı karşıya gelen şey, iki ordudan çok, bir filo ile bir bina ve onun toplarıydı.",
+  "pause": 3.0
+ },
+ {
+  "id": "s45",
+  "section": "bomba",
+  "text": "Süre doldu. Kısa süre sonra Britanya gemileri sarayı bombalamaya başladı.",
+  "tts": "Süre doldu. Kısa süre sonra Britanya gemileri sarayı bombalamaya başladı.",
+  "pause": 0.4
+ },
+ {
+  "id": "s46",
+  "section": "bomba",
+  "text": "Ateş, sarayın ve harem bölümünün yapılarına, bir de onları savunan toplara yöneldi.",
+  "tts": "Ateş, sarayın ve harem bölümünün yapılarına, bir de onları savunan toplara yöneldi.",
+  "pause": 0.35
+ },
+ {
+  "id": "s47",
+  "section": "bomba",
+  "text": "Kısa sürede kıyıdaki toplar susturuldu; saray ağır hasar gördü.",
+  "tts": "Kısa sürede kıyıdaki toplar susturuldu; saray ağır hasar gördü.",
+  "pause": 0.4
+ },
+ {
+  "id": "s48",
+  "section": "bomba",
+  "text": "Kraliyet yatı Glasgow, Britanya'nın amiral gemisi St George'a ateş açtı ve kısa sürede batırıldı.",
+  "tts": "Kraliyet yatı Glazgov, Britanya'nın amiral gemisi Sent Corc'a ateş açtı, ve kısa sürede batırıldı.",
+  "pause": 0.4
+ },
+ {
+  "id": "s49",
+  "section": "bomba",
+  "text": "Karşılık verecek araçlarını yitiren savunma için çatışma fiilen bitmişti.",
+  "tts": "Karşılık verecek araçlarını yitiren savunma için çatışma fiilen bitmişti.",
+  "pause": 0.45
+ },
+ {
+  "id": "s50",
+  "section": "bomba",
+  "text": "Sonunda saraydaki bayrak vurulup düştü ve ateş kesildi.",
+  "tts": "Sonunda saraydaki bayrak vurulup düştü ve ateş kesildi.",
+  "pause": 0.4
+ },
+ {
+  "id": "s51",
+  "section": "bomba",
+  "text": "O sabah indirilmeyeceği bildirilen bayraktı bu.",
+  "tts": "O sabah indirilmeyeceği bildirilen bayraktı bu.",
+  "pause": 2.4
+ },
+ {
+  "id": "s52",
+  "section": "kayip",
+  "text": "Bedeli ağır oldu. Zanzibar tarafında yaklaşık beş yüz kişi öldü ya da yaralandı.",
+  "tts": "Bedeli ağır oldu. Zanzibar tarafında yaklaşık beş yüz kişi öldü ya da yaralandı.",
+  "pause": 1.5
+ },
+ {
+  "id": "s53",
+  "section": "kayip",
+  "text": "Britanya tarafında tek bir yaralı bildirildi.",
+  "tts": "Britanya tarafında tek bir yaralı bildirildi.",
+  "pause": 0.6
+ },
+ {
+  "id": "s54",
+  "section": "kayip",
+  "text": "Bombardımandan sonra karaya çıkan denizciler, saraydan yayılan yangını söndürmeye çalıştı.",
+  "tts": "Bombardımandan sonra karaya çıkan denizciler, saraydan yayılan yangını söndürmeye çalıştı.",
+  "pause": 0.5
+ },
+ {
+  "id": "s55",
+  "section": "kayip",
+  "text": "Savaşın kısalığı bu kaybı küçültmez. Kısa süre, yalnızca ateşin ne kadar sürdüğünü ölçer.",
+  "tts": "Savaşın kısalığı bu kaybı küçültmez. Kısa süre, yalnızca ateşin ne kadar sürdüğünü ölçer.",
+  "pause": 0.4
+ },
+ {
+  "id": "s56",
+  "section": "kayip",
+  "text": "Siyasi sonuç ise çok daha uzun sürdü.",
+  "tts": "Siyasi sonuç ise çok daha uzun sürdü.",
+  "pause": 1.0
+ },
+ {
+  "id": "s57",
+  "section": "yonetim",
+  "text": "Khalid, Alman konsolosluğuna sığındı ve daha sonra bir Alman gemisiyle adadan ayrıldı.",
+  "tts": "Halid, Alman konsolosluğuna sığındı, ve daha sonra bir Alman gemisiyle adadan ayrıldı.",
+  "pause": 0.45
+ },
+ {
+  "id": "s58",
+  "section": "yonetim",
+  "text": "Britanya'nın desteklediği Hamoud bin Muhammed sultan oldu.",
+  "tts": "Britanya'nın desteklediği Hamud bin Muhammed sultan oldu.",
+  "pause": 0.3
+ },
+ {
+  "id": "s59",
+  "section": "yonetim",
+  "text": "Anlaşmazlığın başladığı yerde, yani tahtta, Britanya'nın istediği isim kaldı.",
+  "tts": "Anlaşmazlığın başladığı yerde, yani tahtta, Britanya'nın istediği isim kaldı.",
+  "pause": 0.5
+ },
+ {
+  "id": "s60",
+  "section": "yonetim",
+  "text": "Hamoud, izleyen altı yıl boyunca Britanya'nın güçlü etkisi altında yönetti.",
+  "tts": "Hamud, izleyen altı yıl boyunca Britanya'nın güçlü etkisi altında yönetti.",
+  "pause": 0.3
+ },
+ {
+  "id": "s61",
+  "section": "yonetim",
+  "text": "Himaye düzeni ise 1963'te Zanzibar'ın bağımsızlığına kadar sürdü.",
+  "tts": "Himaye düzeni ise bin dokuz yüz altmış üçte, Zanzibar'ın bağımsızlığına kadar sürdü.",
+  "pause": 0.45
+ },
+ {
+  "id": "s62",
+  "section": "yonetim",
+  "text": "Bazı kaynaklara göre Britanya, bombardımanda kullanılan mermilerin ve yağmanın bedelini bile Khalid'in destekçilerinden talep etti.",
+  "tts": "Bazı kaynaklara göre Britanya, bombardımanda kullanılan mermilerin ve yağmanın bedelini bile, Halid'in destekçilerinden talep etti.",
+  "pause": 0.4
+ },
+ {
+  "id": "s63",
+  "section": "yonetim",
+  "text": "Başka anlatılar bu savaşı, Zanzibar'ın egemen bir devlet olarak sonunun işareti sayar.",
+  "tts": "Başka anlatılar bu savaşı, Zanzibar'ın egemen bir devlet olarak sonunun işareti sayar.",
+  "pause": 0.45
+ },
+ {
+  "id": "s64",
+  "section": "yonetim",
+  "text": "Daha geniş bakınca olay, yerel yöneticilerin Avrupa devletlerinin askerî gücü karşısında ne kadar az seçeneği olduğunu da gösteriyordu.",
+  "tts": "Daha geniş bakınca olay, yerel yöneticilerin Avrupa devletlerinin askerî gücü karşısında ne kadar az seçeneği olduğunu da gösteriyordu.",
+  "pause": 0.45
+ },
+ {
+  "id": "s65",
+  "section": "yonetim",
+  "text": "Sultan unvanı yerinde durdu; ama tahta kimin geçeceğine dair son sözün nerede olduğu açıkça görülmüştü.",
+  "tts": "Sultan unvanı yerinde durdu; ama tahta kimin geçeceğine dair son sözün nerede olduğu açıkça görülmüştü.",
+  "pause": 0.5
+ },
+ {
+  "id": "s68",
+  "section": "final",
+  "text": "“En kısa savaş” unvanının bir yan etkisi var: süre öne çıktıkça, bunun bir tahtın ve yüzlerce insanın kaybının hikâyesi olduğu geri planda kalıyor.",
+  "tts": "En kısa savaş unvanının bir yan etkisi var: süre öne çıktıkça, bunun bir tahtın ve yüzlerce insanın kaybının hikâyesi olduğu, geri planda kalıyor.",
+  "pause": 0.6
+ },
+ {
+  "id": "s69",
+  "section": "final",
+  "text": "Kimi kayıtlar 38, kimileri 45 dakika der; çünkü gemilerin ateşi bıraktığı saatler farklı kaydedilmiştir.",
+  "tts": "Kimi kayıtlar otuz sekiz, kimileri kırk beş dakika der; çünkü gemilerin ateşi bıraktığı saatler farklı kaydedilmiştir.",
+  "pause": 0.45
+ },
+ {
+  "id": "s70",
+  "section": "final",
+  "text": "En güvenli ifade şu: savaş yaklaşık kırk dakika sürdü. Her hâlde, bir saatten kısa.",
+  "tts": "En güvenli ifade şu: savaş yaklaşık kırk dakika sürdü. Her hâlde, bir saatten kısa.",
+  "pause": 0.8
+ },
+ {
+  "id": "s71",
+  "section": "final",
+  "text": "Rakam değişse de hikâye aynı kalıyor: tahtı belirsizleştiren bir ölüm, kabul edilmeyen bir süre sınırı ve o sınır dolduktan sonra gelen bombardıman.",
+  "tts": "Rakam değişse de hikâye aynı kalıyor: tahtı belirsizleştiren bir ölüm, kabul edilmeyen bir süre sınırı ve o sınır dolduktan sonra gelen bombardıman.",
+  "pause": 1.4
+ },
+ {
+  "id": "s72",
+  "section": "cta",
+  "text": "Bu kanalda tarihin böyle anlarını haritalar ve animasyonlarla anlatıyoruz.",
+  "tts": "Bu kanalda tarihin böyle anlarını haritalar ve animasyonlarla anlatıyoruz.",
+  "pause": 0.3
+ },
+ {
+  "id": "s73",
+  "section": "cta",
+  "text": "Yeni videoları kaçırmak istemezseniz, kanala abone olabilirsiniz.",
+  "tts": "Yeni videoları kaçırmak istemezseniz, kanala abone olabilirsiniz.",
+  "pause": 0.0
+ }
+]

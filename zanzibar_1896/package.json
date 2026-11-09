@@ -1,0 +1,23 @@
+{
+  "name": "zanzibar-1896",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Saatin Içindeki Liman - 1896 Britanya-Zanzibar Savaşı animasyon belgeseli",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:silent": "remotion render src/index.ts Main out/zanzibar_video_only.mp4 --muted"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
+    "@remotion/cli": "^4.0.374",
+    "@types/react": "^18.3.12",
+    "d3-geo": "^3.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.374",
+    "topojson-client": "^3.1.0",
+    "typescript": "^5.6.3",
+    "world-atlas": "^2.0.2"
+  }
+}
