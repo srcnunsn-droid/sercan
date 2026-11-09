@@ -55,7 +55,7 @@ tools/finalize.sh
 Tek komutla sessiz tam render: `npx remotion render src/index.ts Main out/video.mp4 --muted`
 
 Notlar:
-- Anlatım, Higgsfield üzerinden **ElevenLabs v4** (hazır ses "Orion") ile cümle cümle üretildi. Telaffuz Whisper (small) ile denetlendi; hatalı okunan segmentler yeniden üretildi (ayrıntı: `edit_notes.md`). TTS dosyaları `work/tts_final/` içinde saklı, adım 2 ağ bağlantısı gerektirmez.
+- Anlatım, Higgsfield üzerinden **ElevenLabs v4** (hazır ses "Orion", voice_id `ed69c516-92d2-4b30-a967-617737a342e5`) ile cümle cümle üretildi. Kanal ses kimliği ve yedek klon ses: `assets/voice/SES_KIMLIGI.md`. Telaffuz Whisper (small) ile denetlendi; hatalı okunan segmentler yeniden üretildi (ayrıntı: `edit_notes.md`). TTS dosyaları `work/tts_final/` içinde saklı, adım 2 ağ bağlantısı gerektirmez.
 - Bütün animasyon zamanları `src/data/timeline.json` dosyasındaki gerçek ses zamanlarına bağlıdır (`S('s31')` gibi). Animasyon kare numarasından hesaplanır; rastgelelik sabit tohumludur.
 - Higgsfield üretimleri, kullanılan aralıklar ve düzeltme denemeleri: `assets/higgsfield/jobs.md`.
 
