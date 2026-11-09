@@ -121,13 +121,13 @@ export const Ultimatum: React.FC<{t: number}> = ({t}) => {
       )}
 
       {/* etiketler */}
-      <Label x={cx1 - 10} y={cy1 - 70} text="Britanya konsolosluğu" o={window(t, S('s27') + 0.4, E('s28') + 0.6, 0.5, 0.5)} size={28} tick="down" tickLen={36} align="center" />
+      <Label x={cx1 - 10} y={cy1 + 110} text="Britanya konsolosluğu" o={window(t, S('s27') + 0.4, E('s28') + 0.6, 0.5, 0.5)} size={28} tick="up" tickLen={36} align="center" />
       <Link x1={cx1 + 30} y1={cy1 - 10} x2={px1 - 20} y2={py1 + 30} p={prog(t, S('s27') + 2.6, S('s27') + 4.0) * (1 - prog(t, E('s28') + 0.4, E('s28') + 1.0))} color={linkRed > 0.5 ? C.danger : C.ivory} dash label={linkRed > 0.5 ? 'ASKERÎ TEHDİT' : 'DİPLOMASİ'} />
       <Chip x={600} y={170} text="SİYASİ BASKI → ASKERÎ TEHDİT" o={window(t, S('s28') + 0.8, E('s28') + 0.5, 0.4, 0.5)} color={C.danger} />
       <Label x={W2S(CONSULATE.x - 120, 690, cam)[0]} y={W2S(CONSULATE.x - 120, 690, cam)[1] + 40} text="Kıyıya denizciler ve deniz piyadeleri" o={window(t, S('s29') + 2.0, E('s29') + 0.5, 0.5, 0.5)} size={26} align="center" />
       <Chip x={960} y={160} text="SİVİL TEKNELER LİMANDAN ÇIKARILIYOR" o={window(t, S('s30') + 0.6, S('s30') + 4.0, 0.5, 0.5)} />
       <Title x={960} y={170} text="Liman çatışmaya hazırlanıyor" size={60} o={window(t, S('s30') + 4.2, E('s30') + 0.6, 0.5, 0.5)} />
-      <DateCard x={960} y={120} top="SON SÜRE" main="27 AĞUSTOS · 09.00" o={window(t, S('s31') + 2.6, E('s31') + 1.2, 0.5, 0.6)} accent={C.danger} scale={0.82} />
+      <DateCard x={1660} y={110} top="SON SÜRE" main="27 AĞUSTOS · 09.00" o={window(t, S('s31') + 2.6, E('s31') + 1.2, 0.5, 0.6)} accent={C.danger} scale={0.82} />
       <Chip x={1590} y={180} text="SÜRE DOLARSA: ATEŞ" o={window(t, S('s32') + 0.3, E('s32') + 0.6, 0.4, 0.5)} color={C.danger} />
       <Chip x={330} y={330} text="SABAH" sub="Khalid görüşme istedi" o={window(t, S('s33') + 0.2, E('s33') + 0.6, 0.4, 0.5)} />
       <Chip x={1590} y={330} text="BRİTANYA" sub="önce ültimatom kabul edilmeli" o={window(t, S('s33') + 2.6, E('s33') + 0.6, 0.4, 0.5)} color="#7FB4B8" />
@@ -183,7 +183,7 @@ export const Power: React.FC<{t: number}> = ({t}) => {
       </AbsoluteFill>
       <Title x={960} y={92} text="Güç dengesi" size={56} o={window(t, S('s37') + 1.4, E('s37') + 0.8, 0.5, 0.5) * (1 - out)} />
       <Label x={70} y={1040} text="Konumlar şematiktir" o={td * 0.85 * (1 - out)} size={20} color={C.sand} />
-      <Label x={TD_GLASGOW.x} y={TD_GLASGOW.y + 110} width={560} text="HHS Glasgow" sub="silahlı kraliyet yatı · yanında birkaç küçük tekne" o={glas} size={32} tick="up" tickLen={40} accent={C.ivory} align="center" />
+      <Label x={TD_GLASGOW.x + 120} y={TD_GLASGOW.y + 150} width={460} text="HHS Glasgow" sub="silahlı kraliyet yatı · yanında birkaç küçük tekne" o={glas} size={32} tick="up" tickLen={60} accent={C.ivory} />
       <Label x={TD_PALACE.x + TD_PALACE.w / 2} y={150} text="Saray çevresi" sub="bazı kaynaklara göre ~3.000 kişi, ~700'ü asker" o={window(t, S('s40') + 0.8, E('s41') + 0.3, 0.5, 0.5)} size={32} align="center" />
       <Chip x={700} y={330} text="BELİRLEYİCİ: ATEŞ GÜCÜ" o={window(t, S('s41') + 0.4, E('s41') + 0.5, 0.4, 0.5)} color={C.danger} size={32} />
       <Label x={TD_PALACE.x + 140} y={480} text="Kıyı topları" sub="savunmanın dayanağı" o={window(t, S('s42') + 0.4, E('s42') + 0.5, 0.4, 0.5)} size={30} tick="up" tickLen={46} accent={C.danger} />
