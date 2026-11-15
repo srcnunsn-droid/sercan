@@ -1,0 +1,11 @@
+node_modules
+dist
+tests/e2e/*.mp4
+tests/e2e/*.wav
+# test çıktıları (kökte oluşursa)
+/*.png
+/*.mp4
+/*.srt
+/*.zip
+/*.bundle
+*.tsbuildinfo
