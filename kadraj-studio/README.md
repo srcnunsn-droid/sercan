@@ -6,6 +6,9 @@ Hiçbir API anahtarı gerekmez; her şey tarayıcıda çalışır. Yerel AI sunu
 ![Kurgu](docs/kurgu.png)
 
 ## Çalıştırma
+**Kolay yol:** zip'i klasöre çıkar → Windows'ta `BASLAT-Windows.bat`, Mac'te `BASLAT-Mac.command` dosyasına çift tıkla. Node.js yoksa indirme sayfasını açar; ilk seferde bağımlılıkları kurar, sonra programı Chrome/Edge'de açar.
+
+**Elle:**
 ```bash
 npm install
 npm run dev        # http://localhost:5173  (Chrome / Edge önerilir)
