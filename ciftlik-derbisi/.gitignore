@@ -1,0 +1,4 @@
+# Yayın sırasında oluşan kayıtlar (her bilgisayarda ayrı)
+veri/*.json
+veri/*.tmp
+araclar/test/ciktilar/
