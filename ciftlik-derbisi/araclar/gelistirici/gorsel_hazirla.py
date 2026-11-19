@@ -75,6 +75,8 @@ def efektleri_bol(im):
 def main(ham, oyun):
     A = os.path.join(oyun, "assets")
     yol = lambda *p: os.path.join(A, *p)
+    for k in ["pist", "ekran", "efekt"]:
+        os.makedirs(yol(k), exist_ok=True)
     for h in HAYVANLAR:
         k = os.path.join(ham, h + ".png")
         if not os.path.exists(k):
