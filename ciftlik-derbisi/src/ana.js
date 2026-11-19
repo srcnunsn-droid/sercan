@@ -28,10 +28,27 @@
 
   const oyun = new Oyun(A, kayit);
   const cizim = new Cizim(app, oyun, varlik);
+
+  // Ses, spiker ve yönetmen (müzik + efekt + anons)
+  const ses = new Ses(A);
+  try { await Promise.race([ses.yukle(), new Promise((r) => setTimeout(r, 8000))]); } catch (e) { console.warn("Ses yüklenemedi", e); }
+  const spiker = new Spiker(ses);
+  const yonetmen = new Yonetmen(oyun, ses, spiker);
+  varlik.cal = () => {}; // eski ses çağrıları artık yönetmende
+  cizim.dinleyici = (o) => yonetmen.olay(o);
+  cizim.spiker = spiker;
+  // (ilk lobi ve bölüm olayları oyun kuyruğundan çizim üzerinden yönetmene ulaşır)
+  // Tarayıcı sesi engellerse küçük bir "sesi aç" düğmesi göster (OBS/LIVE Studio'da genelde gerekmez)
+  const kilit = document.getElementById("sesKilidi");
+  if (kilit) {
+    kilit.textContent = oyun.M.sesAc;
+    kilit.addEventListener("click", () => { kilit.style.display = "none"; });
+    setInterval(() => { kilit.style.display = ses.kilitli ? "block" : "none"; }, 1000);
+  }
   const baglanti = new Baglanti(A, (o) => oyun.girdi(o));
   baglanti.baslat();
 
-  const derbi = { app, oyun, cizim, baglanti, varlik, kayit, zamanCarpani: 1 };
+  const derbi = { app, oyun, cizim, baglanti, varlik, kayit, ses, spiker, yonetmen, zamanCarpani: 1 };
   window.DERBI = derbi;
   if (testModu) new TestPaneli(derbi);
 
@@ -43,6 +60,7 @@
       const adim = Math.max(1, Math.round(derbi.zamanCarpani));
       for (let i = 0; i < adim; i++) oyun.guncelle(dt);
       cizim.guncelle(dt);
+      yonetmen.guncelle(dt);
       if (oyun.faz !== sonFaz) {
         sonFaz = oyun.faz;
         if (sonFaz === "lobi") varlik.tara().catch(() => {}); // yeni konan dosyaları ara

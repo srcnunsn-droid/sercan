@@ -1,0 +1,44 @@
+// Yeni özellikleri (bölüm, olaylar, tahmin, efsane kutlama, spiker alt yazısı) ekran görüntüsüyle dener.
+const { chromium } = require("playwright");
+const cikti = process.argv[2] || ".";
+(async () => {
+  const b = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--autoplay-policy=no-user-gesture-required"] });
+  const p = await b.newPage({ viewport: { width: 1080, height: 1920 } });
+  const hatalar = [];
+  p.on("pageerror", (e) => hatalar.push("pageerror: " + e.message));
+  p.on("console", (m) => { const t = m.text(); if (m.type() === "error" && !/404|ERR_CONNECTION_REFUSED|WebSocket/.test(t)) hatalar.push("console: " + t); if (/Müzik:/.test(t)) console.log(t); });
+  await p.goto("http://localhost:8787/", { waitUntil: "load" });
+  await p.waitForFunction(() => window.DERBI, null, { timeout: 40000 });
+  const D = (fn, arg) => p.evaluate(fn, arg);
+  await D(() => {
+    const o = DERBI.oyun;
+    o.bolum = o.A.bolumler.find((x) => x.kod === "gece"); o.buyukDerbi = true;
+    ["Ayşe", "Mehmet", "Zeynep", "Ali", "Elif", "Can", "Deniz", "Ece"].forEach((ad, i) => o.girdi({ tip: "yorum", kullanici: { id: "k" + i, ad }, metin: String(i + 1) }));
+    o.efsaneler.k0 = { ad: "Ayşe", galibiyet: 9 }; o.efsaneler.k1 = { ad: "Mehmet", galibiyet: 3 };
+    for (let i = 0; i < 6; i++) o.girdi({ tip: "yorum", kullanici: { id: "t" + i, ad: "Tahminci" + i }, metin: "tahmin " + (1 + i) });
+  });
+  await p.waitForTimeout(1500);
+  await p.screenshot({ path: cikti + "/y1-lobi.png" });
+  await D(() => { DERBI.oyun.fazZaman = 999; });
+  await p.waitForTimeout(900);
+  await p.screenshot({ path: cikti + "/y2-start.png" });
+  await D(() => { DERBI.oyun.fazZaman = 999; });
+  await p.waitForTimeout(500);
+  await D(() => { DERBI.zamanCarpani = 15; });
+  await p.waitForTimeout(1500);
+  await D(() => { DERBI.zamanCarpani = 1; DERBI.oyun.yarisOlayi("ruzgar"); DERBI.oyun.yarisOlayi("altinHavuc"); DERBI.spiker.soyle("lider_tavuk", { tekrar: 0 }); });
+  await p.waitForTimeout(600);
+  await p.screenshot({ path: cikti + "/y3-gece-yarisi.png" });
+  await D(() => { const o = DERBI.oyun; o.bolum = o.A.bolumler.find((x) => x.kod === "kar"); DERBI.cizim._bolumUygula(); });
+  await p.waitForTimeout(700);
+  await p.screenshot({ path: cikti + "/y4-kar.png" });
+  await D(() => { DERBI.oyun.testKutlama = "efsane"; DERBI.zamanCarpani = 20; });
+  await p.waitForFunction(() => DERBI.oyun.faz === "kursu", null, { timeout: 90000 });
+  await D(() => { DERBI.zamanCarpani = 1; });
+  await p.waitForTimeout(2600);
+  await p.screenshot({ path: cikti + "/y5-efsane-kursu.png" });
+  const durum = await D(() => ({ sonuc: DERBI.oyun.sonuc, parca: DERBI.cizim.parcaciklar.length, muzik: DERBI.ses.aktif && DERBI.ses.aktif.src, kilitli: DERBI.ses.kilitli }));
+  console.log(JSON.stringify(durum).slice(0, 600));
+  console.log(hatalar.length ? hatalar.join("\n") : "Hata yok");
+  await b.close();
+})();

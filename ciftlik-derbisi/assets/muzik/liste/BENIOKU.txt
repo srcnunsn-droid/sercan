@@ -1,0 +1,21 @@
+KENDİ MÜZİK LİSTEN
+==================
+
+Bu klasöre istediğin kadar şarkı koyabilirsin (500, 1000...). Desteklenen dosyalar:
+.mp3  .ogg  .wav  .m4a  .aac  .opus
+
+Oyun bu klasördeki şarkıları KARIŞIK sırayla, hepsi bitene kadar TEKRARSIZ çalar,
+sonra yeniden karıştırıp baştan başlar. Şarkılar arasında yumuşak geçiş yapar,
+spiker konuşurken müziği otomatik kısar.
+
+Listeni kullanmak için config.js dosyasında şu satırı değiştir:
+  muzikKaynagi: "oyun",
+şuna:
+  muzikKaynagi: "liste",      (her yerde senin listen)
+ya da
+  muzikKaynagi: "karisik",    (lobide senin listen, yarışta oyunun heyecanlı müziği)
+
+ÇOK ÖNEMLİ — TELİF:
+TikTok LIVE'da telifli (radyoda çalan, sanatçıların) şarkıları çalmak yayının sesinin
+kapatılmasına ya da ihlal uyarısına yol açabilir. Buraya sadece kullanma hakkın olan
+(telifsiz / lisanslı / kendi ürettiğin) müzikleri koy.

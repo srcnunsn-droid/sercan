@@ -34,6 +34,13 @@
       this.efsaneler = v.efsaneler || (v.efsaneler = {});
       this.buGece = v.buGece || (v.buGece = {});
       this.aga = v.aga || null; // {id, ad, toplam}
+      this.bolum = (A.bolumler && A.bolumler[0]) || { kod: "ciftlik", ad: "Çiftlik", emoji: "🌻", takilma: 1, olay: 1 };
+      this.buyukDerbi = false;
+      this.tahminler = new Map();   // id -> { ad, idx }
+      this.sonKazananId = null;
+      this.seri = 0;
+      this.testKutlama = null;      // test paneli: "efsane" | "buyuk"
+      this.sonrakiDerbi = false;    // test paneli: sonraki tur derbi olsun
       this._fazaGec("lobi");
     }
 
@@ -93,6 +100,24 @@
       this._zl = [];
       this._kazananSonrasi = null;
       this.kulvarlar = this.A.hayvanlar.map((h, i) => this._yeniKulvar(i));
+      // Bölüm seç (bir önceki ile aynı olmasın) ve Büyük Derbi mi bak
+      const bl = this.A.bolumler || [];
+      if (bl.length) {
+        const adaylar = bl.length > 1 ? bl.filter((b) => b.kod !== (this.bolum && this.bolum.kod)) : bl;
+        this.bolum = this.turNo === 1 ? bl[0] : adaylar[Math.floor(Math.random() * adaylar.length)];
+      }
+      const aralik = this.A.buyukDerbiAraligi || 0;
+      this.buyukDerbi = this.sonrakiDerbi || (aralik > 0 && this.turNo % aralik === 0);
+      this.sonrakiDerbi = false;
+      this.tahminler.clear();
+      this.liderNo = -1;
+      this._liderZaman = -99;
+      this._sonDuzluk = false;
+      this.yariSiralama = null;
+      this.kilPayi = false;
+      this._doluBildirildi = false;
+      this._barYakin = false;
+      this.olay("bolum", { kod: this.bolum.kod, buyukDerbi: this.buyukDerbi });
       // Önce hediye/takip ile yer ayrılanlar, sonra sıradakiler
       const sira = this.sira.slice().sort((a, b) => (b.oncelik ? 1 : 0) - (a.oncelik ? 1 : 0));
       this.sira = [];
@@ -109,6 +134,8 @@
     }
 
     _yarisBaslat() {
+      const YO = this.A.yarisOlaylari || {};
+      this._olaySayac = rastgele(YO.enAzAralik || 12, YO.enFazlaAralik || 20) / ((this.bolum && this.bolum.olay) || 1);
       for (const k of this.kulvarlar) {
         k.gurultu = rastgele(-1, 1) * this.A.yaris.rastgelelik * 0.5;
         k.gurultuHedef = k.gurultu;
@@ -132,26 +159,67 @@
         return b.pos - a.pos;
       });
       const P = this.A.puan;
+      const kat = this.buyukDerbi ? 2 : 1;
       const puanlar = [P.birinci, P.ikinci, P.ucuncu];
+      const puanEkle = (id, ad, n) => {
+        const kayit = this.buGece[id] || (this.buGece[id] = { ad, puan: 0 });
+        kayit.ad = ad;
+        kayit.puan += n;
+      };
       sirali.forEach((k, i) => {
         if (!k.oyuncu) return;
-        const id = k.oyuncu.id;
-        const kayit = this.buGece[id] || (this.buGece[id] = { ad: k.oyuncu.ad, puan: 0 });
-        kayit.ad = k.oyuncu.ad;
-        kayit.puan += (puanlar[i] || 0) + P.katilim;
+        puanEkle(k.oyuncu.id, k.oyuncu.ad, ((puanlar[i] || 0) + P.katilim) * kat);
       });
       const kazanan = sirali[0];
-      if (kazanan.oyuncu) {
-        const e = this.efsaneler[kazanan.oyuncu.id] || (this.efsaneler[kazanan.oyuncu.id] = { ad: kazanan.oyuncu.ad, galibiyet: 0 });
+      const kid = kazanan.oyuncu ? kazanan.oyuncu.id : null;
+      let galibiyet = 0;
+      if (kid) {
+        const e = this.efsaneler[kid] || (this.efsaneler[kid] = { ad: kazanan.oyuncu.ad, galibiyet: 0 });
         e.ad = kazanan.oyuncu.ad;
         e.galibiyet++;
+        galibiyet = e.galibiyet;
       }
+      this.seri = kid && kid === this.sonKazananId ? this.seri + 1 : (kid ? 1 : 0);
+      this.sonKazananId = kid;
+
+      // Tahminler
+      const dogru = [];
+      for (const [id, t] of this.tahminler) {
+        if (t.idx !== kazanan.no) continue;
+        dogru.push(t.ad);
+        puanEkle(id, t.ad, this.A.tahminPuani || 0);
+      }
+
+      // Kutlama etiketleri ve seviyesi
+      const etiketler = [];
+      const agaKazandi = !!(kid && this.aga && this.aga.id === kid);
+      const donum = [5, 10, 25, 50, 100].includes(galibiyet);
+      const geridenGeldi = !!(this.yariSiralama && this.yariSiralama.indexOf(kazanan.no) >= 5);
+      if (this.buyukDerbi) etiketler.push("derbiSampiyonu");
+      if (agaKazandi) etiketler.push("agaZaferi");
+      if (this.seri >= 2) etiketler.push("seri");
+      if (donum) etiketler.push("efsane");
+      if (geridenGeldi) etiketler.push("geridenGeldi");
+      if (this.kilPayi) etiketler.push("kilPayi");
+      if (galibiyet === 1) etiketler.push("ilkZafer");
+      let seviye = this.buyukDerbi || agaKazandi || this.seri >= 2 || donum ? "efsane" : etiketler.length ? "buyuk" : "normal";
+      if (this.testKutlama) {
+        seviye = this.testKutlama;
+        if (!etiketler.length) etiketler.push(seviye === "efsane" ? "efsane" : "geridenGeldi");
+        this.testKutlama = null;
+      }
+
       this.sonuc = {
         kazanan: kazanan.no,
-        ilkUc: sirali.slice(0, 3).map((k) => ({ kulvar: k.no, ad: k.oyuncu ? k.oyuncu.ad : null }))
+        ad: kazanan.oyuncu ? kazanan.oyuncu.ad : null,
+        rozet: this.rozet(kid),
+        galibiyet, seri: this.seri, etiketler, seviye,
+        buyukDerbi: this.buyukDerbi, bolum: this.bolum,
+        tahmin: { dogru: dogru.length, toplam: this.tahminler.size, isimler: dogru.slice(0, 5) },
+        ilkUc: sirali.slice(0, 3).map((k) => ({ kulvar: k.no, ad: k.oyuncu ? k.oyuncu.ad : null, rozet: k.oyuncu ? this.rozet(k.oyuncu.id) : "" }))
       };
       this.kayitGuncelle();
-      this.olay("kazanan", { kulvar: kazanan.no, ad: kazanan.oyuncu ? kazanan.oyuncu.ad : null });
+      this.olay("kazanan", Object.assign({ kulvar: kazanan.no }, this.sonuc));
     }
 
     kayitGuncelle() {
@@ -213,7 +281,7 @@
         let hiz = v0 * k.hayvan.hiz * (1 + k.gurultu) * (1 + destek) * uzama;
 
         // kendiliğinden takılma (son 5 birimde ve fotofinişte olmaz)
-        if (k.kayma <= 0 && this.faz === "yaris" && k.pos > 5 && k.pos < PIST - 8 && Math.random() < Y_.takilmaSikligi * dt) {
+        if (k.kayma <= 0 && this.faz === "yaris" && k.pos > 5 && k.pos < PIST - 8 && Math.random() < Y_.takilmaSikligi * ((this.bolum && this.bolum.takilma) || 1) * dt) {
           this._kaydir(k, Y_.takilmaSuresi, "takilma");
         }
         // kayma
@@ -253,12 +321,19 @@
           k.bitti = true;
           k.bitisSirasi = this.kulvarlar.filter((x) => x.bitti).length;
           k.bitisZaman = this.zaman;
-          if (k.bitisSirasi === 1) { this.kazananKulvar = k.no; this.olay("bitis", { kulvar: k.no }); }
+          if (k.bitisSirasi === 1) {
+            this.kazananKulvar = k.no;
+            const ikinci = Math.max(...this.kulvarlar.filter((x) => x !== k).map((x) => x.pos));
+            this.kilPayi = PIST - ikinci < 0.15;
+            this.olay("bitis", { kulvar: k.no, kilPayi: this.kilPayi });
+          }
         }
       }
 
       // Foto finiş: lider bitişe yaklaşınca ağır çekim
       const yeniLider = this.kulvarlar.reduce((a, b) => (b.pos > a.pos ? b : a));
+      this._liderTakip(yeniLider);
+      if (this.faz === "yaris") this._yarisOlayiSayac(dt, yeniLider);
       if (this.faz === "yaris") {
         const esik = Math.max(2.5, yeniLider.hiz * 1.4);
         if (yeniLider.pos >= PIST - esik || this.kazananKulvar >= 0) {
@@ -280,6 +355,69 @@
           this.zamanOlcegi = 1; // ağır çekim çok uzarsa normale dön
         }
       }
+    }
+
+    // Lider değişimini (titremeden) takip eder, yarı yol sıralamasını ve son düzlüğü kaydeder
+    _liderTakip(enOnde) {
+      const mevcut = this.liderNo >= 0 ? this.kulvarlar[this.liderNo] : null;
+      if (!mevcut || (enOnde !== mevcut && enOnde.pos > mevcut.pos + 0.4)) {
+        const oncekiVar = this.liderNo >= 0;
+        this.liderNo = enOnde.no;
+        if (oncekiVar && this.faz === "yaris" && this.yarisSuresi > 4 && this.zaman - this._liderZaman > 5 && enOnde.pos < PIST - 6) {
+          this._liderZaman = this.zaman;
+          this.olay("liderDegisti", { kulvar: enOnde.no });
+        }
+      }
+      if (!this.yariSiralama && enOnde.pos >= PIST / 2) this.yariSiralama = this.siralama().map((k) => k.no);
+      if (!this._sonDuzluk && enOnde.pos >= PIST * 0.8) { this._sonDuzluk = true; this.olay("sonDuzluk", {}); }
+    }
+
+    _yarisOlayiSayac(dt, lider) {
+      const YO = this.A.yarisOlaylari || {};
+      if (!YO.acik) return;
+      this._olaySayac -= dt;
+      if (this._olaySayac > 0) return;
+      this._olaySayac = rastgele(YO.enAzAralik || 12, YO.enFazlaAralik || 20) / ((this.bolum && this.bolum.olay) || 1);
+      if (this.yarisSuresi < 6 || lider.pos > PIST * 0.85) return;
+      this.yarisOlayi();
+    }
+
+    // Yarış içi sürpriz: altın havuç, arkadan rüzgar, saman balyası (bölüme göre ağırlıklı)
+    yarisOlayi(tur) {
+      if (!this.yaristaMi()) return;
+      const kod = this.bolum && this.bolum.kod;
+      if (!tur) {
+        const torba = ["altinHavuc", "ruzgar", "saman"];
+        if (kod === "hasat") torba.push("altinHavuc", "altinHavuc");
+        if (kod === "firtina") torba.push("ruzgar", "ruzgar");
+        tur = torba[Math.floor(Math.random() * torba.length)];
+      }
+      const yarisanlar = this.kulvarlar.filter((k) => !k.bitti);
+      if (!yarisanlar.length) return;
+      const sirali = yarisanlar.slice().sort((a, b) => b.pos - a.pos);
+      if (tur === "altinHavuc") {
+        const k = yarisanlar[Math.floor(Math.random() * yarisanlar.length)];
+        k.carpanlar.push({ tur: "havuc", carpan: 1.5, kalan: 3 });
+        this.olay("yarisOlayi", { tur, kulvarlar: [k.no] });
+        this.bildir(Y.doldur(this.M.altinHavuc, { hayvan: this.hayvanAdi(k.no) }), "olay");
+      } else if (tur === "ruzgar") {
+        const arka = sirali.slice(-3);
+        arka.forEach((k) => k.carpanlar.push({ tur: "hiz", carpan: 1.3, kalan: 3 }));
+        this.olay("yarisOlayi", { tur, kulvarlar: arka.map((k) => k.no) });
+        this.bildir(this.M.ruzgar, "olay");
+      } else if (tur === "saman") {
+        const lider = sirali[0];
+        this._kaydir(lider, 1.0, "saman");
+        this.olay("yarisOlayi", { tur, kulvarlar: [lider.no] });
+        this.bildir(this.M.saman, "olay");
+      }
+    }
+
+    rozet(id) {
+      const e = id && this.efsaneler[id];
+      if (!e) return "";
+      for (const r of this.A.rozetler || []) if (e.galibiyet >= r.enAz) return r.rozet;
+      return "";
     }
 
     _kaydir(k, sure, sebep) {
@@ -312,10 +450,29 @@
 
     yorum(k, metin) {
       if (Y.kufurVarMi(metin, this.A.kufurListesi)) return;
+      const sade = Y.sadelestir(metin).trim();
+      if (/^(tahmin|guess)\b/.test(sade)) { this.tahmin(k, metin); return; }
       const idx = Y.yorumdanHayvan(metin, this.A.hayvanlar);
       if (idx < 0) return;
       const u = this.kullanici(k);
       this.katil(u, idx, false);
+    }
+
+    // TAHMİN: yarışmayan izleyici kazananı tahmin eder (ücretsiz, sadece puan)
+    tahmin(k, metin) {
+      if (!this.A.tahminAcik) return;
+      const acik = this.faz === "lobi" || this.faz === "start" || (this.faz === "yaris" && this.yarisSuresi < (this.A.tahminSonSaniye || 15));
+      if (!acik) return;
+      const idx = Y.yorumdanHayvan(String(metin).replace(/tahmin|guess/gi, " "), this.A.hayvanlar);
+      if (idx < 0) return;
+      const u = this.kullanici(k);
+      if (this.aktifKulvar(u.id)) return; // yarışan kendi tahminini yapamaz
+      const vardi = this.tahminler.has(u.id);
+      this.tahminler.set(u.id, { ad: u.ad, idx });
+      if (!vardi) {
+        this.bildir(Y.doldur(this.M.tahminYapti, { ad: u.ad, emoji: this.A.hayvanlar[idx].emoji }), "tahmin");
+        this.olay("tahmin", { idx });
+      }
     }
 
     // Kulvara al ya da sıraya koy. Döner: "kulvar" | "sira" | "ayni"
@@ -341,6 +498,7 @@
           if (si >= 0) this.sira.splice(si, 1);
           this.bildir(Y.doldur(this.M.katildi, { ad: u.ad, hayvan: this.hayvanAdi(hedef.no) }), "katilim");
           this.olay("katildi", { kulvar: hedef.no });
+          if (!this._doluBildirildi && this.kulvarlar.every((x) => x.oyuncu)) { this._doluBildirildi = true; this.olay("dolu", {}); }
           return "kulvar";
         }
       }
@@ -362,8 +520,10 @@
       sayi = Math.max(1, Math.min(500, sayi | 0));
       const U = this.A.ucretsiz;
       this.begeniBar += sayi;
+      if (!this._barYakin && this.begeniBar >= U.begeniBariHedef * 0.8) { this._barYakin = true; this.olay("barYakin", {}); }
       if (this.begeniBar >= U.begeniBariHedef) {
         this.begeniBar = 0;
+        this._barYakin = false;
         this._camurBaslat();
         this.olay("barDoldu", {});
       }
@@ -390,6 +550,7 @@
       if (u[alan]) return;
       u[alan] = true;
       this.bildir(Y.doldur(tur === "takip" ? this.M.takipEtti : this.M.paylasti, { ad: u.ad }), "ucretsiz");
+      if (tur === "takip") this.olay("takip", {});
       const kul = this.aktifKulvar(u.id);
       if (kul && this.yaristaMi()) this._efektUygula(kul, "takip", 1, u.ad, true);
       else this._bekleyenEkle(u.id, "takip", 1);
@@ -494,10 +655,12 @@
 
     // ------------------------------------------------------------------ tablolar
     efsaneTablosu(n) {
-      return Object.values(this.efsaneler).sort((a, b) => b.galibiyet - a.galibiyet).slice(0, n || 5);
+      return Object.keys(this.efsaneler).map((id) => Object.assign({ id }, this.efsaneler[id]))
+        .sort((a, b) => b.galibiyet - a.galibiyet).slice(0, n || 5);
     }
     buGeceTablosu(n) {
-      return Object.values(this.buGece).sort((a, b) => b.puan - a.puan).slice(0, n || 5);
+      return Object.keys(this.buGece).map((id) => Object.assign({ id }, this.buGece[id]))
+        .sort((a, b) => b.puan - a.puan).slice(0, n || 5);
     }
     skorlariSifirla(hepsi) {
       for (const k of Object.keys(this.buGece)) delete this.buGece[k];

@@ -35,3 +35,25 @@ Notlar:
 - Videolarda ilk ve son kare olarak aynı karakter görseli verildi; böylece döngü başı-sonu daha iyi uyuyor (fiyat değişmedi: 4 kredi).
 - Her video kare kare kontrol edildi: hayvan yerinde koşuyor, kamera sabit, fon mavi kalıyor, bacak sayısı doğru, karakter görselle aynı.
 - Görseller referans verildiği için kare (1:1) geldi; pist katmanları kodla kırpılıp aynalanarak yatay tekrarlanabilir yapıldı.
+
+---
+
+# 2. Bütçe: Ses ve müzik (en fazla 100 kredi)
+
+Başlangıç bakiyesi: **3128,82**. Son bakiye: **3065,39**. Harcanan: **63,43 kredi** (36,57 kredi kullanılmadı).
+
+| Kalem | Model | Adet | Kredi (yaklaşık) |
+|---|---|---|---|
+| Müzik 120 sn: lobi-1, lobi-2, yaris-1, yaris-2, derbi | elevenlabs_music_v2 (enstrümantal) | 5 | 38,4 |
+| Müzik: zafer (20 sn), efsane (25 sn) | elevenlabs_music_v2 | 2 | 2,9 |
+| Efekt sesleri (düdük, muz, roket, havuç, leylek, çamur, ağa, kalabalık, havai fişek, hız, altın, saman, rüzgar) | mirelo_text_to_audio | 13 | ≈ 7,5 |
+| Hayvan sesleri (8 hayvan) | mirelo_text_to_audio | 8 | 4 |
+| Spiker anonsları (Türkçe, "Kanal Anlatıcısı TR" sesi) | text2speech_v2 (elevenlabs) | 52 | 7,8 |
+| Yanlış telaffuz edilen 5 anonsun yeniden kaydı (7 deneme) | text2speech_v2 | 7 | 1,05 |
+| İlk denemeler (müzik, spiker, düdük, kayma) — kullanıldı | — | — | yukarıdakilere dahil |
+| **Toplam** | | | **63,43** |
+
+Notlar:
+- Hız sınırına takılan 4 istek (429) **ücretsiz** reddedildi ve yeniden gönderildi.
+- Bütün spiker kayıtları konuşma tanıma (Whisper) ile kontrol edildi; "Tavuk" → "Avuk", "Çamur" → "Şamur" gibi 5 hatalı kayıt yeniden üretildi.
+- Telifli şarkı **üretilmedi/indirilmedi**: tüm müzikler bu projeye özel üretilmiş, sözsüz parçalardır.

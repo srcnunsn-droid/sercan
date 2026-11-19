@@ -10,7 +10,7 @@
     kulvarY: 570, kulvarH: 98,
     onplanY: 1354, onplanH: 96,
     barY: 1470, ipucuY: 1560, siraY: 1620,
-    bildirimY: 392,
+    bildirimY: 462, spikerY: 392,
     baslangicX: 150, pikselBirim: 70
   };
   const EMOJI_EFEKT = { muz: "🍌", roket: "🚀", havuc: "🥕", leylek: "🦢", camur: "🟤", hiz: "💨", kalp: "❤️", yildiz: "⭐", tac: "👑", konfeti: "🎉", sersem: "💫" };
@@ -22,6 +22,11 @@
     }, ek || {}));
   }
   function sinirla(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  function renkHsv(h, s, v) {
+    const i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - s), q = v * (1 - f * s), t = v * (1 - (1 - f) * s);
+    const [r, g, b] = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][i % 6];
+    return (Math.round(r * 255) << 16) | (Math.round(g * 255) << 8) | Math.round(b * 255);
+  }
   function sure(sn) { sn = Math.ceil(sn); return Math.floor(sn / 60) + ":" + String(sn % 60).padStart(2, "0"); }
 
   class Cizim {
@@ -40,6 +45,12 @@
       this.bildirimler = [];
       this._imzalar = {};
       this._kurulanSurum = -1;
+      this.dinleyici = null;   // yönetmen (ses/spiker) olayları buradan alır
+      this.spiker = null;      // alt yazı için
+      const daire = new PIXI.Graphics();
+      daire.beginFill(0xffffff).drawCircle(16, 16, 16).endFill();
+      this.daireDoku = app.renderer.generateTexture(daire);
+      daire.destroy();
       this.kur();
     }
 
@@ -311,6 +322,15 @@
       // Çamur yağmuru katmanı
       this.camurKat = new PIXI.Container();
       y.addChild(this.camurKat);
+      // Hava durumu katmanı (kar, yağmur, ateş böceği, yaprak, kabarcık)
+      this.havaKat = new PIXI.Container();
+      y.addChild(this.havaKat);
+      this.havaParca = [];
+      this.bolumFiltre = new PIXI.ColorMatrixFilter();
+      this.karanlik = new PIXI.Graphics();
+      this.karanlik.beginFill(0x061033, 1).drawRect(0, 0, G, Yuk).endFill();
+      this.karanlik.alpha = 0;
+      y.addChild(this.karanlik);
     }
 
     _kulvarlariKur() {
@@ -359,7 +379,7 @@
       const kartY = L.sahneY + 10;
       const ust = new PIXI.Container();
       ust.position.set(40, kartY);
-      ust.addChild(this.panel(G - 80, 170, 0x1d1208, 0.66, 28));
+      ust.addChild(this.panel(G - 80, 214, 0x1d1208, 0.66, 28));
       this.lobiBaslik = new PIXI.Text(this.M.lobi, stil(64, 0xffe14d));
       this.lobiBaslik.position.set(30, 12);
       ust.addChild(this.lobiBaslik);
@@ -370,10 +390,13 @@
       const alt = new PIXI.Text(this.M.lobiAlt, stil(30, 0xffffff, { wordWrap: true, wordWrapWidth: G - 140, strokeThickness: 5 }));
       alt.position.set(30, 92);
       ust.addChild(alt);
+      this.lobiBolum = new PIXI.Text("", stil(34, 0x9ff0ff, { strokeThickness: 6 }));
+      this.lobiBolum.position.set(30, 150);
+      ust.addChild(this.lobiBolum);
       l.addChild(ust);
 
       this.lobiSatirlar = [];
-      const satirY = kartY + 190, satirH = 104;
+      const satirY = kartY + 228, satirH = 100;
       for (let i = 0; i < this.A.hayvanlar.length; i++) {
         const s = new PIXI.Container();
         s.position.set(40, satirY + i * satirH);
@@ -405,8 +428,11 @@
       }
       const siraKap = new PIXI.Container();
       siraKap.position.set(40, satirY + this.A.hayvanlar.length * satirH + 4);
-      siraKap.addChild(this.panel(G - 80, 110, 0x1d1208, 0.66, 22));
-      this.lobiSira = new PIXI.Text("", stil(28, 0xffffff, { wordWrap: true, wordWrapWidth: G - 140, strokeThickness: 5, lineHeight: 34 }));
+      siraKap.addChild(this.panel(G - 80, 128, 0x1d1208, 0.66, 22));
+      this.lobiTahmin = new PIXI.Text(this.A.tahminAcik === false ? "" : this.M.tahminIpucu, stil(26, 0xd9b8ff, { strokeThickness: 5 }));
+      this.lobiTahmin.position.set(26, 86);
+      siraKap.addChild(this.lobiTahmin);
+      this.lobiSira = new PIXI.Text("", stil(28, 0xffffff, { wordWrap: true, wordWrapWidth: G - 140, strokeThickness: 5, lineHeight: 34, breakWords: true }));
       this.lobiSira.position.set(26, 16);
       siraKap.addChild(this.lobiSira);
       l.addChild(siraKap);
@@ -438,7 +464,7 @@
       k.addChild(this.kursuAlt);
       this.kursuSure = new PIXI.Text("", stil(32, 0xffe14d));
       this.kursuSure.anchor.set(0.5, 0);
-      this.kursuSure.position.set(G / 2, 1420);
+      this.kursuSure.position.set(G / 2, 1510);
       k.addChild(this.kursuSure);
       this.konfetiKat = new PIXI.Container();
       k.addChild(this.konfetiKat);
@@ -501,6 +527,24 @@
       this.fotoYazi.position.set(G / 2, 480);
       this.fotoYazi.visible = false;
       o.addChild(this.fotoYazi);
+      // Bölüm kartı (start'ta)
+      this.bolumKart = new PIXI.Text("", stil(96, 0x9ff0ff, { stroke: 0x0b1e33, strokeThickness: 14, align: "center", dropShadow: true, dropShadowDistance: 6, dropShadowAlpha: 0.5 }));
+      this.bolumKart.anchor.set(0.5);
+      this.bolumKart.position.set(G / 2, 640);
+      this.bolumKart.visible = false;
+      o.addChild(this.bolumKart);
+      // Kutlama damgaları
+      this.damgaKat = new PIXI.Container();
+      o.addChild(this.damgaKat);
+      // Spiker alt yazısı
+      this.spikerKap = new PIXI.Container();
+      this.spikerBg = new PIXI.Graphics();
+      this.spikerKap.addChild(this.spikerBg);
+      this.spikerYazi = new PIXI.Text("", stil(36, 0xfff3b0, { strokeThickness: 0, wordWrap: true, wordWrapWidth: G - 140, align: "center" }));
+      this.spikerYazi.anchor.set(0.5);
+      this.spikerKap.addChild(this.spikerYazi);
+      this.spikerKap.visible = false;
+      o.addChild(this.spikerKap);
       this.klipSprite = null;
     }
 
@@ -517,21 +561,32 @@
       this.buyukYazi.visible = false;
       this.bayrak.visible = false;
       this.fotoYazi.visible = false;
+      this.bolumKart.visible = false;
+      this.damgaKat.removeChildren().forEach((c) => c.destroy());
+      this._kutlama = null;
+      // Önceki fazdan kalan katılım/tahmin/olay bildirimlerini temizle
+      if (f === "yaris" || f === "kursu" || f === "lobi") {
+        this.bildirimSirasi = this.bildirimSirasi.filter((b) => b.tur === "hediye" || b.tur === "aga" || b.tur === "ucretsiz");
+        for (const b of this.bildirimler) b.yas = Math.max(b.yas, b.omur - 0.4);
+      }
       this._klipKapat();
       if (f === "lobi") {
         this.kamX = 0;
         this._imzalar.lobi = "";
       }
       if (f === "start") {
-        this.v.cal("geri-sayim");
+        const b = o.bolum || {};
+        this.bolumKart.text = (b.emoji || "") + " " + (this.A.dil === "en" ? b.adEn || b.ad : b.ad || "").toLocaleUpperCase(this.A.dil === "en" ? "en" : "tr") + (o.buyukDerbi ? "\n" + this.M.buyukDerbi : "");
+        this.bolumKart.visible = true;
+        this.bolumKart.scale.set(0.2);
         const vk = this.v.video.start;
         if (vk) this._klipAc(vk);
         this.bayrak.visible = true;
         this.bayrakYazi.text = o.aga ? this.Y.doldur(this.M.startBayragi, { ad: "👑 " + o.aga.ad }) : this.A.oyunAdi + " — " + this.Y.doldur(this.M.tur, { n: o.turNo });
       }
       if (f === "yaris") {
-        this.v.cal("duduk");
         this._kulvarlariKur();
+        this._bolumUygula();
         this.kamX = 0;
         this.buyukYazi.text = this.M.basla;
         this.buyukYazi.visible = true;
@@ -590,12 +645,215 @@
         });
       }
       const kazanan = s.ilkUc[0];
-      this.kursuIsim.text = kazanan.ad ? kazanan.ad : this.hAdi(s.kazanan);
-      this.kursuBaslik.text = this.M.kazanan + " — " + this.hAdi(s.kazanan);
-      this.kursuAlt.text = s.ilkUc.map((u, i) => (i + 1) + ". " + this.hAdi(u.kulvar) + (u.ad ? " — " + u.ad : "")).join("\n") + (kazanan.ad ? "" : "\n" + this.M.kimseYok);
-      this.v.cal("kazanan");
-      this.v.cal(h.klasor);
-      for (let i = 0; i < 70; i++) this._konfeti();
+      this.kursuIsim.text = kazanan.ad ? (s.rozet ? s.rozet + " " : "") + kazanan.ad : this.hAdi(s.kazanan);
+      this.kursuIsim.tint = 0xffffff;
+      this.kursuBaslik.text = (s.buyukDerbi ? "🏆 " : "") + this.M.kazanan + " — " + this.hAdi(s.kazanan);
+      const satirlar = s.ilkUc.map((u, i) => (i + 1) + ". " + this.hAdi(u.kulvar) + (u.ad ? " — " + (u.rozet ? u.rozet + " " : "") + u.ad : ""));
+      if (kazanan.ad && s.galibiyet) satirlar.push(this.Y.doldur(this.M.galibiyetSayisi, { n: s.galibiyet }));
+      else if (!kazanan.ad) satirlar.push(this.M.kimseYok);
+      if (s.tahmin && s.tahmin.toplam) {
+        satirlar.push(s.tahmin.dogru ? this.Y.doldur(this.M.tahminSonuc, { n: s.tahmin.dogru }) + (s.tahmin.isimler.length ? ": " + s.tahmin.isimler.join(", ") : "") : this.M.tahminYok);
+      }
+      this.kursuAlt.text = satirlar.join("\n");
+      this._kutlamaBasla(s);
+    }
+
+    // Kademeli kutlama: normal (konfeti) • büyük (+havai fişek, ışıklar, damga) • efsane (+altın yağmuru, gökkuşağı isim, sarsıntı)
+    _kutlamaBasla(s) {
+      const sev = s.seviye || "normal";
+      this._kutlama = { seviye: sev, sure: 0, fisekSayac: 0.3, damgalar: (s.etiketler || []).slice(0, 3), damgaSayac: 0.6 };
+      for (let i = 0; i < (sev === "normal" ? 70 : 110); i++) this._konfeti();
+      if (sev !== "normal") {
+        this._isiklar = new PIXI.Graphics();
+        this.kursuKazananKap.addChildAt(this._isiklar, 0);
+      } else this._isiklar = null;
+      if (sev === "efsane") this._flasla(0.7);
+    }
+
+    _damga(etiket, i) {
+      const metin = etiket === "seri" ? this.Y.doldur(this.M.seri, { n: this.oyun.sonuc ? this.oyun.sonuc.seri : 2 }) : this.M[etiket] || etiket;
+      const renk = { derbiSampiyonu: 0xffd34d, agaZaferi: 0xffd700, seri: 0xff6b3d, efsane: 0xff4df0, geridenGeldi: 0x4dd0ff, kilPayi: 0x7bff7b, ilkZafer: 0xffffff }[etiket] || 0xffffff;
+      const t = new PIXI.Text(metin, stil(84, renk, { stroke: 0x2b1a0e, strokeThickness: 14, dropShadow: true, dropShadowDistance: 6, dropShadowAlpha: 0.6 }));
+      t.anchor.set(0.5);
+      t.position.set(G / 2 + (i % 2 ? 60 : -60), 680 + i * 110);
+      t.rotation = (i % 2 ? 0.08 : -0.08);
+      t.scale.set(3);
+      t.alpha = 0;
+      t.yas = 0;
+      this.damgaKat.addChild(t);
+    }
+
+    _fisekAt() {
+      const renkler = [0xff4d6d, 0xffd34d, 0x4dd0ff, 0x7bff7b, 0xc77dff, 0xffffff, 0xff9f1c];
+      const x = 120 + Math.random() * (G - 240);
+      const sp = new PIXI.Sprite(this.daireDoku);
+      sp.anchor.set(0.5);
+      sp.scale.set(0.35);
+      sp.tint = 0xfff2c0;
+      sp.position.set(x, Yuk - 300);
+      this.konfetiKat.addChild(sp);
+      this.parcaciklar.push({ sp, vx: (Math.random() - 0.5) * 80, vy: -900 - Math.random() * 300, omur: 3, yas: 0, tur: "fisek", patla: 380 + Math.random() * 380, renk: renkler[(Math.random() * renkler.length) | 0] });
+    }
+
+    _fisekPatla(x, y, renk) {
+      const n = 36;
+      for (let i = 0; i < n; i++) {
+        if (this.parcaciklar.length > 420) break;
+        const a = (i / n) * Math.PI * 2, h = 220 + Math.random() * 260;
+        const sp = new PIXI.Sprite(this.daireDoku);
+        sp.anchor.set(0.5);
+        sp.scale.set(0.28);
+        sp.tint = renk;
+        sp.position.set(x, y);
+        this.konfetiKat.addChild(sp);
+        this.parcaciklar.push({ sp, vx: Math.cos(a) * h, vy: Math.sin(a) * h, omur: 1.3, yas: 0, tur: "kivilcim" });
+      }
+    }
+
+    _kutlamaGuncelle(dt) {
+      const k = this._kutlama;
+      if (!k) return;
+      k.sure += dt;
+      // havai fişek
+      if (k.seviye !== "normal") {
+        k.fisekSayac -= dt;
+        if (k.fisekSayac <= 0) { this._fisekAt(); k.fisekSayac = k.seviye === "efsane" ? 0.35 : 1.0; }
+      }
+      // damgalar sırayla
+      k.damgaSayac -= dt;
+      if (k.damgaSayac <= 0 && k.damgalar.length) {
+        this._damga(k.damgalar.shift(), this.damgaKat.children.length);
+        k.damgaSayac = 0.9;
+        this._flasla(0.25);
+      }
+      for (const t of this.damgaKat.children) {
+        t.yas += dt;
+        const u = Math.min(1, t.yas / 0.25);
+        t.scale.set(3 - 2 * u + Math.sin(this.saat * 6) * 0.03 * u);
+        t.alpha = u;
+      }
+      // ışık hüzmeleri
+      if (this._isiklar) {
+        const g = this._isiklar;
+        g.clear();
+        const renk = k.seviye === "efsane" ? 0xffe680 : 0xffffff;
+        for (const [x0, faz] of [[120, 0], [G - 120, 2]]) {
+          const a = Math.sin(this.saat * 0.9 + faz) * 0.45;
+          const x1 = x0 + Math.sin(a) * 1200, y1 = 1300;
+          g.beginFill(renk, 0.10).drawPolygon([x0, 380, x1 - 170, y1, x1 + 170, y1]).endFill();
+        }
+      }
+      if (k.seviye === "efsane") {
+        // gökkuşağı isim + altın yağmuru + hafif sarsıntı
+        const h = (this.saat * 0.35) % 1;
+        this.kursuIsim.tint = renkHsv(h, 0.45, 1);
+        if (Math.random() < dt * 10 && this.parcaciklar.length < 380) {
+          const sp = new PIXI.Sprite(this.emoji("🪙", 44));
+          sp.anchor.set(0.5);
+          sp.position.set(Math.random() * G, L.sahneY - 40);
+          this.konfetiKat.addChild(sp);
+          this.parcaciklar.push({ sp, vx: (Math.random() - 0.5) * 60, vy: 380 + Math.random() * 220, omur: 4, yas: 0, tur: "konfeti", don: (Math.random() - 0.5) * 6 });
+        }
+        const sars = k.sure < 0.8 ? (0.8 - k.sure) * 14 : 0;
+        this.sahneKursu.position.set((Math.random() - 0.5) * sars, (Math.random() - 0.5) * sars);
+      } else {
+        this.sahneKursu.position.set(0, 0);
+      }
+    }
+
+    // ---------------------------------------------------------------- bölüm görünümü ve hava
+    _bolumUygula() {
+      const kod = (this.oyun.bolum && this.oyun.bolum.kod) || "ciftlik";
+      const f = this.bolumFiltre;
+      f.reset();
+      let filtre = true;
+      this.karanlik.alpha = 0;
+      if (kod === "bataklik") { f.matrix = [0.85, 0.1, 0, 0, 0.02, 0.05, 0.85, 0, 0, 0.02, 0, 0.05, 0.55, 0, 0, 0, 0, 0, 1, 0]; }
+      else if (kod === "kar") { f.matrix = [0.8, 0.1, 0.1, 0, 0.12, 0.1, 0.85, 0.1, 0, 0.12, 0.1, 0.1, 0.95, 0, 0.18, 0, 0, 0, 1, 0]; }
+      else if (kod === "gece") { f.matrix = [0.45, 0, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0, 0.8, 0, 0.03, 0, 0, 0, 1, 0]; }
+      else if (kod === "firtina") { f.desaturate(); f.brightness(0.75, true); }
+      else if (kod === "hasat") { f.matrix = [1.1, 0.05, 0, 0, 0.03, 0, 1.0, 0, 0, 0.01, 0, 0, 0.8, 0, 0, 0, 0, 0, 1, 0]; }
+      else filtre = false;
+      this.sahneYaris.filters = filtre ? [this.bolumFiltre] : null;
+      this.havaKod = kod;
+      this.havaKat.removeChildren().forEach((c) => c.destroy());
+      this.havaParca = [];
+      const sayi = { kar: 90, firtina: 120, gece: 40, hasat: 30, bataklik: 25 }[kod] || 0;
+      for (let i = 0; i < sayi; i++) this._havaParcaEkle(true);
+    }
+
+    _havaParcaEkle(ilk) {
+      const kod = this.havaKod;
+      let sp;
+      if (kod === "hasat") { sp = new PIXI.Sprite(this.emoji(Math.random() < 0.5 ? "🍂" : "🍁", 40)); sp.scale.set(0.5 + Math.random() * 0.4); }
+      else { sp = new PIXI.Sprite(this.daireDoku); }
+      sp.anchor.set(0.5);
+      const p = { sp, x: Math.random() * G, y: ilk ? Math.random() * Yuk : -20, vx: 0, vy: 0, faz: Math.random() * 6 };
+      if (kod === "kar") { sp.scale.set(0.12 + Math.random() * 0.22); sp.alpha = 0.9; p.vy = 60 + Math.random() * 80; p.vx = -20; }
+      else if (kod === "firtina") { sp.scale.set(0.06, 0.9); sp.tint = 0xbfdcff; sp.alpha = 0.55; sp.rotation = 0.25; p.vy = 1300 + Math.random() * 500; p.vx = -330; }
+      else if (kod === "gece") { sp.scale.set(0.16 + Math.random() * 0.1); sp.tint = 0xfff27a; sp.alpha = 0.8; p.vy = -10; p.vx = 10; p.y = ilk ? L.kulvarY + Math.random() * 800 : L.kulvarY + 800; }
+      else if (kod === "hasat") { p.vy = 90 + Math.random() * 60; p.vx = -40; }
+      else if (kod === "bataklik") { sp.scale.set(0.15 + Math.random() * 0.2); sp.tint = 0x6b4a2b; sp.alpha = 0.7; p.y = L.kulvarY + Math.random() * 800; p.vy = -25; p.omur = 1 + Math.random() * 2; }
+      sp.position.set(p.x, p.y);
+      this.havaKat.addChild(sp);
+      this.havaParca.push(p);
+    }
+
+    _havaGuncelle(dt) {
+      const kod = this.havaKod;
+      if (!this.havaParca || !this.havaParca.length) return;
+      for (let i = this.havaParca.length - 1; i >= 0; i--) {
+        const p = this.havaParca[i];
+        p.faz += dt;
+        if (kod === "gece") { p.x += Math.sin(p.faz * 1.3) * 20 * dt; p.y += Math.cos(p.faz) * 14 * dt; p.sp.alpha = 0.4 + Math.abs(Math.sin(p.faz * 2)) * 0.6; }
+        else if (kod === "bataklik") { p.y += p.vy * dt; p.omur -= dt; p.sp.scale.set(p.sp.scale.x + dt * 0.08); p.sp.alpha = Math.max(0, p.omur); }
+        else { p.x += (p.vx + (kod === "kar" ? Math.sin(p.faz * 2) * 30 : 0)) * dt; p.y += p.vy * dt; }
+        if (kod === "hasat") p.sp.rotation += dt * 2;
+        p.sp.position.set(p.x, p.y);
+        const disarida = p.y > Yuk + 30 || p.x < -60 || (kod === "bataklik" && p.omur <= 0);
+        if (disarida) {
+          p.sp.destroy();
+          this.havaParca.splice(i, 1);
+          this._havaParcaEkle(false);
+        }
+      }
+    }
+
+    // Yarış içi sürprizlerin görüntüsü
+    _yarisOlayiGorsel(o) {
+      const kulvarlar = o.kulvarlar || [];
+      if (o.tur === "altinHavuc") {
+        for (const no of kulvarlar) {
+          const g = this.kulvarGorsel && this.kulvarGorsel[no];
+          if (!g) continue;
+          const sp = new PIXI.Sprite(this.efektDoku("havuc", 80));
+          sp.anchor.set(0.5);
+          sp.scale.set(80 / Math.max(1, sp.texture.height));
+          sp.tint = 0xffd700;
+          this.efektKat.addChild(sp);
+          this.parcaciklar.push({ sp, tur: "yol", t: 0, omur: 0.8, x0: G / 2, y0: L.spikerY, x1: g.x, y1: g.kap.y - 60, tepe: -160 });
+          for (let i = 0; i < 10; i++) this._parcacik(this.emoji("✨", 44), g.x + (Math.random() - 0.5) * 120, g.kap.y - 60, (Math.random() - 0.5) * 200, -100 - Math.random() * 150, 1);
+        }
+      } else if (o.tur === "ruzgar") {
+        for (let i = 0; i < 26; i++) {
+          const sp = new PIXI.Sprite(this.daireDoku);
+          sp.anchor.set(0.5);
+          sp.scale.set(2 + Math.random() * 2, 0.06);
+          sp.alpha = 0.6;
+          sp.position.set(-200 - Math.random() * 600, L.kulvarY + Math.random() * 800);
+          this.efektKat.addChild(sp);
+          this.parcaciklar.push({ sp, vx: 1600 + Math.random() * 600, vy: 0, omur: 1.4, yas: 0, tur: "uc" });
+        }
+      } else if (o.tur === "saman") {
+        for (const no of kulvarlar) {
+          const g = this.kulvarGorsel && this.kulvarGorsel[no];
+          if (!g) continue;
+          const sp = new PIXI.Sprite(this.emoji("🌾", 90));
+          sp.anchor.set(0.5);
+          this.efektKat.addChild(sp);
+          this.parcaciklar.push({ sp, tur: "yol", t: 0, omur: 0.6, x0: g.x + 160, y0: L.kulvarY - 120, x1: g.x + 40, y1: g.kap.y - 40, tepe: -80 });
+        }
+      }
     }
 
     // ---------------------------------------------------------------- olaylar
@@ -604,6 +862,7 @@
       if (!liste.length) return;
       this.oyun.olaylar = [];
       for (const o of liste) {
+        if (this.dinleyici) { try { this.dinleyici(o); } catch (e) { console.error("Ses olayı hatası", e); } }
         switch (o.tip) {
           case "faz": this.fazDegisti(o.faz); break;
           case "bildirim": this._bildirimEkle(o.metin, o.tur); break;
@@ -612,9 +871,10 @@
           case "camur": this._camurBasla(o.sure); break;
           case "begeni": this._kalp(o.kulvar, o.sayi); break;
           case "bitis": this._flasla(); break;
-          case "aga": this.v.cal("aga"); this._flasla(0.5); break;
-          case "katildi": if (this.lobiSatirlar[o.kulvar]) this.lobiSatirlar[o.kulvar].nabiz = 1; this.v.cal("katil"); break;
+          case "aga": this._flasla(0.5); break;
+          case "katildi": if (this.lobiSatirlar[o.kulvar]) this.lobiSatirlar[o.kulvar].nabiz = 1; break;
           case "barDoldu": break;
+          case "yarisOlayi": this._yarisOlayiGorsel(o); break;
           default: break;
         }
       }
@@ -726,7 +986,9 @@
       this._tablolar();
       if (f === "lobi" || f === "start") this._lobiGuncelle(dt);
       if (f === "yaris" || f === "fotofinis") this._yarisGuncelle(dt);
-      if (f === "kursu") this._kursuGuncelle(dt);
+      if (f === "kursu") { this._kursuGuncelle(dt); this._kutlamaGuncelle(dt); }
+      if (f === "yaris" || f === "fotofinis") this._havaGuncelle(dt);
+      this._spikerGuncelle();
       this._bildirimGuncelle(dt);
       this._parcacikGuncelle(dt);
       this._ortaGuncelle(dt);
@@ -739,7 +1001,7 @@
       for (const t of this.tablolar) {
         const liste = t.tur === "efsaneler" ? this.oyun.efsaneTablosu(5) : this.oyun.buGeceTablosu(5);
         const metin = liste.length
-          ? liste.map((e, i) => (i + 1) + ". " + e.ad + "  " + (t.tur === "efsaneler" ? this.Y.doldur(this.M.galibiyet, { n: e.galibiyet }) : this.Y.doldur(this.M.puan, { n: e.puan }))).join("\n")
+          ? liste.map((e, i) => (i + 1) + ". " + (this.oyun.rozet(e.id) ? this.oyun.rozet(e.id) + " " : "") + e.ad + "  " + (t.tur === "efsaneler" ? this.Y.doldur(this.M.galibiyet, { n: e.galibiyet }) : this.Y.doldur(this.M.puan, { n: e.puan }))).join("\n")
           : this.M.tabloBos;
         if (t.satir.text !== metin) t.satir.text = metin;
       }
@@ -751,6 +1013,13 @@
       const st = o.faz === "lobi" ? sure(kalan) : "";
       if (this.lobiSure.text !== st) this.lobiSure.text = st;
       this.lobiBaslik.text = o.faz === "lobi" ? this.M.lobi + "  •  " + this.Y.doldur(this.M.tur, { n: o.turNo }) : this.M.basliyor;
+      const b = o.bolum || {};
+      const bm = this.Y.doldur(this.M.siradakiBolum, { emoji: b.emoji || "", ad: this.A.dil === "en" ? b.adEn || b.ad : b.ad }) + (o.buyukDerbi ? "   " + this.M.buyukDerbi : "");
+      if (this.lobiBolum.text !== bm) { this.lobiBolum.text = bm; this.lobiBolum.style.fill = o.buyukDerbi ? 0xffd34d : 0x9ff0ff; }
+      if (this.bolumKart.visible) {
+        this.bolumKart.scale.set(Math.min(1, this.bolumKart.scale.x + dt * 4));
+        if (o.fazZaman > 2.2) this.bolumKart.visible = false;
+      }
       o.kulvarlar.forEach((k, i) => {
         const s = this.lobiSatirlar[i];
         const metin = k.oyuncu ? k.oyuncu.ad : this.Y.doldur(this.M.bos, { ad: this.Y.sadelestir(this.hAdi(i)), no: i + 1 });
@@ -801,14 +1070,21 @@
       this.dunya.x = -k;
 
       const hizOrt = o.PIST / this.A.sure.yarisHedef;
+      if (this.saat - (this._siraZaman2 || -9) > 0.3) {
+        this._siraZaman2 = this.saat;
+        this._siraNo = {};
+        o.siralama().forEach((k, n) => { this._siraNo[k.no] = n + 1; });
+      }
       o.kulvarlar.forEach((kul, i) => {
         const g = this.kulvarGorsel[i];
         if (!g) return;
         // İsim/taç
-        const ad = kul.oyuncu ? kul.oyuncu.ad : this.hAdi(i);
+        const sira = this._siraNo ? this._siraNo[i] : 0;
+        const rz = kul.oyuncu ? this.oyun.rozet(kul.oyuncu.id) : "";
+        const ad = (sira ? sira + ". " : "") + (rz ? rz + " " : "") + (kul.oyuncu ? kul.oyuncu.ad : this.hAdi(i));
         if (g.isim.text !== ad) {
           g.isim.text = ad;
-          g.isim.style.fill = kul.oyuncu ? 0xffffff : 0xe8d9c0;
+          g.isim.style.fill = sira === 1 ? 0xffe14d : kul.oyuncu ? 0xffffff : 0xe8d9c0;
         }
         const agaMi = !!(kul.oyuncu && o.aga && o.aga.id === kul.oyuncu.id);
         g.tac.visible = agaMi;
@@ -883,7 +1159,7 @@
           g.ikon.visible = true;
           if (ikon === "roket") g.ikon.position.set(-62, ucusY - 40);
           else if (ikon === "havuc") g.ikon.position.set(0, ucusY - 175 + Math.sin(this.saat * 8) * 6);
-          else g.ikon.position.set(-70, yOff - 40);
+          else g.ikon.position.set(-24, yOff - 96); // hız bulutu hayvanın sırtında (isimle çakışmasın)
           if (ikon === "roket" && Math.random() < dt * 30) this._parcacik(this.emoji("🔥", 36), x - 70, g.kap.y + ucusY - 40, -150, (Math.random() - 0.5) * 60, 0.35);
         } else {
           g.ikon.visible = false;
@@ -951,7 +1227,7 @@
         this._bildirimBekle = this.bildirimSirasi.length > 4 ? 0.35 : 0.6;
       }
       const lobide = this.oyun.faz === "lobi" || this.oyun.faz === "start" || this.oyun.faz === "kursu";
-      const tabanY = lobide ? 1700 : L.bildirimY;
+      const tabanY = lobide ? 1830 : L.bildirimY;
       for (let i = this.bildirimler.length - 1; i >= 0; i--) {
         const b = this.bildirimler[i];
         b.yas += dt;
@@ -979,6 +1255,14 @@
           continue;
         }
         q.yas += dt;
+        if (q.tur === "fisek") {
+          q.vy += 520 * dt;
+          if (q.vy > -160 || q.sp.y < q.patla) { this._fisekPatla(q.sp.x, q.sp.y, q.renk); q.sp.destroy(); p.splice(i, 1); continue; }
+        } else if (q.tur === "kivilcim") {
+          q.vy += 260 * dt;
+          q.vx *= 1 - dt * 0.8;
+          q.sp.alpha = Math.max(0, 1 - q.yas / q.omur);
+        }
         q.sp.x += q.vx * dt;
         q.sp.y += q.vy * dt;
         if (q.tur === "konfeti") { q.sp.rotation += q.don * dt; q.sp.x += Math.sin(this.saat * 3 + i) * 0.8; }
@@ -988,6 +1272,19 @@
           p.splice(i, 1);
         }
       }
+    }
+
+    _spikerGuncelle() {
+      const a = this.spiker && this.spiker.altyazi;
+      if (!a) { this.spikerKap.visible = false; return; }
+      if (this.spikerYazi.text !== "🎙️ " + a.metin) {
+        this.spikerYazi.text = "🎙️ " + a.metin;
+        const w = Math.min(G - 60, this.spikerYazi.width + 60), h = this.spikerYazi.height + 26;
+        this.spikerBg.clear().beginFill(0x10223a, 0.88).drawRoundedRect(-w / 2, -h / 2, w, h, h / 2).endFill();
+      }
+      const f = this.oyun.faz;
+      this.spikerKap.position.set(G / 2, f === "yaris" || f === "fotofinis" ? L.spikerY : f === "kursu" ? 1610 : 1600);
+      this.spikerKap.visible = true;
     }
 
     _ortaGuncelle(dt) {

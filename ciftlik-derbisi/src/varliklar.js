@@ -8,7 +8,6 @@
     kazandi: ["kazandi.webm", "kazandi.mp4"],
     karakter: ["karakter.png"]
   };
-  const SESLER = ["duduk", "kazanan", "hiz", "muz", "roket", "havuc", "leylek", "camur", "aga", "geri-sayim", "katil"];
 
   // Saf mavi fonu silen gölgelendirici (mp4 ham klipler için; webm zaten şeffaf)
   const MAVI_SIL = `
@@ -129,10 +128,7 @@
         isler.push(this._videoDene(h.klasor + "_kay", HAYVAN_DOSYALARI.kay, k, true));
         isler.push(this._videoDene(h.klasor + "_kazandi", HAYVAN_DOSYALARI.kazandi, k, false));
       }
-      if (this.A.sesAcik) {
-        for (const s of SESLER) isler.push(this._sesDene(s));
-        for (const h of this.A.hayvanlar) isler.push(this._sesDene(h.klasor));
-      }
+      // Sesler src/ses.js tarafından yönetilir
       await Promise.all(isler);
     }
 

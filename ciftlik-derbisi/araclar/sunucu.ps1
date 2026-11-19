@@ -18,7 +18,7 @@ $mime = @{
   '.png' = 'image/png'; '.jpg' = 'image/jpeg'; '.jpeg' = 'image/jpeg'; '.webp' = 'image/webp'; '.gif' = 'image/gif'
   '.svg' = 'image/svg+xml'; '.ico' = 'image/x-icon'
   '.mp4' = 'video/mp4'; '.webm' = 'video/webm'
-  '.mp3' = 'audio/mpeg'; '.ogg' = 'audio/ogg'; '.wav' = 'audio/wav'
+  '.mp3' = 'audio/mpeg'; '.ogg' = 'audio/ogg'; '.wav' = 'audio/wav'; '.m4a' = 'audio/mp4'; '.aac' = 'audio/aac'; '.opus' = 'audio/ogg'
 }
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
@@ -43,6 +43,20 @@ function Kaydet($istek, $yanit) {
   if (Test-Path -LiteralPath $hedef) { Copy-Item -LiteralPath $hedef -Destination (Join-Path $veriKlasoru 'kayit.yedek.json') -Force }
   Move-Item -LiteralPath $gecici -Destination $hedef -Force
   Yaz-Metin $yanit 200 '{"ok":true}' 'application/json'
+}
+
+# assets\muzik\<klasor> içindeki ses dosyalarının adlarını JSON dizi olarak döner
+function Muzik-Listesi($istek, $yanit) {
+  $klasor = $istek.QueryString['klasor']
+  if ($klasor -ne 'oyun' -and $klasor -ne 'liste') { $klasor = 'liste' }
+  $yer = Join-Path $kok ("assets\muzik\" + $klasor)
+  $adlar = @()
+  if (Test-Path -LiteralPath $yer) {
+    $adlar = Get-ChildItem -LiteralPath $yer -File | Where-Object { $_.Extension -match '^\.(mp3|ogg|wav|m4a|aac|opus|webm)$' } | Sort-Object Name | ForEach-Object { $_.Name }
+  }
+  $parcalar = @()
+  foreach ($ad in $adlar) { $parcalar += '"' + ($ad.Replace('\', '\\').Replace('"', '\"')) + '"' }
+  Yaz-Metin $yanit 200 ('[' + ($parcalar -join ',') + ']') 'application/json; charset=utf-8'
 }
 
 function Dosya-Gonder($istek, $yanit, [string]$yol) {
@@ -126,6 +140,7 @@ while ($dinleyici.IsListening) {
     $yol = [System.Uri]::UnescapeDataString($istek.Url.AbsolutePath)
     if ($yol -eq '/api/durum') { Yaz-Metin $yanit 200 '{"ok":true}' 'application/json' }
     elseif ($yol -eq '/api/kaydet' -and $istek.HttpMethod -eq 'POST') { Kaydet $istek $yanit }
+    elseif ($yol -eq '/api/muzik') { Muzik-Listesi $istek $yanit }
     elseif ($istek.HttpMethod -eq 'GET' -or $istek.HttpMethod -eq 'HEAD') { Dosya-Gonder $istek $yanit $yol }
     else { Yaz-Metin $yanit 405 'Desteklenmiyor' 'text/plain' }
   } catch {

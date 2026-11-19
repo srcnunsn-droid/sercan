@@ -9,6 +9,13 @@ http.createServer((q, r) => {
   const yol = decodeURIComponent(new URL(q.url, "http://x").pathname);
   r.setHeader("Cache-Control", "no-store");
   if (yol === "/api/durum") return r.end('{"ok":true}');
+  if (yol === "/api/muzik") {
+    const k = new URL(q.url, "http://x").searchParams.get("klasor") === "oyun" ? "oyun" : "liste";
+    const yer = path.join(kok, "assets", "muzik", k);
+    const adlar = fs.existsSync(yer) ? fs.readdirSync(yer).filter((d) => /\.(mp3|ogg|wav|m4a|aac|opus|webm)$/i.test(d)).sort() : [];
+    r.setHeader("Content-Type", "application/json; charset=utf-8");
+    return r.end(JSON.stringify(adlar));
+  }
   if (yol === "/api/kaydet" && q.method === "POST") {
     let g = ""; q.on("data", (c) => (g += c)); q.on("end", () => {
       try { JSON.parse(g); fs.mkdirSync(path.join(kok, "veri"), { recursive: true }); fs.writeFileSync(path.join(kok, "veri", "kayit.json"), g); r.end('{"ok":true}'); }

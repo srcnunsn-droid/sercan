@@ -57,6 +57,18 @@
           <button data-h="30">30</button><button data-h="100">100</button><button data-h="500">500</button>
         </div>
         <div class="satir"><button data-k="seri">🌹 TikFinity seri hediye (Gül x7)</button></div>
+        <b>Yeni özellikler</b>
+        <div class="satir">
+          <button data-k="tahmin">🔮 10 sahte tahmin</button>
+          <button data-k="altinHavuc">✨ Altın havuç</button>
+          <button data-k="ruzgar">🌬️ Rüzgar</button>
+          <button data-k="saman">🌾 Saman</button>
+        </div>
+        <div class="satir">
+          <button data-k="derbi">🏆 Sonraki tur Büyük Derbi</button>
+          <button data-k="efsaneKutlama">🎆 Efsane kutlama dene</button>
+          <button data-k="spikerDene">🎙️ Spiker dene</button>
+        </div>
         <b>Stres / kontrol</b>
         <div class="satir">
           <button data-k="stres" id="tpStres">👥 200 sahte izleyici: KAPALI</button>
@@ -102,6 +114,16 @@
           document.getElementById("tpStres").textContent = "👥 200 sahte izleyici: " + (this.stresAcik ? "AÇIK" : "KAPALI");
           break;
         case "kopar": this.d.baglanti.kopar(); break;
+        case "tahmin":
+          for (let i = 0; i < 10; i++) {
+            const n = 1 + ((Math.random() * this.d.oyun.A.hayvanlar.length) | 0);
+            this.gonder({ tip: "yorum", kullanici: this.rastgeleKisi(), metin: "tahmin " + n });
+          }
+          break;
+        case "altinHavuc": case "ruzgar": case "saman": o.yarisOlayi(k); break;
+        case "derbi": o.sonrakiDerbi = true; break;
+        case "efsaneKutlama": o.testKutlama = "efsane"; break;
+        case "spikerDene": this.d.spiker.soyle(["lider_tavuk", "son_duzluk", "kil_payi", "efsane"][(Math.random() * 4) | 0], { tekrar: 0 }); break;
         case "atla": o.fazZaman = 9999; if (o.yaristaMi()) o.kulvarlar.forEach((x) => (x.pos = Math.max(x.pos, o.PIST - 3 - Math.random() * 3))); break;
         case "sifirla": o.skorlariSifirla(false); break;
         case "sifirlaHepsi": o.skorlariSifirla(true); break;
@@ -128,7 +150,9 @@
       for (let i = 0; i < 4; i++) {
         const kisi = this.rastgeleKisi(200);
         const r = Math.random();
-        if (r < 0.35) {
+        if (r < 0.05) {
+          this.gonder({ tip: "yorum", kullanici: kisi, metin: "tahmin " + (1 + ((Math.random() * 8) | 0)) });
+        } else if (r < 0.35) {
           const A = o.A;
           const j = (Math.random() * A.hayvanlar.length) | 0;
           this.gonder({ tip: "yorum", kullanici: kisi, metin: Math.random() < 0.3 ? "selam herkese" : (Math.random() < 0.5 ? String(j + 1) : A.hayvanlar[j].ad) });

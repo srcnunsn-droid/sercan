@@ -26,10 +26,16 @@
     #testPaneli .isik { width: 14px; height: 14px; border-radius: 50%; background: #e33; box-shadow: 0 0 8px #e33; flex: none; }
     #testPaneli .durum.bagli .isik { background: #3d3; box-shadow: 0 0 8px #3d3; }
     #testPaneli .durum.baglaniyor .isik { background: #fc3; box-shadow: 0 0 8px #fc3; }
+    #sesKilidi {
+      position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); display: none; z-index: 20;
+      background: rgba(16, 34, 58, .92); color: #fff3b0; font: 700 18px "Segoe UI", Arial, sans-serif;
+      padding: 10px 18px; border-radius: 22px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5);
+    }
   </style>
 </head>
 <body>
   <div id="sahne"></div>
+  <div id="sesKilidi">🔊 Sesi açmak için tıkla</div>
   <!-- Kütüphane proje klasöründen yüklenir (internet gerekmez) -->
   <script src="lib/pixi.min.js"></script>
   <script src="config.js"></script>
@@ -39,6 +45,9 @@
   <script src="src/kayit.js"></script>
   <script src="src/varliklar.js"></script>
   <script src="src/baglanti.js"></script>
+  <script src="src/spiker.js"></script>
+  <script src="src/ses.js"></script>
+  <script src="src/yonetmen.js"></script>
   <script src="src/cizim.js"></script>
   <script src="src/testpanel.js"></script>
   <script src="src/ana.js"></script>

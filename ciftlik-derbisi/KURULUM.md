@@ -53,6 +53,11 @@ Sağ üstte bir panel çıkar:
 | ⏭ Sonraki faz | Lobiyi/yarışı hızlıca geçer |
 | Hız x1 / x5 / x20 | Oyunu hızlandırır (deneme için) |
 | 🧹 Sıfırla | "Bu gece" ya da tüm skorları sıfırlar |
+| 🔮 10 sahte tahmin | Sahte izleyiciler kazananı tahmin eder |
+| ✨ / 🌬️ / 🌾 | Yarış sırasında altın havuç, rüzgar ya da saman balyası sürprizi |
+| 🏆 Sonraki tur Büyük Derbi | Bir sonraki turu Büyük Derbi yapar |
+| 🎆 Efsane kutlama dene | Bu turun kazananına en büyük kutlamayı gösterir |
+| 🎙️ Spiker dene | Rastgele bir spiker anonsu çalar |
 
 Panelin en üstündeki **ışık** TikFinity bağlantısını gösterir:
 🟢 bağlı · 🟡 bağlanıyor · 🔴 bağlı değil
@@ -90,10 +95,12 @@ TikFinity, TikTok yayınındaki yorum/beğeni/hediye bilgilerini bilgisayarında
 3. Adres (URL): **`http://localhost:8787/`** ← sonunda `?test=1` OLMASIN.
 4. Genişlik **1080**, yükseklik **1920**.
 5. Kaynağı tüm ekranı kaplayacak şekilde yerleştir.
+6. **Ses:** Oyunun müziği, efektleri ve spikeri bu kaynaktan gelir. LIVE Studio'nun ses karıştırıcısında bu kaynağın sesinin açık olduğundan emin ol.
 
 **OBS kullanıyorsan:**
 Kaynaklar → **+** → **Tarayıcı** → URL `http://localhost:8787/`, Genişlik `1080`, Yükseklik `1920`.
 "Görünür olmadığında kaynağı kapat" kutusunu **işaretleme** (yoksa oyun her seferinde baştan başlar).
+Oyunun sesini yayına vermek için **"Sesi OBS üzerinden kontrol et"** kutusunu işaretle; sonra ses karıştırıcıda oyunun ses seviyesini ayarlayabilirsin.
 
 > Sıra önemli: **önce BASLAT.bat**, sonra TikFinity, sonra LIVE Studio.
 
@@ -134,7 +141,10 @@ assets\hayvan\tavuk\kos.webm       koşu döngüsü (şeffaf)
 assets\hayvan\tavuk\kay.mp4        (isteğe bağlı) kayma klibi, mavi fon
 assets\hayvan\tavuk\kazandi.mp4    (isteğe bağlı) tam ekran kutlama
 assets\efekt\muz.png, roket.png, havuc.png, leylek.png, camur.png
-assets\ses\  (isteğe bağlı) duduk.mp3, kazanan.mp3, tavuk.mp3 ...
+assets\ses\               efekt sesleri (düdük, roket, hayvan sesleri…)
+assets\ses\spiker\        Türkçe spiker anonsları
+assets\muzik\oyun\        oyunun kendi müzikleri (lobi, yarış, derbi, zafer, efsane)
+assets\muzik\liste\       SENİN şarkı listen (istediğin kadar)
 ```
 Hayvan klasör adları: `tavuk`, `kaplumbaga`, `keci`, `ordek`, `domuz`, `inek`, `esek`, `kirpi`.
 
@@ -146,11 +156,48 @@ Hayvan klasör adları: `tavuk`, `kaplumbaga`, `keci`, `ordek`, `domuz`, `inek`,
 
 > `.webm` yapmasan bile oyun mavi fonu kendisi siler; `FON-TEMIZLE` sadece daha temiz ve hafif sonuç verir.
 
-**Sesler:** `assets\ses\` klasörüne `duduk.mp3` (start), `kazanan.mp3`, `geri-sayim.mp3`, `muz.mp3`, `roket.mp3`, `havuc.mp3`, `leylek.mp3`, `camur.mp3`, `aga.mp3`, `katil.mp3` ya da hayvan adıyla (`inek.mp3`) dosya koyarsan çalar. Yoksa oyun sessiz çalışır.
+**Sesler:** Bir efekt sesini değiştirmek istersen `assets\ses\` içindeki aynı adlı dosyanın yerine kendi dosyanı koy (ör. `duduk.mp3`). Dosyası olmayan küçük sesler (geri sayım bip'i, katılım "pop"u) oyun tarafından üretilir.
 
 ---
 
-## 8. Sık sorunlar ve çözümleri
+## 8. Ses, müzik ve spiker
+
+Oyunda artık üç tür ses var. Hepsi `config.js` dosyasından açılıp kapatılabilir ve sesi ayarlanabilir:
+
+| Ses | Ne zaman çalar | Ayar |
+|---|---|---|
+| 🎵 **Müzik** | Lobide sakin, yarışta hızlı, Büyük Derbi'de destansı; kazananda zafer müziği | `muzikAcik`, `muzikSeviyesi` |
+| 💥 **Efektler** | Düdük, roket, muz, havuç, leylek, çamur, havai fişek, kalabalık, hayvan sesleri… | `sesAcik`, `sesSeviyesi` |
+| 🎙️ **Spiker** | Türkçe anons: "Tavuk öne geçti!", "Foto finiş!", "Kıl payı!"… (ekranda alt yazı da çıkar) | `spikerAcik`, `spikerSeviyesi` |
+
+Spiker konuşurken müzik otomatik kısılır.
+
+**Kendi şarkı listen (500+ şarkı):**
+1. Şarkılarını `assets\muzik\liste\` klasörüne kopyala (mp3, m4a, ogg, wav…). İstediğin kadar koyabilirsin.
+2. `config.js` içinde `muzikKaynagi: "oyun",` satırını `muzikKaynagi: "liste",` (her yerde senin listen) ya da `muzikKaynagi: "karisik",` (lobide senin listen, yarışta oyunun müziği) yap.
+3. Oyunu yeniden başlat. Şarkılar karışık sırayla, hepsi bitene kadar tekrarsız çalar.
+
+> ⚠️ **Telif uyarısı:** TikTok LIVE'da telifli (sanatçıların, radyoda çalan) şarkıları çalmak yayının sesinin kapatılmasına ya da ihlal uyarısına yol açabilir. Listeye sadece kullanma hakkın olan (telifsiz / lisanslı) müzikleri koy. Oyunun kendi müzikleri bu proje için üretildi, sözsüzdür ve güvenle kullanılabilir.
+
+> Normal bir tarayıcıda ilk açılışta ses çıkmazsa ekranın altında **"🔊 Sesi açmak için tıkla"** düğmesi görünür; bir kez tıkla. TikTok LIVE Studio ve OBS'de buna gerek yoktur.
+
+---
+
+## 9. Oyunu ilgi çekici yapan özellikler
+
+- **Bölümler:** Her tur farklı bir pistte geçer: 🌻 Çiftlik, 🟤 Çamurlu Bataklık (daha çok kayma), ❄️ Karlı Dağ (kar yağar, buzda kayılır), 🌙 Gece Yarışı (karanlık + ateş böcekleri), 🌪️ Fırtına (yağmur, sık rüzgar), 🥕 Hasat Şenliği (sık altın havuç). Lobi ekranında "Bu tur: …" yazar, spiker anons eder.
+- **🏆 Büyük Derbi:** Her 5. tur. Puanlar iki katı, destansı müzik, en büyük kutlama.
+- **Yarış içi sürprizler:** Yarış sırasında rastgele ✨ altın havuç (bir hayvan hızlanır), 🌬️ arkadan rüzgar (en gerideki 3 hayvan hızlanır), 🌾 saman balyası (lider takılır). Yarışlar son ana kadar heyecanlı geçer.
+- **🔮 Tahmin:** Kulvar bulamayan izleyiciler yorumla `tahmin 3` ya da `tahmin tavuk` yazar. Kazananı bilen herkes "Bu gece" tablosunda puan kazanır. Para ya da ödül yoktur, sadece eğlence puanı.
+- **Kademeli kutlamalar:** Normal zafer konfetiyle; "GERİDEN GELDİ!", "KIL PAYI!", "İLK ZAFER!" gibi özel zaferler havai fişek ve ışık hüzmeleriyle; Derbi şampiyonluğu, art arda galibiyet, Ağa zaferi ve 5/10/25/50/100. galibiyet ise altın yağmuru, gökkuşağı isim ve "EFSANE!" damgasıyla kutlanır.
+- **Rozetler:** Galibiyet sayısına göre ismin yanında 🥉 (1), 🥈 (3), 🥇 (10). Yarışta, tablolarda ve kürsüde görünür.
+- **Canlı sıralama:** Yarışta her ismin önünde anlık sırası yazar, lider altın renktedir; liderlik değişince spiker anons eder.
+
+Ayarlar `config.js` içinde: `bolumler`, `buyukDerbiAraligi`, `tahminAcik`, `tahminPuani`, `yarisOlaylari`, `rozetler`.
+
+---
+
+## 10. Sık sorunlar ve çözümleri
 
 | Sorun | Çözüm |
 |---|---|
@@ -162,14 +209,18 @@ Hayvan klasör adları: `tavuk`, `kaplumbaga`, `keci`, `ordek`, `domuz`, `inek`,
 | Görseller çıkmıyor, emoji görünüyor | Dosya adları ve klasörler yukarıdaki listeyle **birebir** aynı olmalı (küçük harf, Türkçe karakter yok). Bir sonraki lobiyi bekle. |
 | Koşu klibinde mavi kenar kalıyor | `FON-TEMIZLE.bat`'ı çalıştır. Eski `.webm` varsa önce onu sil. |
 | Oyun yavaş / takılıyor | Diğer programları kapat. LIVE Studio'da kaynağın 1080x1920'den büyük olmadığına bak. |
+| Hiç ses yok | `config.js`'te `sesAcik`, `muzikAcik`, `spikerAcik` değerleri `true` mu? LIVE Studio/OBS'de kaynağın sesi açık mı (OBS: "Sesi OBS üzerinden kontrol et")? Tarayıcıda denerken ekrana bir kez tıkla. |
+| Müzik listem çalmıyor | Şarkılar `assets\muzik\liste\` içinde mi? `muzikKaynagi` değeri `"liste"` ya da `"karisik"` mi? Oyunu yeniden başlattın mı? |
+| Spiker çok konuşuyor | `config.js`'te `spikerAcik: false` yap ya da `spikerSeviyesi`'ni düşür. Alt yazılar da kapanır. |
 | Efsaneleri yedeklemek istiyorum | `veri\kayit.json` dosyasını kopyala. (Otomatik yedek: `veri\kayit.yedek.json`) |
 | "Bu gece" tablosunu sıfırlamak | Test panelinde 🧹 düğmesi. Ayrıca 6 saat oyun açılmazsa yeni yayın sayılır ve kendiliğinden sıfırlanır. |
 
 ---
 
-## 9. Yayın kuralları (oyuna gömülü)
+## 11. Yayın kuralları (oyuna gömülü)
 
 - Ekranda **hiçbir zaman** "hediye at", "jeton gönder", "destek ol" gibi yazı yok; hediye menüsü yok.
 - Ekrandaki yönlendirmeler sadece ücretsiz eylemler: yorum yaz, beğen.
-- Bahis, kumar, iddaa, gerçek para ödülü yok.
+- Bahis, kumar, iddaa, gerçek para ödülü yok. "Tahmin" sadece ücretsiz eğlence puanıdır.
+- Spiker hiçbir zaman hediye istemez; sadece yorum, beğeni ve tahmine çağırır.
 - Çiftlik Ağası yarışı otomatik kazanmaz; sadece görünür statü (taç + start bayrağında isim).

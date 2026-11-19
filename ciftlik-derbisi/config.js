@@ -28,17 +28,18 @@ window.AYARLAR = {
   // klasor: assets/hayvan/ içindeki klasör adı (değiştirme)
   // ad / adEn: ekranda görünen ad
   // emoji: görsel yoksa kullanılan geçici şekil
-  // hiz: temel hız çarpanı (1 = normal). Farkları küçük tut ki herkes kazanabilsin.
+  // hiz: temel hız çarpanı (1 = normal). Hepsi 1.00 olunca her hayvanın şansı eşittir.
+  //      Küçük bir fark (ör. 1.02) bile o hayvanı çok sık kazandırır; dikkatli değiştir.
   // takmaAdlar: yorumda bu kelimeler geçerse bu hayvan seçilir
   hayvanlar: [
-    { klasor: "tavuk",      ad: "Tavuk",      adEn: "Chicken",  emoji: "🐔", renk: 0xffe08a, hiz: 1.02, takmaAdlar: ["tavuk", "tavugu", "chicken", "🐔", "🐓"] },
-    { klasor: "kaplumbaga", ad: "Kaplumbağa", adEn: "Turtle",   emoji: "🐢", renk: 0x9be27a, hiz: 0.97, takmaAdlar: ["kaplumbaga", "kaplumba", "turtle", "🐢"] },
-    { klasor: "keci",       ad: "Keçi",       adEn: "Goat",     emoji: "🐐", renk: 0xd9c3a5, hiz: 1.01, takmaAdlar: ["keci", "goat", "🐐"] },
+    { klasor: "tavuk",      ad: "Tavuk",      adEn: "Chicken",  emoji: "🐔", renk: 0xffe08a, hiz: 1.00, takmaAdlar: ["tavuk", "tavugu", "chicken", "🐔", "🐓"] },
+    { klasor: "kaplumbaga", ad: "Kaplumbağa", adEn: "Turtle",   emoji: "🐢", renk: 0x9be27a, hiz: 1.00, takmaAdlar: ["kaplumbaga", "kaplumba", "turtle", "🐢"] },
+    { klasor: "keci",       ad: "Keçi",       adEn: "Goat",     emoji: "🐐", renk: 0xd9c3a5, hiz: 1.00, takmaAdlar: ["keci", "goat", "🐐"] },
     { klasor: "ordek",      ad: "Ördek",      adEn: "Duck",     emoji: "🦆", renk: 0x8fd3ff, hiz: 1.00, takmaAdlar: ["ordek", "duck", "🦆"] },
-    { klasor: "domuz",      ad: "Domuz",      adEn: "Pig",      emoji: "🐷", renk: 0xffb3c7, hiz: 0.99, takmaAdlar: ["domuz", "pig", "🐷", "🐖"] },
-    { klasor: "inek",       ad: "İnek",       adEn: "Cow",      emoji: "🐮", renk: 0xf2f2f2, hiz: 0.98, takmaAdlar: ["inek", "cow", "🐮", "🐄"] },
+    { klasor: "domuz",      ad: "Domuz",      adEn: "Pig",      emoji: "🐷", renk: 0xffb3c7, hiz: 1.00, takmaAdlar: ["domuz", "pig", "🐷", "🐖"] },
+    { klasor: "inek",       ad: "İnek",       adEn: "Cow",      emoji: "🐮", renk: 0xf2f2f2, hiz: 1.00, takmaAdlar: ["inek", "cow", "🐮", "🐄"] },
     { klasor: "esek",       ad: "Eşek",       adEn: "Donkey",   emoji: "🫏", renk: 0xc0b3a8, hiz: 1.00, takmaAdlar: ["esek", "donkey", "🫏"] },
-    { klasor: "kirpi",      ad: "Kirpi",      adEn: "Hedgehog", emoji: "🦔", renk: 0xd8a36b, hiz: 1.01, takmaAdlar: ["kirpi", "hedgehog", "🦔"] }
+    { klasor: "kirpi",      ad: "Kirpi",      adEn: "Hedgehog", emoji: "🦔", renk: 0xd8a36b, hiz: 1.00, takmaAdlar: ["kirpi", "hedgehog", "🦔"] }
   ],
 
   // ---------------- İSİMLER ----------------
@@ -108,8 +109,42 @@ window.AYARLAR = {
     yenidenBaglanmaSn: 3             // bağlantı koparsa kaç saniyede bir yeniden denensin
   },
 
-  // ---------------- SES ----------------
-  // assets/ses/ klasörüne dosya koyarsan çalar, yoksa oyun sessiz çalışır.
+  // ---------------- SES VE MÜZİK ----------------
   sesAcik: true,
-  sesSeviyesi: 0.6
+  sesSeviyesi: 0.7,       // efekt sesleri (0 = kapalı, 1 = en yüksek)
+  spikerAcik: true,       // Türkçe spiker anonsları (alt yazı da çıkar)
+  spikerSeviyesi: 1.0,
+  muzikAcik: true,
+  muzikSeviyesi: 0.35,    // arka plan müziği (spiker konuşurken otomatik kısılır)
+  // Müzik kaynağı:
+  //  "oyun"   = oyunun kendi müzikleri (assets/muzik/oyun) — lobi, yarış, zafer ayrı ayrı
+  //  "liste"  = senin listen (assets/muzik/liste klasörüne koyduğun TÜM şarkılar, karışık sırayla)
+  //  "karisik"= lobide senin listen, yarışta ve kutlamada oyunun müzikleri
+  // ÖNEMLİ: TikTok'ta telifli şarkı çalmak yayının sesinin kapatılmasına ya da ihlale yol açabilir.
+  // Listeye sadece kullanma hakkın olan (telifsiz / lisanslı) şarkıları koy.
+  muzikKaynagi: "oyun",
+
+  // ---------------- BÖLÜMLER (her tur farklı pist) ----------------
+  // takilma: kendiliğinden kayma sıklığı çarpanı. olay: yarış içi sürpriz sıklığı çarpanı.
+  bolumler: [
+    { kod: "ciftlik",  ad: "Çiftlik",            adEn: "Farm",          emoji: "🌻", takilma: 1.0, olay: 1.0 },
+    { kod: "bataklik", ad: "Çamurlu Bataklık",   adEn: "Mud Swamp",     emoji: "🟤", takilma: 2.0, olay: 1.0 },
+    { kod: "kar",      ad: "Karlı Dağ",          adEn: "Snowy Peak",    emoji: "❄️", takilma: 1.6, olay: 1.0 },
+    { kod: "gece",     ad: "Gece Yarışı",        adEn: "Night Race",    emoji: "🌙", takilma: 1.0, olay: 1.2 },
+    { kod: "firtina",  ad: "Fırtına",            adEn: "Storm",         emoji: "🌪️", takilma: 1.2, olay: 1.8 },
+    { kod: "hasat",    ad: "Hasat Şenliği",      adEn: "Harvest Fest",  emoji: "🥕", takilma: 0.8, olay: 1.6 }
+  ],
+  buyukDerbiAraligi: 5,   // her 5. tur BÜYÜK DERBİ (puanlar x2, özel müzik ve kutlama)
+
+  // ---------------- TAHMİN (yarışmayanlar için ücretsiz oyun) ----------------
+  // Yorum: "tahmin 3" ya da "tahmin tavuk". Doğru bilen "Bu gece" tablosuna puan alır. Para/ödül yok.
+  tahminAcik: true,
+  tahminPuani: 20,
+  tahminSonSaniye: 15,    // yarış başladıktan sonra kaç saniye daha tahmin yapılabilsin
+
+  // ---------------- YARIŞ İÇİ SÜRPRİZLER ----------------
+  yarisOlaylari: { acik: true, enAzAralik: 12, enFazlaAralik: 20 },
+
+  // ---------------- ROZETLER (galibiyet sayısına göre ismin yanında) ----------------
+  rozetler: [ { enAz: 10, rozet: "🥇" }, { enAz: 3, rozet: "🥈" }, { enAz: 1, rozet: "🥉" } ]
 };
