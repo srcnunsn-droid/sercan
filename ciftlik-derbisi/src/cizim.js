@@ -6,7 +6,7 @@
   const L = {
     ustBas: 0, tabloY: 165, tabloH: 190,
     sahneY: 370,
-    gokY: 370, gokH: 200,
+    gokY: 0, gokH: 570,
     kulvarY: 570, kulvarH: 98,
     onplanY: 1354, onplanH: 96,
     barY: 1470, ipucuY: 1560, siraY: 1620,
