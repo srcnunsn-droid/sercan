@@ -41,6 +41,14 @@
       this.seri = 0;
       this.testKutlama = null;      // test paneli: "efsane" | "buyuk"
       this.sonrakiDerbi = false;    // test paneli: sonraki tur derbi olsun
+      // Hediye kataloğu: TikFinity'den gelen gerçek hediye adları/resimleri öğrenilir ve saklanır
+      this.hediyeKatalogu = v.hediyeKatalogu || (v.hediyeKatalogu = {});
+      this.begenenler = new Map();   // id -> { ad, sayi } (bu yayın)
+      this._begeniGecmis = [];       // [ {t, n} ] son beğeniler (otomatik hedef için)
+      this.begeniHedef = this._begeniHedefHesapla();
+      this.sonYorumZaman = 0;        // sessizlik çağrısı için
+      this.canli = null;             // TikFinity yayın durumu (true/false/null)
+      this._hediyeAdiZaman = {};
       this._fazaGec("lobi");
     }
 
@@ -117,6 +125,7 @@
       this.kilPayi = false;
       this._doluBildirildi = false;
       this._barYakin = false;
+      if (this.begeniBar < this.begeniHedef * 0.3) this.begeniHedef = Math.max(this._begeniHedefHesapla(), Math.ceil(this.begeniBar / 50) * 50 + 50);
       this.olay("bolum", { kod: this.bolum.kod, buyukDerbi: this.buyukDerbi });
       // Önce hediye/takip ile yer ayrılanlar, sonra sıradakiler
       const sira = this.sira.slice().sort((a, b) => (b.oncelik ? 1 : 0) - (a.oncelik ? 1 : 0));
@@ -126,7 +135,7 @@
         if (!k || k.oyuncu) k = this.kulvarlar.find((x) => !x.oyuncu) || null;
         if (k) {
           k.oyuncu = { id: s.id, ad: s.ad };
-          this.olay("katildi", { kulvar: k.no });
+          this.olay("katildi", { kulvar: k.no, ad: s.ad, buyuk: true });
         } else {
           this.sira.push(s);
         }
@@ -440,7 +449,8 @@
       try {
         if (o.tip === "yorum") this.yorum(o.kullanici, o.metin);
         else if (o.tip === "begeni") this.begeni(o.kullanici, o.sayi || 1);
-        else if (o.tip === "hediye") this.hediye(o.kullanici, o.jeton || 1, o.hediyeAdi);
+        else if (o.tip === "hediye") this.hediye(o.kullanici, o.jeton || 1, o.hediyeAdi, o.resim, o.birimJeton);
+        else if (o.tip === "yayinDurumu") { this.canli = !!o.canli; this.olay("yayinDurumu", { canli: this.canli }); }
         else if (o.tip === "takip") this.takipPaylasim(o.kullanici, "takip");
         else if (o.tip === "paylasim") this.takipPaylasim(o.kullanici, "paylasim");
       } catch (e) {
@@ -450,12 +460,83 @@
 
     yorum(k, metin) {
       if (Y.kufurVarMi(metin, this.A.kufurListesi)) return;
+      this.sonYorumZaman = this.zaman;
       const sade = Y.sadelestir(metin).trim();
       if (/^(tahmin|guess)\b/.test(sade)) { this.tahmin(k, metin); return; }
-      const idx = Y.yorumdanHayvan(metin, this.A.hayvanlar);
-      if (idx < 0) return;
+      let idx = Y.yorumdanHayvan(metin, this.A.hayvanlar);
+      if (idx < 0) idx = Y.bulanikHayvan(metin, this.A.hayvanlar);
+      if (idx < 0 && Y.katilmaKomutuMu(metin)) {
+        const u = this.kullanici(k);
+        const bos = this.kulvarlar.filter((x) => !x.oyuncu);
+        const secim = this.faz === "lobi" && bos.length ? bos[Math.floor(Math.random() * bos.length)].no : -1;
+        this.katil(u, secim, false);
+        return;
+      }
+      if (idx < 0) { this._hediyeAdiYazildiMi(sade); return; }
       const u = this.kullanici(k);
       this.katil(u, idx, false);
+    }
+
+    // Yorumda bir hediye adı geçtiyse (ör. "gül") güç tablosundaki karşılığını kısa bildirim olarak göster
+    _hediyeAdiYazildiMi(sade) {
+      if (!this.A.hediyeTablosuGoster) return;
+      for (const h of this.gucTablosu()) {
+        if (!h.hediye) continue;
+        const ad = Y.sadelestir(h.hediye.ad);
+        if (ad.length < 2 || !(" " + sade + " ").includes(" " + ad + " ")) continue;
+        if (this.zaman - (this._hediyeAdiZaman[ad] || -99) < 20) return;
+        this._hediyeAdiZaman[ad] = this.zaman;
+        this.bildir(Y.doldur(this.M.hediyeAdiYazildi, { emoji: h.hediye.emoji || "🎁", ad: h.hediye.ad, efekt: h.adi }), "bilgi");
+        return;
+      }
+    }
+
+    // Güç tablosu: her efekt kademesi için örnek bir hediye (önce config'teki liste, sonra yayında öğrenilenler)
+    gucTablosu() {
+      const kademeler = this.A.hediyeEfektleri;
+      const liste = Object.values(this.hediyeKatalogu);
+      const tanimli = (this.A.hediyeListesi || []).map((h) => Object.assign({ tanimli: true }, h));
+      return kademeler.map((k, i) => {
+        const ust = kademeler[i + 1] ? kademeler[i + 1].enAz : Infinity;
+        const uygun = (h) => h.jeton >= k.enAz && h.jeton < ust;
+        let hediye = tanimli.find(uygun) || null;
+        const ogrenilen = liste.filter(uygun).sort((a, b) => (b.sayi || 0) - (a.sayi || 0))[0];
+        if (ogrenilen) hediye = Object.assign({}, hediye && Y.sadelestir(hediye.ad) === Y.sadelestir(ogrenilen.ad) ? hediye : {}, ogrenilen);
+        return { enAz: k.enAz, efekt: k.efekt, adi: this.A.dil === "en" ? k.adEn : k.ad, hediye };
+      });
+    }
+
+    _hediyeOgren(ad, birimJeton, resim) {
+      if (!ad) return;
+      const anahtar = Y.sadelestir(ad);
+      const h = this.hediyeKatalogu[anahtar] || (this.hediyeKatalogu[anahtar] = { ad, jeton: birimJeton, sayi: 0 });
+      h.ad = ad;
+      if (birimJeton) h.jeton = birimJeton;
+      if (resim) h.resim = resim;
+      h.sayi = (h.sayi || 0) + 1;
+      const tanim = (this.A.hediyeListesi || []).find((x) => Y.sadelestir(x.ad) === anahtar);
+      if (tanim && tanim.emoji) h.emoji = tanim.emoji;
+      const anahtarlar = Object.keys(this.hediyeKatalogu);
+      if (anahtarlar.length > 80) { // en az kullanılanları at
+        anahtarlar.sort((a, b) => (this.hediyeKatalogu[a].sayi || 0) - (this.hediyeKatalogu[b].sayi || 0));
+        for (const a of anahtarlar.slice(0, anahtarlar.length - 80)) delete this.hediyeKatalogu[a];
+      }
+    }
+
+    // Beğeni barı hedefi: "otomatik" ise son 2 dakikadaki beğeni hızına göre (az izleyicide küçük hedef)
+    _begeniHedefHesapla() {
+      const U = this.A.ucretsiz;
+      if (typeof U.begeniBariHedef === "number") return U.begeniBariHedef;
+      const enAz = U.begeniHedefEnAz || 150, enFazla = U.begeniHedefEnFazla || 2000;
+      const simdi = this.zaman;
+      this._begeniGecmis = this._begeniGecmis.filter((b) => simdi - b.t < 120);
+      const son2dk = this._begeniGecmis.reduce((a, b) => a + b.n, 0);
+      const hedef = Math.round((son2dk * 0.75) / 50) * 50; // yaklaşık 1,5 dakikada dolacak şekilde
+      return Math.max(enAz, Math.min(enFazla, hedef));
+    }
+
+    enCokBegenenler(n) {
+      return [...this.begenenler.values()].sort((a, b) => b.sayi - a.sayi).slice(0, n || 3);
     }
 
     // TAHMİN: yarışmayan izleyici kazananı tahmin eder (ücretsiz, sadece puan)
@@ -496,8 +577,8 @@
           hedef.oyuncu = { id: u.id, ad: u.ad };
           const si = this.siradaMi(u.id);
           if (si >= 0) this.sira.splice(si, 1);
-          this.bildir(Y.doldur(this.M.katildi, { ad: u.ad, hayvan: this.hayvanAdi(hedef.no) }), "katilim");
-          this.olay("katildi", { kulvar: hedef.no });
+          this.bildir(Y.doldur(this.M.katildi, { ad: u.ad, hayvan: this.hayvanAdi(hedef.no) }), "kulvar");
+          this.olay("katildi", { kulvar: hedef.no, ad: u.ad, buyuk: true });
           if (!this._doluBildirildi && this.kulvarlar.every((x) => x.oyuncu)) { this._doluBildirildi = true; this.olay("dolu", {}); }
           return "kulvar";
         }
@@ -520,10 +601,20 @@
       sayi = Math.max(1, Math.min(500, sayi | 0));
       const U = this.A.ucretsiz;
       this.begeniBar += sayi;
-      if (!this._barYakin && this.begeniBar >= U.begeniBariHedef * 0.8) { this._barYakin = true; this.olay("barYakin", {}); }
-      if (this.begeniBar >= U.begeniBariHedef) {
+      this._begeniGecmis.push({ t: this.zaman, n: sayi });
+      if (this._begeniGecmis.length > 3000) this._begeniGecmis.splice(0, 1000);
+      if (k) {
+        const bid = String(k.id || k.ad);
+        const b = this.begenenler.get(bid) || { ad: Y.isimTemizle(k.ad || k.id, bid, this.A), sayi: 0 };
+        b.sayi += sayi;
+        this.begenenler.set(bid, b);
+        if (this.begenenler.size > 2000) this.begenenler.clear();
+      }
+      if (!this._barYakin && this.begeniBar >= this.begeniHedef * 0.8) { this._barYakin = true; this.olay("barYakin", {}); }
+      if (this.begeniBar >= this.begeniHedef) {
         this.begeniBar = 0;
         this._barYakin = false;
+        this.begeniHedef = this._begeniHedefHesapla();
         this._camurBaslat();
         this.olay("barDoldu", {});
       }
@@ -556,9 +647,10 @@
       else this._bekleyenEkle(u.id, "takip", 1);
     }
 
-    hediye(k, jeton, hediyeAdi) {
+    hediye(k, jeton, hediyeAdi, resim, birimJeton) {
       jeton = Math.max(1, Math.round(jeton));
       const u = this.kullanici(k);
+      this._hediyeOgren(hediyeAdi, birimJeton || jeton, resim);
       const kombo = this.zaman - u.sonHediye <= this.A.komboSuresi ? this.A.komboCarpani : 1;
       u.sonHediye = this.zaman;
       u.toplamJeton += jeton;
@@ -580,6 +672,9 @@
       if (efekt === "aga") efekt = "leylek"; // Ağa ayrıca leylek efektini de alır
 
       this.bildir(Y.doldur(this.M.efekt, { ad: u.ad, efekt: efektAdi }) + (kombo > 1 ? "  " + this.M.kombo : ""), "hediye");
+      const kat = hediyeAdi ? this.hediyeKatalogu[Y.sadelestir(hediyeAdi)] : null;
+      const kulvarNo = this.aktifKulvar(u.id) ? this.aktifKulvar(u.id).no : -1;
+      this.olay("hediyeUcur", { ad: u.ad, hediyeAdi: hediyeAdi || "", resim: (kat && kat.resim) || resim || "", emoji: (kat && kat.emoji) || "🎁", jeton, kulvar: kulvarNo, efekt });
 
       const kul = this.aktifKulvar(u.id);
       if (kul && this.yaristaMi() && !kul.bitti) {

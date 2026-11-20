@@ -9,6 +9,15 @@ http.createServer((q, r) => {
   const yol = decodeURIComponent(new URL(q.url, "http://x").pathname);
   r.setHeader("Cache-Control", "no-store");
   if (yol === "/api/durum") return r.end('{"ok":true}');
+  if (yol === "/api/resim") { // geliştirme sunucusu: sadece önbellekte varsa verir, yoksa 404 (oyun emojiye düşer)
+    const url = new URL(q.url, "http://x").searchParams.get("url") || "";
+    const ad = require("crypto").createHash("sha1").update(url).digest("hex");
+    const yer = path.join(kok, "assets", "hediye");
+    const bul = fs.existsSync(yer) ? fs.readdirSync(yer).find((d) => d.startsWith(ad)) : null;
+    if (!bul) { r.statusCode = 404; return r.end("yok"); }
+    r.setHeader("Content-Type", "image/" + path.extname(bul).slice(1).replace("jpg", "jpeg"));
+    return fs.createReadStream(path.join(yer, bul)).pipe(r);
+  }
   if (yol === "/api/muzik") {
     const k = new URL(q.url, "http://x").searchParams.get("klasor") === "oyun" ? "oyun" : "liste";
     const yer = path.join(kok, "assets", "muzik", k);

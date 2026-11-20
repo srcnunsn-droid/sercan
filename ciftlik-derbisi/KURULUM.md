@@ -183,7 +183,40 @@ Spiker konuşurken müzik otomatik kısılır.
 
 ---
 
-## 9. Oyunu ilgi çekici yapan özellikler
+## 9. Yayın için son sürümün yenilikleri
+
+**Telefon dostu ekran:** İzleyiciler yayını telefondan izler; ekranın alt ~%30'u TikTok yorumlarıyla kaplanır. Bu yüzden pist, beğeni barı, yönlendirmeler ve güç tablosu ekranın **üst %65'inde**. Altta sadece tablolar ve sıra listesi var.
+
+**Üstteki büyük şerit** birkaç saniyede bir değişir:
+1. "CHAT'E HAYVAN ADI ya da 1-8 YAZ"
+2. "KATILMAK İÇİN YAZ: tavuk • inek • 3 • katıl"
+3. "BEĞEN → HAYVANIN HIZLANSIN"
+4. "tahmin 3 YAZ"
+5. **Güç tablosu**: hediyenin resmi, adı, jeton değeri ve oyundaki etkisi (ör. 🌹 Gül · 1 jeton → Hız)
+
+**Kolay katılım:**
+- "katıl", "join", "ben", "oyna" yazan rastgele boş bir kulvara girer.
+- Yazım hataları tanınır: "tavk" → tavuk, "eşşek" → eşek, "kirpii" → kirpi.
+- Yeni katılan herkes ortada büyük **"@ad KATILDI!"** olarak görünür (aynı anda en fazla 3).
+- 30 saniye kimse yazmazsa ortada yanıp sönen **"CHAT'E HAYVAN ADI YAZ, YARIŞA GİR!"** çıkar.
+
+**Beğeni barı** yarışta en üstte: "❤️ BEĞEN → BAR DOLAR → ÇAMUR YAĞMURU!", içinde "640 / 1.000 beğeni" yazar ve en çok beğenen 3 kişi görünür. Doldukça rengi değişir, dolmak üzereyken nabız gibi atar. Hedef **otomatik**: az izleyicide küçük (en az 150), kalabalıkta büyük (en fazla 2.000). Sabit bir hedef istersen `config.js`'te `begeniBariHedef: 1000` yaz.
+
+**Gerçek TikTok hediyeleri:** Hediyelerin adlarını ve resimlerini tahmin etmiyoruz. Yayında bir hediye geldiği anda TikFinity'nin gönderdiği **gerçek ad, jeton değeri ve resim** öğrenilir; resim `assets\hediye\` klasörüne bir kez indirilir ve güç tablosunda görünür. Öğrenilen hediyeler kaydedilir, sonraki yayınlarda da görünür. İlk yayında tabloda sadece `config.js`'teki `hediyeListesi` (Gül 1, Elle Kalp 100) ve efekt adları görünür; hediyeler geldikçe tablo dolar.
+- Hediye gelince hediyenin resmi ve gönderenin adı hayvana doğru uçar, büyük "+100 🪙" çıkar.
+- Biri yorumda hediye adı yazarsa ("gül") kısa bildirim çıkar: "🌹 Gül = Hız!".
+
+**"HEDİYE AT" yazısı:** İstediğin gibi güç tablosunun başlığı "🎁 HEDİYE AT, GÜÇ GELSİN!". ⚠️ TikTok ısrarlı hediye istemeyi ihlal sayabilir. İhlal uyarısı gelirse `config.js`'te `hediyeYazisiGoster: false` yap; başlık "⚡ GÜÇ TABLOSU" olur. Tabloyu tamamen gizlemek için `hediyeTablosuGoster: false`.
+
+**Yayın güvenliği (sadece yayıncı görür):** Yayın sırasında ikinci bir tarayıcı sekmesinde **`http://localhost:8787/?test=1&sessiz=1`** adresini aç (bu sekme ses çıkarmaz). Test panelinde:
+- 📡 **YAYIN BAĞLANDI** / ⚠️ yayın kapalı görünüyor (TikFinity bildirdikçe),
+- **kırmızı uyarı**: 60 saniyedir hiç yorum/beğeni gelmiyorsa "TikFinity yayını görmüyor olabilir → TikFinity'yi kapatıp aç".
+
+**Ses sınırlayıcı:** Aynı anda en fazla 5 efekt sesi çalar (`enFazlaEsZamanliEfekt`), sesler üst üste binip patlamaz.
+
+---
+
+## 10. Oyunu ilgi çekici yapan özellikler
 
 - **Bölümler:** Her tur farklı bir pistte geçer: 🌻 Çiftlik, 🟤 Çamurlu Bataklık (daha çok kayma), ❄️ Karlı Dağ (kar yağar, buzda kayılır), 🌙 Gece Yarışı (karanlık + ateş böcekleri), 🌪️ Fırtına (yağmur, sık rüzgar), 🥕 Hasat Şenliği (sık altın havuç). Lobi ekranında "Bu tur: …" yazar, spiker anons eder.
 - **🏆 Büyük Derbi:** Her 5. tur. Puanlar iki katı, destansı müzik, en büyük kutlama.
@@ -197,7 +230,7 @@ Ayarlar `config.js` içinde: `bolumler`, `buyukDerbiAraligi`, `tahminAcik`, `tah
 
 ---
 
-## 10. Sık sorunlar ve çözümleri
+## 11. Sık sorunlar ve çözümleri
 
 | Sorun | Çözüm |
 |---|---|
@@ -212,15 +245,18 @@ Ayarlar `config.js` içinde: `bolumler`, `buyukDerbiAraligi`, `tahminAcik`, `tah
 | Hiç ses yok | `config.js`'te `sesAcik`, `muzikAcik`, `spikerAcik` değerleri `true` mu? LIVE Studio/OBS'de kaynağın sesi açık mı (OBS: "Sesi OBS üzerinden kontrol et")? Tarayıcıda denerken ekrana bir kez tıkla. |
 | Müzik listem çalmıyor | Şarkılar `assets\muzik\liste\` içinde mi? `muzikKaynagi` değeri `"liste"` ya da `"karisik"` mi? Oyunu yeniden başlattın mı? |
 | Spiker çok konuşuyor | `config.js`'te `spikerAcik: false` yap ya da `spikerSeviyesi`'ni düşür. Alt yazılar da kapanır. |
+| Güç tablosunda hediye resmi yok, emoji var | Normal: o hediye henüz yayında hiç gelmedi. İlk geldiğinde resmi otomatik iner. İnmiyorsa bilgisayarın internet bağlantısını kontrol et. |
+| Yorum yazılıyor ama oyunda kimse katılmıyor | İkinci sekmedeki test panelinde kırmızı uyarı var mı bak. TikFinity'yi kapatıp aç (yayın açıkken). |
 | Efsaneleri yedeklemek istiyorum | `veri\kayit.json` dosyasını kopyala. (Otomatik yedek: `veri\kayit.yedek.json`) |
 | "Bu gece" tablosunu sıfırlamak | Test panelinde 🧹 düğmesi. Ayrıca 6 saat oyun açılmazsa yeni yayın sayılır ve kendiliğinden sıfırlanır. |
 
 ---
 
-## 11. Yayın kuralları (oyuna gömülü)
+## 12. Yayın kuralları (oyuna gömülü)
 
-- Ekranda **hiçbir zaman** "hediye at", "jeton gönder", "destek ol" gibi yazı yok; hediye menüsü yok.
+- Güç tablosu başlığında senin isteğinle "HEDİYE AT" yazar (`hediyeYazisiGoster`); kapatılınca hiçbir yerde hediye isteyen yazı kalmaz.
 - Ekrandaki yönlendirmeler sadece ücretsiz eylemler: yorum yaz, beğen.
 - Bahis, kumar, iddaa, gerçek para ödülü yok. "Tahmin" sadece ücretsiz eğlence puanıdır.
 - Spiker hiçbir zaman hediye istemez; sadece yorum, beğeni ve tahmine çağırır.
+- Gerçek para ödülü, çekiliş ya da "hediye at kesin kazan" vaadi yok. Hediyeler yarışı tek başına belirlemez (efekt sınırı).
 - Çiftlik Ağası yarışı otomatik kazanmaz; sadece görünür statü (taç + start bayrağında isim).

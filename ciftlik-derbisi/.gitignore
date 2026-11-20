@@ -2,3 +2,5 @@
 veri/*.json
 veri/*.tmp
 araclar/test/ciktilar/
+assets/hediye/*
+!assets/hediye/.gitkeep

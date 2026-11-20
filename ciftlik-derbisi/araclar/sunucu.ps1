@@ -5,6 +5,7 @@
 #  veri\kayit.json dosyasına yazar. Pencereyi kapatırsan oyun da durur.
 # =====================================================================
 param([int]$Port = 8787, [switch]$Ac)
+try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch { }
 
 $kok = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if (-not $kok.EndsWith('\')) { $kok = $kok + '\' }
@@ -57,6 +58,34 @@ function Muzik-Listesi($istek, $yanit) {
   $parcalar = @()
   foreach ($ad in $adlar) { $parcalar += '"' + ($ad.Replace('\', '\\').Replace('"', '\"')) + '"' }
   Yaz-Metin $yanit 200 ('[' + ($parcalar -join ',') + ']') 'application/json; charset=utf-8'
+}
+
+# TikTok hediye resmini bir kez indirip assets\hediye\ klasörüne kaydeder, sonra oradan verir.
+# Sadece TikTok'un resim sunucularına izin verilir.
+function Hediye-Resmi($istek, $yanit) {
+  $url = $istek.QueryString['url']
+  $u = $null
+  try { $u = [System.Uri]$url } catch { }
+  if (-not $u -or $u.Scheme -ne 'https' -or -not ($u.Host -match '(tiktokcdn|tiktokcdn-us|tiktokcdn-eu|ibyteimg|byteimg|muscdn|tiktokv)\.(com|net)$')) {
+    Yaz-Metin $yanit 403 'Izin yok' 'text/plain'; return
+  }
+  $klasor = Join-Path $kok 'assets\hediye'
+  if (-not (Test-Path -LiteralPath $klasor)) { New-Item -ItemType Directory -Path $klasor | Out-Null }
+  $sha = [System.Security.Cryptography.SHA1]::Create()
+  $hex = -join ($sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($url)) | ForEach-Object { $_.ToString('x2') })
+  $uzanti = 'png'
+  if ($u.AbsolutePath -match '\.(png|jpe?g|webp|gif)') { $uzanti = $Matches[1].ToLowerInvariant() }
+  $ad = $hex + '.' + $uzanti
+  $dosya = Join-Path $klasor $ad
+  if (-not (Test-Path -LiteralPath $dosya)) {
+    try {
+      Invoke-WebRequest -Uri $url -OutFile $dosya -UseBasicParsing -TimeoutSec 8
+    } catch {
+      if (Test-Path -LiteralPath $dosya) { Remove-Item -LiteralPath $dosya -ErrorAction SilentlyContinue }
+      Yaz-Metin $yanit 502 'Indirilemedi' 'text/plain'; return
+    }
+  }
+  Dosya-Gonder $istek $yanit ('/assets/hediye/' + $ad)
 }
 
 function Dosya-Gonder($istek, $yanit, [string]$yol) {
@@ -141,6 +170,7 @@ while ($dinleyici.IsListening) {
     if ($yol -eq '/api/durum') { Yaz-Metin $yanit 200 '{"ok":true}' 'application/json' }
     elseif ($yol -eq '/api/kaydet' -and $istek.HttpMethod -eq 'POST') { Kaydet $istek $yanit }
     elseif ($yol -eq '/api/muzik') { Muzik-Listesi $istek $yanit }
+    elseif ($yol -eq '/api/resim') { Hediye-Resmi $istek $yanit }
     elseif ($istek.HttpMethod -eq 'GET' -or $istek.HttpMethod -eq 'HEAD') { Dosya-Gonder $istek $yanit $yol }
     else { Yaz-Metin $yanit 405 'Desteklenmiyor' 'text/plain' }
   } catch {

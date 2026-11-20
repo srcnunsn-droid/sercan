@@ -3,6 +3,8 @@
   const A = window.AYARLAR;
   const params = new URLSearchParams(location.search);
   const testModu = params.get("test") === "1";
+  // ?sessiz=1 → bu sekme hiç ses çıkarmaz (yayıncı durum paneli için ikinci sekmede kullanılır)
+  if (params.get("sessiz") === "1") { A.sesAcik = false; A.muzikAcik = false; A.spikerAcik = false; }
 
   const app = new PIXI.Application({
     width: 1080, height: 1920, backgroundColor: 0x8fd6ff,

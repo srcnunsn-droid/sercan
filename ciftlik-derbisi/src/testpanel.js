@@ -41,6 +41,8 @@
       p.innerHTML = `
         <h3>🧪 TEST PANELİ</h3>
         <div id="tpDurum" class="durum"><span class="isik"></span><span class="yazi">TikFinity: ?</span></div>
+        <div id="tpYayin" class="kucuk"></div>
+        <div id="tpUyari" style="display:none;background:#c0182b;color:#fff;font-weight:800;padding:8px;border-radius:8px;margin-top:6px"></div>
         <div class="kucuk" id="tpFps"></div>
         <b>Ücretsiz eylemler</b>
         <div class="satir">
@@ -90,7 +92,10 @@
         const b = e.target.closest("button");
         if (!b) return;
         if (b.dataset.h) {
-          this.gonder({ tip: "hediye", kullanici: this.yarisanVeyaRastgele(), jeton: Number(b.dataset.h) });
+          // Gerçek TikFinity hediye olayı gibi (ad + birim jeton). Bilinen tek gerçek ad: Gül (1 jeton)
+          const j = Number(b.dataset.h);
+          const ad = { 1: "Gül", 100: "Elle Kalp" }[j] || "Test hediyesi " + j;
+          this.gonder({ tip: "hediye", kullanici: this.yarisanVeyaRastgele(), jeton: j, hediyeAdi: ad, birimJeton: j });
         } else if (b.dataset.z) {
           this.d.zamanCarpani = Number(b.dataset.z);
         } else {
@@ -172,6 +177,17 @@
       el.className = "durum " + b.durum;
       const ad = { bagli: "BAĞLI", baglaniyor: "bağlanıyor…", kapali: "BAĞLI DEĞİL" }[b.durum];
       el.querySelector(".yazi").textContent = "TikFinity: " + ad + " (mesaj: " + b.sayac.mesaj + ", kopma: " + b.sayac.kopma + ")";
+      // Yayın durumu ve "TikFinity yayını görmüyor" uyarısı (sadece bu panelde, izleyici görmez)
+      const o = this.d.oyun;
+      document.getElementById("tpYayin").textContent = o.canli === true ? o.M.yayinBaglandi : o.canli === false ? o.M.yayinKapali : "Yayın durumu: bilinmiyor (TikFinity bildirince güncellenir)";
+      const sn = this.d.oyun.A.olaySessizlikUyariSn || 60;
+      const gecen = b.sonIzleyiciOlayi ? (Date.now() - b.sonIzleyiciOlayi) / 1000 : (b.durum === "bagli" ? (Date.now() - (this._bagliBas || (this._bagliBas = Date.now()))) / 1000 : 0);
+      const uyari = document.getElementById("tpUyari");
+      if (b.durum === "bagli" && o.canli !== false && gecen > sn) {
+        uyari.style.display = "block";
+        uyari.textContent = o.M.tikfinitySessiz.replace("{sn}", Math.round(gecen));
+      } else uyari.style.display = "none";
+      if (b.durum !== "bagli") this._bagliBas = 0;
       const app = this.d.app;
       const mem = performance.memory ? " • bellek " + Math.round(performance.memory.usedJSHeapSize / 1048576) + " MB" : "";
       document.getElementById("tpFps").textContent = "FPS " + Math.round(app.ticker.FPS) + " • faz " + this.d.oyun.faz + " • tur " + this.d.oyun.turNo + " • hız x" + this.d.zamanCarpani + mem;

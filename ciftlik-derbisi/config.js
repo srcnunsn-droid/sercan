@@ -70,7 +70,11 @@ window.AYARLAR = {
     begeniKisiSiniri: 0.6,   // bir kişinin saniyede beğeniyle alabileceği en fazla itme (pistin yüzdesi)
     takipHizSuresi: 2.5,     // takip/paylaşım hızının süresi (sn)
     takipHizCarpani: 1.45,   // takip/paylaşım hız çarpanı
-    begeniBariHedef: 1000,   // topluluk barını doldurmak için gereken toplam beğeni
+    // Topluluk barı hedefi: "otomatik" = izleyici sayısına göre (az izleyicide küçük hedef, ~1,5 dakikada dolar)
+    // ya da sabit bir sayı yaz (ör. 1000).
+    begeniBariHedef: "otomatik",
+    begeniHedefEnAz: 150,    // otomatik hedefin en küçük değeri
+    begeniHedefEnFazla: 2000,// otomatik hedefin en büyük değeri
     camurSuresi: 3,          // Çamur Yağmuru süresi (sn)
     camurAraligi: 30         // iki Çamur Yağmuru arasında en az kaç saniye olsun
   },
@@ -97,8 +101,17 @@ window.AYARLAR = {
   komboSuresi: 10,     // aynı kişiden bu kadar saniye içinde gelen ikinci hediye KOMBO x2 olur
   komboCarpani: 2,
 
-  // Hediye menüsü / hediye tablosu ekranda gösterilsin mi? (KESİNLİKLE false kalsın)
-  hediyeMenusuGoster: false,
+  // GÜÇ TABLOSU: ekranın üstündeki dönen şeritte hangi hediyenin ne yaptığını gösterir.
+  hediyeTablosuGoster: true,
+  // true: tablonun başlığı "HEDİYE AT" olur.  false: başlık "GÜÇ TABLOSU" olur ve "hediye at" yazısı hiç çıkmaz.
+  // TikTok ısrarlı hediye istemeyi ihlal sayabilir; ihlal uyarısı gelirse bunu false yap.
+  hediyeYazisiGoster: true,
+  // Bilinen hediyeler (jeton = TikTok'taki jeton değeri). Yayında gelen hediyelerin gerçek adı ve resmi
+  // TikFinity'den OTOMATİK öğrenilir; buraya yazman gerekmez. Yazarsan emoji, resim gelmezse yedek olarak kullanılır.
+  hediyeListesi: [
+    { ad: "Gül", jeton: 1, emoji: "🌹" },
+    { ad: "Elle Kalp", jeton: 100, emoji: "🫶" }
+  ],
 
   // ---------------- PUANLAR ("Bu gece" tablosu) ----------------
   puan: { birinci: 100, ikinci: 60, ucuncu: 40, katilim: 10 },
@@ -112,6 +125,7 @@ window.AYARLAR = {
   // ---------------- SES VE MÜZİK ----------------
   sesAcik: true,
   sesSeviyesi: 0.7,       // efekt sesleri (0 = kapalı, 1 = en yüksek)
+  enFazlaEsZamanliEfekt: 5, // aynı anda en fazla kaç efekt sesi çalsın (ses patlamasın)
   spikerAcik: true,       // Türkçe spiker anonsları (alt yazı da çıkar)
   spikerSeviyesi: 1.0,
   muzikAcik: true,
@@ -144,6 +158,12 @@ window.AYARLAR = {
 
   // ---------------- YARIŞ İÇİ SÜRPRİZLER ----------------
   yarisOlaylari: { acik: true, enAzAralik: 12, enFazlaAralik: 20 },
+
+  // ---------------- YÖNLENDİRME ----------------
+  rehberDegismeSn: 6,     // üstteki "nasıl oynanır" şeridi kaç saniyede bir sayfa değiştirsin
+  sessizlikCagriSn: 30,   // bu kadar saniye kimse yazmazsa ortada "katıl" çağrısı yanıp söner
+  // TikFinity bağlıyken bu kadar saniye hiç olay gelmezse test panelinde uyarı (yayıncı görür, izleyici görmez)
+  olaySessizlikUyariSn: 60,
 
   // ---------------- ROZETLER (galibiyet sayısına göre ismin yanında) ----------------
   rozetler: [ { enAz: 10, rozet: "🥇" }, { enAz: 3, rozet: "🥈" }, { enAz: 1, rozet: "🥉" } ]

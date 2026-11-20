@@ -150,9 +150,18 @@
         sablon.addEventListener("error", () => { this.yokEfekt.add(ad); });
         this.efektler[ad] = sablon;
       }
+      // Ses sınırlayıcı: aynı anda çok efekt üst üste binip patlamasın
+      const sinir = this.A.enFazlaEsZamanliEfekt || 5;
+      if ((this._calan || 0) >= sinir) return;
       try {
         const c = sablon.cloneNode();
         c.volume = v;
+        this._calan = (this._calan || 0) + 1;
+        let bitti = false;
+        const azalt = () => { if (!bitti) { bitti = true; this._calan = Math.max(0, this._calan - 1); } };
+        c.addEventListener("ended", azalt);
+        c.addEventListener("error", azalt);
+        setTimeout(azalt, 7000);
         const p = c.play();
         if (p && p.catch) p.catch((e) => { if (e && e.name === "NotAllowedError") this.kilitli = true; else this.sentez(ad, v); });
       } catch (e) { this.sentez(ad, v); }

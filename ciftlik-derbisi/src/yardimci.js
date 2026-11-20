@@ -64,11 +64,49 @@
     return -1;
   }
 
+  // İki kelime arasındaki harf farkı (yazım hatası toleransı için)
+  function mesafe(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return 9;
+    const d = [];
+    for (let i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (let j = 0; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+    }
+    return d[a.length][b.length];
+  }
+
+  // Yazım hatalı hayvan adı: "tavk", "kirpii", "eşşek", "kaplumbağa" → en yakın hayvan (1 harf fark, uzun adlarda 2)
+  function bulanikHayvan(yorum, hayvanlar) {
+    const kelimeler = sadelestir(yorum).replace(/(.)\1{2,}/g, "$1$1").split(/[^a-z0-9]+/).filter((k) => k.length >= 3);
+    let enIyi = -1, enAz = 9;
+    for (const k of kelimeler.slice(0, 4)) {
+      const sik = k.replace(/(.)\1+/g, "$1"); // "eşşek" → "esek", "kirpii" → "kirpi"
+      for (let i = 0; i < hayvanlar.length; i++) {
+        for (const t of hayvanlar[i].takmaAdlar) {
+          if (!/^[a-z]+$/.test(t) || t.length < 4) continue;
+          const izin = t.length >= 8 ? 2 : 1;
+          const m = Math.min(mesafe(k, t), mesafe(sik, t), k.length > t.length ? mesafe(k.slice(0, t.length), t) : 9);
+          if (m <= izin && m < enAz) { enAz = m; enIyi = i; }
+        }
+      }
+    }
+    return enIyi;
+  }
+
+  // "katıl", "join", "ben", "oyna" gibi genel katılma komutları (hayvan seçmeden)
+  function katilmaKomutuMu(yorum) {
+    const sade = sadelestir(yorum).trim().replace(/(.)\1{2,}/g, "$1");
+    return /^(katil|katiliyorum|katilmak|katilcam|join|ben|bende|ben de|oyna|oynicam|oynayacagim|gir|giriyorum|yarisa|yaris)\b/.test(sade) || /^!(katil|join|oyna)/.test(sade);
+  }
+
   // "{ad} → {efekt}" kalıbını doldurur
   function doldur(kalip, degerler) {
     return String(kalip).replace(/\{(\w+)\}/g, (_, k) => (degerler && degerler[k] != null ? degerler[k] : ""));
   }
 
-  window.Yardimci = { sadelestir, kufurVarMi, isimTemizle, yorumdanHayvan, doldur };
+  window.Yardimci = { sadelestir, kufurVarMi, isimTemizle, yorumdanHayvan, bulanikHayvan, katilmaKomutuMu, mesafe, doldur };
   if (typeof module !== "undefined") module.exports = window.Yardimci;
 })();

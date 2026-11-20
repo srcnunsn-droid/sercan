@@ -14,6 +14,8 @@
       this.gorulenSira = [];
       this.seriler = new Map();     // devam eden hediye serileri
       this.sayac = { mesaj: 0, kopma: 0 };
+      this.sonIzleyiciOlayi = 0;    // son yorum/beğeni/hediye zamanı (TikFinity yayını görüyor mu?)
+      this.bilinmeyen = {};          // tanınmayan olay türleri (sadece sayılır)
       this._kapatildi = false;
       setInterval(() => this._seriZamanAsimi(), 1000);
     }
@@ -86,6 +88,7 @@
       if (!olay || !d) return;
       if (olay !== "gift" && this._tekrarMi(d)) return;
       const k = () => this._kullanici(d);
+      if (["chat", "comment", "like", "gift", "follow", "share", "social", "member"].includes(olay)) this.sonIzleyiciOlayi = Date.now();
       switch (olay) {
         case "chat":
         case "comment":
@@ -109,7 +112,14 @@
         case "gift":
           this._hediye(d);
           break;
+        case "livestatuschange": {
+          // TikFinity yayının açılıp kapandığını bildirir
+          const canli = d.isLive != null ? d.isLive : d.live != null ? d.live : d.status;
+          this.olayFn({ tip: "yayinDurumu", canli: canli === true || canli === 1 || canli === "true" || canli === "live" });
+          break;
+        }
         default:
+          this.bilinmeyen[olay] = (this.bilinmeyen[olay] || 0) + 1;
           break;
       }
     }
@@ -125,20 +135,21 @@
       const adet = Math.max(1, Number(d.repeatCount || 1));
       const seriHediyesi = Number(d.giftType) === 1;
       const ad = d.giftName || (d.gift && d.gift.name) || "";
+      const resim = d.giftPictureUrl || d.giftPictureURL || (d.gift && d.gift.image && d.gift.image.url_list && d.gift.image.url_list[0]) || "";
       const anahtar = kul.id + "|" + (d.giftId || ad) + "|" + (d.groupId || "");
 
       if (!seriHediyesi) {
         if (this._tekrarMi(d)) return;
-        this.olayFn({ tip: "hediye", kullanici: kul, jeton: elmas * adet, hediyeAdi: ad });
+        this.olayFn({ tip: "hediye", kullanici: kul, jeton: elmas * adet, hediyeAdi: ad, resim, birimJeton: elmas });
         return;
       }
       let s = this.seriler.get(anahtar);
-      if (!s) { s = { sayilan: 0, son: 0, zaman: Date.now(), kul, elmas, ad }; this.seriler.set(anahtar, s); }
+      if (!s) { s = { sayilan: 0, son: 0, zaman: Date.now(), kul, elmas, ad, resim }; this.seriler.set(anahtar, s); }
       s.son = Math.max(s.son, adet);
       s.zaman = Date.now();
       if (d.repeatEnd === true || d.repeatEnd === 1 || d.repeatEnd === "true") {
         const fark = s.son - s.sayilan;
-        if (fark > 0) this.olayFn({ tip: "hediye", kullanici: kul, jeton: elmas * fark, hediyeAdi: ad });
+        if (fark > 0) this.olayFn({ tip: "hediye", kullanici: kul, jeton: elmas * fark, hediyeAdi: ad, resim, birimJeton: elmas });
         this.seriler.delete(anahtar);
       }
     }
@@ -149,7 +160,7 @@
         if (simdi - s.zaman > 8000) {
           const fark = s.son - s.sayilan;
           if (fark > 0) {
-            this.olayFn({ tip: "hediye", kullanici: s.kul, jeton: s.elmas * fark, hediyeAdi: s.ad });
+            this.olayFn({ tip: "hediye", kullanici: s.kul, jeton: s.elmas * fark, hediyeAdi: s.ad, resim: s.resim, birimJeton: s.elmas });
             s.sayilan = s.son;
           }
           // 60 sn daha hatırla ki geç gelen "son" mesajı çift saymasın

@@ -3,16 +3,22 @@
   const G = 1080, Yuk = 1920;
   const YAZI = ["Arial Rounded MT Bold", "Segoe UI", "Arial", "Noto Color Emoji", "Segoe UI Emoji", "sans-serif"];
   // Yerleşim (piksel)
+  // Telefonda ekranın alt ~%30'u TikTok yorumlarıyla kaplanır: önemli her şey üst %65'te (y < 1248).
   const L = {
-    ustBas: 0, tabloY: 165, tabloH: 190,
-    sahneY: 370,
-    gokY: 0, gokH: 570,
-    kulvarY: 570, kulvarH: 98,
-    onplanY: 1354, onplanH: 96,
-    barY: 1470, ipucuY: 1560, siraY: 1620,
-    bildirimY: 462, spikerY: 392,
+    guvenliAlt: 1248,
+    logoH: 84, rehberY: 92, rehberH: 84,
+    sahneY: 186,                       // lobi/kürsü kartlarının başladığı yer
+    barY: 184, barH: 84,               // beğeni barı (yarışta)
+    spikerY: 318,
+    gokY: 0, gokH: 380,
+    kulvarY: 380, kulvarH: 104,        // 8 kulvar: 380 - 1212
+    onplanY: 1212, onplanH: 80,
+    bildirimY: 410,
+    tabloY: 1580, tabloH: 190,         // alt bölge (ikincil bilgi)
+    ipucuY: 1306, siraY: 1380,
     baslangicX: 150, pikselBirim: 70
   };
+  const PIST_H = 104 * 8;
   const EMOJI_EFEKT = { muz: "🍌", roket: "🚀", havuc: "🥕", leylek: "🦢", camur: "🟤", hiz: "💨", kalp: "❤️", yildiz: "⭐", tac: "👑", konfeti: "🎉", sersem: "💫" };
 
   function stil(boyut, renk, ek) {
@@ -154,7 +160,7 @@
         g.beginFill((r << 16) | (gg << 8) | b).drawRect(0, (Yuk / 40) * i, G, Yuk / 40 + 1).endFill();
       }
       void ust;
-      g.beginFill(0x7cc96b).drawRect(0, 1350, G, 570).endFill();
+      g.beginFill(0x7cc96b).drawRect(0, L.onplanY, G, Yuk - L.onplanY).endFill();
       this.arka.addChild(g);
       this.arkaLobi = this._tamEkran(this.v.doku.lobi);
       this.arkaKursu = this._tamEkran(this.v.doku.kursu);
@@ -176,15 +182,15 @@
       u.removeChildren().forEach((c) => c.destroy({ children: true }));
       if (this.v.doku.logo) {
         const lg = new PIXI.Sprite(this.v.doku.logo);
-        const o = Math.min(560 / lg.texture.width, 150 / lg.texture.height);
+        const o = Math.min(420 / lg.texture.width, (L.logoH - 6) / lg.texture.height);
         lg.scale.set(o);
         lg.anchor.set(0.5, 0);
-        lg.position.set(G / 2, 8);
+        lg.position.set(G / 2, 4);
         u.addChild(lg);
       } else {
-        const t = new PIXI.Text(this.A.oyunAdi, stil(64, 0xffe14d, { dropShadow: true, dropShadowDistance: 5, dropShadowAlpha: 0.5 }));
+        const t = new PIXI.Text(this.A.oyunAdi, stil(54, 0xffe14d, { dropShadow: true, dropShadowDistance: 5, dropShadowAlpha: 0.5 }));
         t.anchor.set(0.5, 0);
-        t.position.set(G / 2, 50);
+        t.position.set(G / 2, 10);
         u.addChild(t);
       }
       const tabloW = 500;
@@ -204,6 +210,109 @@
         u.addChild(kap);
         this.tablolar.push(kap);
       });
+      // NASIL OYNANIR / GÜÇ TABLOSU şeridi (her zaman görünür, ekranın en üstünde)
+      this.rehber = new PIXI.Container();
+      this.rehber.position.set(30, L.rehberY);
+      const rp = this.panel(G - 60, L.rehberH, 0x0f2140, 0.92, 22);
+      this.rehber.addChild(rp);
+      const cerceve = new PIXI.Graphics();
+      cerceve.lineStyle(4, 0xffd34d, 1).drawRoundedRect(0, 0, G - 60, L.rehberH, 22);
+      this.rehber.addChild(cerceve);
+      this.rehberIc = new PIXI.Container();
+      this.rehber.addChild(this.rehberIc);
+      u.addChild(this.rehber);
+      this._rehberNo = -1;
+      this._rehberZaman = -99;
+    }
+
+    // Şerit sayfaları: nasıl oynanır adımları + güç tablosu (hediye resmi, adı, jeton, etki)
+    _rehberSayfalari() {
+      const M = this.M, s = [];
+      s.push({ yazi: M.rehber1, renk: 0xffffff });
+      s.push({ yazi: M.rehberKatil, renk: 0x9ff0ff });
+      s.push({ yazi: M.rehber2, renk: 0xffb3c7 });
+      if (this.A.tahminAcik !== false) s.push({ yazi: M.rehber3, renk: 0xd9b8ff });
+      if (this.A.hediyeTablosuGoster) {
+        const t = this.oyun.gucTablosu();
+        for (let i = 0; i < t.length; i += 3) s.push({ guc: t.slice(i, i + 3) });
+      }
+      return s;
+    }
+
+    _rehberGoster(sayfa) {
+      const ic = this.rehberIc;
+      ic.removeChildren().forEach((c) => c.destroy({ children: true }));
+      const W = G - 60, H = L.rehberH;
+      if (sayfa.yazi) {
+        const t = new PIXI.Text(sayfa.yazi, stil(46, sayfa.renk || 0xffffff, { strokeThickness: 7 }));
+        t.anchor.set(0.5);
+        if (t.width > W - 40) t.scale.set((W - 40) / t.width);
+        t.position.set(W / 2, H / 2 + 2);
+        ic.addChild(t);
+      } else if (sayfa.guc) {
+        const baslik = new PIXI.Text(this.A.hediyeYazisiGoster ? this.M.hediyeAt.replace(", ", ",\n") : this.M.gucTablosu, stil(24, 0xffd34d, { align: "center", lineHeight: 26, strokeThickness: 5 }));
+        baslik.anchor.set(0.5);
+        if (baslik.width > 190) baslik.scale.set(190 / baslik.width);
+        baslik.position.set(105, H / 2);
+        ic.addChild(baslik);
+        const genis = (W - 215) / 3;
+        sayfa.guc.forEach((g, i) => {
+          const x = 215 + i * genis;
+          const res = new PIXI.Sprite(this.hediyeDokusu(g.hediye, g.efekt));
+          res.anchor.set(0.5);
+          const o = 60 / Math.max(res.texture.width, res.texture.height, 1);
+          res.scale.set(o);
+          res.position.set(x + 34, H / 2);
+          res._hediye = g.hediye; res._efekt = g.efekt; res._boy = 60;
+          ic.addChild(res);
+          const ust = new PIXI.Text((g.hediye ? g.hediye.ad + " · " : "") + g.enAz + "+ 🪙", stil(22, 0xfff2c0, { strokeThickness: 4 }));
+          ust.position.set(x + 70, 8);
+          if (ust.width > genis - 76) ust.scale.set((genis - 76) / ust.width);
+          ic.addChild(ust);
+          const alt = new PIXI.Text("→ " + g.adi.replace("!", ""), stil(32, 0xffffff, { strokeThickness: 5 }));
+          alt.position.set(x + 70, 38);
+          if (alt.width > genis - 76) alt.scale.set((genis - 76) / alt.width);
+          ic.addChild(alt);
+        });
+      }
+      ic.alpha = 0;
+    }
+
+    _rehberGuncelle(dt) {
+      const sure = this.A.rehberDegismeSn || 6;
+      if (this.saat - this._rehberZaman >= sure) {
+        const sayfalar = this._rehberSayfalari();
+        this._rehberNo = (this._rehberNo + 1) % sayfalar.length;
+        this._rehberZaman = this.saat;
+        this._rehberGoster(sayfalar[this._rehberNo]);
+      }
+      const yas = this.saat - this._rehberZaman;
+      this.rehberIc.alpha = Math.min(1, yas * 4, Math.max(0, (sure - yas) * 4));
+      // resmi sonradan inen hediyeleri güncelle
+      for (const c of this.rehberIc.children) {
+        if (c._hediye && c._hediye.resim && c.texture !== this.hediyeDokusu(c._hediye, c._efekt)) {
+          c.texture = this.hediyeDokusu(c._hediye, c._efekt);
+          c.scale.set(c._boy / Math.max(c.texture.width, c.texture.height, 1));
+        }
+      }
+    }
+
+    // Hediye resmi: TikTok resmi (yerel sunucu üzerinden önbelleğe alınır) > config'teki resim > emoji
+    hediyeDokusu(h, efekt) {
+      this._hediyeDoku = this._hediyeDoku || {};
+      if (h) {
+        const kaynak = h.resimDosya || (h.resim ? "api/resim?url=" + encodeURIComponent(h.resim) : "");
+        if (kaynak) {
+          const k = this._hediyeDoku[kaynak];
+          if (k && k !== "yukleniyor" && k !== "yok") return k;
+          if (!k) {
+            this._hediyeDoku[kaynak] = "yukleniyor";
+            PIXI.Texture.fromURL(kaynak).then((t) => { this._hediyeDoku[kaynak] = t; }).catch(() => { this._hediyeDoku[kaynak] = "yok"; });
+          }
+        }
+        if (h.emoji) return this.emoji(h.emoji, 96);
+      }
+      return this.efektDoku(efekt === "aga" ? "tac" : efekt || "yildiz", 96);
     }
 
     _yarisKur() {
@@ -376,27 +485,27 @@
     _lobiKur() {
       const l = this.sahneLobi;
       l.removeChildren().forEach((c) => c.destroy({ children: true }));
-      const kartY = L.sahneY + 10;
+      const kartY = L.sahneY;
       const ust = new PIXI.Container();
       ust.position.set(40, kartY);
-      ust.addChild(this.panel(G - 80, 214, 0x1d1208, 0.66, 28));
-      this.lobiBaslik = new PIXI.Text(this.M.lobi, stil(64, 0xffe14d));
-      this.lobiBaslik.position.set(30, 12);
+      ust.addChild(this.panel(G - 80, 188, 0x1d1208, 0.72, 28));
+      this.lobiBaslik = new PIXI.Text(this.M.lobi, stil(58, 0xffe14d));
+      this.lobiBaslik.position.set(30, 8);
       ust.addChild(this.lobiBaslik);
-      this.lobiSure = new PIXI.Text("0:45", stil(72, 0xffffff));
+      this.lobiSure = new PIXI.Text("0:45", stil(68, 0xffffff));
       this.lobiSure.anchor.set(1, 0);
       this.lobiSure.position.set(G - 80 - 30, 6);
       ust.addChild(this.lobiSure);
       const alt = new PIXI.Text(this.M.lobiAlt, stil(30, 0xffffff, { wordWrap: true, wordWrapWidth: G - 140, strokeThickness: 5 }));
-      alt.position.set(30, 92);
+      alt.position.set(30, 82);
       ust.addChild(alt);
       this.lobiBolum = new PIXI.Text("", stil(34, 0x9ff0ff, { strokeThickness: 6 }));
-      this.lobiBolum.position.set(30, 150);
+      this.lobiBolum.position.set(30, 130);
       ust.addChild(this.lobiBolum);
       l.addChild(ust);
 
       this.lobiSatirlar = [];
-      const satirY = kartY + 228, satirH = 100;
+      const satirY = kartY + 196, satirH = 98;
       for (let i = 0; i < this.A.hayvanlar.length; i++) {
         const s = new PIXI.Container();
         s.position.set(40, satirY + i * satirH);
@@ -427,10 +536,10 @@
         this.lobiSatirlar.push({ s, bg, oyuncu, tac, nabiz: 0 });
       }
       const siraKap = new PIXI.Container();
-      siraKap.position.set(40, satirY + this.A.hayvanlar.length * satirH + 4);
-      siraKap.addChild(this.panel(G - 80, 128, 0x1d1208, 0.66, 22));
+      siraKap.position.set(40, satirY + this.A.hayvanlar.length * satirH + 2);
+      siraKap.addChild(this.panel(G - 80, 116, 0x1d1208, 0.72, 22));
       this.lobiTahmin = new PIXI.Text(this.A.tahminAcik === false ? "" : this.M.tahminIpucu, stil(26, 0xd9b8ff, { strokeThickness: 5 }));
-      this.lobiTahmin.position.set(26, 86);
+      this.lobiTahmin.position.set(26, 72);
       siraKap.addChild(this.lobiTahmin);
       this.lobiSira = new PIXI.Text("", stil(28, 0xffffff, { wordWrap: true, wordWrapWidth: G - 140, strokeThickness: 5, lineHeight: 34, breakWords: true }));
       this.lobiSira.position.set(26, 16);
@@ -446,25 +555,25 @@
       this.kursuKazananKap = new PIXI.Container();
       k.addChild(this.kursuKazananKap);
       const kart = new PIXI.Container();
-      kart.position.set(60, L.sahneY + 10);
-      kart.addChild(this.panel(G - 120, 210, 0x1d1208, 0.66, 30));
+      kart.position.set(60, L.sahneY);
+      kart.addChild(this.panel(G - 120, 200, 0x1d1208, 0.72, 30));
       this.kursuBaslik = new PIXI.Text(this.M.kazanan, stil(60, 0xffe14d));
       this.kursuBaslik.anchor.set(0.5, 0);
       this.kursuBaslik.position.set((G - 120) / 2, 10);
       kart.addChild(this.kursuBaslik);
       this.kursuIsim = new PIXI.Text("", stil(84, 0xffffff));
       this.kursuIsim.anchor.set(0.5, 0);
-      this.kursuIsim.position.set((G - 120) / 2, 84);
+      this.kursuIsim.position.set((G - 120) / 2, 80);
       kart.addChild(this.kursuIsim);
       k.addChild(kart);
 
-      this.kursuAlt = new PIXI.Text("", stil(34, 0xffffff, { align: "center", lineHeight: 46, strokeThickness: 6 }));
+      this.kursuAlt = new PIXI.Text("", stil(30, 0xffffff, { align: "center", lineHeight: 38, strokeThickness: 6 }));
       this.kursuAlt.anchor.set(0.5, 0);
-      this.kursuAlt.position.set(G / 2, 1250);
+      this.kursuAlt.position.set(G / 2, 1050);
       k.addChild(this.kursuAlt);
       this.kursuSure = new PIXI.Text("", stil(32, 0xffe14d));
       this.kursuSure.anchor.set(0.5, 0);
-      this.kursuSure.position.set(G / 2, 1510);
+      this.kursuSure.position.set(G / 2, 1300);
       k.addChild(this.kursuSure);
       this.konfetiKat = new PIXI.Container();
       k.addChild(this.konfetiKat);
@@ -475,14 +584,24 @@
       h.removeChildren().forEach((c) => c.destroy({ children: true }));
       const bar = new PIXI.Container();
       bar.position.set(40, L.barY);
-      this.barCerceve = this.panel(G - 80, 76, 0x1d1208, 0.7, 38);
+      this.barCerceve = this.panel(G - 80, L.barH, 0x1d1208, 0.85, 26);
       bar.addChild(this.barCerceve);
       this.barDolgu = new PIXI.Graphics();
       bar.addChild(this.barDolgu);
-      this.barYazi = new PIXI.Text("", stil(28, 0xffffff, { strokeThickness: 5 }));
-      this.barYazi.anchor.set(0.5);
-      this.barYazi.position.set((G - 80) / 2, 38);
+      this.barYazi = new PIXI.Text(this.M.begeniBaslik, stil(30, 0xffffff, { strokeThickness: 6 }));
+      this.barYazi.anchor.set(0, 0.5);
+      this.barYazi.position.set(20, 27);
+      if (this.barYazi.width > 700) this.barYazi.scale.set(700 / this.barYazi.width);
       bar.addChild(this.barYazi);
+      this.barSayi = new PIXI.Text("", stil(32, 0xffe14d, { strokeThickness: 6 }));
+      this.barSayi.anchor.set(1, 0.5);
+      this.barSayi.position.set(G - 100, 27);
+      bar.addChild(this.barSayi);
+      this.barLider = new PIXI.Text("", stil(22, 0xffd6e0, { strokeThickness: 4 }));
+      this.barLider.anchor.set(0, 0.5);
+      this.barLider.position.set(20, 64);
+      bar.addChild(this.barLider);
+      this.barKap = bar;
       h.addChild(bar);
       this.ipucu = new PIXI.Text(this.M.yarisAlt, stil(28, 0xffffff, { wordWrap: true, wordWrapWidth: G - 80, align: "center", strokeThickness: 6 }));
       this.ipucu.anchor.set(0.5, 0);
@@ -494,7 +613,7 @@
       h.addChild(this.siraYazi);
       this.agaYazi = new PIXI.Text("", stil(30, 0xffd700, { strokeThickness: 6 }));
       this.agaYazi.anchor.set(0.5, 0);
-      this.agaYazi.position.set(G / 2, L.siraY + 140);
+      this.agaYazi.position.set(G / 2, L.siraY + 110);
       h.addChild(this.agaYazi);
     }
 
@@ -503,11 +622,11 @@
       o.removeChildren().forEach((c) => c.destroy({ children: true }));
       this.buyukYazi = new PIXI.Text("", stil(200, 0xffe14d, { strokeThickness: 18, dropShadow: true, dropShadowDistance: 8, dropShadowAlpha: 0.5 }));
       this.buyukYazi.anchor.set(0.5);
-      this.buyukYazi.position.set(G / 2, 900);
+      this.buyukYazi.position.set(G / 2, 760);
       this.buyukYazi.visible = false;
       o.addChild(this.buyukYazi);
       this.bayrak = new PIXI.Container();
-      this.bayrak.position.set(G / 2, 1540);
+      this.bayrak.position.set(G / 2, 1060);
       const bp = this.panel(820, 120, 0xb3122e, 0.92, 18);
       bp.position.set(-410, 0);
       this.bayrak.addChild(bp);
@@ -519,23 +638,37 @@
       o.addChild(this.bayrak);
       this.camurYazi = new PIXI.Text(this.M.camurYagmuru, stil(96, 0x8b5a2b, { fill: [0xb07b45, 0x6b3f1d], stroke: 0xffffff, strokeThickness: 12 }));
       this.camurYazi.anchor.set(0.5);
-      this.camurYazi.position.set(G / 2, 760);
+      this.camurYazi.position.set(G / 2, 620);
       this.camurYazi.visible = false;
       o.addChild(this.camurYazi);
       this.fotoYazi = new PIXI.Text(this.M.fotoFinis, stil(110, 0xffffff, { stroke: 0x111111, strokeThickness: 14 }));
       this.fotoYazi.anchor.set(0.5);
-      this.fotoYazi.position.set(G / 2, 480);
+      this.fotoYazi.position.set(G / 2, 520);
       this.fotoYazi.visible = false;
       o.addChild(this.fotoYazi);
       // Bölüm kartı (start'ta)
       this.bolumKart = new PIXI.Text("", stil(96, 0x9ff0ff, { stroke: 0x0b1e33, strokeThickness: 14, align: "center", dropShadow: true, dropShadowDistance: 6, dropShadowAlpha: 0.5 }));
       this.bolumKart.anchor.set(0.5);
-      this.bolumKart.position.set(G / 2, 640);
+      this.bolumKart.position.set(G / 2, 600);
       this.bolumKart.visible = false;
       o.addChild(this.bolumKart);
       // Kutlama damgaları
       this.damgaKat = new PIXI.Container();
       o.addChild(this.damgaKat);
+      // Ortada büyük "@ad KATILDI!" yazıları
+      this.katilimKat = new PIXI.Container();
+      o.addChild(this.katilimKat);
+      this.katilimSirasi = [];
+      // Sessizlik çağrısı
+      this.cagriYazi = new PIXI.Text(this.M.sessizCagri, stil(58, 0xffffff, { stroke: 0xb3122e, strokeThickness: 12, align: "center", wordWrap: true, wordWrapWidth: G - 120 }));
+      this.cagriYazi.anchor.set(0.5);
+      this.cagriYazi.position.set(G / 2, 900);
+      this.cagriYazi.visible = false;
+      o.addChild(this.cagriYazi);
+      // Uçan hediyeler
+      this.hediyeKat = new PIXI.Container();
+      o.addChild(this.hediyeKat);
+      this.ucanlar = [];
       // Spiker alt yazısı
       this.spikerKap = new PIXI.Container();
       this.spikerBg = new PIXI.Graphics();
@@ -568,6 +701,10 @@
       if (f === "yaris" || f === "kursu" || f === "lobi") {
         this.bildirimSirasi = this.bildirimSirasi.filter((b) => b.tur === "hediye" || b.tur === "aga" || b.tur === "ucretsiz");
         for (const b of this.bildirimler) b.yas = Math.max(b.yas, b.omur - 0.4);
+      }
+      if (f === "yaris" || f === "kursu") {
+        this.katilimSirasi = [];
+        for (const k of this.katilimKat.children) k.yas = Math.max(k.yas, 1.8);
       }
       this._klipKapat();
       if (f === "lobi") {
@@ -630,11 +767,11 @@
       } else {
         // Kürsü: 2 - 1 - 3
         const b = this.kursuBasamak;
-        const yer = [[G / 2, 1090, 300, 0xffd34d, "1"], [G / 2 - 330, 1140, 250, 0xd7d7d7, "2"], [G / 2 + 330, 1170, 220, 0xd99a5b, "3"]];
-        yer.forEach(([x, yy, w, renk]) => b.beginFill(renk).drawRoundedRect(x - w / 2, yy, w, 1240 - yy, 16).endFill());
+        const yer = [[G / 2, 880, 300, 0xffd34d, "1"], [G / 2 - 330, 930, 250, 0xd7d7d7, "2"], [G / 2 + 330, 960, 220, 0xd99a5b, "3"]];
+        yer.forEach(([x, yy, w, renk]) => b.beginFill(renk).drawRoundedRect(x - w / 2, yy, w, 1040 - yy, 16).endFill());
         s.ilkUc.forEach((u, i) => {
           const [x, yy] = yer[i];
-          const hg = this.hayvanGorseli(u.kulvar, i === 0 ? 420 : 200, "resim");
+          const hg = this.hayvanGorseli(u.kulvar, i === 0 ? 380 : 190, "resim");
           hg.position.set(x, yy + 4);
           kap.addChild(hg);
           if (i === 0) this._kursuHayvan = hg;
@@ -675,7 +812,7 @@
       const renk = { derbiSampiyonu: 0xffd34d, agaZaferi: 0xffd700, seri: 0xff6b3d, efsane: 0xff4df0, geridenGeldi: 0x4dd0ff, kilPayi: 0x7bff7b, ilkZafer: 0xffffff }[etiket] || 0xffffff;
       const t = new PIXI.Text(metin, stil(84, renk, { stroke: 0x2b1a0e, strokeThickness: 14, dropShadow: true, dropShadowDistance: 6, dropShadowAlpha: 0.6 }));
       t.anchor.set(0.5);
-      t.position.set(G / 2 + (i % 2 ? 60 : -60), 680 + i * 110);
+      t.position.set(G / 2 + (i % 2 ? 60 : -60), 470 + i * 100);
       t.rotation = (i % 2 ? 0.08 : -0.08);
       t.scale.set(3);
       t.alpha = 0;
@@ -739,8 +876,8 @@
         const renk = k.seviye === "efsane" ? 0xffe680 : 0xffffff;
         for (const [x0, faz] of [[120, 0], [G - 120, 2]]) {
           const a = Math.sin(this.saat * 0.9 + faz) * 0.45;
-          const x1 = x0 + Math.sin(a) * 1200, y1 = 1300;
-          g.beginFill(renk, 0.10).drawPolygon([x0, 380, x1 - 170, y1, x1 + 170, y1]).endFill();
+          const x1 = x0 + Math.sin(a) * 1000, y1 = 1100;
+          g.beginFill(renk, 0.10).drawPolygon([x0, 390, x1 - 170, y1, x1 + 170, y1]).endFill();
         }
       }
       if (k.seviye === "efsane") {
@@ -791,9 +928,9 @@
       const p = { sp, x: Math.random() * G, y: ilk ? Math.random() * Yuk : -20, vx: 0, vy: 0, faz: Math.random() * 6 };
       if (kod === "kar") { sp.scale.set(0.12 + Math.random() * 0.22); sp.alpha = 0.9; p.vy = 60 + Math.random() * 80; p.vx = -20; }
       else if (kod === "firtina") { sp.scale.set(0.06, 0.9); sp.tint = 0xbfdcff; sp.alpha = 0.55; sp.rotation = 0.25; p.vy = 1300 + Math.random() * 500; p.vx = -330; }
-      else if (kod === "gece") { sp.scale.set(0.16 + Math.random() * 0.1); sp.tint = 0xfff27a; sp.alpha = 0.8; p.vy = -10; p.vx = 10; p.y = ilk ? L.kulvarY + Math.random() * 800 : L.kulvarY + 800; }
+      else if (kod === "gece") { sp.scale.set(0.16 + Math.random() * 0.1); sp.tint = 0xfff27a; sp.alpha = 0.8; p.vy = -10; p.vx = 10; p.y = ilk ? L.kulvarY + Math.random() * PIST_H : L.kulvarY + PIST_H; }
       else if (kod === "hasat") { p.vy = 90 + Math.random() * 60; p.vx = -40; }
-      else if (kod === "bataklik") { sp.scale.set(0.15 + Math.random() * 0.2); sp.tint = 0x6b4a2b; sp.alpha = 0.7; p.y = L.kulvarY + Math.random() * 800; p.vy = -25; p.omur = 1 + Math.random() * 2; }
+      else if (kod === "bataklik") { sp.scale.set(0.15 + Math.random() * 0.2); sp.tint = 0x6b4a2b; sp.alpha = 0.7; p.y = L.kulvarY + Math.random() * PIST_H; p.vy = -25; p.omur = 1 + Math.random() * 2; }
       sp.position.set(p.x, p.y);
       this.havaKat.addChild(sp);
       this.havaParca.push(p);
@@ -840,7 +977,7 @@
           sp.anchor.set(0.5);
           sp.scale.set(2 + Math.random() * 2, 0.06);
           sp.alpha = 0.6;
-          sp.position.set(-200 - Math.random() * 600, L.kulvarY + Math.random() * 800);
+          sp.position.set(-200 - Math.random() * 600, L.kulvarY + Math.random() * PIST_H);
           this.efektKat.addChild(sp);
           this.parcaciklar.push({ sp, vx: 1600 + Math.random() * 600, vy: 0, omur: 1.4, yas: 0, tur: "uc" });
         }
@@ -872,15 +1009,20 @@
           case "begeni": this._kalp(o.kulvar, o.sayi); break;
           case "bitis": this._flasla(); break;
           case "aga": this._flasla(0.5); break;
-          case "katildi": if (this.lobiSatirlar[o.kulvar]) this.lobiSatirlar[o.kulvar].nabiz = 1; break;
+          case "katildi":
+            if (this.lobiSatirlar[o.kulvar]) this.lobiSatirlar[o.kulvar].nabiz = 1;
+            if (o.buyuk && o.ad) { this.katilimSirasi.push(o); if (this.katilimSirasi.length > 12) this.katilimSirasi.shift(); }
+            break;
           case "barDoldu": break;
           case "yarisOlayi": this._yarisOlayiGorsel(o); break;
+          case "hediyeUcur": this._hediyeUcur(o); break;
           default: break;
         }
       }
     }
 
     _bildirimEkle(metin, tur) {
+      if (tur === "kulvar") return; // kulvara katılım ortada büyük "@ad KATILDI!" olarak gösteriliyor
       const onemli = tur === "hediye" || tur === "aga" || tur === "buyuk" || tur === "ucretsiz";
       // Kalabalıkta katılım bildirimlerini sınırla
       if (!onemli && this.bildirimSirasi.length > 6) return;
@@ -891,13 +1033,13 @@
     _bildirimGoster(b) {
       const renk = { hediye: 0xff7a1a, aga: 0xc99700, buyuk: 0x6b3f1d, ucretsiz: 0x2e9d4b, katilim: 0x2a6fdb }[b.tur] || 0x333333;
       const kap = new PIXI.Container();
-      const t = new PIXI.Text(b.metin, stil(34, 0xffffff, { strokeThickness: 0 }));
+      const t = new PIXI.Text(b.metin, stil(30, 0xffffff, { strokeThickness: 0 }));
       const w = Math.min(G - 60, t.width + 48);
       if (t.width > G - 108) t.scale.set((G - 108) / t.width);
-      const bg = this.panel(w, 62, renk, 0.92, 31);
+      const bg = this.panel(w, 56, renk, 0.92, 28);
       kap.addChild(bg);
       t.anchor.set(0.5);
-      t.position.set(w / 2, 31);
+      t.position.set(w / 2, 28);
       kap.addChild(t);
       kap.position.set((G - w) / 2, L.bildirimY);
       kap.omur = b.tur === "aga" ? 4.5 : 3.2;
@@ -989,6 +1131,9 @@
       if (f === "kursu") { this._kursuGuncelle(dt); this._kutlamaGuncelle(dt); }
       if (f === "yaris" || f === "fotofinis") this._havaGuncelle(dt);
       this._spikerGuncelle();
+      this._rehberGuncelle(dt);
+      this._katilimGuncelle(dt);
+      this._ucanGuncelle(dt);
       this._bildirimGuncelle(dt);
       this._parcacikGuncelle(dt);
       this._ortaGuncelle(dt);
@@ -1186,14 +1331,23 @@
         this.fotoYazi.scale.set(1 + Math.sin(this.saat * 6) * 0.03);
       }
       // HUD
-      const U = this.A.ucretsiz;
-      const doluluk = sinirla(o.begeniBar / U.begeniBariHedef, 0, 1);
+      const hedefB = o.begeniHedef || 1000;
+      const doluluk = sinirla(o.begeniBar / hedefB, 0, 1);
       const yuvarla = Math.round(doluluk * 200);
       if (this._barSon !== yuvarla) {
         this._barSon = yuvarla;
         this.barDolgu.clear();
-        if (doluluk > 0) this.barDolgu.beginFill(0xff4d7a).drawRoundedRect(6, 6, Math.max(64, (G - 92) * doluluk), 64, 32).endFill();
-        this.barYazi.text = this.Y.doldur(this.M.begeniBari, { n: o.begeniBar, h: U.begeniBariHedef });
+        const renk = doluluk < 0.5 ? 0xff4d7a : doluluk < 0.8 ? 0xff8c1a : 0xff2d2d;
+        if (doluluk > 0) this.barDolgu.beginFill(renk, 0.85).drawRoundedRect(5, 5, Math.max(40, (G - 90) * doluluk), L.barH - 10, 22).endFill();
+        this.barSayi.text = this.Y.doldur(this.M.begeniSayi, { n: o.begeniBar.toLocaleString("tr-TR"), h: hedefB.toLocaleString("tr-TR") });
+      }
+      // Bar dolmak üzereyken nabız gibi atsın
+      this.barKap.scale.set(doluluk >= 0.8 ? 1 + Math.abs(Math.sin(this.saat * 6)) * 0.015 : 1);
+      if (this.saat - (this._liderZaman3 || -9) > 1) {
+        this._liderZaman3 = this.saat;
+        const l = o.enCokBegenenler(3);
+        const m = l.length ? this.Y.doldur(this.M.enCokBegenen, { liste: l.map((b) => b.ad + " " + b.sayi).join("  •  ") }) : "";
+        if (this.barLider.text !== m) { this.barLider.text = m; if (this.barLider.width > G - 120) this.barLider.scale.set((G - 120) / this.barLider.width); else this.barLider.scale.set(1); }
       }
       if (this.saat - (this._siraZaman || -9) > 0.5) {
         this._siraZaman = this.saat;
@@ -1227,11 +1381,11 @@
         this._bildirimBekle = this.bildirimSirasi.length > 4 ? 0.35 : 0.6;
       }
       const lobide = this.oyun.faz === "lobi" || this.oyun.faz === "start" || this.oyun.faz === "kursu";
-      const tabanY = lobide ? 1830 : L.bildirimY;
+      const tabanY = lobide ? 1400 : L.bildirimY;
       for (let i = this.bildirimler.length - 1; i >= 0; i--) {
         const b = this.bildirimler[i];
         b.yas += dt;
-        const hedefY = tabanY + i * 70 * (lobide ? -1 : 1);
+        const hedefY = tabanY + i * 66;
         b.y += (hedefY - b.y) * Math.min(1, dt * 10);
         b.alpha = b.yas < 0.2 ? b.yas / 0.2 : b.yas > b.omur - 0.4 ? Math.max(0, (b.omur - b.yas) / 0.4) : 1;
         if (b.yas >= b.omur) {
@@ -1274,6 +1428,92 @@
       }
     }
 
+    _katilimGuncelle(dt) {
+      // aynı anda en fazla 3 büyük katılım yazısı
+      if (this.katilimSirasi.length && this.katilimKat.children.length < 3) {
+        const o = this.katilimSirasi.shift();
+        const h = this.A.hayvanlar[o.kulvar] || {};
+        const kap = new PIXI.Container();
+        const t = new PIXI.Text(this.Y.doldur(this.M.katildiBuyuk, { ad: o.ad, emoji: h.emoji || "" }), stil(54, 0xffffff, { strokeThickness: 0 }));
+        t.anchor.set(0.5);
+        if (t.width > G - 140) t.scale.set((G - 140) / t.width);
+        const w = t.width + 60, hh = 84;
+        const bg = new PIXI.Graphics();
+        bg.beginFill(0x1f7a33, 0.94).drawRoundedRect(-w / 2, -hh / 2, w, hh, 42).endFill();
+        kap.addChild(bg, t);
+        kap.yas = 0;
+        kap.scale.set(0.3);
+        kap.position.set(G / 2, 0);
+        this.katilimKat.addChild(kap);
+      }
+      const lobide = this.oyun.faz === "lobi" || this.oyun.faz === "start";
+      const taban = lobide ? 660 : 640;
+      this.katilimKat.children.slice().forEach((k, i) => {
+        k.yas += dt;
+        k.y += (taban + i * 96 - k.y) * Math.min(1, dt * 12);
+        k.scale.set(Math.min(1, k.scale.x + dt * 6));
+        k.alpha = k.yas > 1.8 ? Math.max(0, 1 - (k.yas - 1.8) / 0.4) : 1;
+        if (k.yas > 2.2) k.destroy({ children: true });
+      });
+      // 30 sn kimse yazmazsa yanıp sönen çağrı
+      const o = this.oyun, f = o.faz;
+      const sessiz = o.zaman - (o.sonYorumZaman || 0) > (this.A.sessizlikCagriSn || 30);
+      const bosVar = o.kulvarlar.some((k) => !k.oyuncu);
+      const goster = sessiz && ((f === "lobi" && bosVar) || f === "yaris");
+      this.cagriYazi.visible = goster;
+      if (goster) { this.cagriYazi.alpha = 0.55 + Math.abs(Math.sin(this.saat * 3)) * 0.45; this.cagriYazi.scale.set(1 + Math.sin(this.saat * 3) * 0.03); }
+    }
+
+    // Hediye gelince: resmi + gönderenin adı yukarıdan hayvana (ya da ortaya) uçar, jeton sayısı patlar
+    _hediyeUcur(o) {
+      if (this.ucanlar.length > 6) return;
+      const kap = new PIXI.Container();
+      const hediye = o.resim || o.emoji ? { resim: o.resim, emoji: o.emoji } : null;
+      const sp = new PIXI.Sprite(this.hediyeDokusu(hediye, o.efekt));
+      sp.anchor.set(0.5);
+      sp.scale.set(130 / Math.max(sp.texture.width, sp.texture.height, 1));
+      kap.addChild(sp);
+      const ad = new PIXI.Text(o.ad + (o.hediyeAdi ? " · " + o.hediyeAdi : ""), stil(30, 0xffe14d, { strokeThickness: 6 }));
+      ad.anchor.set(0.5, 0);
+      ad.position.set(0, 70);
+      kap.addChild(ad);
+      kap.position.set(G / 2, 170);
+      this.hediyeKat.addChild(kap);
+      let x1 = G / 2, y1 = 700;
+      const g = this.kulvarGorsel && this.kulvarGorsel[o.kulvar];
+      if (g && (this.oyun.faz === "yaris" || this.oyun.faz === "fotofinis")) { x1 = g.x; y1 = g.kap.y - 80; }
+      this.ucanlar.push({ kap, sp, hediye, efekt: o.efekt, t: 0, x0: G / 2, y0: 170, x1, y1, jeton: o.jeton });
+    }
+
+    _ucanGuncelle(dt) {
+      for (let i = this.ucanlar.length - 1; i >= 0; i--) {
+        const u = this.ucanlar[i];
+        u.t += dt;
+        // resim sonradan indiyse değiştir
+        if (u.hediye && u.hediye.resim) {
+          const d = this.hediyeDokusu(u.hediye, u.efekt);
+          if (d !== u.sp.texture) { u.sp.texture = d; u.sp.scale.set(130 / Math.max(d.width, d.height, 1)); }
+        }
+        const sure = 1.1;
+        if (u.t < 0.5) { u.kap.scale.set(0.5 + u.t); }
+        else {
+          const k = Math.min(1, (u.t - 0.5) / sure), e = k * k * (3 - 2 * k);
+          u.kap.position.set(u.x0 + (u.x1 - u.x0) * e, u.y0 + (u.y1 - u.y0) * e - Math.sin(Math.PI * k) * 120);
+          u.kap.scale.set(1 - 0.4 * e);
+          if (k >= 1 && !u.patladi) {
+            u.patladi = true;
+            const t = new PIXI.Text("+" + u.jeton + " 🪙", stil(64, 0xffd34d, { strokeThickness: 10 }));
+            t.anchor.set(0.5);
+            t.position.set(u.x1, u.y1 - 30);
+            this.efektKat.addChild(t);
+            this.parcaciklar.push({ sp: t, vx: 0, vy: -90, omur: 1.3, yas: 0, tur: "uc" });
+            for (let n = 0; n < 8; n++) this._parcacik(this.emoji("✨", 44), u.x1, u.y1, (Math.random() - 0.5) * 300, -100 - Math.random() * 200, 0.8);
+          }
+        }
+        if (u.t > 0.5 + sure + 0.25) { u.kap.destroy({ children: true }); this.ucanlar.splice(i, 1); }
+      }
+    }
+
     _spikerGuncelle() {
       const a = this.spiker && this.spiker.altyazi;
       if (!a) { this.spikerKap.visible = false; return; }
@@ -1283,7 +1523,7 @@
         this.spikerBg.clear().beginFill(0x10223a, 0.88).drawRoundedRect(-w / 2, -h / 2, w, h, h / 2).endFill();
       }
       const f = this.oyun.faz;
-      this.spikerKap.position.set(G / 2, f === "yaris" || f === "fotofinis" ? L.spikerY : f === "kursu" ? 1610 : 1600);
+      this.spikerKap.position.set(G / 2, f === "yaris" || f === "fotofinis" ? L.spikerY : f === "kursu" ? 1360 : 1340);
       this.spikerKap.visible = true;
     }
 
