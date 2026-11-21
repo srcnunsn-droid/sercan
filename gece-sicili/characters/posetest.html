@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- Gate A pose test: every rig in 3 extreme poses (joints must stay attached). -> characters/pose-test.png -->
+<link rel="stylesheet" href="../lib/fonts.css">
+<script src="../lib/core.js"></script><script src="../lib/constants.js"></script><script src="../lib/rig.js"></script><script src="../lib/human.js"></script>
+<script src="../sets/props.js"></script><script src="idil.js"></script><script src="saren.js"></script><script src="tovan.js"></script>
+<style>body{margin:0;background:#1b2140}</style></head><body>
+<svg id="s" width="3000" height="1000" viewBox="0 0 3000 1000"></svg>
+<script>
+const s=document.getElementById('s'), C=GS.C;
+const T=(x,y,str,size,a)=>{const t=GS.el('text',Object.assign({x,y,'font-size':size,fill:C.fluo,'text-anchor':'middle','font-family':'GSSerif'},a||{}),s);t.textContent=str;};
+T(40,64,'POZ TESTİ — uç pozlarda kollar, bacaklar ve baş kopmuyor',44,{'text-anchor':'start','font-weight':700});
+const P=[
+ ['idil','alarm ipine uzanma',{lean:-10,armR:{sh:165,el:15,wr:10,hand:'grip'},armL:{sh:-45,el:30,hand:'open'},legR:{th:28,kn:8},legL:{th:-22,kn:18,ft:-10},head:{turn:0.2,tilt:-12},eyes:'wide',brows:'up',mouth:'small',look:[0.6,-1]},r=>r.holdProp('R',GS.PROP.alarmRing(),'translate(0 -24)')],
+ ['idil','tepsiyi kaldırma',{lean:-8,armR:{sh:85,el:55,wr:-30,hand:'grip'},armL:{sh:75,el:70,wr:-20,hand:'open'},legR:{th:12,kn:6},legL:{th:-14,kn:10},head:{turn:0.5,tilt:6},eyes:'narrow',brows:'down'},r=>r.holdProp('R',GS.PROP.tray(),'translate(0 0) rotate(-80)',false)],
+ ['idil','raftan sicil çekme (sola dönük)',{facing:'left',lean:14,rootY:40,armR:{sh:120,el:40,wr:0,hand:'grip'},armL:{sh:30,el:90,hand:'relaxed'},legR:{th:30,kn:45,ft:15},legL:{th:-8,kn:40,ft:-30},head:{turn:0.6,tilt:10},look:[1,0.4]},r=>r.holdProp('R',GS.PROP.registerClosed(),'translate(10 40) scale(0.8)',true)],
+ ['saren','sedyede yatıyor',{rot:-90,y:-200,x:300,scale:0.6,armR:{sh:10,el:10},armL:{sh:20,el:40},head:{turn:0.1},eyes:'closed'}],
+ ['saren','diz çökmüş, sol kol taşımıyor',{facing:'left',rootY:224,legL:{th:-6,kn:92,ft:-92},legR:{th:82,kn:84,ft:2},skirt:{rot:20,sy:0.7},armL:{sh:-4,el:6,hand:'relaxed'},armR:{sh:40,el:60,wr:-20,hand:'open'},lean:6,head:{turn:0.4,tilt:-8},look:[0.3,-0.8],eyes:'open',brows:'worried'}],
+ ['saren','yüzünü çeviriyor, eller açık',{facing:'left',armR:{sh:40,el:80,wr:-25,hand:'open'},armL:{sh:30,el:70,wr:-25,hand:'open'},head:{turn:-0.7,tilt:8},lean:-4,eyes:'half',amber:0.6,mouth:'bared'}],
+ ['tovan','dimdik, aşağı bakış',{facing:'left',head:{turn:0.4,tilt:-4},look:[0,1]}],
+ ['tovan','ağır adım',{facing:'left',legR:{th:22,kn:12},legL:{th:-18,kn:24,ft:-12},armR:{sh:-14,el:10},armL:{sh:16,el:14},skirt:{rot:3}}],
+ ['tovan','işaret ediyor',{facing:'left',armR:{sh:95,el:5,hand:'point'},head:{turn:0.7,tilt:-6},eyes:'narrow',brows:'down'}],
+];
+P.forEach((p,i)=>{
+  const x=20+i*330, y=100, w=320, h=880;
+  GS.el('rect',{x,y,width:w,height:h,rx:12,fill:'#252c52',stroke:'#3a4378','stroke-width':2},s);
+  GS.el('line',{x1:x+10,x2:x+w-10,y1:y+760,y2:y+760,stroke:'#4b5590','stroke-width':3},s); // floor
+  const v=GS.el('svg',{x,y,width:w,height:760,viewBox:'-340 -1310 680 1310',preserveAspectRatio:'xMidYMax meet'},s);
+  const r=GS.buildRig(GS.CHAR[p[0]]()); v.appendChild(r.el); r.set(Object.assign({y:0},p[2])); if(p[3]) p[3](r);
+  T(x+w/2,y+810,p[0].toLocaleUpperCase('tr-TR'),28,{'font-weight':700}); T(x+w/2,y+850,p[1],21);
+});
+</script></body></html>

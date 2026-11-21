@@ -1,0 +1,105 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Character sheet (Gate A). Usage: sheet.html?char=idil|saren|tovan  -> characters/sheet-<char>.png -->
+<link rel="stylesheet" href="../lib/fonts.css">
+<script src="../lib/core.js"></script><script src="../lib/constants.js"></script>
+<script src="../lib/rig.js"></script><script src="../lib/human.js"></script>
+<script src="../sets/props.js"></script>
+<script src="idil.js"></script><script src="saren.js"></script><script src="tovan.js"></script>
+<style>
+  body{margin:0;background:#1b2140;}
+  svg text{font-family:GSSerif}
+</style></head>
+<body>
+<svg id="s" width="3000" height="2300" viewBox="0 0 3000 2300"></svg>
+<script>
+(function(){
+const GS=window.GS, C=GS.C;
+const q=new URLSearchParams(location.search); const who=q.get('char')||'idil';
+const NAMES={idil:'İDİL',saren:'SAREN',tovan:'TOVAN'};
+const s=document.getElementById('s');
+const bg=GS.el('rect',{x:0,y:0,width:3000,height:2300,fill:C.indigo},s);
+const T=(x,y,str,size,attrs)=>{const t=GS.el('text',Object.assign({x,y,'font-size':size||30,fill:C.fluo,'text-anchor':'middle','font-family':'GSSerif'},attrs||{}),s);t.textContent=str;return t;};
+// panel: nested svg viewport showing world box [vx,vy,vw,vh] of a fresh rig
+function panel(x,y,w,h,box,state,label,setup){
+  GS.el('rect',{x,y,width:w,height:h,rx:14,fill:'#252c52',stroke:'#3a4378','stroke-width':2},s);
+  const v=GS.el('svg',{x,y,width:w,height:h,viewBox:box.join(' '),preserveAspectRatio:'xMidYMid meet'},s);
+  const r=GS.buildRig(GS.CHAR[who]()); v.appendChild(r.el); r.set(state||{});
+  if(setup) setup(r,v);
+  if(label) T(x+w/2,y+h-14,label,26);
+  return r;
+}
+const vamp=GS.CHAR[who]().vampire;
+const D=GS.CHAR[who]().dims;
+const headY=D.headY, top=headY-170, ht=-(top)+40;
+T(40,70,NAMES[who]+' — karakter sayfası (Bölüm 1)',46,{'text-anchor':'start','font-weight':700});
+T(40,112,{idil:'28, insan, ölüm sicili memuru · adaçayı önlük, koyu kazak, bakır mühür',saren:'33, vampir, eski muhafız · kömür rengi uzun palto, yüksek yaka, SOL kolda kanlı sargı',tovan:'61 (40 gösterir), vampir, muhafız komutanı · siyah asker paltosu, gümüş yaka işaretleri'}[who],28,{'text-anchor':'start',fill:C.steel});
+
+// full bodies: front + 3/4 (facing right) + 3/4 facing left (flip test)
+const bodyBox=[-330,top,660,ht];
+panel(40,150,560,1060,bodyBox,{view:'front',head:{turn:0}},'önden');
+panel(620,150,560,1060,bodyBox,{view:'three',head:{turn:0.45}},'3/4 (sağa bakıyor)');
+panel(1200,150,560,1060,bodyBox,{view:'three',facing:'left',head:{turn:0.45}},'3/4 (sola bakıyor)');
+
+// expressions (head CU)
+const hb=[-150,headY-150,300,300];
+const EXP=[
+ ['nötr',{eyes:'open',brows:'neutral',mouth:'closed'}],
+ ['korku / şaşkınlık',{eyes:'wide',brows:'up',mouth:'small'}],
+ ['öfke',{eyes:'narrow',brows:'down',mouth:'closed'}],
+ ['hüzün / kırgın',{eyes:'half',brows:'worried',mouth:'closed',look:[0,0.6]}],
+ ['kararlı',{eyes:'open',brows:'flat',mouth:'closed',look:[0.3,0]}],
+];
+if(who==='tovan'){EXP[0][1].eyes='narrow';EXP[4][1].eyes='narrow';EXP[4][1].look=[0,1];EXP[4][0]='soğuk, aşağı bakış';}
+EXP.forEach((e,i)=>panel(1790+ (i%3)*400, 150+Math.floor(i/3)*400, 380, 380, hb, Object.assign({head:{turn:0.3}},e[1]), e[0]));
+// amber (vampires) / tired eyes (İdil) in the 6th slot
+if(vamp) panel(1790+800,550,380,380,hb,{head:{turn:0.3},eyes:'wide',amber:1,brows:'down',mouth:'bared'},'dişler + kehribar göz');
+else panel(1790+800,550,380,380,hb,{head:{turn:0.3},eyes:'closed',brows:'worried',mouth:'closed'},'göz kırpma / kapalı');
+
+// mouth shapes
+T(1790,985,'ağız şekilleri',30,{'text-anchor':'start','font-weight':700});
+const mb=[-48,headY+28,96,76];
+GS.MOUTHS.forEach((m,i)=>panel(1790+i*200,1000,185,185,mb,{head:{turn:0},mouth:m},m));
+
+// eye states
+T(1790,1235,'göz durumları',30,{'text-anchor':'start','font-weight':700});
+const eb=[-75,headY-35,150,90];
+GS.EYES.forEach((e,i)=>panel(1790+i*240,1250,225,150,eb,{head:{turn:0},eyes:e},e));
+
+// hands with the episode's key props
+T(40,1490,'eller + bu bölümün eşyaları',30,{'text-anchor':'start','font-weight':700});
+function handPanel(i,label,side,hand,propFn,off,up,armPose,extra){
+  const st={view:'three',head:{turn:0.45}};
+  st['arm'+side]=Object.assign({hand},armPose);
+  Object.assign(st,extra||{});
+  return panel(40+i*490,1510,470,470,[-260,-1020,520,520],st,label,(r,v)=>{
+    if(propFn) r.holdProp(side,propFn(),off,up);
+    // centre the viewport on the hand (+prop): hand bbox corners mapped into the viewport's user space
+    const H=r.arms[side].hand, bb=H.getBBox(), m=v.getScreenCTM().inverse().multiply(H.getScreenCTM());
+    const pts=[[bb.x,bb.y],[bb.x+bb.width,bb.y],[bb.x,bb.y+bb.height],[bb.x+bb.width,bb.y+bb.height]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m));
+    const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+    const cx=(Math.min(...xs)+Math.max(...xs))/2, cy=(Math.min(...ys)+Math.max(...ys))/2;
+    v.setAttribute('viewBox',`${cx-300} ${cy-300} 600 600`);
+  });
+}
+if(who==='idil'){
+  handPanel(0,'tepsi (sağ el)','R','grip',()=>GS.PROP.tray(),'translate(110 0)',true,{sh:70,el:30,wr:-10});
+  handPanel(1,'bakır mühür + başparmak','R','pinch',()=>GS.PROP.seal(),'translate(-2 34) scale(1.1)',true,{sh:40,el:70,wr:0});
+  handPanel(2,'alarm ipi halkası','R','grip',()=>GS.PROP.alarmRing(),'translate(0 -24)',false,{sh:150,el:10,wr:0});
+  handPanel(3,'numaralı kâğıt','R','pinch',()=>GS.PROP.paperStrip(),'translate(100 10) scale(0.9)',true,{sh:55,el:50,wr:10});
+  handPanel(4,'ampul','R','grip',()=>GS.PROP.ampule(),'',true,{sh:60,el:60,wr:0});
+  handPanel(5,'eski sicil','R','grip',()=>GS.PROP.registerClosed(),'translate(10 30) scale(0.8)',true,{sh:50,el:40,wr:0});
+} else if(who==='saren'){
+  handPanel(0,'bez paket (sağ el)','R','grip',()=>GS.PROP.package('tied'),'translate(0 30) scale(0.8)',true,{sh:60,el:40,wr:0},{facing:'left'});
+  handPanel(1,'açık eller (iki el görünür)','R','open',null,null,false,{sh:35,el:60,wr:-20},{facing:'left',armL:{sh:30,el:55,wr:-20,hand:'open'}});
+  handPanel(2,'unutulan bez (sağ el)','R','grip',()=>GS.PROP.package('wrap'),'translate(0 20) scale(0.8)',true,{sh:85,el:5,wr:0},{facing:'left'});
+  handPanel(3,'yaralı SOL kol (sargı)','L','relaxed',null,null,false,{sh:10,el:20,wr:0},{facing:'left'});
+  handPanel(4,'aynı kol, sağa bakarken','L','relaxed',null,null,false,{sh:10,el:20,wr:0},{facing:'right'});
+  handPanel(5,'yaralı kolu göğsünde','L','fist',null,null,false,{sh:20,el:120,wr:10},{facing:'left',armR:{sh:30,el:100,wr:0,hand:'open'}});
+} else {
+  handPanel(0,'kıpırtısız duruş','R','fist',null,null,false,{sh:-6,el:4,wr:0},{facing:'left'});
+  handPanel(1,'kapı eşiğinde','R','relaxed',null,null,false,{sh:8,el:10,wr:0},{facing:'left'});
+}
+})();
+</script>
+</body></html>

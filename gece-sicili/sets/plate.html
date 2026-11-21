@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../lib/fonts.css">
+<script src="../lib/core.js"></script><script src="../lib/constants.js"></script><script src="../lib/rig.js"></script><script src="../lib/human.js"></script>
+<script src="props.js"></script><script src="../characters/idil.js"></script><script src="../characters/saren.js"></script><script src="morgue.js"></script>
+<style>body{margin:0;background:#000;font-family:GSSerif}
+.lbl{position:absolute;color:#dff3f0;font:600 26px GSSerif;background:rgba(0,0,0,.55);padding:4px 10px;border-radius:4px}</style></head><body>
+<svg id="s" width="2600" height="1500" viewBox="-2350 -2350 5200 3000"></svg>
+<div class="lbl" style="left:20px;top:16px">MORG — set plaka (geniş görünüm, Bölüm 1 eşyaları)</div>
+<script>
+const s=document.getElementById('s');
+const M=GS.SET.morgue();
+s.appendChild(M.far);s.appendChild(M.mid);
+const P=M.parts, L=GS.MORGUE;
+P.flicker(0,1);
+// props on set
+const put=(parent,el,x,y,sc,rot)=>{el.setAttribute('transform',`translate(${x} ${y}) rotate(${rot||0}) scale(${sc||1})`);parent.appendChild(el);return el;};
+put(P.slotGurney,GS.PROP.sheet('cover',940),(L.gurney.x0+L.gurney.x1)/2+90,L.gurney.top-6);
+put(P.slotFront,GS.PROP.tray(),P.tableTop[0],P.tableTop[1]-22);
+put(P.slotFront,GS.PROP.package('tied'),P.tableTop[0]+40,P.tableTop[1]-70,0.9);
+put(P.slotFront,GS.PROP.ampule(),-300,180,1.6);
+put(P.slotFront,GS.PROP.paperStrip(),-40,190,1.4);
+put(P.slotFront,GS.PROP.seal(),230,200,1.6);
+put(P.slotFloor,GS.PROP.dropSplat(),560,40,1.6);
+put(P.slotFloor,GS.PROP.sheet('floor'),900,190,1.4);
+put(P.slotFront,GS.PROP.registerClosed(),470,170,1);
+P.emptyDrawer.open(0);
+// characters at their marks (scale reference)
+const sar=GS.buildRig(GS.CHAR.saren()); P.slotGurney.insertBefore(sar.el,P.slotGurney.firstChild);
+sar.set({rot:-90,x:L.sarenFeetX,y:L.gurney.top-10,eyes:'closed',armR:{sh:4,el:4},armL:{sh:-8,el:4}});
+const idl=GS.buildRig(GS.CHAR.idil()); P.slotFront.appendChild(idl.el); idl.set({x:L.idilMark,y:0,armR:{sh:30,el:50,hand:'grip'}});
+// labels
+const lab=(x,y,t)=>{const e=GS.el('text',{x,y,'font-size':54,fill:'#dff3f0','text-anchor':'middle','font-family':'GSSerif','font-weight':700,stroke:'#000','stroke-width':6,'paint-order':'stroke'},s);e.textContent=t;};
+lab((L.exit.x0+L.exit.x1)/2,L.exit.y0-60,'arka çıkış');lab((L.shelf.x0+L.shelf.x1)/2,L.shelf.y0-60,'eski siciller');lab(L.cord.x,-2000,'alarm ipi');
+lab(1290,-1640,'morg çekmeceleri (boş: alt orta)');lab((L.door.x0+L.door.x1)/2,L.door.y0-60,'dış kapı');lab(260,-260,'sedye');lab(-525,-330,'masa');
+lab(-150,330,'eşyalar: ampul · numaralı kâğıt · bakır mühür · eski sicil · kan damlası · ıslak çarşaf');
+P.handleDown(0);
+</script></body></html>
