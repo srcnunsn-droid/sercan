@@ -34,6 +34,7 @@ You are the **animation director AND developer** for *Gece Sicili* ("Night Regis
 - NO intro card, NO title card, NO outro, NO logo, NO fade-in at the start. Frame 0 is already story. The episode ends on a HARD CUT on the last frame (no fade) unless the script says otherwise.
 - Safe zone (Instagram UI): nothing important in the top 220 px, the bottom 420 px, or within 60 px of the left/right edges. Subtitles live inside this safe zone.
 - Output: `out/preview-XX.mp4` (540x960 draft) and `out/gece-sicili-bolum-XX.mp4` (1080x1920 final).
+- Also a horizontal version for every episode (user request, Ep 01): `out/gece-sicili-bolum-XX-yatay.mp4` (1920x1080, same shots; the camera re-frames each shot for 16:9; subtitles bottom-centred). Build with `python3 tools/build_comp.py XX h` (HyperFrames allows one root composition, so `index.html` is switched per orientation) and switch back to `v` afterwards.
 
 ---
 

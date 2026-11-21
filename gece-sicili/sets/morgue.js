@@ -11,15 +11,15 @@
   // Layout constants (also used by episode data/camera).
   const M = (GS.MORGUE = {
     wallBase: -180, ceiling: -2200,
-    exit: { x0: -1860, x1: -1500, y0: -1300 },
-    shelf: { x0: -1420, x1: -1020, y0: -1560, y1: -560 },
-    cord: { x: -960, top: -2150, ringY: -1060 },
-    table: { x0: -660, x1: -390, top: -470 },
-    gurney: { x0: -290, x1: 820, top: -540 },
-    drawers: { x0: 840, cols: 3, rows: 4, w: 300, h: 330, empty: [1, 0] }, // [col,row] row 0 = bottom
-    door: { x0: 1880, x1: 2280, y0: -1340, handle: [1930, -720] },
-    light: { x: 160, y: -2110 },
-    idilMark: -820, sarenFeetX: 880,
+    exit: { x0: -1900, x1: -1540, y0: -1300 },
+    shelf: { x0: -1470, x1: -1070, y0: -1560, y1: -560 },
+    cord: { x: -900, top: -2150, ringY: -980 },
+    table: { x0: -560, x1: -300, top: -470 },
+    gurney: { x0: -150, x1: 950, top: -540 },
+    drawers: { x0: 1060, cols: 3, rows: 4, w: 300, h: 330, empty: [1, 0] }, // [col,row] row 0 = bottom
+    door: { x0: 2080, x1: 2480, y0: -1340, handle: [2130, -720] },
+    light: { x: 300, y: -2110 },
+    idilMark: -700, sarenFeetX: 1000,
   });
 
   GS.SET.morgue = function (opts) {
@@ -42,12 +42,12 @@
     el("stop", { offset: "0%", "stop-color": C.fluo, "stop-opacity": 0.16 }, rg2);
     el("stop", { offset: "100%", "stop-color": C.fluo, "stop-opacity": 0 }, rg2);
 
-    el("rect", { x: -2600, y: -2700, width: 5600, height: 2600, fill: "#22393e" }, far); // upper wall
+    el("rect", { x: -3000, y: -3200, width: 6400, height: 3100, fill: "#22393e" }, far); // upper wall
     el("rect", { x: -2600, y: -960, width: 5600, height: 800, fill: C.teal }, far); // tiled wainscot
     for (let x = -2600; x < 3000; x += 120) path(`M ${x} -960 L ${x} ${M.wallBase}`, GS.line(2, "#3b5d62", { opacity: 0.7 }), far);
     for (let y = -960; y < M.wallBase; y += 120) path(`M -2600 ${y} L 3000 ${y}`, GS.line(2, "#3b5d62", { opacity: 0.7 }), far);
     el("rect", { x: -2600, y: -972, width: 5600, height: 24, fill: "#1f3236", stroke: C.outline, "stroke-width": 3, "vector-effect": "non-scaling-stroke" }, far);
-    el("rect", { x: -2600, y: -2700, width: 5600, height: 520, fill: C.navy }, far); // ceiling band
+    el("rect", { x: -3000, y: -3200, width: 6400, height: 1020, fill: C.navy }, far); // ceiling band
     // pipes
     path(`M -2600 -1980 L 3000 -1980`, { stroke: C.outline, "stroke-width": 34, fill: "none" }, far);
     path(`M -2600 -1980 L 3000 -1980`, { stroke: "#4c6468", "stroke-width": 26, fill: "none" }, far);
@@ -57,7 +57,7 @@
 
     // ---------- MID: floor, fixtures, furniture ----------
     // floor (flat tiles with cheap perspective)
-    el("rect", { x: -2600, y: M.wallBase, width: 5600, height: 1400, fill: "#151b27" }, mid);
+    el("rect", { x: -3000, y: M.wallBase, width: 6400, height: 2800, fill: "#151b27" }, mid);
     [-140, -80, 0, 110, 260, 460, 760].forEach((y) => path(`M -2600 ${y} L 3000 ${y}`, GS.line(2, "#26303f"), mid));
     for (let x = -3600; x <= 4000; x += 300) {
       const vx = 200, vy = -1500;
@@ -226,6 +226,10 @@
     const nf = g({ class: "near-cart" }, near);
     path(`M -1500 260 L -1000 260 L -980 1400 L -1520 1400 Z`, fo("#0e131c"), nf);
     path(`M -1500 260 L -1000 260 L -1000 300 L -1500 300 Z`, ff("#2c3846"), nf);
+
+    // Tovan's long shadow from the open doorway across the floor (S43); opacity driven by data
+    parts.tovanShadow = path(`M ${M.door.x0 + 150} ${M.wallBase} L ${M.door.x0 + 280} ${M.wallBase} L 160 150 Q 40 200 -110 120 Z`, ff("#05060a", { opacity: 0 }), mid);
+    mid.insertBefore(parts.tovanShadow, parts.slotBack);
 
     // flicker(t): very subtle tube flicker, deterministic
     parts.flicker = function (t, seed) {

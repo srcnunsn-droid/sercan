@@ -370,7 +370,6 @@
     function holdProp(side, propEl, offset, upright) {
       const A = arms[side];
       A.upright = !!upright;
-      while (A.prop.firstChild) A.prop.removeChild(A.prop.firstChild);
       if (propEl) {
         if (offset) A.prop.setAttribute("transform", offset);
         A.prop.appendChild(propEl);
