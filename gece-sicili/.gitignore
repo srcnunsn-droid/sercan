@@ -4,3 +4,5 @@ out/qa-*/
 node_modules/
 .hyperframes/
 out/work-*/
+out/.*/
+out/raw-*.mp4
