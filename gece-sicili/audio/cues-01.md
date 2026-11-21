@@ -35,22 +35,22 @@ Ambience (whole episode): `amb_morgue.wav` — low drone + faint fluorescent buz
 
 | Line | Speaker | Start (s) | Length (s) | File |
 |---|---|---|---|---|
-| 1 | idil | 8.40 | 2.81 | `audio/voice/trim/ep01_l01_idil.wav` |
-| 2 | saren | 12.20 | 2.63 | `audio/voice/trim/ep01_l02_saren.wav` |
-| 3 | idil | 16.00 | 1.99 | `audio/voice/trim/ep01_l03_idil.wav` |
-| 4 | saren | 19.40 | 3.29 | `audio/voice/trim/ep01_l04_saren.wav` |
-| 5 | idil | 37.40 | 2.21 | `audio/voice/trim/ep01_l05_idil.wav` |
-| 6 | saren | 39.95 | 0.80 | `audio/voice/trim/ep01_l06_saren.wav` |
-| 7 | idil | 41.20 | 2.61 | `audio/voice/trim/ep01_l07_idil.wav` |
-| 8 | saren | 44.30 | 3.26 | `audio/voice/trim/ep01_l08_saren.wav` |
-| 9 | idil | 48.00 | 3.52 | `audio/voice/trim/ep01_l09_idil.wav` |
-| 10 | saren | 51.90 | 5.86 | `audio/voice/trim/ep01_l10_saren.wav` |
-| 11 | idil | 64.40 | 3.57 | `audio/voice/trim/ep01_l11_idil.wav` |
-| 12 | saren | 68.30 | 1.34 | `audio/voice/trim/ep01_l12_saren.wav` |
-| 13 | idil | 70.00 | 2.39 | `audio/voice/trim/ep01_l13_idil.wav` |
-| 14 | saren | 72.70 | 2.01 | `audio/voice/trim/ep01_l14_saren.wav` |
-| 15 | idil | 75.00 | 4.32 | `audio/voice/trim/ep01_l15_idil.wav` |
-| 16 | saren | 79.60 | 7.58 | `audio/voice/trim/ep01_l16_saren.wav` |
-| 17 | idil | 98.20 | 5.62 | `audio/voice/trim/ep01_l17_idil.wav` |
-| 18 | saren | 104.10 | 0.86 | `audio/voice/trim/ep01_l18_saren.wav` |
-| 19 | idil | 105.30 | 1.84 | `audio/voice/trim/ep01_l19_idil.wav` |
+| 1 | idil | 8.40 | 2.55 | `audio/voice/trim/ep01_l01_idil.wav` |
+| 2 | saren | 12.20 | 2.71 | `audio/voice/trim/ep01_l02_saren.wav` |
+| 3 | idil | 16.00 | 1.60 | `audio/voice/trim/ep01_l03_idil.wav` |
+| 4 | saren | 19.40 | 2.94 | `audio/voice/trim/ep01_l04_saren.wav` |
+| 5 | idil | 37.40 | 1.68 | `audio/voice/trim/ep01_l05_idil.wav` |
+| 6 | saren | 39.95 | 0.69 | `audio/voice/trim/ep01_l06_saren.wav` |
+| 7 | idil | 41.20 | 2.16 | `audio/voice/trim/ep01_l07_idil.wav` |
+| 8 | saren | 44.30 | 3.12 | `audio/voice/trim/ep01_l08_saren.wav` |
+| 9 | idil | 48.00 | 3.12 | `audio/voice/trim/ep01_l09_idil.wav` |
+| 10 | saren | 51.60 | 6.16 | `audio/voice/trim/ep01_l10_saren.wav` |
+| 11 | idil | 64.40 | 2.16 | `audio/voice/trim/ep01_l11_idil.wav` |
+| 12 | saren | 68.30 | 1.53 | `audio/voice/trim/ep01_l12_saren.wav` |
+| 13 | idil | 70.00 | 1.92 | `audio/voice/trim/ep01_l13_idil.wav` |
+| 14 | saren | 72.70 | 2.22 | `audio/voice/trim/ep01_l14_saren.wav` |
+| 15 | idil | 75.00 | 2.80 | `audio/voice/trim/ep01_l15_idil.wav` |
+| 16 | saren | 79.60 | 5.91 | `audio/voice/trim/ep01_l16_saren.wav` |
+| 17 | idil | 98.20 | 4.96 | `audio/voice/trim/ep01_l17_idil.wav` |
+| 18 | saren | 104.10 | 0.83 | `audio/voice/trim/ep01_l18_saren.wav` |
+| 19 | idil | 105.30 | 2.16 | `audio/voice/trim/ep01_l19_idil.wav` |

@@ -15,7 +15,7 @@
     { n: 7, speaker: "idil", start: 41.2, text: "Kardeşimin mezarını da mı açtınız?" },
     { n: 8, speaker: "saren", start: 44.3, text: "Mezarda değil. Beni sana gönderdi." },
     { n: 9, speaker: "idil", start: 48.0, text: "Yalan söylemeden önce adımı öğrenmişsin." },
-    { n: 10, speaker: "saren", start: 51.9, cards: ["Beni dinlemeden de öldürebilirsin.", "Kâğıdı önce defterinle karşılaştır."] },
+    { n: 10, speaker: "saren", start: 51.6, cards: ["Beni dinlemeden de öldürebilirsin.", "Kâğıdı önce defterinle karşılaştır."] },
     { n: 11, speaker: "idil", start: 64.4, text: "Ölüm haberini dört yıl önce aldım." },
     { n: 12, speaker: "saren", start: 68.3, text: "Bedenini gördün mü?" },
     { n: 13, speaker: "idil", start: 70.0, text: "Görmeme izin vermediler." },
