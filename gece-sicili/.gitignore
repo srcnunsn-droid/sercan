@@ -3,3 +3,4 @@ out/*.log
 out/qa-*/
 node_modules/
 .hyperframes/
+out/work-*/
