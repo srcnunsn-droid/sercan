@@ -35,7 +35,7 @@ def add_input(path):
 
 # ambience
 ai = add_input(f"{ROOT}/audio/sfx/{D['amb']}.wav")
-filters.append(f"[{ai}:a]atrim=0:{DUR},asetpts=N/SR/TB,volume=-17dB[amb]")
+filters.append(f"[{ai}:a]atrim=0:{DUR},asetpts=N/SR/TB,volume=-21dB[amb]")
 # voices
 for ln in D["lines"]:
     v = D["voice"][str(ln["n"])]
@@ -47,7 +47,7 @@ for ln in D["lines"]:
 for k, (t, name, gain) in enumerate(D["sfx"]):
     i = add_input(f"{ROOT}/audio/sfx/{name}.wav")
     ms = int(round(t * 1000))
-    filters.append(f"[{i}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay={ms}|{ms},volume={gain - 6}dB[s{k}]")
+    filters.append(f"[{i}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay={ms}|{ms},volume={gain - 4}dB[s{k}]")
     slabels.append(f"[s{k}]")
 
 filters.append(f"{''.join(vlabels)}amix=inputs={len(vlabels)}:normalize=0,apad=whole_dur={DUR}[vox]")
@@ -84,7 +84,7 @@ desc = {
     "cord_drop": "alarm cord released, ring taps", "drawer_rumble": "morgue drawer rumble", "lid_close": "drawer lid slides shut", "door_open": "outer door opens + corridor hum",
 }
 with open(f"{ROOT}/audio/cues-{EP}.md", "w") as f:
-    f.write(f"# Sound cues — Bölüm {EP}\n\nAll SFX are procedural (tools/make_sfx.py, no credits, royalty-free). Swap any file in `audio/sfx/` with the same name and re-run `python3 tools/mix_audio.py {EP}`.\n\n")
+    f.write(f"# Sound cues — Bölüm {EP}\n\nSFX + ambience: Higgsfield Mirelo SFX (audio/sfx_hf, ~9 credits), prepared by tools/prep_sfx.py; procedural fallbacks in audio/sfx_proc (tools/make_sfx.py). Swap any file in `audio/sfx/` with the same name and re-run `python3 tools/mix_audio.py {EP}`.\n\n")
     f.write(f"Ambience (whole episode): `{D['amb']}.wav` — low drone + faint fluorescent buzz, ducked ~-12 dB under speech.\n\n| Time (s) | File | Gain (dB) | Description |\n|---|---|---|---|\n")
     for t, name, gain in D["sfx"]:
         f.write(f"| {t:.2f} | `{name}.wav` | {gain} | {desc.get(name, '')} |\n")

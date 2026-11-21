@@ -340,14 +340,15 @@
     shots,
     black: [],
     sfx: [
-      // [time, file, gainDb]  (also listed in audio/cues-01.md)
-      [0.0, "cloth_grip", -6], [0.8, "tray_clang", 0], [1.5, "cord_rustle", -4], [5.33, "blood_drop", -2],
-      [24.3, "cart_wheels", -4], [32.5, "package_thud", 0], [33.9, "ampule_clink", -2], [34.0, "paper_slide", -4],
-      [38.1, "paper_slide", -8], [58.6, "package_thud", -10], [61.3, "register_pull", -2], [62.0, "page_flips", -3],
-      [64.0, "knee_thud", 0], [64.15, "sheet_slide", -3], [66.7, "page_flips", -8], [87.35, "handle_click", 0],
-      [93.65, "handle_click", 0], [94.35, "cord_drop", -2], [96.25, "sheet_slide", -6], [97.1, "drawer_rumble", -2],
-      [109.3, "drawer_rumble", -4], [112.4, "lid_close", -2], [113.0, "drawer_rumble", -6], [114.4, "handle_click", -3], [114.6, "door_open", -1],
+      // [time, file, gainDb]  (also listed in audio/cues-01.md). Files: Higgsfield SFX (audio/sfx_hf -> audio/sfx)
+      [0.0, "cloth_grip", -2], [0.8, "tray_clang", 0], [1.5, "cord_rustle", -6], [5.3, "blood_drop", -4],
+      [24.3, "cart_wheels", -4], [32.5, "package_thud", -1], [33.8, "ampule_clink", -4], [34.0, "paper_slide", -7],
+      [38.1, "paper_slide", -10], [58.6, "package_thud", -9], [61.3, "register_pull", -3], [62.0, "page_flips", -5],
+      [64.0, "knee_thud", 0], [64.15, "sheet_slide", -5], [66.7, "page_flips", -9], [87.3, "handle_click", 0],
+      [93.6, "handle_click", 0], [94.3, "cord_drop", -4], [96.25, "sheet_slide", -8], [97.1, "drawer_rumble", -2],
+      [109.8, "drawer_rumble", -5], [112.5, "lid_close", -2], [114.35, "handle_click", -3], [114.6, "door_open", -1],
     ],
+
     ambience: "amb_morgue",
   };
 })();

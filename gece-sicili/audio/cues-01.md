@@ -1,35 +1,34 @@
 # Sound cues — Bölüm 01
 
-All SFX are procedural (tools/make_sfx.py, no credits, royalty-free). Swap any file in `audio/sfx/` with the same name and re-run `python3 tools/mix_audio.py 01`.
+SFX + ambience: Higgsfield Mirelo SFX (audio/sfx_hf, ~9 credits), prepared by tools/prep_sfx.py; procedural fallbacks in audio/sfx_proc (tools/make_sfx.py). Swap any file in `audio/sfx/` with the same name and re-run `python3 tools/mix_audio.py 01`.
 
 Ambience (whole episode): `amb_morgue.wav` — low drone + faint fluorescent buzz, ducked ~-12 dB under speech.
 
 | Time (s) | File | Gain (dB) | Description |
 |---|---|---|---|
-| 0.00 | `cloth_grip.wav` | -6 | cloth + grip (hand clamps the wrist) |
+| 0.00 | `cloth_grip.wav` | -2 | cloth + grip (hand clamps the wrist) |
 | 0.80 | `tray_clang.wav` | 0 | metal tray hits the floor |
-| 1.50 | `cord_rustle.wav` | -4 | alarm cord rustle |
-| 5.33 | `blood_drop.wav` | -2 | blood drop on tile |
+| 1.50 | `cord_rustle.wav` | -6 | alarm cord rustle |
+| 5.30 | `blood_drop.wav` | -4 | blood drop on tile |
 | 24.30 | `cart_wheels.wav` | -4 | hearse-cart wheels pass in the corridor |
-| 32.50 | `package_thud.wav` | 0 | cloth package lands on steel |
-| 33.90 | `ampule_clink.wav` | -2 | glass ampule rolls + clink |
-| 34.00 | `paper_slide.wav` | -4 | paper strip slides |
-| 38.10 | `paper_slide.wav` | -8 | paper strip slides |
-| 58.60 | `package_thud.wav` | -10 | cloth package lands on steel |
-| 61.30 | `register_pull.wav` | -2 | old register pulled from the shelf + dust |
-| 62.00 | `page_flips.wav` | -3 | page flips |
+| 32.50 | `package_thud.wav` | -1 | cloth package lands on steel |
+| 33.80 | `ampule_clink.wav` | -4 | glass ampule rolls + clink |
+| 34.00 | `paper_slide.wav` | -7 | paper strip slides |
+| 38.10 | `paper_slide.wav` | -10 | paper strip slides |
+| 58.60 | `package_thud.wav` | -9 | cloth package lands on steel |
+| 61.30 | `register_pull.wav` | -3 | old register pulled from the shelf + dust |
+| 62.00 | `page_flips.wav` | -5 | page flips |
 | 64.00 | `knee_thud.wav` | 0 | knee hits the floor |
-| 64.15 | `sheet_slide.wav` | -3 | sheet slides / is pushed |
-| 66.70 | `page_flips.wav` | -8 | page flips |
-| 87.35 | `handle_click.wav` | 0 | outer door handle goes down |
-| 93.65 | `handle_click.wav` | 0 | outer door handle goes down |
-| 94.35 | `cord_drop.wav` | -2 | alarm cord released, ring taps |
-| 96.25 | `sheet_slide.wav` | -6 | sheet slides / is pushed |
+| 64.15 | `sheet_slide.wav` | -5 | sheet slides / is pushed |
+| 66.70 | `page_flips.wav` | -9 | page flips |
+| 87.30 | `handle_click.wav` | 0 | outer door handle goes down |
+| 93.60 | `handle_click.wav` | 0 | outer door handle goes down |
+| 94.30 | `cord_drop.wav` | -4 | alarm cord released, ring taps |
+| 96.25 | `sheet_slide.wav` | -8 | sheet slides / is pushed |
 | 97.10 | `drawer_rumble.wav` | -2 | morgue drawer rumble |
-| 109.30 | `drawer_rumble.wav` | -4 | morgue drawer rumble |
-| 112.40 | `lid_close.wav` | -2 | drawer lid slides shut |
-| 113.00 | `drawer_rumble.wav` | -6 | morgue drawer rumble |
-| 114.40 | `handle_click.wav` | -3 | outer door handle goes down |
+| 109.80 | `drawer_rumble.wav` | -5 | morgue drawer rumble |
+| 112.50 | `lid_close.wav` | -2 | drawer lid slides shut |
+| 114.35 | `handle_click.wav` | -3 | outer door handle goes down |
 | 114.60 | `door_open.wav` | -1 | outer door opens + corridor hum |
 
 ## Voice lines
